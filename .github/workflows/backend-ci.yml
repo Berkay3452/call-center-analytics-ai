@@ -1,0 +1,218 @@
+# Backend CI — her PR'da backend kodunun doğru ve hatasız çalıştığını kontrol eder.
+#
+# İşler (job'lar):
+#   1. changes   : PR backend'e dokunuyor mu? Dokunmuyorsa diğer işler atlanır (dokümantasyon PR'ları beklemez).
+#   2. lint      : ruff ile kod stili ve olası hatalar (hatalar PR'da ilgili satıra yorum olarak düşer).
+#   3. typecheck : mypy ile tip kontrolü.
+#   4. test      : pytest + kapsam (coverage) raporu (özet, iş sayfasının "Summary" kısmında görünür).
+#   5. smoke     : Gerçek PostgreSQL + Redis ile API ve Celery işçisini ayağa kaldırıp uçtan uca dener.
+#   6. backend-ci: Tüm sonuçları toplayan tek kontrol. Branch korumasında "zorunlu kontrol" olarak bu seçilir.
+
+name: Backend CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Aynı PR'a yeni commit gelirse eski çalışma iptal edilir (zaman ve dakika kotası tasarrufu).
+concurrency:
+  group: backend-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+env:
+  UV_VERSION: "0.11.17"
+  # Testler yerel .env dosyasına değil, bu ortam değişkenlerine bakar.
+  APP_ENV: test
+
+jobs:
+  changes:
+    name: Değişiklik tespiti
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: filter
+        uses: dorny/paths-filter@v4
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+              - 'infra/**'
+              - '.github/workflows/backend-ci.yml'
+
+  lint:
+    name: Lint (ruff)
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - name: Bağımlılıkları kur
+        run: uv sync --locked --extra ai
+      - name: Ruff kontrol
+        # github formatı: hatalar PR'daki "Files changed" sekmesinde satır üzerinde görünür.
+        run: uv run ruff check . --output-format=github
+      - name: Ruff format kontrolü
+        run: uv run ruff format --check --diff .
+
+  typecheck:
+    name: Tip kontrolü (mypy)
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - name: Bağımlılıkları kur
+        run: uv sync --locked --extra ai
+      - name: Mypy
+        run: uv run mypy app tests
+
+  test:
+    name: Testler (pytest)
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - name: Bağımlılıkları kur
+        run: uv sync --locked --extra ai
+      - name: Pytest
+        run: >
+          uv run pytest
+          --tb=short
+          --junitxml=reports/junit.xml
+          --cov=app --cov-report=term-missing
+      - name: Kapsam özetini yaz
+        if: always()
+        run: |
+          echo "## Test kapsamı (coverage)" >> "$GITHUB_STEP_SUMMARY"
+          uv run coverage report --format=markdown >> "$GITHUB_STEP_SUMMARY" || echo "Kapsam raporu üretilemedi." >> "$GITHUB_STEP_SUMMARY"
+      - name: Test raporunu sakla
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: pytest-raporu
+          path: backend/reports/
+          retention-days: 7
+
+  smoke:
+    name: Uçtan uca duman testi (API + Celery + DB + Redis)
+    needs: [changes, test]
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      # infra/docker-compose.yml ile aynı imajlar → yerelde ve CI'da aynı ortam.
+      postgres:
+        image: pgvector/pgvector:0.8.6-pg17
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: call_center
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres -d call_center"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+      redis:
+        image: redis:8.10-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 3s --health-retries 10
+    env:
+      DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/call_center
+      REDIS_URL: redis://localhost:6379/0
+      AUTH_DEV_BYPASS: "true"
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          version: ${{ env.UV_VERSION }}
+          enable-cache: true
+          cache-dependency-glob: backend/uv.lock
+      - name: Bağımlılıkları kur
+        run: uv sync --locked --extra ai
+      - name: API ve Celery işçisini başlat
+        run: |
+          uv run uvicorn app.main:app --port 8000 > uvicorn.log 2>&1 &
+          uv run celery -A app.workers.celery_app worker -Q default --concurrency 1 -l info > celery.log 2>&1 &
+          # API'nin açılmasını bekle (en fazla 30 sn).
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:8000/health > /dev/null && exit 0
+            sleep 1
+          done
+          echo "::error::API 30 saniyede açılmadı."
+          exit 1
+      - name: Hazır olma kontrolü (/health/ready → 200)
+        run: |
+          code=$(curl -s -o ready.json -w "%{http_code}" http://localhost:8000/health/ready)
+          cat ready.json; echo
+          if [ "$code" != "200" ]; then
+            echo "::error::/health/ready $code döndü (beklenen 200). Veritabanı veya Redis bağlantısı başarısız."
+            exit 1
+          fi
+      - name: Oturum ucu (/api/v1/me → 200)
+        run: curl -sf http://localhost:8000/api/v1/me
+      - name: Celery kuyruk testi (ping → pong)
+        run: |
+          uv run python -c "
+          from app.workers.tasks.system import ping
+          result = ping.delay().get(timeout=30)
+          assert result == 'pong', result
+          print('Celery yanıtı:', result)
+          "
+      - name: Hata durumunda logları göster
+        if: failure()
+        run: |
+          echo "===== uvicorn.log ====="; cat uvicorn.log || true
+          echo "===== celery.log =====";  cat celery.log  || true
+
+  backend-ci:
+    # Branch korumasında yalnızca bu kontrol "zorunlu" yapılır. Backend'e dokunmayan PR'larda
+    # diğer işler atlanır ve bu kontrol yine geçer; böylece dokümantasyon PR'ları takılı kalmaz.
+    name: Backend CI sonucu
+    needs: [changes, lint, typecheck, test, smoke]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sonuçları değerlendir
+        run: |
+          echo "lint=${{ needs.lint.result }} typecheck=${{ needs.typecheck.result }} test=${{ needs.test.result }} smoke=${{ needs.smoke.result }}"
+          if [ "${{ needs.changes.result }}" != "success" ] || \
+             [[ "${{ join(needs.*.result, ' ') }}" =~ (failure|cancelled) ]]; then
+            echo "::error::Backend CI başarısız. Kırmızı olan işe tıklayıp hatanın yerini görün."
+            exit 1
+          fi
+          echo "Backend CI başarılı."
