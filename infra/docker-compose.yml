@@ -1,0 +1,38 @@
+# Yerel geliştirme bağımlılıkları: PostgreSQL (pgvector) + Redis.
+# Çalıştırma (repo kökünden): docker compose -f infra/docker-compose.yml up -d
+#
+# Not: Üretimde veritabanı Supabase'tir. Bu Postgres, Supabase hazır olana kadar
+# backend'i yerelde çalıştırmak içindir (aynı sürüm: PG 17 + pgvector 0.8).
+
+name: call-center-dev
+
+services:
+  postgres:
+    image: pgvector/pgvector:0.8.6-pg17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: call_center
+    ports:
+      - "5433:5432" # makinede kurulu başka bir Postgres ile çakışmasın diye 5433
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d call_center"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  redis:
+    image: redis:8.10-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:
