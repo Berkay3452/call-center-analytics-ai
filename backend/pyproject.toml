@@ -1,0 +1,82 @@
+# Backend proje tanımı — bağımlılıklar `uv` ile yönetilir, kilit dosyası uv.lock.
+# Sürüm aralıkları Sistem_mimarisi_v1.md §4'teki doğrulanmış sürümlere göre seçildi.
+[project]
+name = "call-center-backend"
+version = "0.1.0"
+description = "Çağrı merkezi analitiği — FastAPI backend (API + Celery işçileri)"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    # Web katmanı
+    "fastapi~=0.142.0",
+    "uvicorn[standard]~=0.54.0",
+    "sse-starlette~=3.5",
+    # Doğrulama ve ayarlar
+    "pydantic~=2.13",
+    "pydantic-settings~=2.15",
+    # Veritabanı (Supabase PostgreSQL + pgvector)
+    "sqlalchemy[asyncio]~=2.1",
+    "asyncpg~=0.31",
+    "pgvector~=0.5",
+    # Kuyruk ve önbellek
+    "celery[redis]~=5.6",
+    "redis>=5",
+    # Kimlik doğrulama (Supabase JWT / JWKS)
+    "pyjwt[crypto]~=2.15",
+    # Yardımcılar
+    "httpx~=0.28",
+    "structlog>=26.1",
+    "tenacity~=9.1",
+]
+
+[project.optional-dependencies]
+# Yapay zekâ katmanı: LLM istemcisi, ajan orkestrasyonu (LangGraph), MCP.
+ai = [
+    "langchain~=1.4",
+    "langchain-core~=1.6",
+    "langchain-openai~=1.6",
+    "langgraph~=1.2",
+    "mcp~=2.2",
+]
+# Ses → metin katmanı. torch içerir ve büyüktür; donanım kararı netleşince kurulacak.
+stt = [
+    "faster-whisper~=1.2",
+    "pyannote.audio~=4.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest~=9.1",
+    "pytest-asyncio~=1.4",
+    "pytest-cov~=7.1",
+    "ruff~=0.16",
+    "mypy~=2.3",
+]
+
+[tool.uv]
+# Uygulama paket olarak kurulmaz; `app` doğrudan backend/ klasöründen import edilir.
+package = false
+default-groups = ["dev"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+addopts = "-ra"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "ASYNC", "SIM", "RUF"]
+# Türkçe yorum/metinlerdeki "ı", "ş" gibi harfler "belirsiz karakter" sayılmasın.
+ignore = ["RUF001", "RUF002", "RUF003"]
+
+[tool.mypy]
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+strict_optional = true
+warn_unused_ignores = true
+ignore_missing_imports = true
