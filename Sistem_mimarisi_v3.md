@@ -1,7 +1,7 @@
 # Sistem Mimarisi v3
 
 **Proje:** Yapay Zekâ Destekli Sesli Asistan ve Çağrı Merkezi Analitiği Sistemi
-**Sürüm:** v3.0 · **Tarih:** 2026-10-07 · **Durum:** Güncel · **Önceki sürümler:** v1, v2 (git geçmişinde)
+**Sürüm:** v3.1 · **Tarih:** 2026-10-08 · **Durum:** Güncel · **Önceki sürümler:** v1, v2 (git geçmişinde)
 
 **v3'te değişenler:** Sıfırdan bir web sitesi kurmuyoruz. Hocamızın verdiği hazır **Miço Usta** uygulamasına (tekne bakım ve servis platformu) belirli sayfalar ekleyip arkada çalışan **AI servisimizi** buraya entegre edeceğiz. Sektör telekomdan **tekne servisine** geçti; veriler sentetik. Ayrıntılar §3'te.
 
@@ -32,10 +32,10 @@
 
 - **Hazır uygulamaya entegrasyon.** Miço Usta (Next.js arayüz, .NET 10 backend, PostgreSQL, Redis, Google Cloud) olduğu gibi kalır; biz ona yeni sayfalar ekleriz.
 - **AI servisimiz ayrı bir Python servisi (FastAPI) olarak çalışır** ve .NET uygulamasıyla REST (JSON) üzerinden konuşur. Python seçimi, LLM, agent ve RAG kütüphanelerinin ağırlıklı olarak Python ekosisteminde olmasındandır. *(Hocaya soruldu, yanıt bekleniyor.)*
-- **Agent'lar önce sıralı, sonra LangGraph.** Vizeye kadar sıralı orkestratör yeterlidir.
+- **Orkestratör baştan LangGraph ile kurulur.** Agent'lar aşamalar halinde çalışır: önce Triage, sonra diğer üç agent paralel. Yeni agent eklemek akışı değiştirmez.
 - **LLM sağlayıcısı değiştirilebilir:** Host sistem Vertex AI/Gemini kullanıyor; biz sağlayıcıyı ayardan seçilebilir tuttuk. Geliştirmede ücretsiz API'ler, uyumluluk için Gemini.
 - **Yapılandırılmış çıktı:** Her agent şemaya uygun JSON döner; çıktı doğrulanmadan CRM'e yazılmaz.
-- **Veritabanı:** Büyük ihtimalle sıfırdan kendi PostgreSQL'imizi oluşturacağız. *(Melih hocaya soracak.)* Supabase yalnızca geliştirme aşamasında kalabilir.
+- **Veritabanı:** Geliştirmede ortak veritabanı olarak **Supabase** kullanılır. Yalnızca standart PostgreSQL + pgvector özellikleri kullanılır (Supabase Auth ve RLS'e bağımlılık yok), şema **Alembic** migration'larıyla kurulur. Böylece canlı ortamda başka bir PostgreSQL'e taşınabilir. Canlı ortamda büyük ihtimalle kendi PostgreSQL'imiz olacak. *(Hocaya sorulacak.)*
 - **Veri tamamen sentetiktir** (gerçek müşteri verisi yok, KVKK). LLM'e giden metin kişisel veriden arındırılır.
 - **Tekne sahibi yalnızca kendi teknesinin verisini görür.** Asistan, oturumdaki kullanıcının yetkisiyle çalışır.
 - **Kod ve veritabanı İngilizce, arayüz ve LLM çıktısı Türkçe.**
@@ -55,11 +55,11 @@ Not: Gezdiğimiz örnek site (Figma Make ile hazırlanmış bir prototip) arayü
 |--------|-------------------|---------------------|
 | Backend | .NET 10 | Python 3.12 + FastAPI 0.142 |
 | Arayüz | Next.js | Ahmet, hazır Next.js uygulamasına sayfa ekler |
-| Veritabanı | PostgreSQL | PostgreSQL 17 + pgvector (karar bekliyor) |
+| Veritabanı | PostgreSQL | PostgreSQL 17 + pgvector; geliştirmede Supabase, migration'lar Alembic |
 | Kuyruk / önbellek | Redis | Celery + Redis |
 | Bulut | Google Cloud | Google Cloud'da canlıya alma |
 | LLM | Vertex AI / Gemini | Sağlayıcı arayüzü: Gemini veya ücretsiz API'ler |
-| Konuşma tanıma | — | Deepgram (Nova-3); Google'ın STT servisi alternatif (karar bekliyor) |
+| Konuşma tanıma | — | Deepgram (Nova-3) veya Google'ın STT servisi; 5. haftada karşılaştırılacak |
 | Agent orkestrasyonu | — | LangGraph + LangChain |
 
 Sürümler 2026-09-30 ve 2026-10-04'te doğrulanmıştır; kilit dosyaları (`uv.lock`, `package-lock.json`) repoda tutulur.
@@ -82,7 +82,7 @@ Sürümler 2026-09-30 ve 2026-10-04'te doğrulanmıştır; kilit dosyaları (`uv
 - **Talep Çıkarım Agent'ı:** talep, lokasyon, problem, aciliyet, sonraki aksiyon.
 - **Satış Sonucu Agent'ı:** sonuç ve kayıp nedeni (fiyat, geç dönüş).
 - **Özet Agent'ı:** kısa görüşme özeti.
-- **Orkestratör:** agent'ları çalıştırır, çıktıyı doğrular, sonucu yazar. Bir agent çökerse kayıt "kısmi" tamamlanır.
+- **Orkestratör:** agent'ları çalıştırır, her çıktıyı şemasıyla yeniden doğrular ve sonucu yazar. Doğrulama hatasında agent'a hata mesajıyla bir kez düzeltme şansı verilir; çökme ve süre aşımı tekrar denenmez. Bir agent çökerse diğerlerinin sonucu korunur ve kayıt "kısmi" tamamlanır. Her agent çalışması (süre, deneme sayısı, hata) kaydedilir.
 
 **KPI'ların kaynağı**
 
@@ -149,15 +149,16 @@ Sürümler 2026-09-30 ve 2026-10-04'te doğrulanmıştır; kilit dosyaları (`uv
 - AI servisi Google Cloud'da, hazır uygulamayla aynı ağda çalışır. Çalıştırma biçimi (konteyner, VM) ve veritabanı yönetimi netleşecek.
 - LLM tarafı için Vertex AI/Gemini ile uyumluluk önemlidir; sağlayıcı arayüzümüz bunu destekler.
 
-## 11. Mevcut Durum (7 Ekim)
+## 11. Mevcut Durum (8 Ekim)
 
 | Alan | Durum |
 |------|-------|
 | Backend iskeleti (FastAPI, kuyruk, ayarlar, hata biçimi, sağlık uçları) | **Hazır** |
 | Backend CI (lint, tip kontrolü, test, duman testi) | **Hazır** |
 | LLM, agent, STT ve embedding arayüzleri | **Hazır** (içleri yazılacak) |
+| Orkestratör (LangGraph): aşamalar, paralel çalışma, doğrulama ve düzeltme, kısmi başarı | **Hazır** (agent'lar yer tutucu; #17–#20'de yazılacak) |
 | Miço Usta incelemesi | **Yapıldı** (üç panel gezildi) |
-| Telekoma göre hazırlanan şema ve issue'lar | **Güncellenecek** |
+| Telekoma göre hazırlanan issue'lar | **Güncellendi** (4. hafta: #4–#24) |
 
 **Backend'de yapılacak değişiklikler:** giriş doğrulamasını Supabase JWT'den servis anahtarına çevirmek; agent'ları tekne servisi alanına uyarlamak; STT sağlayıcısını (Deepgram veya Google) seçmek; LLM sağlayıcısına Gemini/Vertex AI seçeneği eklemek.
 
@@ -166,14 +167,15 @@ Sürümler 2026-09-30 ve 2026-10-04'te doğrulanmıştır; kilit dosyaları (`uv
 | Karar | Durum |
 |-------|-------|
 | .NET ile Python servisi entegrasyon yöntemi | Hocaya soruldu, yanıt bekleniyor |
-| Veritabanı: kendi PostgreSQL'imiz mi, Miço Usta'nınki mi? | Büyük ihtimalle kendi; Melih soracak |
+| Canlı veritabanı: kendi PostgreSQL'imiz mi, Miço Usta'nınki mi? | Büyük ihtimalle kendi; geliştirmede Supabase |
 | Miço Usta veri şeması / örnek veri | Hocadan istenecek |
-| STT: Deepgram mı, Google'ın STT servisi mi? | Karar bekliyor |
+| STT: Deepgram mı, Google'ın STT servisi mi? | 5. haftada karşılaştırılacak (#15) |
 | Canlıya alma ortamı ve biçimi (Google Cloud) | Final öncesi netleşecek |
 | Admin'deki mevcut AI Asistan'ın iyileştirilmesi kapsama dahil mi? | Hocaya sorulacak |
 
 ## 13. Değişiklik Günlüğü
 
+- **v3.1 (2026-10-08):** Orkestratör baştan LangGraph (paralel aşamalar, doğrulama ve tek düzeltme); geliştirmede Supabase + Alembic; STT kararı 5. haftaya; 4. hafta issue'ları güncellendi.
 - **v3.0 (2026-10-07):** Hazır Miço Usta uygulamasına entegrasyon; sektör tekne servisi; üç iş (CRM kaydı, Çağrı Analitiği, Miço AI); yeni agent seti; servis anahtarı ile kimlik doğrulama; Google Cloud'a canlıya alma; şemalar yeniden çizildi.
 - **v2.0 (2026-10-04):** Deepgram STT, takvim ve vize hedefi.
 - **v1.0 (2026-09-30):** İlk mimari taslağı.
