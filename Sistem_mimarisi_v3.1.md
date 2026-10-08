@@ -32,7 +32,7 @@
 
 - **Hazır uygulamaya entegrasyon.** Miço Usta (Next.js arayüz, .NET 10 backend, PostgreSQL, Redis, Google Cloud) olduğu gibi kalır; biz ona yeni sayfalar ekleriz.
 - **AI servisimiz ayrı bir Python servisi (FastAPI) olarak çalışır** ve .NET uygulamasıyla REST (JSON) üzerinden konuşur. Python seçimi, LLM, agent ve RAG kütüphanelerinin ağırlıklı olarak Python ekosisteminde olmasındandır. *(Hocaya soruldu, yanıt bekleniyor.)*
-- **Orkestratör baştan LangGraph ile kurulur.** Agent'lar aşamalar halinde çalışır: önce Triage, sonra diğer üç agent paralel. Yeni agent eklemek akışı değiştirmez.
+- **Orkestratör baştan LangGraph ile kurulur.** Agent'lar aşamalar halinde çalışır: önce Çağrı Sınıflandırma, sonra diğer üç agent paralel. Yeni agent eklemek akışı değiştirmez.
 - **LLM sağlayıcısı değiştirilebilir:** Host sistem Vertex AI/Gemini kullanıyor; biz sağlayıcıyı ayardan seçilebilir tuttuk. Geliştirmede ücretsiz API'ler, uyumluluk için Gemini.
 - **Yapılandırılmış çıktı:** Her agent şemaya uygun JSON döner; çıktı doğrulanmadan CRM'e yazılmaz.
 - **Veritabanı:** Geliştirmede ortak veritabanı olarak **Supabase** kullanılır. Yalnızca standart PostgreSQL + pgvector özellikleri kullanılır (Supabase Auth ve RLS'e bağımlılık yok), şema **Alembic** migration'larıyla kurulur. Böylece canlı ortamda başka bir PostgreSQL'e taşınabilir. Canlı ortamda büyük ihtimalle kendi PostgreSQL'imiz olacak. *(Hocaya sorulacak.)*
@@ -78,10 +78,10 @@ Sürümler 2026-09-30 ve 2026-10-04'te doğrulanmıştır; kilit dosyaları (`uv
 
 ![Agent'lar ve orkestratör](docs/diagrams/04_agent_orkestrator.png)
 
-- **Triage Agent'ı:** çağrı tipi (yeni müşteri, servis, teklif, acil, bilgi).
-- **Talep Çıkarım Agent'ı:** talep, lokasyon, problem, aciliyet, sonraki aksiyon.
-- **Satış Sonucu Agent'ı:** sonuç ve kayıp nedeni (fiyat, geç dönüş).
-- **Özet Agent'ı:** kısa görüşme özeti.
+- **Çağrı Sınıflandırma Agent'ı:** çağrı tipi (yeni müşteri, servis, teklif, acil, bilgi).
+- **CRM Bilgi Çıkarım Agent'ı:** talep, lokasyon, problem, aciliyet, sonraki aksiyon.
+- **Satış Analiz Agent'ı:** satış sonucu ve kayıp nedeni (fiyat, geç dönüş).
+- **Özetleme Agent'ı:** kısa görüşme özeti.
 - **Orkestratör:** agent'ları çalıştırır, her çıktıyı şemasıyla yeniden doğrular ve sonucu yazar. Doğrulama hatasında agent'a hata mesajıyla bir kez düzeltme şansı verilir; çökme ve süre aşımı tekrar denenmez. Bir agent çökerse diğerlerinin sonucu korunur ve kayıt "kısmi" tamamlanır. Her agent çalışması (süre, deneme sayısı, hata) kaydedilir.
 
 **KPI'ların kaynağı**
@@ -90,7 +90,7 @@ Sürümler 2026-09-30 ve 2026-10-04'te doğrulanmıştır; kilit dosyaları (`uv
 |-----|---------------|
 | Gelen çağrı | Çağrı sayısı |
 | Yeni müşteri, servis talebi, teklif talebi, acil servis | Konuşmadan çıkarılan çağrı tipi ve aciliyet |
-| Satışa dönüşen, kaybedilme nedeni | Satış Sonucu Agent'ı |
+| Satışa dönüşen, kaybedilme nedeni | Satış Analiz Agent'ı |
 | En sık arıza, en yoğun marina | Konuşmadan çıkarılan problem ve lokasyon |
 | Ortalama cevap süresi | Ses dosyasından çıkmaz; **çağrı bilgisinden** (çalma ve açılma zamanı) hesaplanır |
 

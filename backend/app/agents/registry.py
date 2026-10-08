@@ -1,7 +1,7 @@
 """Varsayılan çağrı analizi akışı: hangi agent hangi aşamada çalışır.
 
-Gerçek agent'lar yazıldıkça (#17 Triage, #18 Talep Çıkarım, #19 Satış Sonucu, #20 Özet)
-ilgili yer tutucu kendi sınıfıyla değiştirilir; akışın kendisi değişmez.
+Gerçek agent'lar yazıldıkça (#17 Çağrı Sınıflandırma, #18 CRM Bilgi Çıkarım, #19 Satış Analiz,
+#20 Özetleme) ilgili yer tutucu kendi sınıfıyla değiştirilir; akışın kendisi değişmez.
 """
 
 from typing import Any, ClassVar
@@ -12,10 +12,10 @@ from app.agents.base import AgentResult, AnalysisContext, BaseAgent
 from app.agents.orchestrator import Orchestrator, RunRecorder, Stage
 
 # Agent adları; orkestratör çıktısında (`outputs`, `runs`) ve veritabanında bu adlar görünür.
-TRIAGE = "triage"
-REQUEST_EXTRACTION = "request_extraction"
-SALES_OUTCOME = "sales_outcome"
-SUMMARY = "summary"
+CALL_CLASSIFIER = "call_classifier"
+CRM_EXTRACTION = "crm_extraction"
+SALES_ANALYZER = "sales_analyzer"
+SUMMARIZER = "summarizer"
 
 
 class _Empty(BaseModel):
@@ -40,10 +40,10 @@ def _pending(agent_name: str) -> BaseAgent[Any]:
 
 
 def default_stages() -> list[Stage]:
-    """Sistem mimarisi v3 §6.1: Triage → (Talep Çıkarım ‖ Satış Sonucu ‖ Özet)."""
+    """Mimari v3.1 §6.1: Çağrı Sınıflandırma → (CRM Bilgi Çıkarım ‖ Satış Analiz ‖ Özetleme)."""
     return [
-        [_pending(TRIAGE)],
-        [_pending(REQUEST_EXTRACTION), _pending(SALES_OUTCOME), _pending(SUMMARY)],
+        [_pending(CALL_CLASSIFIER)],
+        [_pending(CRM_EXTRACTION), _pending(SALES_ANALYZER), _pending(SUMMARIZER)],
     ]
 
 

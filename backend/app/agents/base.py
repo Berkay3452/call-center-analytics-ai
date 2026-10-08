@@ -48,7 +48,8 @@ class AnalysisContext(BaseModel):
     segments: list[Segment]
     call_info: CallInfo | None = None
     language: str = "tr"
-    # Önceki aşamadaki agent'ların çıktıları (ör. Talep Çıkarım, Triage'ın çağrı tipini görür).
+    # Önceki aşamadaki agent'ların çıktıları
+    # (ör. CRM Bilgi Çıkarım, Çağrı Sınıflandırma'nın çağrı tipini görür).
     prior: dict[str, Any] = Field(default_factory=dict)
     # Önceki denemenin doğrulama hatası. Doluysa agent bunu prompt'a ekleyip çıktısını düzeltir.
     feedback: str | None = None

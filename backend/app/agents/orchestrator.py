@@ -4,7 +4,7 @@ Agent'lar aşamalar (stage) halinde çalışır. Aynı aşamadaki agent'lar birb
 paralel çalışır; bir sonraki aşama, öncekilerin başarılı çıktılarını `ctx.prior` içinde görür.
 Varsayılan akış (Sistem mimarisi v3 §6.1):
 
-    Triage → (Talep Çıkarım ‖ Satış Sonucu ‖ Özet) → sonuç
+    Çağrı Sınıflandırma → (CRM Bilgi Çıkarım ‖ Satış Analiz ‖ Özetleme) → sonuç
 
 Kurallar:
 - Her agent çıktısı kendi Pydantic şemasıyla yeniden doğrulanır.
