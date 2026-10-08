@@ -29,6 +29,7 @@ pip install -r requirements.txt -r requirements-dev.txt
 
 - `requirements.txt`: uygulama ve `ai` ekstrası (FastAPI, Celery, SQLAlchemy, LangGraph, LangChain...).
 - `requirements-dev.txt`: test ve kod kalitesi araçları (pytest, ruff, mypy).
+- CI'daki **Bağımlılık sürümleri** kontrolü, `uv.lock` ile `pyproject.toml` ve bu iki dosyanın uyumunu her PR'da denetler; uyumsuzsa PR kırmızı olur.
 - Bu dosyaları elle düzenlemeyin. Bağımlılık değişince `pyproject.toml` güncellenir, `uv lock` çalıştırılır ve dosyalar şu komutlarla yeniden üretilir:
 
 ```

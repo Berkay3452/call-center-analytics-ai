@@ -6,7 +6,8 @@
 #   3. typecheck : mypy ile tip kontrolü.
 #   4. test      : pytest + kapsam (coverage) raporu (özet, iş sayfasının "Summary" kısmında görünür).
 #   5. smoke     : Gerçek PostgreSQL + Redis ile API ve Celery işçisini ayağa kaldırıp uçtan uca dener.
-#   6. backend-ci: Tüm sonuçları toplayan tek kontrol. Branch korumasında "zorunlu kontrol" olarak bu seçilir.
+#   6. dependencies: Bağımlılık sürümleri tutarlı mı (pyproject.toml, uv.lock, requirements.txt)?
+#   7. backend-ci: Tüm sonuçları toplayan tek kontrol. Branch korumasında "zorunlu kontrol" olarak bu seçilir.
 
 name: Backend CI
 
@@ -199,17 +200,47 @@ jobs:
           echo "===== uvicorn.log ====="; cat uvicorn.log || true
           echo "===== celery.log =====";  cat celery.log  || true
 
+  dependencies:
+    name: Bağımlılık sürümleri
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          version: ${{ env.UV_VERSION }}
+      - name: uv.lock, pyproject.toml ile uyumlu mu?
+        # pyproject.toml'a kütüphane eklenip `uv lock` çalıştırılmadıysa burada kırılır.
+        run: uv lock --check
+      - name: requirements dosyalarını uv.lock'tan yeniden üret
+        # Komutlar dosyaların başlığındaki komutla birebir aynıdır (README'de de yazıyor).
+        run: |
+          uv export --frozen --no-hashes --no-emit-project --no-dev --extra ai -o requirements.txt
+          uv export --frozen --no-hashes --no-emit-project --only-dev -o requirements-dev.txt
+      - name: requirements dosyaları güncel mi?
+        run: |
+          if ! git diff --exit-code -- requirements.txt requirements-dev.txt; then
+            echo "::error::requirements dosyaları uv.lock ile uyumsuz. backend/ içinde şu komutları çalıştırıp sonucu commit'leyin (ayrıntı: backend/README.md):"
+            echo "uv export --frozen --no-hashes --no-emit-project --no-dev --extra ai -o requirements.txt"
+            echo "uv export --frozen --no-hashes --no-emit-project --only-dev -o requirements-dev.txt"
+            exit 1
+          fi
+
   backend-ci:
     # Branch korumasında yalnızca bu kontrol "zorunlu" yapılır. Backend'e dokunmayan PR'larda
     # diğer işler atlanır ve bu kontrol yine geçer; böylece dokümantasyon PR'ları takılı kalmaz.
     name: Backend CI sonucu
-    needs: [changes, lint, typecheck, test, smoke]
+    needs: [changes, lint, typecheck, test, smoke, dependencies]
     if: always()
     runs-on: ubuntu-latest
     steps:
       - name: Sonuçları değerlendir
         run: |
-          echo "lint=${{ needs.lint.result }} typecheck=${{ needs.typecheck.result }} test=${{ needs.test.result }} smoke=${{ needs.smoke.result }}"
+          echo "lint=${{ needs.lint.result }} typecheck=${{ needs.typecheck.result }} test=${{ needs.test.result }} smoke=${{ needs.smoke.result }} dependencies=${{ needs.dependencies.result }}"
           if [ "${{ needs.changes.result }}" != "success" ] || \
              [[ "${{ join(needs.*.result, ' ') }}" =~ (failure|cancelled) ]]; then
             echo "::error::Backend CI başarısız. Kırmızı olan işe tıklayıp hatanın yerini görün."
