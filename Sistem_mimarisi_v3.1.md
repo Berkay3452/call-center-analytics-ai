@@ -74,12 +74,12 @@ Sürümler 2026-09-30 ve 2026-10-04'te doğrulanmıştır; kilit dosyaları (`uv
 - Ses metne çevrilir, konuşmacılar müşteri ve usta olarak ayrılır, kişisel veriler maskelenir.
 - Agent'lar konuşmadan CRM alanlarını çıkarır. Çıktı doğrulanır; doğrulanmazsa agent'a bir kez düzeltme şansı verilir.
 - Sonuç iki yere gider: **CRM** (müşteri ve servis emri önerisi) ve **Çağrı Analitiği** (KPI).
-- Hocanın örneği: "Motor çalışıyor ama gaz verdiğimde devir yükselmiyor, Tuzla Marina'da, yarın usta gelebilir mi?" → talep: motor arızası, lokasyon: Tuzla Marina, aciliyet: yüksek, aksiyon: servis randevusu oluştur.
+- Hocanın örneği: "Motor çalışıyor ama gaz verdiğimde devir yükselmiyor, Tuzla Marina'da, yarın usta gelebilir mi?" → müşteri talebi: motor arızası, lokasyon: Tuzla Marina, problem: motor devir almıyor, talep: yerinde servis, aciliyet: yüksek, potansiyel iş: motor arıza tespiti, sonraki aksiyon: servis randevusu oluştur.
 
 ![Agent'lar ve orkestratör](docs/diagrams/04_agent_orkestrator.png)
 
 - **Çağrı Sınıflandırma Agent'ı:** çağrı tipi (yeni müşteri, servis, teklif, acil, bilgi).
-- **CRM Bilgi Çıkarım Agent'ı:** talep, lokasyon, problem, aciliyet, sonraki aksiyon.
+- **CRM Bilgi Çıkarım Agent'ı:** CRM kaydının 7 alanı: müşteri talebi, lokasyon, problem, hizmet biçimi, aciliyet, potansiyel iş, sonraki aksiyon.
 - **Satış Analiz Agent'ı:** satış sonucu ve kayıp nedeni (fiyat, geç dönüş).
 - **Özetleme Agent'ı:** kısa görüşme özeti.
 - **Orkestratör:** agent'ları çalıştırır, her çıktıyı şemasıyla yeniden doğrular ve sonucu yazar. Doğrulama hatasında agent'a hata mesajıyla bir kez düzeltme şansı verilir; çökme ve süre aşımı tekrar denenmez. Bir agent çökerse diğerlerinin sonucu korunur ve kayıt "kısmi" tamamlanır. Her agent çalışması (süre, deneme sayısı, hata) kaydedilir.

@@ -279,3 +279,14 @@ async def test_default_flow_runs_end_to_end_with_pending_agents() -> None:
     assert {r.status for r in result.runs} == {"skipped"}
     # Hiçbir agent henüz yazılmadığı için analiz başarılı sayılmaz.
     assert result.status == "basarisiz"
+
+
+async def test_result_converts_to_analysis_result() -> None:
+    orch = Orchestrator([[fake(CALL_CLASSIFIER, fail(CALL_CLASSIFIER)), fake("x")]])
+
+    analysis = (await orch.run(make_ctx())).to_analysis_result()
+
+    assert analysis.status == "kismi"
+    assert analysis.classification is None
+    assert set(analysis.errors) == {CALL_CLASSIFIER}
+    assert {r.agent for r in analysis.runs} == {CALL_CLASSIFIER, "x"}

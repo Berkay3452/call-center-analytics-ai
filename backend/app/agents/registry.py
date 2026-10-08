@@ -9,13 +9,8 @@ from typing import Any, ClassVar
 from pydantic import BaseModel
 
 from app.agents.base import AgentResult, AnalysisContext, BaseAgent
+from app.agents.names import CALL_CLASSIFIER, CRM_EXTRACTION, SALES_ANALYZER, SUMMARIZER
 from app.agents.orchestrator import Orchestrator, RunRecorder, Stage
-
-# Agent adları; orkestratör çıktısında (`outputs`, `runs`) ve veritabanında bu adlar görünür.
-CALL_CLASSIFIER = "call_classifier"
-CRM_EXTRACTION = "crm_extraction"
-SALES_ANALYZER = "sales_analyzer"
-SUMMARIZER = "summarizer"
 
 
 class _Empty(BaseModel):
