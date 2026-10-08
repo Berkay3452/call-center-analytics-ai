@@ -1,9 +1,9 @@
-# Sistem Mimarisi v3
+# Sistem Mimarisi v3.1
 
 **Proje:** Yapay Zekâ Destekli Sesli Asistan ve Çağrı Merkezi Analitiği Sistemi
-**Sürüm:** v3.1 · **Tarih:** 2026-10-08 · **Durum:** Güncel · **Önceki sürümler:** v1, v2 (git geçmişinde)
+**Sürüm:** v3.1 · **Tarih:** 2026-10-08 · **Durum:** Güncel · **Önceki sürümler:** v1, v2, v3.0 (git geçmişinde)
 
-**v3'te değişenler:** Sıfırdan bir web sitesi kurmuyoruz. Hocamızın verdiği hazır **Miço Usta** uygulamasına (tekne bakım ve servis platformu) belirli sayfalar ekleyip arkada çalışan **AI servisimizi** buraya entegre edeceğiz. Sektör telekomdan **tekne servisine** geçti; veriler sentetik. Ayrıntılar §3'te.
+**v3'te değişenler (v3.1 bunun üstüne eklenen güncellemedir):** Sıfırdan bir web sitesi kurmuyoruz. Hocamızın verdiği hazır **Miço Usta** uygulamasına (tekne bakım ve servis platformu) belirli sayfalar ekleyip arkada çalışan **AI servisimizi** buraya entegre edeceğiz. Sektör telekomdan **tekne servisine** geçti; veriler sentetik. Ayrıntılar §3'te.
 
 ---
 
