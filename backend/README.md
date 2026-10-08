@@ -17,6 +17,25 @@ Komutlar `backend/` klasöründe çalıştırılır.
 
 STT bağımlılıkları (torch, faster-whisper, pyannote) büyüktür ve donanım kararı netleşince kurulacaktır: `uv sync --extra ai --extra stt`
 
+### uv kullanmadan kurulum (requirements.txt)
+
+`requirements.txt` ve `requirements-dev.txt`, `uv.lock` dosyasından üretilmiş **sabit sürümlü** listelerdir (Python 3.12 gerekir). `pip` ile kurulum:
+
+```
+python -m venv .venv
+.venv\Scripts\activate          # macOS/Linux: source .venv/bin/activate
+pip install -r requirements.txt -r requirements-dev.txt
+```
+
+- `requirements.txt`: uygulama ve `ai` ekstrası (FastAPI, Celery, SQLAlchemy, LangGraph, LangChain...).
+- `requirements-dev.txt`: test ve kod kalitesi araçları (pytest, ruff, mypy).
+- Bu dosyaları elle düzenlemeyin. Bağımlılık değişince `pyproject.toml` güncellenir, `uv lock` çalıştırılır ve dosyalar şu komutlarla yeniden üretilir:
+
+```
+uv export --frozen --no-hashes --no-emit-project --no-dev --extra ai -o requirements.txt
+uv export --frozen --no-hashes --no-emit-project --only-dev -o requirements-dev.txt
+```
+
 ## Çalıştırma
 
 | Ne | Komut |
