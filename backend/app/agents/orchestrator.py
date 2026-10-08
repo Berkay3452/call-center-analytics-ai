@@ -4,7 +4,7 @@ Agent'lar aşamalar (stage) halinde çalışır. Aynı aşamadaki agent'lar birb
 paralel çalışır; bir sonraki aşama, öncekilerin başarılı çıktılarını `ctx.prior` içinde görür.
 Varsayılan akış (Sistem mimarisi v3 §6.1):
 
-    Triage → (Talep Çıkarım ‖ Satış Sonucu ‖ Özet) → sonuç
+    Çağrı Sınıflandırma → (CRM Bilgi Çıkarım ‖ Satış Analiz ‖ Özetleme) → sonuç
 
 Kurallar:
 - Her agent çıktısı kendi Pydantic şemasıyla yeniden doğrulanır.
@@ -20,39 +20,18 @@ import asyncio
 import operator
 import time
 from collections.abc import Awaitable, Sequence
-from typing import Annotated, Any, Literal, Protocol, TypedDict
+from typing import Annotated, Any, Protocol, TypedDict
 from uuid import UUID
 
 import structlog
 from pydantic import BaseModel, Field, ValidationError
 
 from app.agents.base import AgentResult, AnalysisContext, BaseAgent, CallInfo, Segment
+from app.schemas.analysis import AgentRun, AnalysisResult, AnalysisStatus
 
 log = structlog.get_logger(__name__)
 
-# Veritabanına ve arayüze giden değerler; bkz. #5 ve #9.
-AnalysisStatus = Literal["tamam", "kismi", "basarisiz"]
-
 Stage = Sequence[BaseAgent[Any]]
-
-
-class AgentRun(BaseModel):
-    """Bir agent çalışmasının kaydı (`agent_runs` tablosuna yazılacak satır)."""
-
-    agent: str
-    status: str
-    attempts: int
-    latency_ms: int
-    error: str | None = None
-    error_kind: str | None = None
-    model: str | None = None
-    prompt_version: str | None = None
-    tokens_in: int = 0
-    tokens_out: int = 0
-
-    @classmethod
-    def from_result(cls, result: AgentResult[Any]) -> "AgentRun":
-        return cls.model_validate(result.model_dump(exclude={"output"}))
 
 
 class OrchestrationResult(BaseModel):
@@ -64,6 +43,16 @@ class OrchestrationResult(BaseModel):
     errors: dict[str, str] = Field(default_factory=dict)
     runs: list[AgentRun] = Field(default_factory=list)
     latency_ms: int = 0
+
+    def to_analysis_result(self) -> AnalysisResult:
+        """Agent adına göre toplanan çıktıları şemalı birleşik sonuca çevirir."""
+        return AnalysisResult.from_outputs(
+            call_id=self.call_id,
+            status=self.status,
+            outputs=self.outputs,
+            errors=self.errors,
+            runs=self.runs,
+        )
 
 
 class RunRecorder(Protocol):

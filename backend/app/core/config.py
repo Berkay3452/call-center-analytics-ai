@@ -60,7 +60,7 @@ class Settings(BaseSettings):
     llm_provider: Literal["groq", "openrouter", "gemini", "ollama", "openai_compatible"] = "groq"
     llm_base_url: str | None = None  # boşsa sağlayıcının varsayılan adresi kullanılır
     llm_api_key: SecretStr | None = None
-    llm_fast_model: str | None = None  # duygu, anahtar kelime, triage gibi hafif işler
+    llm_fast_model: str | None = None  # sınıflandırma gibi hafif işler
     llm_smart_model: str | None = None  # özet, şikayet, RAG yanıtı gibi zor işler
     # Ücretsiz katmanların istek sınırı düşük olduğu için eşzamanlılık bilinçli olarak küçük.
     llm_max_concurrency: int = Field(default=2, ge=1)

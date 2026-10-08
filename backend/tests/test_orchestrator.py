@@ -17,7 +17,7 @@ from app.agents.base import (
     Segment,
 )
 from app.agents.orchestrator import OrchestrationResult, Orchestrator, run_analysis
-from app.agents.registry import REQUEST_EXTRACTION, SALES_OUTCOME, SUMMARY, TRIAGE
+from app.agents.registry import CALL_CLASSIFIER, CRM_EXTRACTION, SALES_ANALYZER, SUMMARIZER
 
 
 class _Out(BaseModel):
@@ -88,24 +88,29 @@ class _ListRecorder:
 
 
 async def test_all_agents_ok_gives_tamam_and_passes_prior() -> None:
-    triage = fake(TRIAGE)
-    second = [fake(REQUEST_EXTRACTION), fake(SALES_OUTCOME), fake(SUMMARY)]
+    classifier = fake(CALL_CLASSIFIER)
+    second = [fake(CRM_EXTRACTION), fake(SALES_ANALYZER), fake(SUMMARIZER)]
     recorder = _ListRecorder()
-    orch = Orchestrator([[triage], second], recorder=recorder)
+    orch = Orchestrator([[classifier], second], recorder=recorder)
 
     result = await orch.run(make_ctx())
 
     assert result.status == "tamam"
     assert result.errors == {}
-    assert result.outputs[SUMMARY] == {"label": SUMMARY}
-    assert [r.agent for r in result.runs] == [TRIAGE, REQUEST_EXTRACTION, SALES_OUTCOME, SUMMARY]
+    assert result.outputs[SUMMARIZER] == {"label": SUMMARIZER}
+    assert [r.agent for r in result.runs] == [
+        CALL_CLASSIFIER,
+        CRM_EXTRACTION,
+        SALES_ANALYZER,
+        SUMMARIZER,
+    ]
     assert all(r.attempts == 1 for r in result.runs)
-    # İkinci aşama Triage'ın çıktısını görür; aynı aşamadakilerin çıktısını görmez.
+    # İkinci aşama Çağrı Sınıflandırma'nın çıktısını görür; aynı aşamadakilerin çıktısını görmez.
     for agent in second:
-        assert agent.seen[0].prior == {TRIAGE: {"label": TRIAGE}}
-    assert triage.seen[0].prior == {}
+        assert agent.seen[0].prior == {CALL_CLASSIFIER: {"label": CALL_CLASSIFIER}}
+    assert classifier.seen[0].prior == {}
     # Çağrı bilgisi agent'lara ulaşır; kayıtçı bir kez çağrılır.
-    assert triage.seen[0].call_info is not None
+    assert classifier.seen[0].call_info is not None
     assert recorder.records == [result]
 
 
@@ -131,21 +136,24 @@ async def test_same_stage_agents_run_in_parallel() -> None:
 
 async def test_failed_agent_gives_kismi_and_keeps_others() -> None:
     orch = Orchestrator(
-        [[fake(TRIAGE)], [fake(REQUEST_EXTRACTION), fake(SALES_OUTCOME, fail(SALES_OUTCOME))]]
+        [
+            [fake(CALL_CLASSIFIER)],
+            [fake(CRM_EXTRACTION), fake(SALES_ANALYZER, fail(SALES_ANALYZER))],
+        ]
     )
 
     result = await orch.run(make_ctx())
 
     assert result.status == "kismi"
-    assert set(result.outputs) == {TRIAGE, REQUEST_EXTRACTION}
-    assert result.errors == {SALES_OUTCOME: "bozuldu"}
-    failed = next(r for r in result.runs if r.agent == SALES_OUTCOME)
+    assert set(result.outputs) == {CALL_CLASSIFIER, CRM_EXTRACTION}
+    assert result.errors == {SALES_ANALYZER: "bozuldu"}
+    failed = next(r for r in result.runs if r.agent == SALES_ANALYZER)
     assert (failed.status, failed.error_kind, failed.attempts) == ("failed", "runtime", 1)
 
 
 async def test_failed_first_stage_does_not_stop_next_stage() -> None:
-    summary = fake(SUMMARY)
-    orch = Orchestrator([[fake(TRIAGE, fail(TRIAGE))], [summary]])
+    summary = fake(SUMMARIZER)
+    orch = Orchestrator([[fake(CALL_CLASSIFIER, fail(CALL_CLASSIFIER))], [summary]])
 
     result = await orch.run(make_ctx())
 
@@ -262,7 +270,23 @@ async def test_default_flow_runs_end_to_end_with_pending_agents() -> None:
     result = await run_analysis(ctx.call_id, ctx.segments, ctx.call_info)
 
     assert result.call_id == ctx.call_id
-    assert [r.agent for r in result.runs] == [TRIAGE, REQUEST_EXTRACTION, SALES_OUTCOME, SUMMARY]
+    assert [r.agent for r in result.runs] == [
+        CALL_CLASSIFIER,
+        CRM_EXTRACTION,
+        SALES_ANALYZER,
+        SUMMARIZER,
+    ]
     assert {r.status for r in result.runs} == {"skipped"}
     # Hiçbir agent henüz yazılmadığı için analiz başarılı sayılmaz.
     assert result.status == "basarisiz"
+
+
+async def test_result_converts_to_analysis_result() -> None:
+    orch = Orchestrator([[fake(CALL_CLASSIFIER, fail(CALL_CLASSIFIER)), fake("x")]])
+
+    analysis = (await orch.run(make_ctx())).to_analysis_result()
+
+    assert analysis.status == "kismi"
+    assert analysis.classification is None
+    assert set(analysis.errors) == {CALL_CLASSIFIER}
+    assert {r.agent for r in analysis.runs} == {CALL_CLASSIFIER, "x"}

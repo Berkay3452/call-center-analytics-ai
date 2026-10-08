@@ -2,8 +2,8 @@
 
 Ücretsiz API sağlayıcılarının hepsi OpenAI-uyumlu uç sunduğu için tek istemci (ChatOpenAI)
 farklı `base_url` ile kullanılır. İki katman vardır:
-- fast  : duygu, anahtar kelime, triage gibi hafif işler
-- smart : özet, şikayet tespiti, RAG yanıtı gibi zor işler
+- fast  : çağrı sınıflandırma gibi hafif işler
+- smart : CRM bilgi çıkarımı, satış analizi, RAG yanıtı gibi zor işler
 
 LangChain bağımlılığı `ai` ekstrasındadır ve tembel import edilir; API bu paket olmadan da açılır.
 """
