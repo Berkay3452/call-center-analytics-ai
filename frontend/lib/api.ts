@@ -1,7 +1,6 @@
 /**
  * Mock API istemcisi — backend hazır olana kadar JSON dosyalarından veri döndürür.
- *
- * Miço Usta entegrasyonunda her fonksiyon gerçek fetch() çağrısıyla değiştirilecektir.
+ * backend/app/schemas/analysis.py şemalarıyla birebir uyumludur.
  */
 
 import type { Call, CrmSuggestion, KpiCard } from "@/lib/types";
@@ -11,7 +10,7 @@ import type { Call, CrmSuggestion, KpiCard } from "@/lib/types";
 // ---------------------------------------------------------------------------
 export async function fetchCalls(): Promise<Call[]> {
   const data = await import("@/mocks/calls.json");
-  return data.default as Call[];
+  return data.default as unknown as Call[];
 }
 
 // ---------------------------------------------------------------------------
@@ -27,13 +26,13 @@ export async function fetchCallById(id: string): Promise<Call | undefined> {
 // ---------------------------------------------------------------------------
 export async function fetchKpis(): Promise<KpiCard[]> {
   const data = await import("@/mocks/kpis.json");
-  return data.default as KpiCard[];
+  return data.default as unknown as KpiCard[];
 }
 
 // ---------------------------------------------------------------------------
-// CRM önerileri
+// CRM önerileri (7 alanlı CRM çıkarımları)
 // ---------------------------------------------------------------------------
 export async function fetchCrmSuggestions(): Promise<CrmSuggestion[]> {
   const data = await import("@/mocks/crm-suggestions.json");
-  return data.default as CrmSuggestion[];
+  return data.default as unknown as CrmSuggestion[];
 }
