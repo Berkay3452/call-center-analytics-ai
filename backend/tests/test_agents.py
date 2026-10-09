@@ -7,6 +7,7 @@ hataları doğru sınıfladığını kanıtlar. Modelin Türkçe kalitesi burada
 
 import json
 from collections.abc import Callable
+from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
@@ -552,3 +553,46 @@ async def test_full_pipeline_on_hoca_scenario() -> None:
         SALES_ANALYZER,
         SUMMARIZER,
     ]
+
+
+# --- Agent bazında model ayarı --------------------------------------------------------------------
+
+
+def test_model_override_falls_back_to_tier(settings_factory: Callable[..., Settings]) -> None:
+    s = settings_factory(
+        llm_fast_model="hizli", llm_smart_model="guclu", llm_sales_analyzer_model="ozel"
+    )
+
+    assert s.llm_model_for(CALL_CLASSIFIER, "fast") == "hizli"
+    assert s.llm_model_for(CRM_EXTRACTION, "smart") == "guclu"
+    assert s.llm_model_for(SALES_ANALYZER, "smart") == "ozel"  # agent ayarı katmanı ezer
+    assert s.llm_model_for(SUMMARIZER, "fast") == "hizli"
+
+
+def test_every_default_agent_has_model_setting() -> None:
+    """Yeni agent eklenip .env ayarı unutulursa bu test uyarır."""
+    example = (Path(__file__).parents[1] / ".env.example").read_text(encoding="utf-8")
+    for stage in default_stages():
+        for agent in stage:
+            field = f"llm_{agent.name}_model"
+            assert field in Settings.model_fields, field
+            assert f"{field.upper()}=" in example, field
+
+
+async def test_agent_uses_its_own_model_name(
+    settings_factory: Callable[..., Settings], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    used: list[str | None] = []
+
+    def fake_get_chat_model(tier: str, settings: Settings, *, model: str | None = None) -> object:
+        used.append(model)
+        return scripted(CLASSIFICATION_JSON)
+
+    monkeypatch.setattr("app.agents.llm_agent.get_chat_model", fake_get_chat_model)
+    settings = settings_factory(llm_fast_model="hizli", llm_call_classifier_model="siniflandirici")
+
+    result = await CallClassifierAgent(settings=settings).run(tuzla_ctx())
+
+    assert used == ["siniflandirici"]
+    assert result.status == "ok"
+    assert result.model == "siniflandirici"

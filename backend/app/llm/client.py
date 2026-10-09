@@ -43,9 +43,18 @@ def _resolve_base_url(settings: Settings) -> str:
         ) from exc
 
 
-def get_chat_model(tier: Tier, settings: Settings, *, temperature: float = 0.0) -> "BaseChatModel":
-    """İstenen katman için yapılandırılmış sohbet modelini döndürür."""
-    model = settings.llm_fast_model if tier == "fast" else settings.llm_smart_model
+def get_chat_model(
+    tier: Tier,
+    settings: Settings,
+    *,
+    model: str | None = None,
+    temperature: float = 0.0,
+) -> "BaseChatModel":
+    """İstenen katman için yapılandırılmış sohbet modelini döndürür.
+
+    `model` verilirse (agent'a özel ayar) katman modeli yerine o kullanılır.
+    """
+    model = model or (settings.llm_fast_model if tier == "fast" else settings.llm_smart_model)
     if not model:
         raise LLMNotConfiguredError(f"LLM_{tier.upper()}_MODEL tanımlı değil (.env).")
     api_key = settings.llm_api_key.get_secret_value() if settings.llm_api_key else None

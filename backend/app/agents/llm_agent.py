@@ -157,8 +157,8 @@ class LLMAgent[T: BaseModel](BaseAgent[T]):
         if self._model is not None:
             return self._model, getattr(self._model, "model_name", None)
         settings = self.settings
-        name = settings.llm_fast_model if self.model_tier == "fast" else settings.llm_smart_model
-        return get_chat_model(self.model_tier, settings), name
+        name = settings.llm_model_for(self.name, self.model_tier)
+        return get_chat_model(self.model_tier, settings, model=name), name
 
     def _fail(self, error: str, kind: str, **extra: Any) -> AgentResult[T]:
         return AgentResult[T].model_validate(

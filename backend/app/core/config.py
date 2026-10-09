@@ -63,6 +63,12 @@ class Settings(BaseSettings):
     llm_fast_model: str | None = None  # sınıflandırma gibi hafif işler
     llm_smart_model: str | None = None  # özet, şikayet, RAG yanıtı gibi zor işler
     # Ücretsiz katmanların istek sınırı düşük olduğu için eşzamanlılık bilinçli olarak küçük.
+    # Agent bazında model: doluysa o agent, katman modeli (fast/smart) yerine bunu kullanır.
+    # Alan adı `llm_<agent adı>_model` biçimindedir (adlar için bkz. app/agents/names.py).
+    llm_call_classifier_model: str | None = None
+    llm_crm_extraction_model: str | None = None
+    llm_sales_analyzer_model: str | None = None
+    llm_summarizer_model: str | None = None
     llm_max_concurrency: int = Field(default=2, ge=1)
     llm_timeout_s: float = 60.0
     llm_max_retries: int = 3
@@ -80,6 +86,13 @@ class Settings(BaseSettings):
     tei_url: str = "http://localhost:8080"
 
     # --- Türetilmiş değerler ---
+    def llm_model_for(self, agent_name: str, tier: Literal["fast", "smart"]) -> str | None:
+        """Agent'ın kullanacağı model adı: önce agent'a özel ayar, yoksa katman modeli."""
+        override: str | None = getattr(self, f"llm_{agent_name}_model", None)
+        if override:
+            return override
+        return self.llm_fast_model if tier == "fast" else self.llm_smart_model
+
     @property
     def cors_origin_list(self) -> list[str]:
         return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
