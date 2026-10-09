@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 import type { ChatMessage } from "@/lib/types";
 
 let msgCounter = 0;
@@ -17,7 +17,7 @@ const MOCK_REPLIES = [
   "Başka bir sorunuz var mı?",
 ];
 
-// Karşılama mesajı ID'si — useEffect ile timestamp doldurulur (prerender uyumlu).
+// Karşılama mesajı ID'si.
 const WELCOME_ID = makeId();
 
 export default function AssistantPage() {
@@ -27,20 +27,11 @@ export default function AssistantPage() {
       role: "assistant",
       content:
         "Merhaba! Ben Miço Usta AI asistanı. Size nasıl yardımcı olabilirim?",
-      // Prerender sırasında new Date() çağrısını önlemek için boş bırakılır;
-      // useEffect istemci tarafında doldurur.
+      // Karşılama mesajı saatsizdir: prerender sırasında new Date() çağrılmaz ve
+      // arayüz boş timestamp'te saati göstermez.
       timestamp: "",
     },
   ]);
-
-  // İstemci mount olduktan sonra ilk mesajın timestamp'ini doldur.
-  useEffect(() => {
-    setMessages((prev) =>
-      prev.map((m) =>
-        m.id === WELCOME_ID ? { ...m, timestamp: new Date().toISOString() } : m,
-      ),
-    );
-  }, []);
 
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
