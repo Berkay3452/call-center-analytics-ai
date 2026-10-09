@@ -69,7 +69,7 @@ Supabase kurulmadan `/api/v1` uçlarını denemek için `.env` içinde `AUTH_DEV
 | `app/services` | İş mantığı |
 | `app/workers` | Celery uygulaması ve kuyruklar (stt, analysis, index) |
 | `app/llm` | Ücretsiz, OpenAI-uyumlu LLM sağlayıcıları için istemci fabrikası |
-| `app/agents` | Agent sözleşmesi (`base.py`), LangGraph orkestratörü (`orchestrator.py`), varsayılan akış (`registry.py`); agent'lar buraya gelecek |
+| `app/agents` | Agent sözleşmesi (`base.py`), LLM agent tabanı (`llm_agent.py`), dört analiz agent'ı, prompt'lar (`prompts/`), alıntı doğrulama (`grounding.py`), LangGraph orkestratörü (`orchestrator.py`), varsayılan akış (`registry.py`) |
 | `app/stt` | STT sağlayıcı sözleşmesi |
 | `app/rag` | Embedding sözleşmesi; RAG bileşenleri buraya gelecek |
 | `tests` | Testler (gerçek veritabanı/Redis/LLM gerektirmez) |

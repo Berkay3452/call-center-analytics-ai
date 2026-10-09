@@ -156,7 +156,8 @@ Sürümler 2026-09-30 ve 2026-10-04'te doğrulanmıştır; kilit dosyaları (`uv
 | Backend iskeleti (FastAPI, kuyruk, ayarlar, hata biçimi, sağlık uçları) | **Hazır** |
 | Backend CI (lint, tip kontrolü, test, duman testi) | **Hazır** |
 | LLM, agent, STT ve embedding arayüzleri | **Hazır** (içleri yazılacak) |
-| Orkestratör (LangGraph): aşamalar, paralel çalışma, doğrulama ve düzeltme, kısmi başarı | **Hazır** (agent'lar yer tutucu; #17–#20'de yazılacak) |
+| Orkestratör (LangGraph): aşamalar, paralel çalışma, doğrulama ve düzeltme, kısmi başarı | **Hazır** |
+| Dört analiz agent'ı (Çağrı Sınıflandırma, CRM Bilgi Çıkarım, Satış Analiz, Özetleme) | **Hazır** (sahte LLM ile test edildi; gerçek LLM ile ölçüm #21'de) |
 | Miço Usta incelemesi | **Yapıldı** (üç panel gezildi) |
 | Telekoma göre hazırlanan issue'lar | **Güncellendi** (4. hafta: #4–#24) |
 

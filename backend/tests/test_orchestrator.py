@@ -282,12 +282,9 @@ async def test_default_flow_runs_end_to_end_without_llm(
         SALES_ANALYZER,
         SUMMARIZER,
     ]
-    runs = {r.agent: r for r in result.runs}
-    for name in (CALL_CLASSIFIER, CRM_EXTRACTION, SALES_ANALYZER):
-        assert runs[name].error_kind == "runtime"
-        assert "LLM yapılandırılmadı" in (runs[name].error or "")
-    # Henüz yazılmamış agent'lar yer tutucu olarak atlanır.
-    assert runs[SUMMARIZER].status == "skipped"
+    for run in result.runs:
+        assert (run.status, run.error_kind) == ("failed", "runtime")
+        assert "LLM yapılandırılmadı" in (run.error or "")
     assert result.status == "basarisiz"
 
 

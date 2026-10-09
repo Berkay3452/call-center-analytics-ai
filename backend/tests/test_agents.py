@@ -17,9 +17,11 @@ from app.agents.call_classifier import CallClassifierAgent
 from app.agents.crm_extraction import CrmExtractionAgent
 from app.agents.grounding import is_grounded, normalize, transcript_text
 from app.agents.llm_agent import extract_json_object, format_transcript, load_prompt
-from app.agents.names import CALL_CLASSIFIER, CRM_EXTRACTION, SALES_ANALYZER
+from app.agents.names import CALL_CLASSIFIER, CRM_EXTRACTION, SALES_ANALYZER, SUMMARIZER
 from app.agents.orchestrator import Orchestrator
+from app.agents.registry import default_stages
 from app.agents.sales_analyzer import SalesAnalyzerAgent
+from app.agents.summarizer import SummarizerAgent, find_personal_data
 from app.core.config import Settings
 from app.domain.enums import (
     CallType,
@@ -434,3 +436,119 @@ async def test_sales_analyzer_sees_switchboard_outcome() -> None:
     await SalesAnalyzerAgent(model=model).run(tuzla_ctx(call_info=CallInfo(outcome="geri_ara")))
 
     assert '"outcome": "geri_ara"' in model.last_user
+
+
+# --- Özetleme (#20) ---------------------------------------------------------------------------
+
+SUMMARY_JSON = json.dumps(
+    {
+        "summary": (
+            "Müşteri, Tuzla Marina'daki teknesinde gaz verildiğinde devrin yükselmediğini "
+            "bildirdi. Firma ertesi sabah için yerinde servis randevusu oluşturdu."
+        ),
+        "key_points": ["Motor devir sorunu", "Tuzla Marina", "Yarın yerinde servis"],
+    },
+    ensure_ascii=False,
+)
+
+
+def test_summarizer_contract() -> None:
+    agent = SummarizerAgent()
+
+    assert agent.name == SUMMARIZER
+    assert agent.model_tier == "fast"
+    prompt = load_prompt(agent.prompt_file)
+    assert "- summary:" in prompt and "- key_points:" in prompt
+
+
+async def test_summarizer_on_hoca_scenario() -> None:
+    result = await SummarizerAgent(model=scripted(SUMMARY_JSON)).run(tuzla_ctx())
+
+    assert result.status == "ok"
+    assert result.output is not None
+    assert "Tuzla Marina" in result.output.summary
+    assert len(result.output.key_points) == 3
+
+
+async def test_summarizer_rejects_more_than_three_sentences() -> None:
+    long = '{"summary": "Bir. İki. Üç. Dört.", "key_points": []}'
+
+    result = await SummarizerAgent(model=scripted(long)).run(tuzla_ctx())
+
+    assert result.error_kind == "validation"
+    assert "3 cümle" in (result.error or "")
+
+
+@pytest.mark.parametrize(
+    ("text", "kind"),
+    [
+        ("Müşteri 0532 123 45 67 numarasından aradı.", "uzun numara"),
+        ("Müşteri +90 (532) 123-45-67 numarasını verdi.", "uzun numara"),
+        ("Kimlik no 12345678901 olarak paylaşıldı.", "uzun numara"),
+        ("Fatura ornek.kisi@example.com adresine gidecek.", "e-posta"),
+        ("Ödeme TR33 0006 1005 1978 6457 8413 26 hesabına yapılacak.", "IBAN"),
+        ("[İSİM] Bey randevu istedi.", "maskeli ifade"),
+    ],
+)
+def test_find_personal_data_detects_leaks(text: str, kind: str) -> None:
+    assert any(kind in found for found in find_personal_data(text))
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Müşteri 15.10.2026 14:30 için randevu aldı.",
+        "Teknenin boyu 12 metre, motoru 2 x 250 beygir.",
+        "Kış bakımı 12 500 TL olarak teklif edildi.",
+    ],
+)
+def test_find_personal_data_ignores_business_numbers(text: str) -> None:
+    assert find_personal_data(text) == []
+
+
+async def test_summarizer_personal_data_leak_gets_fixed_by_orchestrator() -> None:
+    leaked = '{"summary": "Müşteri 0532 123 45 67 numarasından aradı.", "key_points": []}'
+    model = scripted(leaked, SUMMARY_JSON)
+
+    result = await Orchestrator([[SummarizerAgent(model=model)]]).run(tuzla_ctx())
+
+    assert result.status == "tamam"
+    assert result.runs[0].attempts == 2
+    assert "kişisel veri" in model.last_user
+
+
+# --- Dört agent birlikte (varsayılan akış) ------------------------------------------------------
+
+
+async def test_full_pipeline_on_hoca_scenario() -> None:
+    """Varsayılan akıştaki dört agent, sahte LLM'lerle hocanın senaryosunu uçtan uca işler."""
+    sales_json = '{"outcome": "satisa_donustu", "confidence": 0.85}'
+    responses = {
+        CALL_CLASSIFIER: CLASSIFICATION_JSON,
+        CRM_EXTRACTION: CRM_JSON,
+        SALES_ANALYZER: sales_json,
+        SUMMARIZER: SUMMARY_JSON,
+    }
+    stages = default_stages()
+    for stage in stages:
+        for agent in stage:
+            agent._model = scripted(responses[agent.name])  # type: ignore[attr-defined]
+
+    result = await Orchestrator(stages).run(tuzla_ctx())
+    analysis = result.to_analysis_result()
+
+    assert analysis.status == "tamam"
+    assert analysis.errors == {}
+    assert analysis.classification is not None
+    assert analysis.classification.call_type == CallType.SERVIS
+    assert analysis.crm is not None
+    assert analysis.crm.next_action == NextAction.SERVIS_RANDEVUSU_OLUSTUR
+    assert analysis.sales is not None
+    assert analysis.sales.outcome == SalesOutcomeType.SATISA_DONUSTU
+    assert analysis.summary is not None
+    assert [r.agent for r in analysis.runs] == [
+        CALL_CLASSIFIER,
+        CRM_EXTRACTION,
+        SALES_ANALYZER,
+        SUMMARIZER,
+    ]
