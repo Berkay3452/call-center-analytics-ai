@@ -9,8 +9,10 @@ from typing import Any, ClassVar
 from pydantic import BaseModel
 
 from app.agents.base import AgentResult, AnalysisContext, BaseAgent
-from app.agents.names import CALL_CLASSIFIER, CRM_EXTRACTION, SALES_ANALYZER, SUMMARIZER
+from app.agents.call_classifier import CallClassifierAgent
+from app.agents.names import CRM_EXTRACTION, SALES_ANALYZER, SUMMARIZER
 from app.agents.orchestrator import Orchestrator, RunRecorder, Stage
+from app.core.config import Settings
 
 
 class _Empty(BaseModel):
@@ -34,13 +36,18 @@ def _pending(agent_name: str) -> BaseAgent[Any]:
     return agent
 
 
-def default_stages() -> list[Stage]:
-    """Mimari v3.1 §6.1: Çağrı Sınıflandırma → (CRM Bilgi Çıkarım ‖ Satış Analiz ‖ Özetleme)."""
+def default_stages(settings: Settings | None = None) -> list[Stage]:
+    """Mimari v3.1 §6.1: Çağrı Sınıflandırma → (CRM Bilgi Çıkarım ‖ Satış Analiz ‖ Özetleme).
+
+    `settings` verilmezse LLM ayarları `.env`'den okunur (testlerde bilerek verilir).
+    """
     return [
-        [_pending(CALL_CLASSIFIER)],
+        [CallClassifierAgent(settings=settings)],
         [_pending(CRM_EXTRACTION), _pending(SALES_ANALYZER), _pending(SUMMARIZER)],
     ]
 
 
-def build_default_orchestrator(recorder: RunRecorder | None = None) -> Orchestrator:
-    return Orchestrator(default_stages(), recorder=recorder)
+def build_default_orchestrator(
+    recorder: RunRecorder | None = None, settings: Settings | None = None
+) -> Orchestrator:
+    return Orchestrator(default_stages(settings), recorder=recorder)
