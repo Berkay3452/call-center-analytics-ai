@@ -1,0 +1,36 @@
+[
+  {
+    "label": "Toplam Çağrı",
+    "value": 1248,
+    "unit": "adet",
+    "changePercent": 12.4
+  },
+  {
+    "label": "Ortalama Süre",
+    "value": "4:32",
+    "unit": "dk",
+    "changePercent": -3.1
+  },
+  {
+    "label": "Cevapsız Çağrı",
+    "value": 87,
+    "unit": "adet",
+    "changePercent": -8.5
+  },
+  {
+    "label": "Müşteri Memnuniyeti",
+    "value": 4.3,
+    "unit": "/ 5",
+    "changePercent": 5.0
+  },
+  {
+    "label": "Pozitif Duygu",
+    "value": "68%",
+    "changePercent": 2.2
+  },
+  {
+    "label": "Çözüm Oranı",
+    "value": "91%",
+    "changePercent": 0.5
+  }
+]
