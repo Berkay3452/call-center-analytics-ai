@@ -10,7 +10,8 @@ from pydantic import BaseModel
 
 from app.agents.base import AgentResult, AnalysisContext, BaseAgent
 from app.agents.call_classifier import CallClassifierAgent
-from app.agents.names import CRM_EXTRACTION, SALES_ANALYZER, SUMMARIZER
+from app.agents.crm_extraction import CrmExtractionAgent
+from app.agents.names import SALES_ANALYZER, SUMMARIZER
 from app.agents.orchestrator import Orchestrator, RunRecorder, Stage
 from app.core.config import Settings
 
@@ -43,7 +44,11 @@ def default_stages(settings: Settings | None = None) -> list[Stage]:
     """
     return [
         [CallClassifierAgent(settings=settings)],
-        [_pending(CRM_EXTRACTION), _pending(SALES_ANALYZER), _pending(SUMMARIZER)],
+        [
+            CrmExtractionAgent(settings=settings),
+            _pending(SALES_ANALYZER),
+            _pending(SUMMARIZER),
+        ],
     ]
 
 

@@ -14,11 +14,14 @@ import pytest
 
 from app.agents.base import AnalysisContext, CallInfo, Segment
 from app.agents.call_classifier import CallClassifierAgent
+from app.agents.crm_extraction import CrmExtractionAgent
+from app.agents.grounding import is_grounded, normalize, transcript_text
 from app.agents.llm_agent import extract_json_object, format_transcript, load_prompt
-from app.agents.names import CALL_CLASSIFIER
+from app.agents.names import CALL_CLASSIFIER, CRM_EXTRACTION
 from app.agents.orchestrator import Orchestrator
 from app.core.config import Settings
-from app.domain.enums import CallType
+from app.domain.enums import CallType, NextAction, RequestCategory, ServiceMode, Urgency
+from app.schemas.analysis import CrmExtraction
 from tests.llm_fakes import scripted
 
 # Hocanın örnek senaryosu (Sistem mimarisi v3.1 §6.1).
@@ -195,3 +198,128 @@ async def test_call_classifier_on_hoca_scenario() -> None:
     assert result.output is not None
     assert result.output.call_type == CallType.SERVIS
     assert 0 <= result.output.confidence <= 1
+
+
+# --- CRM Bilgi Çıkarım (#18) ------------------------------------------------------------------
+
+CRM_JSON = json.dumps(
+    {
+        "request_category": "motor_arizasi",
+        "location": "Tuzla Marina",
+        "problem": "Motor gaz verince devir almıyor",
+        "service_mode": "yerinde_servis",
+        "urgency": "yuksek",
+        "potential_job": "Motor arıza tespiti",
+        "next_action": "servis_randevusu_olustur",
+        "evidence": {
+            "location": "Tuzla Marina'da teknem var",
+            "problem": "gaz verdiğimde devir yükselmiyor",
+        },
+    },
+    ensure_ascii=False,
+)
+
+
+def test_crm_extraction_contract() -> None:
+    agent = CrmExtractionAgent()
+
+    assert agent.name == CRM_EXTRACTION
+    assert agent.model_tier == "smart"
+    prompt = load_prompt(agent.prompt_file)
+    # Prompt, CRM kaydının 7 alanını ve seçmeli alanların her değerini tanımlamalı.
+    for field in CrmExtraction.model_fields:
+        assert f"- {field}:" in prompt
+    for enum_cls in (RequestCategory, ServiceMode, Urgency, NextAction):
+        for member in enum_cls:
+            assert f"- {member.value}:" in prompt, member
+
+
+async def test_crm_extraction_on_hoca_scenario() -> None:
+    """Hocanın örneğindeki 7 alanın tamamı."""
+    result = await CrmExtractionAgent(model=scripted(CRM_JSON)).run(tuzla_ctx())
+
+    assert result.status == "ok"
+    crm = result.output
+    assert crm is not None
+    assert crm.request_category == RequestCategory.MOTOR_ARIZASI
+    assert crm.location == "Tuzla Marina"
+    assert crm.problem == "Motor gaz verince devir almıyor"
+    assert crm.service_mode == ServiceMode.YERINDE_SERVIS
+    assert crm.urgency == Urgency.YUKSEK
+    assert crm.potential_job == "Motor arıza tespiti"
+    assert crm.next_action == NextAction.SERVIS_RANDEVUSU_OLUSTUR
+    assert set(crm.evidence) == {"location", "problem"}
+
+
+async def test_crm_extraction_keeps_unknown_fields_null() -> None:
+    sparse = '{"request_category": "motor_arizasi", "evidence": {}}'
+
+    result = await CrmExtractionAgent(model=scripted(sparse)).run(tuzla_ctx())
+
+    assert result.status == "ok"
+    assert result.output is not None
+    assert result.output.location is None
+    assert result.output.next_action is None
+
+
+async def test_crm_extraction_drops_ungrounded_and_orphan_evidence() -> None:
+    answer = json.dumps(
+        {
+            "location": "Tuzla Marina",
+            "problem": "Devir yükselmiyor",
+            "evidence": {
+                "location": "TUZLA MARINA'DA teknem var!",  # büyük harf/noktalama farkı: kalır
+                "problem": "motor tamamen bozuldu",  # konuşmada geçmiyor: çıkar
+                "urgency": "Yarın bir usta gelebilir mi",  # alan boş: çıkar
+            },
+        },
+        ensure_ascii=False,
+    )
+
+    result = await CrmExtractionAgent(model=scripted(answer)).run(tuzla_ctx())
+
+    assert result.status == "ok"
+    assert result.output is not None
+    assert result.output.evidence == {"location": "TUZLA MARINA'DA teknem var!"}
+    assert result.output.problem == "Devir yükselmiyor"  # alanın kendisine dokunulmaz
+
+
+async def test_crm_extraction_sees_classifier_output_in_pipeline() -> None:
+    crm_model = scripted(CRM_JSON)
+    orchestrator = Orchestrator(
+        [
+            [CallClassifierAgent(model=scripted(CLASSIFICATION_JSON))],
+            [CrmExtractionAgent(model=crm_model)],
+        ]
+    )
+
+    result = await orchestrator.run(tuzla_ctx())
+
+    assert result.status == "tamam"
+    assert '"call_type": "servis"' in crm_model.last_user
+    analysis = result.to_analysis_result()
+    assert analysis.crm is not None
+    assert analysis.crm.location == "Tuzla Marina"
+
+
+# --- Alıntı doğrulama ---------------------------------------------------------------------------
+
+
+def test_normalize_ignores_case_punctuation_and_turkish_letters() -> None:
+    assert normalize("  Tuzla Marina'da!  ") == "tuzla marina da"
+    assert normalize("IŞIK, ışık; İğne") == normalize("isik isik igne")
+
+
+@pytest.mark.parametrize(
+    ("quote", "expected"),
+    [
+        ("gaz verdiğimde devir yükselmiyor", True),
+        ("GAZ VERDIGIMDE DEVIR YUKSELMIYOR", True),
+        ("devir yükselmiyor yarın", True),  # cümle sınırını aşan alıntı da olur
+        ("devir yükselmedi", False),  # yeniden yazılmış
+        ("az verdiğimde", False),  # kelime ortasından başlayan parça
+        ("", False),
+    ],
+)
+def test_is_grounded(quote: str, expected: bool) -> None:
+    assert is_grounded(quote, transcript_text(TUZLA_SEGMENTS)) is expected
