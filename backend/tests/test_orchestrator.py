@@ -16,8 +16,10 @@ from app.agents.base import (
     CallInfo,
     Segment,
 )
+from app.agents.names import CALL_CLASSIFIER, CRM_EXTRACTION, SALES_ANALYZER, SUMMARIZER
 from app.agents.orchestrator import OrchestrationResult, Orchestrator, run_analysis
-from app.agents.registry import CALL_CLASSIFIER, CRM_EXTRACTION, SALES_ANALYZER, SUMMARIZER
+from app.agents.registry import build_default_orchestrator
+from app.core.config import Settings
 
 
 class _Out(BaseModel):
@@ -265,9 +267,13 @@ def test_invalid_stages_are_rejected(stages: list[Any], message: str) -> None:
         Orchestrator(stages)
 
 
-async def test_default_flow_runs_end_to_end_with_pending_agents() -> None:
+async def test_default_flow_runs_end_to_end_without_llm(
+    settings_factory: Callable[..., Settings],
+) -> None:
+    """LLM ayarı olmadan da akış uçtan uca döner; agent'lar düzgün hata verir, çökme olmaz."""
     ctx = make_ctx()
-    result = await run_analysis(ctx.call_id, ctx.segments, ctx.call_info)
+    orchestrator = build_default_orchestrator(settings=settings_factory())
+    result = await run_analysis(ctx.call_id, ctx.segments, ctx.call_info, orchestrator=orchestrator)
 
     assert result.call_id == ctx.call_id
     assert [r.agent for r in result.runs] == [
@@ -276,8 +282,9 @@ async def test_default_flow_runs_end_to_end_with_pending_agents() -> None:
         SALES_ANALYZER,
         SUMMARIZER,
     ]
-    assert {r.status for r in result.runs} == {"skipped"}
-    # Hiçbir agent henüz yazılmadığı için analiz başarılı sayılmaz.
+    for run in result.runs:
+        assert (run.status, run.error_kind) == ("failed", "runtime")
+        assert "LLM yapılandırılmadı" in (run.error or "")
     assert result.status == "basarisiz"
 
 
