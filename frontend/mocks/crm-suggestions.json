@@ -1,0 +1,26 @@
+[
+  {
+    "callId": "call-002",
+    "caller": "Fatma Kaya",
+    "suggestion": "Tekrar arayarak özür dileyin ve ücretsiz kontrol hizmeti teklif edin.",
+    "priority": "high"
+  },
+  {
+    "callId": "call-003",
+    "caller": "Mehmet Deniz",
+    "suggestion": "Cevapsız çağrıyı geri dönün; olası müşteri kaybı riski var.",
+    "priority": "high"
+  },
+  {
+    "callId": "call-004",
+    "caller": "Zeynep Arslan",
+    "suggestion": "Test sürüşü daveti gönderin; satışa dönüşme potansiyeli yüksek.",
+    "priority": "medium"
+  },
+  {
+    "callId": "call-005",
+    "caller": "Ali Öztürk",
+    "suggestion": "Fatura şablonunu sadeleştirmek için müşteri geri bildirimini kaydedin.",
+    "priority": "low"
+  }
+]

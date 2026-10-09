@@ -1,0 +1,57 @@
+[
+  {
+    "id": "call-001",
+    "caller": "Ahmet Yılmaz",
+    "startedAt": "2024-10-01T09:05:00Z",
+    "durationSec": 312,
+    "status": "completed",
+    "sentiment": "positive",
+    "transcript": "Merhaba, teknem için sezon sonu bakım randevusu almak istiyorum.",
+    "summary": "Tekne bakım randevusu talebi. Müşteri memnun, randevu onaylandı.",
+    "tags": ["bakım", "randevu", "memnun"]
+  },
+  {
+    "id": "call-002",
+    "caller": "Fatma Kaya",
+    "startedAt": "2024-10-01T11:20:00Z",
+    "durationSec": 95,
+    "status": "completed",
+    "sentiment": "negative",
+    "transcript": "Geçen hafta yaptırdığım tamir hâlâ düzelmedi, şikâyetçiyim.",
+    "summary": "Tamir şikayeti. Müşteri memnuniyetsiz, teknik ekip yönlendirildi.",
+    "tags": ["şikayet", "tamir", "takip"]
+  },
+  {
+    "id": "call-003",
+    "caller": "Mehmet Deniz",
+    "startedAt": "2024-10-01T13:45:00Z",
+    "durationSec": 0,
+    "status": "missed",
+    "sentiment": "neutral",
+    "transcript": "",
+    "summary": "Cevapsız çağrı.",
+    "tags": ["cevapsız"]
+  },
+  {
+    "id": "call-004",
+    "caller": "Zeynep Arslan",
+    "startedAt": "2024-10-02T08:30:00Z",
+    "durationSec": 480,
+    "status": "completed",
+    "sentiment": "positive",
+    "transcript": "Yeni tekne modeli hakkında bilgi almak istedim, çok yardımcı oldunuz.",
+    "summary": "Yeni tekne modeli sorgusu. Müşteri satın alma sürecine yönlendirildi.",
+    "tags": ["satış", "bilgi", "memnun"]
+  },
+  {
+    "id": "call-005",
+    "caller": "Ali Öztürk",
+    "startedAt": "2024-10-02T14:10:00Z",
+    "durationSec": 210,
+    "status": "completed",
+    "sentiment": "neutral",
+    "transcript": "Fatura konusunda sormak istediğim birkaç şey vardı.",
+    "summary": "Fatura sorgusu. Bilgi verildi, işlem tamamlandı.",
+    "tags": ["fatura", "bilgi"]
+  }
+]
