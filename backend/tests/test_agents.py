@@ -17,10 +17,19 @@ from app.agents.call_classifier import CallClassifierAgent
 from app.agents.crm_extraction import CrmExtractionAgent
 from app.agents.grounding import is_grounded, normalize, transcript_text
 from app.agents.llm_agent import extract_json_object, format_transcript, load_prompt
-from app.agents.names import CALL_CLASSIFIER, CRM_EXTRACTION
+from app.agents.names import CALL_CLASSIFIER, CRM_EXTRACTION, SALES_ANALYZER
 from app.agents.orchestrator import Orchestrator
+from app.agents.sales_analyzer import SalesAnalyzerAgent
 from app.core.config import Settings
-from app.domain.enums import CallType, NextAction, RequestCategory, ServiceMode, Urgency
+from app.domain.enums import (
+    CallType,
+    LossReason,
+    NextAction,
+    RequestCategory,
+    SalesOutcomeType,
+    ServiceMode,
+    Urgency,
+)
 from app.schemas.analysis import CrmExtraction
 from tests.llm_fakes import scripted
 
@@ -323,3 +332,105 @@ def test_normalize_ignores_case_punctuation_and_turkish_letters() -> None:
 )
 def test_is_grounded(quote: str, expected: bool) -> None:
     assert is_grounded(quote, transcript_text(TUZLA_SEGMENTS)) is expected
+
+
+# --- Satış Analiz (#19) -----------------------------------------------------------------------
+
+LOST_SEGMENTS = [
+    Segment(
+        idx=0,
+        speaker="rep",
+        start_ms=0,
+        end_ms=4000,
+        text_masked="Kış bakımı paketi için fiyatımız [TUTAR], sezon sonuna kadar geçerli.",
+    ),
+    Segment(
+        idx=1,
+        speaker="customer",
+        start_ms=4000,
+        end_ms=8000,
+        text_masked="O fiyata olmaz, çok pahalı. Ben başka yere bakacağım.",
+    ),
+]
+
+
+def test_sales_analyzer_contract() -> None:
+    agent = SalesAnalyzerAgent()
+
+    assert agent.name == SALES_ANALYZER
+    assert agent.model_tier == "smart"
+    prompt = load_prompt(agent.prompt_file)
+    for enum_cls in (SalesOutcomeType, LossReason):
+        for member in enum_cls:
+            assert f"- {member.value}:" in prompt, member
+
+
+async def test_sales_analyzer_lost_on_price() -> None:
+    answer = json.dumps(
+        {
+            "outcome": "kaybedildi",
+            "loss_reason": "fiyat",
+            "evidence": "O fiyata olmaz, çok pahalı",
+            "confidence": 0.9,
+        },
+        ensure_ascii=False,
+    )
+
+    result = await SalesAnalyzerAgent(model=scripted(answer)).run(tuzla_ctx(segments=LOST_SEGMENTS))
+
+    assert result.status == "ok"
+    assert result.output is not None
+    assert result.output.outcome == SalesOutcomeType.KAYBEDILDI
+    assert result.output.loss_reason == LossReason.FIYAT
+    assert result.output.evidence == "O fiyata olmaz, çok pahalı"
+
+
+async def test_sales_analyzer_converted_on_hoca_scenario() -> None:
+    answer = (
+        '{"outcome": "satisa_donustu", "loss_reason": null, "evidence": null, "confidence": 0.8}'
+    )
+
+    result = await SalesAnalyzerAgent(model=scripted(answer)).run(tuzla_ctx())
+
+    assert result.output is not None
+    assert result.output.outcome == SalesOutcomeType.SATISA_DONUSTU
+    assert result.output.loss_reason is None
+
+
+async def test_sales_analyzer_rule_violation_gets_fixed_by_orchestrator() -> None:
+    """Satışa dönüşmüş çağrıya kayıp nedeni yazılırsa şema reddeder, ikinci denemede düzelir."""
+    wrong = '{"outcome": "satisa_donustu", "loss_reason": "fiyat", "confidence": 0.8}'
+    right = '{"outcome": "satisa_donustu", "loss_reason": null, "confidence": 0.8}'
+    model = scripted(wrong, right)
+
+    result = await Orchestrator([[SalesAnalyzerAgent(model=model)]]).run(tuzla_ctx())
+
+    assert result.status == "tamam"
+    assert result.runs[0].attempts == 2
+    assert "loss_reason yalnızca" in model.last_user
+
+
+async def test_sales_analyzer_drops_ungrounded_evidence() -> None:
+    answer = json.dumps(
+        {
+            "outcome": "kaybedildi",
+            "loss_reason": "rakip",
+            "evidence": "Rakip firma daha ucuza yapıyor",
+            "confidence": 0.7,
+        },
+        ensure_ascii=False,
+    )
+
+    result = await SalesAnalyzerAgent(model=scripted(answer)).run(tuzla_ctx(segments=LOST_SEGMENTS))
+
+    assert result.output is not None
+    assert result.output.loss_reason == LossReason.RAKIP
+    assert result.output.evidence is None
+
+
+async def test_sales_analyzer_sees_switchboard_outcome() -> None:
+    model = scripted('{"outcome": "beklemede", "confidence": 0.6}')
+
+    await SalesAnalyzerAgent(model=model).run(tuzla_ctx(call_info=CallInfo(outcome="geri_ara")))
+
+    assert '"outcome": "geri_ara"' in model.last_user
