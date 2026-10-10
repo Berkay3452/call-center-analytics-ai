@@ -1,0 +1,53 @@
+{
+  "call_id": "call_006",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Göcek D-Marin'de Ufuk adlı Azimut 55'im var. Gövdede kıl çatlakları ve osmoz belirtileri görüyorum, teklif almak istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Önce bir keşif gerekir. Çatlaklar su hattının altında mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, su hattının altında. Karina boyası da yenilenmeli."
+    },
+    {
+      "speaker": "rep",
+      "text": "Keşif için usta gönderip ardından yazılı teklif hazırlıyoruz. Keşif iki gün içinde yapılabilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bu hafta içinde olsun. Ama önce bir şey söyleyeyim, Fethiye'deki bir firmayla da görüştüm."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii, karşılaştırma yapmanız çok normal. Biz iki yıl garanti veriyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "O firma da garanti veriyor, tersanesi de Göcek'e daha yakın. Aslında az önce onlarla anlaştım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum, yani bizden teklif almaktan vazgeçtiniz mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, o firmayla devam edeceğim, haber vermek için aradım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teşekkür ederiz, tekrar ihtiyacınız olursa buradayız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Sağ olun."
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "call_id": "call_006",
+  "call_type": "teklif",
+  "crm": {
+    "request_category": "govde_ve_kil",
+    "location": "Göcek D-Marin",
+    "problem": "Su hattı altında kıl çatlakları ve osmoz belirtileri",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": "Gövde osmoz ve kıl onarımı, karina boyası",
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "rakip"
+  },
+  "notes": "Kayıp nedeni rakip: müşteri başka bir firmayla anlaştığını söylüyor; fiyat veya tarih itirazı yok."
+}

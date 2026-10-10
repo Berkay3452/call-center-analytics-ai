@@ -1,0 +1,18 @@
+{
+  "call_id": "call_010",
+  "call_type": "acil",
+  "crm": {
+    "request_category": "motor_arizasi",
+    "location": "Bodrum Milta Marina",
+    "problem": "Makine dairesinde duman ve yangın alarmı",
+    "service_mode": "yerinde_servis",
+    "urgency": "acil",
+    "potential_job": "Acil hasar tespiti (motor/elektrik) ve onarım",
+    "next_action": "usta_ata"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Yangın/duman: acil."
+}

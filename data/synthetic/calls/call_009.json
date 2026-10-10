@@ -1,0 +1,45 @@
+{
+  "call_id": "call_009",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, aboneliğimde kaç bakım hakkım kaldı? Bir de hafta sonu çalışıyor musunuz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Abonelik hangi teknenin adına?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yıldız, Göcek D-Marin."
+    },
+    {
+      "speaker": "rep",
+      "text": "Gold paket görünüyor. İki bakım hakkınızdan biri kullanılmış, bir hakkınız kalmış. Paket mart ayında bitiyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Anladım. Hafta sonu ofis açık mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Cumartesi dokuz ile on yedi arası açığız, pazar yalnızca acil hat çalışıyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, önümüzdeki hafta bir bakım için tekrar arayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Dilediğiniz zaman. Başka bir sorunuz var mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Hayır, teşekkürler."
+    }
+  ]
+}

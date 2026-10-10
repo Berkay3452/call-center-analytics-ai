@@ -1,0 +1,65 @@
+{
+  "call_id": "call_002",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta acil hat, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Alo, teknem su alıyor! Sintine pompası sürekli çalışıyor ama seviye düşmüyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Sakin olalım, canınız tehlikede mi? Teknede kimse var mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Eşim ve ben varız, ama sular döşemenin altından yükseliyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Seviye artıyor mu azalıyor mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Artıyor, yavaş ama artıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anladım. Teknenin adı ve tam olarak neredesiniz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Albatros, Göcek D-Marin, B iskelesi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Marina ofisine de haber veriyorum. Deniz suyu vanalarını kapatın, sintine pompasını elle de çalıştırın, aküyü kapatmayın. Ben nöbetçi ustamızı hemen yönlendiriyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ne kadar sürer?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Göcek'teki nöbetçi ustamız marinada, on beş dakika içinde yanınızda olur."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, bekliyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hattan ayrılmayın, ustamız sizi [TELEFON] numarasından arayacak."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki, çok teşekkür ederim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geçmiş olsun, ekibimiz yola çıktı."
+    }
+  ]
+}

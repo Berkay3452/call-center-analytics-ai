@@ -1,0 +1,18 @@
+{
+  "call_id": "call_005",
+  "call_type": "teklif",
+  "crm": {
+    "request_category": "kis_bakimi",
+    "location": "Yalıkavak Marina",
+    "problem": null,
+    "service_mode": "atolyede",
+    "urgency": "dusuk",
+    "potential_job": "Kış bakımı paketi (karaya çekme, motor kışlama)",
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "fiyat"
+  },
+  "notes": "Arıza yok, problem null beklenir."
+}

@@ -1,0 +1,65 @@
+{
+  "call_id": "call_001",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, ben Selim. Size nasıl yardımcı olabilirim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Tuzla Marina'da teknem var. Motor çalışıyor ama gaz verdiğimde devir yükselmiyor. Yarın bir usta gelebilir mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Geçmiş olsun. Teknenin adı ve modeli nedir?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Rüzgar, Jeanneau Sun Odyssey 440."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tamam. Motor boşta düzgün çalışıyor diyorsunuz, gaz verince devir mi düşüyor yoksa hiç artmıyor mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Gaz kolunu ittiğimde devir bin üç yüzde takılıyor, daha fazla çıkmıyor. Egzozdan biraz siyah duman da geliyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anladım, yakıt filtresi ya da turbo tarafı olabilir, yerinde bakmak gerekir. Tekne şu an iskelede mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, Tuzla Marina'da, C pontonunda bağlı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yarın sabah dokuz ile on bir arası bir ustamız o bölgede olacak. Arıza tespiti için yerinde servis yazayım mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Olur, lütfen. Tekneyi cumartesi denize çıkarmam lazım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anladım. Yerinde arıza tespiti bin beş yüz lira, yapılacak iş çıkarsa tutarı ona mahsup ediyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, sorun değil."
+    },
+    {
+      "speaker": "rep",
+      "text": "O zaman yarın sabah dokuz buçuğa randevunuzu oluşturuyorum. Telefonunuza onay mesajı gelecek."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler, görüşürüz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederim, iyi günler."
+    }
+  ]
+}

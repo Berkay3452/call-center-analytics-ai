@@ -1,0 +1,53 @@
+{
+  "call_id": "call_005",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Yalıkavak Marina'da Martı adında katamaranım var. Kış bakımı için fiyat teklifi almak istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii. Kış bakımına neler dahil olsun? Karaya çekme, motor kışlama, gövde yıkama..."
+    },
+    {
+      "speaker": "customer",
+      "text": "Hepsi olsun. İki motor var, jeneratör de var. Kışlama, antifriz, akü bakımı, tekne örtüsü."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tekneyi karaya çekip atölyede mi bekletmek istersiniz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Karaya çekilsin, atölyede kalsın, nisanda indiririm."
+    },
+    {
+      "speaker": "rep",
+      "text": "Lagoon 42 için karaya çekme ve beş aylık bekleme dahil, tüm kalemleriyle toplam yüz yirmi bin lira civarında bir teklif çıkıyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yüz yirmi bin mi? Çok pahalı, bu bütçem değil. Geçen yıl bunun yarısına yaptırmıştım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Fiyat ağırlıklı karaya çekme ve bekleme bedelinden oluşuyor. Motor kışlamasını ayrı alırsak biraz düşer."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yine de çok yüksek, bu fiyatla çalışamam. Fiyat yüzünden vazgeçiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum, ileride bir kampanya olursa size haber verebiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Gerek yok, teşekkürler."
+    }
+  ]
+}

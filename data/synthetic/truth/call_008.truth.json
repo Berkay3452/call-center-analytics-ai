@@ -1,0 +1,18 @@
+{
+  "call_id": "call_008",
+  "call_type": "bilgi",
+  "crm": {
+    "request_category": "periyodik_bakim",
+    "location": "Kalamış Marina",
+    "problem": null,
+    "service_mode": "atolyede",
+    "urgency": "dusuk",
+    "potential_job": null,
+    "next_action": "bilgi_ver"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Satışla ilgisi yok; sonuç beklemede."
+}
