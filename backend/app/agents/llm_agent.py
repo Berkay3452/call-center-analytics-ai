@@ -21,7 +21,12 @@ from pydantic import BaseModel, ValidationError
 
 from app.agents.base import AgentResult, AnalysisContext, BaseAgent, Segment
 from app.core.config import Settings, get_settings
-from app.llm.client import LLMNotConfiguredError, get_chat_model, llm_semaphore
+from app.llm.client import (
+    LLMNotConfiguredError,
+    get_chat_model,
+    llm_rate_limiter,
+    llm_semaphore,
+)
 
 if TYPE_CHECKING:
     from langchain_core.language_models.chat_models import BaseChatModel
@@ -179,6 +184,10 @@ class LLMAgent[T: BaseModel](BaseAgent[T]):
             return self._fail(f"LLM yapılandırılmadı: {exc}", "runtime")
 
         try:
+            # Önce kota sırası (model başına dakikadaki istek), sonra eşzamanlılık sınırı.
+            waited = await llm_rate_limiter(self.settings).acquire(model_name or self.model_tier)
+            if waited:
+                log.info("agent.rate_limited", agent=self.name, waited_s=round(waited, 1))
             async with llm_semaphore(self.settings):
                 response = await model.ainvoke(self.build_messages(ctx))
         except Exception as exc:  # sağlayıcı, ağ, kota vb.; orkestratör tekrar denemez

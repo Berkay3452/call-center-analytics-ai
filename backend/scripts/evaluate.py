@@ -134,20 +134,27 @@ def report(rows: list[dict[str, Any]], settings: Settings) -> str:
         f"Model: fast={settings.llm_fast_model} | smart={settings.llm_smart_model} "
         f"| sağlayıcı={settings.llm_provider} | çağrı={len(rows)}",
         "",
-        "| Alan | Doğru | Toplam | Oran |",
-        "|---|---|---|---|",
+        "Oran yalnızca ölçülen alanlar üzerindendir; agent başarısızsa alan 'ölçülemedi' sayılır.",
+        "",
+        "| Alan | Doğru | Ölçülen | Ölçülemedi | Oran |",
+        "|---|---|---|---|---|",
     ]
     for f in fields:
         vals = [r["scores"][f] for r in rows]
         ok = sum(1 for v in vals if v is True)
-        lines.append(f"| {f} | {ok} | {len(vals)} | %{round(100 * ok / len(vals))} |")
-    total_ok = sum(1 for r in rows for v in r["scores"].values() if v is True)
-    total = sum(len(r["scores"]) for r in rows)
+        measured = sum(1 for v in vals if v is not None)
+        rate = f"%{round(100 * ok / measured)}" if measured else "-"
+        lines.append(f"| {f} | {ok} | {measured} | {len(vals) - measured} | {rate} |")
+    all_vals = [v for r in rows for v in r["scores"].values()]
+    total_ok = sum(1 for v in all_vals if v is True)
+    measured = sum(1 for v in all_vals if v is not None)
     status = {s: sum(1 for r in rows if r["status"] == s) for s in ("tamam", "kismi", "basarisiz")}
     fixes = sum(1 for r in rows for a in r["attempts"].values() if a > 1)
+    overall = f"%{round(100 * total_ok / measured)}" if measured else "-"
     lines += [
         "",
-        f"Genel doğruluk: %{round(100 * total_ok / total)} ({total_ok}/{total})",
+        f"Genel doğruluk (ölçülenler): {overall} ({total_ok}/{measured}); "
+        f"ölçülemeyen alan: {len(all_vals) - measured}",
         f"Analiz durumu: {status}",
         f"Düzeltme gereken agent çalışması: {fixes}",
         f"Ortalama süre: {round(sum(r['seconds'] for r in rows) / len(rows), 1)} sn/çağrı"

@@ -9,6 +9,9 @@ LangChain bağımlılığı `ai` ekstrasındadır ve tembel import edilir; API b
 """
 
 import asyncio
+import time
+from collections import defaultdict, deque
+from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING, Literal
 from weakref import WeakKeyDictionary
 
@@ -24,6 +27,8 @@ PROVIDER_BASE_URLS: dict[str, str] = {
     "groq": "https://api.groq.com/openai/v1",
     "openrouter": "https://openrouter.ai/api/v1",
     "gemini": "https://generativelanguage.googleapis.com/v1beta/openai/",
+    # NVIDIA build.nvidia.com: açık modeller (Gemma, Llama, Qwen, Nemotron...), ücretsiz anahtar.
+    "nvidia": "https://integrate.api.nvidia.com/v1",
     "ollama": "http://localhost:11434/v1",
 }
 
@@ -76,6 +81,60 @@ def get_chat_model(
 # Her event loop için ayrı semafor: Celery görevleri her seferinde yeni döngü açar
 # (asyncio.run) ve bir döngüye bağlı semafor başka döngüde kullanılamaz.
 _semaphores: "WeakKeyDictionary[asyncio.AbstractEventLoop, asyncio.Semaphore]" = WeakKeyDictionary()
+
+
+class RateLimiter:
+    """Model başına dakikadaki istek sayısını sınırlar (kayan 60 sn pencere).
+
+    Sınır dolunca, penceredeki en eski istek çıkana kadar bekletir; böylece ücretsiz katmanın
+    "dakikada N istek" kotasına takılıp 429 almak yerine sıra beklenir.
+    """
+
+    def __init__(
+        self,
+        per_minute: int,
+        *,
+        window_s: float = 60.0,
+        clock: Callable[[], float] = time.monotonic,
+        sleep: Callable[[float], Awaitable[None]] = asyncio.sleep,
+    ) -> None:
+        self.per_minute = per_minute
+        self.window_s = window_s
+        self._clock = clock
+        self._sleep = sleep
+        self._calls: defaultdict[str, deque[float]] = defaultdict(deque)
+        self._lock = asyncio.Lock()
+
+    async def acquire(self, key: str) -> float:
+        """Bir istek hakkı alır; beklenen toplam süreyi (sn) döner. Sınır 0 ise beklemez."""
+        if self.per_minute <= 0:
+            return 0.0
+        waited = 0.0
+        while True:
+            async with self._lock:
+                now = self._clock()
+                calls = self._calls[key]
+                while calls and now - calls[0] >= self.window_s:
+                    calls.popleft()
+                if len(calls) < self.per_minute:
+                    calls.append(now)
+                    return waited
+                delay = self.window_s - (now - calls[0])
+            await self._sleep(delay)
+            waited += delay
+
+
+_limiters: "WeakKeyDictionary[asyncio.AbstractEventLoop, RateLimiter]" = WeakKeyDictionary()
+
+
+def llm_rate_limiter(settings: Settings) -> RateLimiter:
+    """Çalışan event loop'a ait hız sınırlayıcı (semafordaki gerekçeyle döngü başına ayrı)."""
+    loop = asyncio.get_running_loop()
+    limiter = _limiters.get(loop)
+    if limiter is None:
+        limiter = RateLimiter(settings.llm_requests_per_minute)
+        _limiters[loop] = limiter
+    return limiter
 
 
 def llm_semaphore(settings: Settings) -> asyncio.Semaphore:

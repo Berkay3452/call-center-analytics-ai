@@ -57,7 +57,9 @@ class Settings(BaseSettings):
     auth_dev_bypass: bool = False
 
     # --- LLM (ücretsiz, OpenAI-uyumlu API sağlayıcıları) ---
-    llm_provider: Literal["groq", "openrouter", "gemini", "ollama", "openai_compatible"] = "groq"
+    llm_provider: Literal[
+        "groq", "openrouter", "gemini", "nvidia", "ollama", "openai_compatible"
+    ] = "groq"
     llm_base_url: str | None = None  # boşsa sağlayıcının varsayılan adresi kullanılır
     llm_api_key: SecretStr | None = None
     llm_fast_model: str | None = None  # sınıflandırma gibi hafif işler
@@ -70,6 +72,9 @@ class Settings(BaseSettings):
     llm_sales_analyzer_model: str | None = None
     llm_summarizer_model: str | None = None
     llm_max_concurrency: int = Field(default=2, ge=1)
+    # Model başına dakikadaki en fazla istek (0 = sınırsız). Gemini ücretsiz katmanı: 5.
+    # Sınır süreç içidir; birden fazla Celery işçisi varsa her biri ayrı sayar.
+    llm_requests_per_minute: int = Field(default=0, ge=0)
     llm_timeout_s: float = 60.0
     llm_max_retries: int = 3
 
