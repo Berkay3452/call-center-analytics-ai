@@ -50,6 +50,18 @@ uv export --frozen --no-hashes --no-emit-project --only-dev -o requirements-dev.
 
 Supabase kurulmadan `/api/v1` uçlarını denemek için `.env` içinde `AUTH_DEV_BYPASS=true` yapın (yalnızca `APP_ENV=local`).
 
+## Agent'ları gerçek LLM ile değerlendirme
+
+`.env`'de LLM ayarları doluyken (geçici seçim: Gemini, bkz. #13) agent'lar sentetik çağrılarda (`data/synthetic/`) çalıştırılıp doğru etiketlerle karşılaştırılır:
+
+```
+python -m scripts.evaluate                                 # 10 çağrının hepsi
+python -m scripts.evaluate --calls call_001,call_004       # seçili çağrılar
+python -m scripts.evaluate --fast <model> --smart <model>  # modeli .env'i değiştirmeden dene
+```
+
+Çıktı: alan bazında doğruluk tablosu, yanlış alanlar, süre ve token sayısı. Ücretsiz katman sınırları nedeniyle çağrılar sırayla işlenir.
+
 ## Uç Noktalar
 
 | Yol | Açıklama |
