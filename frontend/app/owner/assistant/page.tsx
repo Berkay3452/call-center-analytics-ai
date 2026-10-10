@@ -213,7 +213,7 @@ export default function AssistantPage() {
                       isUser ? "text-sky-200" : "text-gray-400"
                     }`}
                   >
-                    {new Date(msg.timestamp).toLocaleTimeString("tr-TR")}
+                    {new Date(msg.timestamp).toLocaleTimeString("tr-TR", { timeZone: "Europe/Istanbul" })}
                   </p>
                 )}
               </div>

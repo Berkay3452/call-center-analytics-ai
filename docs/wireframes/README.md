@@ -37,7 +37,7 @@ Miço Usta'nın mevcut panelleri (Gösterge Paneli, Servis Emirleri, Tekne Sahib
     7. Ortalama Yanıt Süresi (4:32 dk)
   - **Grafik ve İstatistik Modülleri:**
     - *Günlük Çağrı Sayısı Trendi:* Son 7 güne ait çağrı hacmi sütun grafiği (Issue #36).
-    - *En Sık Tekne Arızaları:* Motor & Tahrik (%45), Elektrik & Jeneratör (%35), Sintine & Su Tahliye (%27), Periyodik Bakım (%19), Gövde & Tutya (%14).
+    - *En Sık Tekne Arızaları:* `RequestCategory` değerlerine göre: Motor arızası (%32), Elektrik arızası (%25), Yakıt sistemi (%19), Periyodik bakım (%14), Gövde ve kıl bakımı (%10). Bir çağrının tek kategorisi olduğu için yüzdeler toplamı %100'dür.
     - *En Yoğun Marinalar:* Kalamış (%37), Göcek (%31), Bodrum (%20), Tuzla (%8), Yalıkavak (%4).
     - *Satış Kaçırma Sebepleri:* Fiyat yüksek (%48), Geç dönüş (%34), Rakip usta tercihi (%14), Takvim uyuşmazlığı (%4).
   - **Son Çağrılar Tablosu:** Arayan kişi, tekne adı, marina, konu, süre, analiz durumu rozeti (`tamam`, `kismi`, `basarisiz`), aciliyet rozeti ve tek tıkla servis emrine geçiş linki (Issue #36).

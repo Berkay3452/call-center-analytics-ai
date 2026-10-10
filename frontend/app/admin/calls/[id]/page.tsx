@@ -90,7 +90,7 @@ export default async function CallDetailPage({ params }: Props) {
             </h1>
             <p className="mt-1 text-xs text-gray-500">
               {call.callerPhone} • {call.boatModel || ""} • {call.location} •{" "}
-              {new Date(call.startedAt).toLocaleString("tr-TR")}
+              {new Date(call.startedAt).toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" })}
             </p>
           </div>
           <div className="flex items-center gap-2">

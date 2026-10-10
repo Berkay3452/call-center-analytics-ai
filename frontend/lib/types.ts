@@ -232,10 +232,6 @@ export interface ChatMessage {
    * Boş dizi veya undefined → kaynak kartı gösterilmez ("bulamadım" durumu).
    */
   citations?: CitationCard[];
-  /**
-   * @deprecated Geriye dönük uyumluluk için saklı. `citations[0]` kullanın.
-   */
-  citation?: CitationCard;
 }
 
 // ---------------------------------------------------------------------------
@@ -251,7 +247,7 @@ export interface DailyCallPoint {
 // Arıza Kategorisi İstatistiği
 // ---------------------------------------------------------------------------
 export interface FailureCategoryItem {
-  category: string;
+  category: RequestCategory;
   label: string;
   count: number;
   pct: number;
