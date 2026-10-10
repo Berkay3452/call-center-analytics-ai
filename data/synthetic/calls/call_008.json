@@ -1,0 +1,65 @@
+{
+  "call_id": "call_008",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, dün Kalamış'taki atölyenize bıraktığım Poyraz'ın işi bitti mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Dün saat kaçta bırakmıştınız, hatırlıyor musunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Öğleden sonra üç gibi, ustanız [İSİM] teslim aldı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Bakayım. Servis emri ne için açılmıştı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Periyodik bakım ve filtre değişimi için."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kayıtta devam ediyor görünüyor, motor yağı ve filtreler değişti, impeller kaldı. Yarın öğleden önce bitmesi planlı."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yarın alabilir miyim?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yarın öğleden sonra teslim edebiliriz, iş bitince size onay mesajı gönderilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki, ek bir problem çıktı mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Hayır, şimdilik not düşülmemiş."
+    },
+    {
+      "speaker": "customer",
+      "text": "Fatura ne kadar tutar, onu da öğrenebilir miyim?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Paketiniz kapsamında, ek bir ücret görünmüyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Güzel, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederim, iyi günler."
+    }
+  ]
+}

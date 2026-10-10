@@ -1,0 +1,18 @@
+{
+  "call_id": "call_007",
+  "call_type": "yeni_musteri",
+  "crm": {
+    "request_category": "periyodik_bakim",
+    "location": "Tuzla Marina",
+    "problem": null,
+    "service_mode": "yerinde_servis",
+    "urgency": "dusuk",
+    "potential_job": "Yıllık periyodik bakım paketi ve ilk genel kontrol",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Yeni müşteri; arıza yok, problem null beklenir."
+}

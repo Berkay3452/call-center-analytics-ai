@@ -1,0 +1,18 @@
+{
+  "call_id": "call_003",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "elektrik_arizasi",
+    "location": "Bodrum Milta Marina",
+    "problem": "Aküler şarj olmuyor, motor çalışırken voltaj düşük kalıyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "yuksek",
+    "potential_job": "Şarj sistemi (alternatör/regülatör) kontrolü",
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "takvim"
+  },
+  "notes": "Kayıp nedeni takvim: müşteri 'bu tarih bana uymuyor' diyor, rakip veya fiyat söylemiyor."
+}

@@ -1,0 +1,65 @@
+{
+  "call_id": "call_010",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta acil hat, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Motor dairesinden duman çıkıyor! Yangın alarmı öttü."
+    },
+    {
+      "speaker": "rep",
+      "text": "Önce güvenlik: motoru durdurdunuz mu? Yangın söndürme sistemi var mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Motoru durdurdum, otomatik söndürücü devreye girdi sanırım, duman azaldı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Duman hâlâ çıkıyor mu, koku nasıl, yanık kablo mu yakıt mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yanık plastik gibi kokuyor, koyu duman azaldı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tekneden iskeleye inebilir misiniz? Marina güvenlik ekibini de arıyorum. Tekne adı ve konumunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Akdeniz, Bodrum Milta Marina, D iskelesi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kimseye zarar yok, değil mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yok, hepimiz iskeledeyiz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Marinaya bildirdim. Nöbetçi ustamızı motor ve elektrik tarafını incelemek için yönlendiriyorum. Güvenlik ekibi izin verene kadar makine dairesine girmeyin."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, usta ne zaman gelir?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yirmi dakika içinde yanınızda olur."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki, bekliyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hattan ayrılmayın, ben buradayım."
+    }
+  ]
+}

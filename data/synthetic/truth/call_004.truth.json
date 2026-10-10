@@ -1,0 +1,18 @@
+{
+  "call_id": "call_004",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "yakit_sistemi",
+    "location": "Kalamış Marina",
+    "problem": "Motor arada bir tekliyor, yakıt filtresi tıkanmış olabilir",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": "Yakıt filtresi kontrolü ve değişimi",
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "gec_donus"
+  },
+  "notes": "Kayıp nedeni geç dönüş: müşteri üç gündür dönüş yapılmadığını söylüyor."
+}

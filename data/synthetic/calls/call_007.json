@@ -1,0 +1,65 @@
+{
+  "call_id": "call_007",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, geçen hafta tekne aldım, ilk kez bakım yaptıracağım, sizinle ilk defa konuşuyorum. Hizmetleriniz neler?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Hoş geldiniz, hayırlı olsun. Tekneniz nerede, modeli nedir?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Tuzla Marina'da, Fairline Targa 40, adı Karayel. İkinci el aldım, bakım geçmişini bilmiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "O zaman bir genel kontrol ve periyodik bakım paketimizi öneririm: motor yağı, filtreler, akü ve elektrik kontrolü, sintine ve gövde incelemesi."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bunu yıllık abonelik gibi yapıyor musunuz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, yıllık paketimiz var, iki bakım ziyareti ve acil destek hattı dahil."
+    },
+    {
+      "speaker": "customer",
+      "text": "Fiyatı nedir?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Bu boydaki tekne için yıllık altmış beş bin lira."
+    },
+    {
+      "speaker": "customer",
+      "text": "Makul görünüyor. Paketi alayım, ilk kontrol ziyareti de bu hafta içinde olsun."
+    },
+    {
+      "speaker": "rep",
+      "text": "Harika, perşembe sabah ustamız Tuzla Marina'ya gelsin, olur mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Perşembe uygun."
+    },
+    {
+      "speaker": "rep",
+      "text": "O zaman kaydınızı oluşturuyorum, sözleşme bilgileri e-postanıza gelecek."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hoş geldiniz, iyi günler."
+    }
+  ]
+}

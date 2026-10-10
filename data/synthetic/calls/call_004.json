@@ -1,0 +1,65 @@
+{
+  "call_id": "call_004",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, üç gündür sizi arıyorum, hiç dönüş yapılmadı. Mesaj bıraktım, iki kez de aradım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Çok özür dilerim, kayıtlarınıza bakayım. Hangi konuydu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Kalamış Marina'da Lodos adlı teknem var. Motor arada bir tekliyor, yakıt filtresi tıkanmış olabilir. Bu hafta içinde baktırmak istemiştim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Motor ne zaman tekliyor, yüksek devirde mi boşta mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yüksek devirde, özellikle gaz verince. Boşta düzgün çalışıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum. İlk talebinizin kaydı görünmüyor, sistemde bir aksaklık olmuş olabilir. Yarın ilk iş ustamızı gönderebilirim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yarın mı? Üç gündür bekliyorum, bu kadar beklettikten sonra artık umudum kalmadı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Gerçekten özür dilerim, öncelik vererek bugün öğleden sonra da çıkarabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bugün mü? Üç gündür kimse bakmadı, şimdi nasıl bugüne sığdırıyorsunuz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Haklısınız, ekibimiz bugün yoğun ama sizin için yer açabilirim, ilk aramayı ben yapacağım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Hayır, geç kaldınız. Üç gündür dönüş yapılmaması beni çok rahatsız etti. Artık beklemeyeceğim, talebi iptal edin."
+    },
+    {
+      "speaker": "rep",
+      "text": "Haklısınız, tekrar özür dilerim. İleride yine çalışabilirsek memnun oluruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Görüşürüz."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dilerim."
+    }
+  ]
+}
