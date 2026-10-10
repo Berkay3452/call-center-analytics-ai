@@ -2,6 +2,8 @@ import Link from "next/link";
 import { fetchCalls } from "@/lib/api";
 import {
   CALL_TYPE_LABELS,
+  EMPTY_LABEL,
+  labelOf,
   URGENCY_LABELS,
   type CallType,
   type Urgency,
@@ -69,13 +71,13 @@ export default async function CallsPage() {
                   </div>
                 </td>
                 <td className="px-4 py-3 text-sm text-gray-600">
-                  {call.location}
+                  {call.location ?? EMPTY_LABEL}
                 </td>
                 <td className="px-4 py-3">
                   <span
-                    className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${CALL_TYPE_BADGE[call.callType]}`}
+                    className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${call.callType ? CALL_TYPE_BADGE[call.callType] : "bg-gray-50 text-gray-600"}`}
                   >
-                    {CALL_TYPE_LABELS[call.callType]}
+                    {labelOf(CALL_TYPE_LABELS, call.callType)}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-sm text-gray-500">
@@ -83,10 +85,10 @@ export default async function CallsPage() {
                 </td>
                 <td className="px-4 py-3">
                   <span
-                    className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${URGENCY_BADGE[call.urgency]}`}
+                    className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${call.urgency ? URGENCY_BADGE[call.urgency] : "bg-gray-100 text-gray-600 border-gray-200"}`}
                   >
                     {call.urgency === "acil" && <span className="mr-1">🚨</span>}
-                    {URGENCY_LABELS[call.urgency]}
+                    {labelOf(URGENCY_LABELS, call.urgency)}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-sm">

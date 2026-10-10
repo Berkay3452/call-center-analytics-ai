@@ -4,6 +4,8 @@ import { fetchCallById, fetchCalls } from "@/lib/api";
 import { PlaceholderCard } from "@/components/PlaceholderCard";
 import {
   CALL_TYPE_LABELS,
+  EMPTY_LABEL,
+  labelOf,
   NEXT_ACTION_LABELS,
   REQUEST_CATEGORY_LABELS,
   SERVICE_MODE_LABELS,
@@ -38,7 +40,8 @@ export default async function CallDetailPage({ params }: Props) {
 
   if (!call) notFound();
 
-  const urgencyStyle = URGENCY_COLOR[call.crm.urgency];
+  // Aciliyet çıkarılamadıysa (null) nötr renk kullanılır.
+  const urgencyStyle = call.crm.urgency ? URGENCY_COLOR[call.crm.urgency] : URGENCY_COLOR.dusuk;
 
   return (
     <div className="space-y-6">
@@ -63,7 +66,7 @@ export default async function CallDetailPage({ params }: Props) {
             </span>
           )}
           <span className="inline-flex rounded-md bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700">
-            {CALL_TYPE_LABELS[call.callType]}
+            {labelOf(CALL_TYPE_LABELS, call.callType)}
           </span>
         </div>
       </div>
@@ -207,7 +210,7 @@ export default async function CallDetailPage({ params }: Props) {
                   1. Müşteri Talebi (Kategori)
                 </span>
                 <span className="mt-0.5 block text-sm font-semibold text-gray-900">
-                  {REQUEST_CATEGORY_LABELS[call.crm.requestCategory] || call.crm.requestCategory}
+                  {labelOf(REQUEST_CATEGORY_LABELS, call.crm.requestCategory)}
                 </span>
               </div>
 
@@ -217,7 +220,7 @@ export default async function CallDetailPage({ params }: Props) {
                   2. Marina / Lokasyon
                 </span>
                 <span className="mt-0.5 block text-sm font-semibold text-gray-900">
-                  📍 {call.crm.location}
+                  📍 {call.crm.location ?? EMPTY_LABEL}
                 </span>
               </div>
 
@@ -227,7 +230,7 @@ export default async function CallDetailPage({ params }: Props) {
                   3. Problem Tanımı
                 </span>
                 <p className="mt-0.5 text-sm text-gray-800">
-                  {call.crm.problem}
+                  {call.crm.problem ?? EMPTY_LABEL}
                 </p>
               </div>
 
@@ -237,7 +240,7 @@ export default async function CallDetailPage({ params }: Props) {
                   4. Talep / Hizmet Biçimi
                 </span>
                 <span className="mt-0.5 block text-sm font-semibold text-gray-900">
-                  ⚙️ {SERVICE_MODE_LABELS[call.crm.serviceMode] || call.crm.serviceMode}
+                  ⚙️ {labelOf(SERVICE_MODE_LABELS, call.crm.serviceMode)}
                 </span>
               </div>
 
@@ -248,7 +251,7 @@ export default async function CallDetailPage({ params }: Props) {
                 </span>
                 <span className={`mt-0.5 block text-sm font-bold ${urgencyStyle.text}`}>
                   {call.crm.urgency === "acil" && "🚨 "}
-                  {URGENCY_LABELS[call.crm.urgency] || call.crm.urgency}
+                  {labelOf(URGENCY_LABELS, call.crm.urgency)}
                 </span>
               </div>
 
@@ -258,7 +261,7 @@ export default async function CallDetailPage({ params }: Props) {
                   6. Doğacak Potansiyel İş
                 </span>
                 <span className="mt-0.5 block text-sm font-semibold text-gray-900">
-                  💼 {call.crm.potentialJob}
+                  💼 {call.crm.potentialJob ?? EMPTY_LABEL}
                 </span>
               </div>
 
@@ -268,7 +271,7 @@ export default async function CallDetailPage({ params }: Props) {
                   7. Önerilen Sonraki Aksiyon
                 </span>
                 <span className="mt-0.5 block text-sm font-bold text-sky-900">
-                  📋 {NEXT_ACTION_LABELS[call.crm.nextAction] || call.crm.nextAction}
+                  📋 {labelOf(NEXT_ACTION_LABELS, call.crm.nextAction)}
                 </span>
               </div>
             </div>

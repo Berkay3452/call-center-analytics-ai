@@ -175,7 +175,7 @@
     "durationSec": 290,
     "status": "completed",
     "callType": "yeni_musteri",
-    "urgency": "orta",
+    "urgency": "normal",
     "location": "Yalıkavak Marina",
     "analysisStatus": "tamam",
     "transcript": "Müşteri: Merhaba, Yalıkavak Marina'ya yeni bağlandık. Sintine su seviye sensörleri ve jeneratör devreye girmiyor. Hafta sonu seyre çıkacağız, usta yönlendirebilir misiniz?\nTemsilci: Hoş geldiniz Deniz Bey. Elektrik ve jeneratör teknisyenimizi yarın 10:00 için görevlendiriyorum.\nMüşteri: Süper, onaylıyorum teşekkür ederim.",

@@ -1,5 +1,7 @@
 import { fetchCrmSuggestions } from "@/lib/api";
 import {
+  EMPTY_LABEL,
+  labelOf,
   NEXT_ACTION_LABELS,
   REQUEST_CATEGORY_LABELS,
   SERVICE_MODE_LABELS,
@@ -54,7 +56,7 @@ export default async function CrmPage() {
                   )}
                 </div>
                 <div className="mt-1 flex items-center gap-2 text-xs text-gray-500">
-                  <span>📍 {s.location}</span>
+                  <span>📍 {s.location ?? EMPTY_LABEL}</span>
                   <span>•</span>
                   <span>Çağrı ID: {s.callId}</span>
                 </div>
@@ -62,10 +64,10 @@ export default async function CrmPage() {
 
               <div className="flex items-center gap-2">
                 <span
-                  className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${URGENCY_BADGE[s.urgency]}`}
+                  className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${s.urgency ? URGENCY_BADGE[s.urgency] : "bg-gray-100 text-gray-600 border-gray-200"}`}
                 >
                   {s.urgency === "acil" && <span className="mr-1">🚨</span>}
-                  {URGENCY_LABELS[s.urgency]}
+                  {labelOf(URGENCY_LABELS, s.urgency)}
                 </span>
                 <Link
                   href={`/admin/calls/${s.callId}`}
@@ -83,7 +85,7 @@ export default async function CrmPage() {
                   1. Müşteri Talebi (Kategori)
                 </span>
                 <p className="mt-0.5 text-xs font-semibold text-slate-800">
-                  {REQUEST_CATEGORY_LABELS[s.requestCategory]}
+                  {labelOf(REQUEST_CATEGORY_LABELS, s.requestCategory)}
                 </p>
               </div>
 
@@ -92,7 +94,7 @@ export default async function CrmPage() {
                   2. Lokasyon / Marina
                 </span>
                 <p className="mt-0.5 text-xs font-semibold text-slate-800">
-                  {s.location}
+                  {s.location ?? EMPTY_LABEL}
                 </p>
               </div>
 
@@ -101,7 +103,7 @@ export default async function CrmPage() {
                   3. Problem Tanımı
                 </span>
                 <p className="mt-0.5 text-xs font-semibold text-slate-800 line-clamp-2">
-                  {s.problem}
+                  {s.problem ?? EMPTY_LABEL}
                 </p>
               </div>
 
@@ -110,7 +112,7 @@ export default async function CrmPage() {
                   4. Hizmet Biçimi
                 </span>
                 <p className="mt-0.5 text-xs font-semibold text-slate-800">
-                  {SERVICE_MODE_LABELS[s.serviceMode]}
+                  {labelOf(SERVICE_MODE_LABELS, s.serviceMode)}
                 </p>
               </div>
 
@@ -119,7 +121,7 @@ export default async function CrmPage() {
                   6. Potansiyel İş
                 </span>
                 <p className="mt-0.5 text-xs font-semibold text-slate-800">
-                  {s.potentialJob}
+                  {s.potentialJob ?? EMPTY_LABEL}
                 </p>
               </div>
 
@@ -128,7 +130,7 @@ export default async function CrmPage() {
                   7. Sonraki Aksiyon / Servis Emri
                 </span>
                 <p className="mt-0.5 text-xs font-bold text-sky-900">
-                  {NEXT_ACTION_LABELS[s.nextAction]}
+                  {labelOf(NEXT_ACTION_LABELS, s.nextAction)}
                 </p>
               </div>
             </div>

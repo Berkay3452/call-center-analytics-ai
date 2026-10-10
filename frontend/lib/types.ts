@@ -59,6 +59,17 @@ export type LossReason =
   | "guven"
   | "diger";
 
+/** Boş (null) değer için gösterilecek metin. */
+export const EMPTY_LABEL = "—";
+
+/** Etiket sözlüğünden Türkçe karşılığı döner; değer boşsa "—" gösterir. */
+export function labelOf<T extends string>(
+  labels: Record<T, string>,
+  value: T | null | undefined,
+): string {
+  return value ? (labels[value] ?? value) : EMPTY_LABEL;
+}
+
 export type AnalysisStatus = "tamam" | "kismi" | "basarisiz";
 
 // ---------------------------------------------------------------------------
@@ -92,7 +103,7 @@ export const URGENCY_LABELS: Record<Urgency, string> = {
   dusuk: "Düşük",
   normal: "Normal",
   yuksek: "Yüksek",
-  acil: "Kritik (Acil)",
+  acil: "Acil",
 };
 
 export const NEXT_ACTION_LABELS: Record<NextAction, string> = {
@@ -117,20 +128,22 @@ export const LOSS_REASON_LABELS: Record<LossReason, string> = {
 // CRM Kaydı — 7 Temel Alan (Hocanın Şartı / CrmExtraction)
 // ---------------------------------------------------------------------------
 export interface CrmRecord {
+  // Backend (CrmExtraction) konuşmada geçmeyen alanı UYDURMAZ ve null döndürür;
+  // bu yüzden 7 alanın hepsi null olabilir ve arayüz boş durumu göstermelidir.
   /** 1. Müşteri talebi / talep kategorisi */
-  requestCategory: RequestCategory;
+  requestCategory: RequestCategory | null;
   /** 2. Marina veya lokasyon */
-  location: string;
+  location: string | null;
   /** 3. Problem tanımı */
-  problem: string;
+  problem: string | null;
   /** 4. Hizmetin veriliş biçimi (Yerinde servis vb.) */
-  serviceMode: ServiceMode;
+  serviceMode: ServiceMode | null;
   /** 5. Aciliyet seviyesi */
-  urgency: Urgency;
+  urgency: Urgency | null;
   /** 6. Doğacak potansiyel iş */
-  potentialJob: string;
+  potentialJob: string | null;
   /** 7. Önerilen sonraki aksiyon / servis emri */
-  nextAction: NextAction;
+  nextAction: NextAction | null;
   /** Kanıt alıntıları */
   evidence?: Partial<Record<string, string>>;
 }
@@ -168,9 +181,9 @@ export interface Call {
   startedAt: string;
   durationSec: number;
   status: CallStatus;
-  callType: CallType;
-  urgency: Urgency;
-  location: string;
+  callType: CallType | null;
+  urgency: Urgency | null;
+  location: string | null;
   analysisStatus: AnalysisStatus;
   transcript: string;
   summary: string;

@@ -49,7 +49,7 @@ Miço Usta'nın mevcut panelleri (Gösterge Paneli, Servis Emirleri, Tekne Sahib
   - **Sol Panel (Ses & Transkript):**
     - Ses oynatıcı ve gerçekçi **Audio Waveform (Dalga Formu)** ile oynatma süresi göstergesi.
     - Ayrıştırılmış konuşma balonları: Müşteri (Tekne Sahibi) ve Miço Usta Temsilcisi diyalogları.
-    - **Summarizer Agent Özeti:** Güven skoru, 3 cümlelik Türkçe özet ve 3 anahtar madde.
+    - **Özetleme Agent'ı özeti:** En fazla 3 cümlelik Türkçe özet ve en fazla 3 anahtar madde (`CallSummary`).
   - **Sağ Panel (7 Alanlı CRM Servis Emri):**
     - Hocanın şart koştuğu ve `backend/app/schemas/analysis.py` (`CrmExtraction`) ile tanımlanan **7 Temel CRM Alanı**:
       1. `request_category` (Müşteri Talebi): *Motor Arızası*
