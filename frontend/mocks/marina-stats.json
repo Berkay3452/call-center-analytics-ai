@@ -1,0 +1,7 @@
+[
+  { "name": "Kalamış Marina (İstanbul)",  "count": 468, "pct": 37, "tag": "En Yüksek" },
+  { "name": "Göcek D-Marin (Muğla)",      "count": 384, "pct": 31, "tag": "Sezon Yoğun" },
+  { "name": "Bodrum Milta Marina",         "count": 246, "pct": 20, "tag": "Normal" },
+  { "name": "Tuzla Marina / Tersaneler",   "count": 98,  "pct": 8,  "tag": "Bakım" },
+  { "name": "Yalıkavak Marina",            "count": 52,  "pct": 4,  "tag": "VIP" }
+]

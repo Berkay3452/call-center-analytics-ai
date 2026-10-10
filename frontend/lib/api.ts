@@ -3,7 +3,15 @@
  * backend/app/schemas/analysis.py şemalarıyla birebir uyumludur.
  */
 
-import type { Call, CrmSuggestion, KpiCard } from "@/lib/types";
+import type {
+  Call,
+  CrmSuggestion,
+  DailyCallPoint,
+  FailureCategoryItem,
+  KpiCard,
+  LossReasonItem,
+  MarinaStatItem,
+} from "@/lib/types";
 
 // ---------------------------------------------------------------------------
 // Çağrı listesi
@@ -35,4 +43,36 @@ export async function fetchKpis(): Promise<KpiCard[]> {
 export async function fetchCrmSuggestions(): Promise<CrmSuggestion[]> {
   const data = await import("@/mocks/crm-suggestions.json");
   return data.default as unknown as CrmSuggestion[];
+}
+
+// ---------------------------------------------------------------------------
+// Günlük çağrı trendi (son 7 gün)
+// ---------------------------------------------------------------------------
+export async function fetchDailyCalls(): Promise<DailyCallPoint[]> {
+  const data = await import("@/mocks/daily-calls.json");
+  return data.default as unknown as DailyCallPoint[];
+}
+
+// ---------------------------------------------------------------------------
+// Arıza kategorileri (RequestCategory bazlı)
+// ---------------------------------------------------------------------------
+export async function fetchFailureCategories(): Promise<FailureCategoryItem[]> {
+  const data = await import("@/mocks/failure-categories.json");
+  return data.default as unknown as FailureCategoryItem[];
+}
+
+// ---------------------------------------------------------------------------
+// Marina istatistikleri
+// ---------------------------------------------------------------------------
+export async function fetchMarinaStats(): Promise<MarinaStatItem[]> {
+  const data = await import("@/mocks/marina-stats.json");
+  return data.default as unknown as MarinaStatItem[];
+}
+
+// ---------------------------------------------------------------------------
+// Kayıp nedenleri (LossReason bazlı)
+// ---------------------------------------------------------------------------
+export async function fetchLossReasons(): Promise<LossReasonItem[]> {
+  const data = await import("@/mocks/loss-reasons.json");
+  return data.default as unknown as LossReasonItem[];
 }

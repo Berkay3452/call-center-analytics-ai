@@ -60,6 +60,16 @@ export default async function CallDetailPage({ params }: Props) {
               ⚠️ Kısmi Analiz — Eksik Bilgi Mevcut
             </span>
           )}
+          {call.analysisStatus === "basarisiz" && (
+            <span className="inline-flex items-center rounded-md bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-800 border border-red-200">
+              ✕ Analiz Başarısız — Transkript Eksik
+            </span>
+          )}
+          {call.analysisStatus === "tamam" && (
+            <span className="inline-flex items-center rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800 border border-emerald-200">
+              ✓ Analiz Tamamlandı
+            </span>
+          )}
           {call.urgency === "acil" && (
             <span className="inline-flex items-center rounded-md bg-red-100 px-2.5 py-1 text-xs font-bold text-red-700 border border-red-300 animate-pulse">
               🚨 ACİL SERVİS
@@ -80,7 +90,7 @@ export default async function CallDetailPage({ params }: Props) {
             </h1>
             <p className="mt-1 text-xs text-gray-500">
               {call.callerPhone} • {call.boatModel || ""} • {call.location} •{" "}
-              {new Date(call.startedAt).toLocaleString("tr-TR")}
+              {new Date(call.startedAt).toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" })}
             </p>
           </div>
           <div className="flex items-center gap-2">

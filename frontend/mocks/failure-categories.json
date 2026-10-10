@@ -1,0 +1,7 @@
+[
+  { "category": "motor_arizasi", "label": "Motor arızası", "count": 213, "pct": 32, "color": "bg-sky-600" },
+  { "category": "elektrik_arizasi", "label": "Elektrik arızası", "count": 168, "pct": 25, "color": "bg-sky-500" },
+  { "category": "yakit_sistemi", "label": "Yakıt sistemi", "count": 128, "pct": 19, "color": "bg-sky-400" },
+  { "category": "periyodik_bakim", "label": "Periyodik bakım", "count": 91, "pct": 14, "color": "bg-slate-400" },
+  { "category": "govde_ve_kil", "label": "Gövde ve kıl bakımı", "count": 67, "pct": 10, "color": "bg-slate-300" }
+]
