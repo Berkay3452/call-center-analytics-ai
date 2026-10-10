@@ -1,0 +1,255 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 900" width="1280" height="900" font-family="Inter, system-ui, sans-serif">
+  <!-- Arka Plan -->
+  <rect width="1280" height="900" fill="#F8FAFC"/>
+
+  <!-- SIDEBAR (Daraltılmış / Kompakt Görünüm) -->
+  <rect x="0" y="0" width="64" height="900" fill="#0F172A"/>
+  <text x="32" y="38" font-size="20" text-anchor="middle">⚓</text>
+  <line x1="0" y1="56" x2="64" y2="56" stroke="#1E293B" stroke-width="1"/>
+  <text x="32" y="90"  font-size="16" text-anchor="middle">📊</text>
+  <text x="32" y="136" font-size="16" text-anchor="middle">🔧</text>
+  <!-- Aktif: Çağrılar & Detay -->
+  <rect x="0" y="152" width="64" height="40" fill="#0284C7" opacity="0.3"/>
+  <rect x="0" y="152" width="3" height="40" fill="#0284C7"/>
+  <text x="32" y="178" font-size="16" text-anchor="middle">📞</text>
+  <text x="32" y="224" font-size="16" text-anchor="middle">💡</text>
+  <text x="32" y="270" font-size="16" text-anchor="middle">🤖</text>
+  <text x="32" y="316" font-size="16" text-anchor="middle">📈</text>
+  <text x="32" y="870" font-size="14" text-anchor="middle">⚙️</text>
+
+  <!-- ÜST BAR (HEADER) -->
+  <rect x="64" y="0" width="1216" height="56" fill="#FFFFFF"/>
+  <line x1="64" y1="56" x2="1280" y2="56" stroke="#E2E8F0" stroke-width="1"/>
+
+  <!-- Ekmek Kırıntısı (Breadcrumb) -->
+  <text x="84" y="22" font-size="10" fill="#64748B">Admin</text>
+  <text x="120" y="22" font-size="10" fill="#94A3B8"> / </text>
+  <text x="136" y="22" font-size="10" fill="#64748B">Çağrılar</text>
+  <text x="185" y="22" font-size="10" fill="#94A3B8"> / </text>
+  <text x="200" y="22" font-size="10" fill="#0284C7" font-weight="600">call-001 — Detay &amp; CRM Kaydı</text>
+  <text x="84" y="42" font-size="16" fill="#0F172A" font-weight="700">Çağrı Detayı &amp; CRM Servis Emri Önerisi</text>
+
+  <!-- Kısmi Analiz Uyarı Rozeti -->
+  <rect x="740" y="14" width="200" height="26" rx="6" fill="#FFF7ED" stroke="#FED7AA" stroke-width="1"/>
+  <text x="840" y="31" font-size="10" fill="#C2410C" text-anchor="middle" font-weight="600">⚠️ Kısmi Analiz: Belge No Eksik</text>
+
+  <!-- Acil Servis Rozeti -->
+  <rect x="950" y="14" width="110" height="26" rx="6" fill="#FEF2F2" stroke="#FECACA" stroke-width="1.5"/>
+  <text x="1005" y="31" font-size="11" fill="#DC2626" text-anchor="middle" font-weight="700">🚨 ACİL SERVİS</text>
+
+  <!-- Durum Rozeti -->
+  <rect x="1070" y="14" width="100" height="26" rx="6" fill="#DCFCE7" stroke="#BBF7D0" stroke-width="1"/>
+  <text x="1120" y="31" font-size="10" fill="#16A34A" text-anchor="middle" font-weight="700">✓ Analiz Tamam</text>
+
+  <!-- Admin Profil -->
+  <circle cx="1250" cy="28" r="14" fill="#0F172A"/>
+  <text x="1250" y="32" font-size="11" fill="#7DD3FC" text-anchor="middle" font-weight="700">A</text>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SOL PANEL (Ses Oynatıcı, Dalga Formu & Transkript)
+  ════════════════════════════════════════════════════════════════ -->
+  <rect x="76" y="68" width="670" height="820" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1"/>
+
+  <!-- Başlık & Müşteri / Tekne Bilgisi -->
+  <rect x="76" y="68" width="670" height="60" rx="12" fill="#F8FAFC"/>
+  <rect x="76" y="112" width="670" height="16" fill="#F8FAFC"/>
+  <line x1="76" y1="128" x2="746" y2="128" stroke="#E2E8F0" stroke-width="1"/>
+
+  <circle cx="106" cy="98" r="16" fill="#E0F2FE"/>
+  <text x="106" y="103" font-size="12" fill="#0284C7" text-anchor="middle" font-weight="700">AY</text>
+  <text x="132" y="93" font-size="14" fill="#0F172A" font-weight="700">Ahmet Yılmaz — Poyraz (Motoryat 42)</text>
+  <text x="132" y="110" font-size="11" fill="#64748B">+90 532 412 88 90  •  Kalamış Marina İskele C-12  •  09 Eki 2024, 09:05</text>
+
+  <!-- SES OYNATICI VE DALGA FORMU (AUDIO WAVEFORM) -->
+  <text x="96" y="152" font-size="12" fill="#0F172A" font-weight="700">Ses Oynatıcı &amp; Dalga Formu (05:12 dk)</text>
+  <rect x="96" y="162" width="630" height="74" rx="10" fill="#0F172A"/>
+
+  <!-- Dalga Formu Çizgileri -->
+  <g opacity="0.85">
+    <line x1="140" y1="199" x2="140" y2="199" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+    <line x1="148" y1="190" x2="148" y2="208" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+    <line x1="156" y1="184" x2="156" y2="214" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+    <line x1="164" y1="194" x2="164" y2="204" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+    <line x1="172" y1="178" x2="172" y2="220" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+    <line x1="180" y1="186" x2="180" y2="212" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+    <line x1="188" y1="174" x2="188" y2="224" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+    <line x1="196" y1="182" x2="196" y2="216" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+    <line x1="204" y1="192" x2="204" y2="206" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+    <line x1="212" y1="180" x2="212" y2="218" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+    <line x1="220" y1="170" x2="220" y2="228" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+    <line x1="228" y1="184" x2="228" y2="214" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+    <line x1="236" y1="190" x2="236" y2="208" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+    <line x1="244" y1="176" x2="244" y2="222" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+    <line x1="252" y1="182" x2="252" y2="216" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+    <line x1="260" y1="168" x2="260" y2="230" stroke="#38BDF8" stroke-width="3" stroke-linecap="round"/>
+    <!-- Playhead Konumu -->
+    <line x1="270" y1="170" x2="270" y2="228" stroke="#F43F5E" stroke-width="2"/>
+    <line x1="278" y1="182" x2="278" y2="216" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="286" y1="190" x2="286" y2="208" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="294" y1="174" x2="294" y2="224" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="302" y1="184" x2="302" y2="214" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="310" y1="178" x2="310" y2="220" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="318" y1="186" x2="318" y2="212" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="326" y1="172" x2="326" y2="226" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="334" y1="180" x2="334" y2="218" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="342" y1="192" x2="342" y2="206" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="350" y1="184" x2="350" y2="214" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="358" y1="170" x2="358" y2="228" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="366" y1="178" x2="366" y2="220" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="374" y1="186" x2="374" y2="212" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="382" y1="174" x2="382" y2="224" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="390" y1="182" x2="390" y2="216" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="398" y1="190" x2="398" y2="208" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="406" y1="176" x2="406" y2="222" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="414" y1="184" x2="414" y2="214" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="422" y1="172" x2="422" y2="226" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="430" y1="180" x2="430" y2="218" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="438" y1="188" x2="438" y2="210" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="446" y1="174" x2="446" y2="224" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="454" y1="182" x2="454" y2="216" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="462" y1="190" x2="462" y2="208" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="470" y1="176" x2="470" y2="222" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="478" y1="184" x2="478" y2="214" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="486" y1="170" x2="486" y2="228" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="494" y1="178" x2="494" y2="220" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="502" y1="186" x2="502" y2="212" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="510" y1="174" x2="510" y2="224" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="518" y1="182" x2="518" y2="216" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="526" y1="190" x2="526" y2="208" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="534" y1="176" x2="534" y2="222" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="542" y1="184" x2="542" y2="214" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="550" y1="172" x2="550" y2="226" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="558" y1="180" x2="558" y2="218" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="566" y1="188" x2="566" y2="210" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="574" y1="174" x2="574" y2="224" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="582" y1="182" x2="582" y2="216" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="590" y1="190" x2="590" y2="208" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="598" y1="176" x2="598" y2="222" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="606" y1="184" x2="606" y2="214" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+    <line x1="614" y1="170" x2="614" y2="228" stroke="#475569" stroke-width="3" stroke-linecap="round"/>
+  </g>
+  <text x="114" y="204" font-size="16" fill="#38BDF8">▶</text>
+  <text x="636" y="204" font-size="11" fill="#94A3B8" font-family="monospace">01:14 / 05:12</text>
+
+  <!-- TRANSKRİPT KONUŞMA BALONLARI -->
+  <text x="96" y="260" font-size="12" fill="#0F172A" font-weight="700">Diyalog Transkripti (Müşteri &amp; Temsilci Ayrımı)</text>
+
+  <!-- Balon 1: Müşteri -->
+  <rect x="96" y="272" width="460" height="64" rx="10" fill="#F1F5F9" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="112" y="292" font-size="10" fill="#0284C7" font-weight="700">⚓ MÜŞTERİ (Ahmet Yılmaz)  •  00:04</text>
+  <text x="112" y="310" font-size="12" fill="#0F172A">"Merhaba, Kalamış Marina'dayım. Motoryatımın ana makinesi</text>
+  <text x="112" y="326" font-size="12" fill="#0F172A">çalışıyor ama gaz yemiyor, ayrıca sintine su uyarısı verdi."</text>
+
+  <!-- Balon 2: Temsilci -->
+  <rect x="266" y="344" width="460" height="64" rx="10" fill="#E0F2FE" stroke="#BAE6FD" stroke-width="1"/>
+  <text x="282" y="364" font-size="10" fill="#0369A1" font-weight="700">🛠 MİÇO USTA TEMSİLCİSİ  •  00:18</text>
+  <text x="282" y="382" font-size="12" fill="#0F172A">"Geçmiş olsun Ahmet Bey. Hemen nöbetçi teknik ekibimizi</text>
+  <text x="282" y="398" font-size="12" fill="#0F172A">yönlendiriyorum. Tekneniz Poyraz, iskele C-12 miydi?"</text>
+
+  <!-- Balon 3: Müşteri -->
+  <rect x="96" y="416" width="460" height="64" rx="10" fill="#F1F5F9" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="112" y="436" font-size="10" fill="#0284C7" font-weight="700">⚓ MÜŞTERİ  •  00:32</text>
+  <text x="112" y="454" font-size="12" fill="#0F172A">"Evet doğru, C-12'deyim. Lütfen acele edin, hafta sonu seyre</text>
+  <text x="112" y="470" font-size="12" fill="#0F172A">çıkmamız gerekiyordu, sintineye acil baksınlar."</text>
+
+  <!-- Balon 4: Temsilci -->
+  <rect x="266" y="488" width="460" height="64" rx="10" fill="#E0F2FE" stroke="#BAE6FD" stroke-width="1"/>
+  <text x="282" y="508" font-size="10" fill="#0369A1" font-weight="700">🛠 MİÇO USTA TEMSİLCİSİ  •  00:46</text>
+  <text x="282" y="526" font-size="12" fill="#0F172A">"Kayıt açıldı. Baş Usta Mehmet Şimşek 30 dakika içinde teknenizde</text>
+  <text x="282" y="542" font-size="12" fill="#0F172A">olup motor arıza tespiti ve sintine kontrolü yapacaktır."</text>
+
+  <!-- AI Özet Kutusu -->
+  <rect x="96" y="570" width="630" height="96" rx="10" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="112" y="592" font-size="11" fill="#0F172A" font-weight="700">🤖 AI Görüşme Özeti (Summarizer Agent)</text>
+  <rect x="630" y="580" width="80" height="18" rx="9" fill="#DCFCE7"/>
+  <text x="670" y="593" font-size="9" fill="#16A34A" text-anchor="middle" font-weight="700">Güven: %95</text>
+  <text x="112" y="612" font-size="11" fill="#334155">Müşteri Kalamış Marina'daki Poyraz motoryatında ana makine gaz yememe sorunu ve sintine su</text>
+  <text x="112" y="628" font-size="11" fill="#334155">seviyesi alarmı bildirdi. Hafta sonu seyri nedeniyle acil yerinde müdahale talep edildi.</text>
+  <text x="112" y="648" font-size="10" fill="#0284C7" font-weight="600">Önemli Noktalar: 1) Motor devir sorunu  2) Sintine alarmı aktif  3) Kalamış C-12 iskelesi</text>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SAĞ PANEL: 7 ALANLI CRM KAYDI & SERVİS EMRİ ÖNERİSİ
+  ════════════════════════════════════════════════════════════════ -->
+  <rect x="760" y="68" width="504" height="820" rx="12" fill="#FFFFFF" stroke="#0284C7" stroke-width="1.5"/>
+
+  <!-- Panel Başlığı (Miço Usta Lacivert) -->
+  <rect x="760" y="68" width="504" height="52" rx="12" fill="#0F172A"/>
+  <rect x="760" y="100" width="504" height="20" fill="#0F172A"/>
+  <text x="780" y="94" font-size="14" fill="#FFFFFF" font-weight="700">CRM Servis Emri Önerisi (7 Temel Alan)</text>
+  <text x="780" y="110" font-size="10" fill="#7DD3FC">backend/app/schemas/analysis.py • CrmExtraction Şeması</text>
+
+  <!-- 1. Müşteri Talebi (request_category) -->
+  <rect x="780" y="132" width="464" height="52" rx="8" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="796" y="148" font-size="10" fill="#64748B" font-weight="700">1. MÜŞTERİ TALEBİ (Kategori / request_category)</text>
+  <text x="796" y="168" font-size="13" fill="#0F172A" font-weight="700">🔧 Motor Arızası</text>
+  <rect x="1140" y="146" width="90" height="22" rx="4" fill="#E0F2FE"/>
+  <text x="1185" y="161" font-size="10" fill="#0284C7" text-anchor="middle" font-weight="600">motor_arizasi</text>
+
+  <!-- 2. Lokasyon (location) -->
+  <rect x="780" y="192" width="464" height="52" rx="8" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="796" y="208" font-size="10" fill="#64748B" font-weight="700">2. LOKASYON / MARİNA (location)</text>
+  <text x="796" y="228" font-size="13" fill="#0F172A" font-weight="700">⚓ Kalamış Marina (İskele C-12)</text>
+  <text x="1150" y="228" font-size="10" fill="#64748B">İstanbul</text>
+
+  <!-- 3. Problem Tanımı (problem) -->
+  <rect x="780" y="252" width="464" height="64" rx="8" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="796" y="268" font-size="10" fill="#64748B" font-weight="700">3. PROBLEM TANIMI (problem)</text>
+  <text x="796" y="288" font-size="12" fill="#0F172A" font-weight="600">Ana makine devir almıyor ve sintine su seviyesi alarmı var</text>
+  <text x="796" y="304" font-size="10" fill="#64748B">Kanıt: &#8220;gaz kolunu ittiğimde devir yükselmiyor, sintine su uyarısı verdi&#8221;</text>
+
+  <!-- 4. Talep / Hizmet Biçimi (service_mode) -->
+  <rect x="780" y="324" width="464" height="52" rx="8" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="796" y="340" font-size="10" fill="#64748B" font-weight="700">4. TALEP / HİZMET BİÇİMİ (service_mode)</text>
+  <text x="796" y="360" font-size="13" fill="#0F172A" font-weight="700">🚤 Yerinde Servis (Marinada Müdahale)</text>
+  <rect x="1140" y="338" width="90" height="22" rx="4" fill="#E0F2FE"/>
+  <text x="1185" y="353" font-size="10" fill="#0284C7" text-anchor="middle" font-weight="600">yerinde_servis</text>
+
+  <!-- 5. Aciliyet (urgency) -->
+  <rect x="780" y="384" width="464" height="56" rx="8" fill="#FEF2F2" stroke="#FECACA" stroke-width="1.5"/>
+  <text x="796" y="402" font-size="10" fill="#991B1B" font-weight="700">5. ACİLİYET SEVİYESİ (urgency)</text>
+  <text x="796" y="424" font-size="14" fill="#DC2626" font-weight="800">🚨 KRİTİK / ACİL (Güvenlik Riski &amp; Seyir Engeli)</text>
+  <rect x="1140" y="400" width="90" height="22" rx="4" fill="#DC2626"/>
+  <text x="1185" y="415" font-size="10" fill="#FFFFFF" text-anchor="middle" font-weight="700">acil</text>
+
+  <!-- 6. Potansiyel İş (potential_job) -->
+  <rect x="780" y="448" width="464" height="60" rx="8" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="796" y="464" font-size="10" fill="#64748B" font-weight="700">6. DOĞACAK POTANSİYEL İŞ (potential_job)</text>
+  <text x="796" y="484" font-size="13" fill="#0F172A" font-weight="700">💼 Motor Arıza Tespiti + Sintine Pompası Revizyonu</text>
+  <text x="796" y="498" font-size="10" fill="#64748B">Tahmini iş süresi: 3-4 saat • Usta İhtiyacı: 1 Motorcu + 1 Elektrikçi</text>
+
+  <!-- 7. Sonraki Aksiyon / Servis Emri (next_action) -->
+  <rect x="780" y="516" width="464" height="60" rx="8" fill="#F0F9FF" stroke="#BAE6FD" stroke-width="1.5"/>
+  <text x="796" y="534" font-size="10" fill="#0369A1" font-weight="700">7. ÖNERİLEN SONRAKİ AKSİYON (next_action)</text>
+  <text x="796" y="554" font-size="14" fill="#0284C7" font-weight="800">📋 Servis Randevusu Oluştur &amp; Usta Ata</text>
+  <rect x="1100" y="532" width="130" height="22" rx="4" fill="#0284C7"/>
+  <text x="1165" y="547" font-size="9" fill="#FFFFFF" text-anchor="middle" font-weight="700">servis_randevusu</text>
+
+  <!-- Görevlendirilen Usta Kartı -->
+  <rect x="780" y="586" width="464" height="48" rx="8" fill="#F0FDF4" stroke="#BBF7D0" stroke-width="1"/>
+  <circle cx="806" cy="610" r="14" fill="#16A34A"/>
+  <text x="806" y="615" font-size="11" fill="#FFFFFF" text-anchor="middle" font-weight="700">MŞ</text>
+  <text x="830" y="605" font-size="12" fill="#0F172A" font-weight="700">Mehmet Şimşek — Baş Usta (Kalamış Nöbetçi)</text>
+  <text x="830" y="621" font-size="10" fill="#16A34A">Müsait • Tahmini Varış: 25-30 dk</text>
+  <text x="1200" y="614" font-size="10" fill="#0284C7" font-weight="600">Değiştir ▾</text>
+
+  <!-- AKSİYON BUTONLARI -->
+  <g transform="translate(0, 646)">
+    <!-- Onayla ve Servis Emri Oluştur (Miço Usta Mavisi) -->
+    <rect x="780" y="10" width="464" height="50" rx="10" fill="#0284C7"/>
+    <text x="1012" y="41" font-size="14" fill="#FFFFFF" text-anchor="middle" font-weight="800">
+      ✓ ONAYLA VE SERVİS EMRİ OLUŞTUR
+    </text>
+
+    <!-- Düzenle & Reddet Butonları -->
+    <rect x="780" y="68" width="224" height="38" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+    <text x="892" y="92" font-size="12" fill="#475569" text-anchor="middle" font-weight="600">✏ Düzenle</text>
+
+    <rect x="1020" y="68" width="224" height="38" rx="8" fill="#FFFFFF" stroke="#FECACA" stroke-width="1.5"/>
+    <text x="1132" y="92" font-size="12" fill="#DC2626" text-anchor="middle" font-weight="600">✕ Reddet</text>
+  </g>
+
+  <!-- Alt Bilgi Notu -->
+  <text x="1012" y="780" font-size="10" fill="#94A3B8" text-anchor="middle">
+    Onay sonrasında Miço Usta Servis Emirleri paneline #SRV-2024-8841 numarasıyla aktarılır.
+  </text>
+</svg>

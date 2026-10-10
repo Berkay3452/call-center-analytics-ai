@@ -1,26 +1,68 @@
 [
   {
+    "callId": "call-001",
+    "caller": "Ahmet Yılmaz",
+    "boatName": "Poyraz (Motoryat 42)",
+    "requestCategory": "motor_arizasi",
+    "location": "Kalamış Marina (İskele C-12)",
+    "problem": "Ana makine devir almıyor, sintine su seviyesi alarmı aktif",
+    "serviceMode": "yerinde_servis",
+    "urgency": "acil",
+    "potentialJob": "Motor arıza tespiti ve sintine pompası revizyonu",
+    "nextAction": "servis_randevusu_olustur",
+    "evidence": {
+      "problem": "gaz kolunu ittiğimde devir yükselmiyor, ayrıca sintinede su uyarısı verdi",
+      "location": "Kalamış Marina'dayım, C-12 iskelesi",
+      "nextAction": "Acil servis gönderebilir misiniz?"
+    }
+  },
+  {
     "callId": "call-002",
     "caller": "Fatma Kaya",
-    "suggestion": "Tekrar arayarak özür dileyin ve ücretsiz kontrol hizmeti teklif edin.",
-    "priority": "high"
+    "boatName": "Albatros (Beneteau 45)",
+    "requestCategory": "periyodik_bakim",
+    "location": "Göcek D-Marin",
+    "problem": "Sezon sonu kışlama ve 250 saatlik periyodik motor yağ/filtre değişimi",
+    "serviceMode": "yerinde_servis",
+    "urgency": "normal",
+    "potentialJob": "250 saatlik periyodik motor bakımı + kışlama paketi",
+    "nextAction": "teklif_hazirla",
+    "evidence": {
+      "problem": "Sezon sonu kışlama ve periyodik motor bakımı",
+      "location": "Göcek D-Marin'de teknem var",
+      "nextAction": "fiyat ve randevu almak istiyorum"
+    }
   },
   {
     "callId": "call-003",
     "caller": "Mehmet Deniz",
-    "suggestion": "Cevapsız çağrıyı geri dönün; olası müşteri kaybı riski var.",
-    "priority": "high"
-  },
-  {
-    "callId": "call-004",
-    "caller": "Zeynep Arslan",
-    "suggestion": "Test sürüşü daveti gönderin; satışa dönüşme potansiyeli yüksek.",
-    "priority": "medium"
+    "boatName": "Poseidon (Bavaria 46)",
+    "requestCategory": "diger",
+    "location": "Bodrum Milta Marina",
+    "problem": "Cevapsız çağrı - profilinde kayıtlı açık motor arıza geçmişi mevcut",
+    "serviceMode": "yerinde_servis",
+    "urgency": "yuksek",
+    "potentialJob": "Müşteri talep tespiti ve acil kontrol",
+    "nextAction": "geri_ara",
+    "evidence": {
+      "location": "Bodrum Milta Marina"
+    }
   },
   {
     "callId": "call-005",
-    "caller": "Ali Öztürk",
-    "suggestion": "Fatura şablonunu sadeleştirmek için müşteri geri bildirimini kaydedin.",
-    "priority": "low"
+    "caller": "Deniz Saygın",
+    "boatName": "Martı (Lagoon 42)",
+    "requestCategory": "elektrik_arizasi",
+    "location": "Yalıkavak Marina",
+    "problem": "Jeneratör marş basmıyor, sintine seviye sensörleri arızalı",
+    "serviceMode": "yerinde_servis",
+    "urgency": "normal",
+    "potentialJob": "Jeneratör arıza tespiti ve sintine sensör değişimi",
+    "nextAction": "usta_ata",
+    "evidence": {
+      "problem": "Sintine su seviye sensörleri ve jeneratör devreye girmiyor",
+      "location": "Yalıkavak Marina'ya yeni bağlandık",
+      "nextAction": "usta yönlendirebilir misiniz?"
+    }
   }
 ]

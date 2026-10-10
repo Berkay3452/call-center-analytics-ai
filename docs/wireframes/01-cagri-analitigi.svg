@@ -1,0 +1,407 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 900" width="1280" height="900" font-family="Inter, system-ui, sans-serif">
+  <!-- Background -->
+  <rect width="1280" height="900" fill="#F8FAFC"/>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SIDEBAR
+  ════════════════════════════════════════════════════════════════ -->
+  <rect x="0" y="0" width="220" height="900" fill="#0F172A"/>
+
+  <!-- Logo -->
+  <text x="24" y="36" font-size="11" fill="#64748B" font-weight="600" letter-spacing="1.5">MİÇO USTA</text>
+  <text x="24" y="56" font-size="16" fill="#FFFFFF" font-weight="700">⚓ Panel</text>
+  <line x1="0" y1="70" x2="220" y2="70" stroke="#1E293B" stroke-width="1"/>
+
+  <!-- Nav items -->
+  <!-- Active: Çağrı Analitiği -->
+  <rect x="8" y="84" width="204" height="40" rx="8" fill="#0284C7" opacity="0.2"/>
+  <rect x="8" y="84" width="3" height="40" rx="2" fill="#0284C7"/>
+  <text x="36" y="99" font-size="12" fill="#7DD3FC">📊</text>
+  <text x="56" y="99" font-size="12" fill="#E0F2FE" font-weight="600">Çağrı Analitiği</text>
+  <rect x="180" y="91" width="24" height="14" rx="7" fill="#0284C7"/>
+  <text x="186" y="102" font-size="9" fill="#FFF" font-weight="700">47</text>
+  <text x="36" y="116" font-size="10" fill="#94A3B8">Bugün 47 yeni çağrı</text>
+
+  <!-- Nav: Servis Emirleri -->
+  <text x="36" y="148" font-size="12" fill="#64748B">🔧</text>
+  <text x="56" y="148" font-size="12" fill="#94A3B8">Servis Emirleri</text>
+  <text x="36" y="168" font-size="10" fill="#475569">12 bekliyor</text>
+
+  <!-- Nav: Tekne Sahipleri -->
+  <text x="36" y="200" font-size="12" fill="#64748B">⚓</text>
+  <text x="56" y="200" font-size="12" fill="#94A3B8">Tekne Sahipleri</text>
+  <text x="36" y="220" font-size="10" fill="#475569">248 kayıt</text>
+
+  <!-- Nav: CRM Önerileri -->
+  <text x="36" y="252" font-size="12" fill="#64748B">💡</text>
+  <text x="56" y="252" font-size="12" fill="#94A3B8">CRM Önerileri</text>
+  <text x="36" y="272" font-size="10" fill="#475569">8 yeni öneri</text>
+
+  <!-- Nav: AI Asistan -->
+  <text x="36" y="304" font-size="12" fill="#64748B">🤖</text>
+  <text x="56" y="304" font-size="12" fill="#94A3B8">AI Asistan</text>
+
+  <!-- Nav: Raporlar -->
+  <text x="36" y="356" font-size="12" fill="#64748B">📈</text>
+  <text x="56" y="356" font-size="12" fill="#94A3B8">Raporlar</text>
+
+  <!-- Nav: Ayarlar -->
+  <text x="36" y="408" font-size="12" fill="#64748B">⚙️</text>
+  <text x="56" y="408" font-size="12" fill="#94A3B8">Ayarlar</text>
+
+  <!-- User info at bottom -->
+  <line x1="0" y1="840" x2="220" y2="840" stroke="#1E293B" stroke-width="1"/>
+  <circle cx="28" cy="862" r="14" fill="#1E3A5F"/>
+  <text x="28" y="866" font-size="11" fill="#7DD3FC" text-anchor="middle">A</text>
+  <text x="50" y="858" font-size="11" fill="#CBD5E1" font-weight="600">Admin Kullanıcı</text>
+  <text x="50" y="873" font-size="10" fill="#64748B">Kalamış Marina</text>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       HEADER
+  ════════════════════════════════════════════════════════════════ -->
+  <rect x="220" y="0" width="1060" height="64" fill="#FFFFFF"/>
+  <line x1="220" y1="64" x2="1280" y2="64" stroke="#E2E8F0" stroke-width="1"/>
+
+  <!-- Breadcrumb -->
+  <text x="240" y="28" font-size="11" fill="#64748B">Miço Usta Admin</text>
+  <text x="340" y="28" font-size="11" fill="#94A3B8"> / </text>
+  <text x="356" y="28" font-size="11" fill="#0284C7" font-weight="600">Çağrı Analitiği</text>
+  <text x="240" y="48" font-size="18" fill="#0F172A" font-weight="700">Çağrı Analitiği Dashboard</text>
+
+  <!-- Marina selector -->
+  <rect x="780" y="16" width="160" height="32" rx="8" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="796" y="36" font-size="12" fill="#0F172A" font-weight="600">⚓ Kalamış Marina</text>
+  <text x="926" y="36" font-size="10" fill="#64748B">▼</text>
+
+  <!-- Date filter -->
+  <rect x="952" y="16" width="140" height="32" rx="8" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="968" y="36" font-size="12" fill="#0F172A">📅 Son 30 Gün</text>
+  <text x="1076" y="36" font-size="10" fill="#64748B">▼</text>
+
+  <!-- Role badge -->
+  <rect x="1104" y="16" width="80" height="32" rx="8" fill="#0284C7"/>
+  <text x="1114" y="36" font-size="12" fill="#FFF" font-weight="700">🛡 Admin</text>
+
+  <!-- Alert badge -->
+  <circle cx="1202" cy="32" r="14" fill="#F1F5F9" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="1202" y="36" font-size="13" text-anchor="middle">🔔</text>
+  <circle cx="1212" cy="22" r="7" fill="#EF4444"/>
+  <text x="1212" y="26" font-size="8" fill="#FFF" text-anchor="middle" font-weight="700">3</text>
+
+  <circle cx="1248" cy="32" r="14" fill="#1E3A5F"/>
+  <text x="1248" y="37" font-size="13" text-anchor="middle" fill="#7DD3FC">A</text>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       FILTER BAR
+  ════════════════════════════════════════════════════════════════ -->
+  <rect x="220" y="64" width="1060" height="48" fill="#F8FAFC"/>
+  <line x1="220" y1="112" x2="1280" y2="112" stroke="#E2E8F0" stroke-width="1"/>
+
+  <!-- Filter chips -->
+  <rect x="240" y="80" width="60" height="16" rx="8" fill="#0284C7"/>
+  <text x="270" y="92" font-size="10" fill="#FFF" text-anchor="middle" font-weight="600">Tümü</text>
+
+  <rect x="308" y="80" width="60" height="16" rx="8" fill="#E0F2FE" stroke="#7DD3FC" stroke-width="1"/>
+  <text x="338" y="92" font-size="10" fill="#0284C7" text-anchor="middle">Acil</text>
+
+  <rect x="376" y="80" width="90" height="16" rx="8" fill="#E0F2FE" stroke="#7DD3FC" stroke-width="1"/>
+  <text x="421" y="92" font-size="10" fill="#0284C7" text-anchor="middle">Servis Talebi</text>
+
+  <rect x="474" y="80" width="90" height="16" rx="8" fill="#E0F2FE" stroke="#7DD3FC" stroke-width="1"/>
+  <text x="519" y="92" font-size="10" fill="#0284C7" text-anchor="middle">Teklif Talebi</text>
+
+  <rect x="572" y="80" width="90" height="16" rx="8" fill="#E0F2FE" stroke="#7DD3FC" stroke-width="1"/>
+  <text x="617" y="92" font-size="10" fill="#0284C7" text-anchor="middle">Satış İnkişafı</text>
+
+  <!-- Marina filter -->
+  <rect x="900" y="76" width="140" height="24" rx="6" fill="#FFF" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="916" y="92" font-size="11" fill="#64748B">Tüm Marinalar ▼</text>
+
+  <!-- Date range -->
+  <rect x="1050" y="76" width="200" height="24" rx="6" fill="#FFF" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="1066" y="92" font-size="11" fill="#64748B">01 Eyl — 30 Eyl 2024</text>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       KPI CARDS ROW
+  ════════════════════════════════════════════════════════════════ -->
+  <!-- Card 1: Gelen Çağrı -->
+  <rect x="240" y="128" width="138" height="88" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1"/>
+  <rect x="240" y="128" width="138" height="4" rx="2" fill="#0284C7"/>
+  <text x="256" y="152" font-size="10" fill="#64748B">Gelen Çağrı</text>
+  <text x="256" y="178" font-size="26" fill="#0F172A" font-weight="700">1,248</text>
+  <rect x="256" y="188" width="50" height="14" rx="7" fill="#DCFCE7"/>
+  <text x="280" y="199" font-size="9" fill="#16A34A" text-anchor="middle" font-weight="600">▲ 12.4%</text>
+  <text x="322" y="199" font-size="9" fill="#94A3B8">vs önceki ay</text>
+
+  <!-- Card 2: Yeni Müşteri -->
+  <rect x="386" y="128" width="138" height="88" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1"/>
+  <rect x="386" y="128" width="138" height="4" rx="2" fill="#0EA5E9"/>
+  <text x="402" y="152" font-size="10" fill="#64748B">Yeni Müşteri</text>
+  <text x="402" y="178" font-size="26" fill="#0F172A" font-weight="700">87</text>
+  <rect x="402" y="188" width="50" height="14" rx="7" fill="#DCFCE7"/>
+  <text x="426" y="199" font-size="9" fill="#16A34A" text-anchor="middle" font-weight="600">▲ 8.2%</text>
+  <text x="468" y="199" font-size="9" fill="#94A3B8">vs önceki ay</text>
+
+  <!-- Card 3: Servis Talebi -->
+  <rect x="532" y="128" width="138" height="88" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1"/>
+  <rect x="532" y="128" width="138" height="4" rx="2" fill="#6366F1"/>
+  <text x="548" y="152" font-size="10" fill="#64748B">Servis Talebi</text>
+  <text x="548" y="178" font-size="26" fill="#0F172A" font-weight="700">432</text>
+  <rect x="548" y="188" width="50" height="14" rx="7" fill="#DCFCE7"/>
+  <text x="572" y="199" font-size="9" fill="#16A34A" text-anchor="middle" font-weight="600">▲ 5.1%</text>
+  <text x="614" y="199" font-size="9" fill="#94A3B8">vs önceki ay</text>
+
+  <!-- Card 4: Teklif Talebi -->
+  <rect x="678" y="128" width="138" height="88" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1"/>
+  <rect x="678" y="128" width="138" height="4" rx="2" fill="#8B5CF6"/>
+  <text x="694" y="152" font-size="10" fill="#64748B">Teklif Talebi</text>
+  <text x="694" y="178" font-size="26" fill="#0F172A" font-weight="700">214</text>
+  <rect x="694" y="188" width="50" height="14" rx="7" fill="#FEF9C3"/>
+  <text x="718" y="199" font-size="9" fill="#CA8A04" text-anchor="middle" font-weight="600">▼ 3.8%</text>
+  <text x="760" y="199" font-size="9" fill="#94A3B8">vs önceki ay</text>
+
+  <!-- Card 5: ACİL SERVİS (kırmızı vurgulu) -->
+  <rect x="824" y="128" width="138" height="88" rx="10" fill="#FFF5F5" stroke="#FECACA" stroke-width="1.5"/>
+  <rect x="824" y="128" width="138" height="4" rx="2" fill="#EF4444"/>
+  <text x="840" y="148" font-size="10" fill="#991B1B" font-weight="600">🚨 Acil Servis</text>
+  <text x="840" y="178" font-size="26" fill="#DC2626" font-weight="700">23</text>
+  <rect x="840" y="188" width="70" height="14" rx="7" fill="#FEE2E2"/>
+  <text x="874" y="199" font-size="9" fill="#DC2626" text-anchor="middle" font-weight="600">▲ 18.2% YENİ</text>
+
+  <!-- Card 6: Satışa Dönüşen -->
+  <rect x="970" y="128" width="138" height="88" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1"/>
+  <rect x="970" y="128" width="138" height="4" rx="2" fill="#10B981"/>
+  <text x="986" y="152" font-size="10" fill="#64748B">Satışa Dönüşen</text>
+  <text x="986" y="174" font-size="22" fill="#0F172A" font-weight="700">68%</text>
+  <text x="986" y="192" font-size="10" fill="#10B981" font-weight="600">▲ 4.2%</text>
+
+  <!-- Card 7: Ort. Yanıt Süresi -->
+  <rect x="1116" y="128" width="144" height="88" rx="10" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1"/>
+  <rect x="1116" y="128" width="144" height="4" rx="2" fill="#F59E0B"/>
+  <text x="1132" y="152" font-size="10" fill="#64748B">Ort. Yanıt Süresi</text>
+  <text x="1132" y="174" font-size="22" fill="#0F172A" font-weight="700">4:32 dk</text>
+  <rect x="1132" y="184" width="56" height="14" rx="7" fill="#DCFCE7"/>
+  <text x="1160" y="195" font-size="9" fill="#16A34A" text-anchor="middle" font-weight="600">▼ 0:18 dk ✓</text>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       CHARTS ROW 1
+  ════════════════════════════════════════════════════════════════ -->
+
+  <!-- Chart 1: En Sık Tekne Arızaları -->
+  <rect x="240" y="236" width="340" height="280" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="256" y="264" font-size="13" fill="#0F172A" font-weight="700">En Sık Tekne Arızaları</text>
+  <text x="256" y="280" font-size="10" fill="#94A3B8">Çağrı kategorisi dağılımı (son 30 gün)</text>
+
+  <!-- Bar chart -->
+  <!-- Motor Arızası -->
+  <text x="256" y="312" font-size="11" fill="#334155" font-weight="500">Motor Arızası</text>
+  <rect x="256" y="318" width="220" height="20" rx="4" fill="#E0F2FE"/>
+  <rect x="256" y="318" width="195" height="20" rx="4" fill="#0284C7"/>
+  <text x="464" y="332" font-size="10" fill="#0F172A" font-weight="600">213</text>
+
+  <!-- Elektrik -->
+  <text x="256" y="358" font-size="11" fill="#334155" font-weight="500">Elektrik Sistemi</text>
+  <rect x="256" y="364" width="220" height="20" rx="4" fill="#E0F2FE"/>
+  <rect x="256" y="364" width="155" height="20" rx="4" fill="#0EA5E9"/>
+  <text x="424" y="378" font-size="10" fill="#0F172A" font-weight="600">168</text>
+
+  <!-- Sintine -->
+  <text x="256" y="404" font-size="11" fill="#334155" font-weight="500">Sintine / Pompa</text>
+  <rect x="256" y="410" width="220" height="20" rx="4" fill="#E0F2FE"/>
+  <rect x="256" y="410" width="118" height="20" rx="4" fill="#38BDF8"/>
+  <text x="388" y="424" font-size="10" fill="#0F172A" font-weight="600">128</text>
+
+  <!-- Şanzıman -->
+  <text x="256" y="450" font-size="11" fill="#334155" font-weight="500">Şanzıman</text>
+  <rect x="256" y="456" width="220" height="20" rx="4" fill="#E0F2FE"/>
+  <rect x="256" y="456" width="84" height="20" rx="4" fill="#7DD3FC"/>
+  <text x="354" y="470" font-size="10" fill="#0F172A" font-weight="600">91</text>
+
+  <!-- Navigasyon -->
+  <text x="256" y="496" font-size="11" fill="#334155" font-weight="500">Navigasyon Ekipmanı</text>
+  <rect x="256" y="502" width="220" height="20" rx="4" fill="#E0F2FE"/>
+  <rect x="256" y="502" width="62" height="20" rx="4" fill="#BAE6FD"/>
+  <text x="332" y="516" font-size="10" fill="#0F172A" font-weight="600">67</text>
+
+  <!-- Chart 2: En Yoğun Marinalar -->
+  <rect x="592" y="236" width="320" height="280" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="608" y="264" font-size="13" fill="#0F172A" font-weight="700">En Yoğun Marinalar</text>
+  <text x="608" y="280" font-size="10" fill="#94A3B8">Çağrı yoğunluğuna göre sıralama</text>
+
+  <!-- Donut / circles visual -->
+  <!-- Kalamış -->
+  <circle cx="700" cy="360" r="60" fill="#0F172A" opacity="0.05" stroke="#E2E8F0" stroke-width="1"/>
+  <circle cx="700" cy="360" r="60" fill="none" stroke="#0284C7" stroke-width="8" stroke-dasharray="264 94" stroke-dashoffset="66" transform="rotate(-90 700 360)"/>
+  <circle cx="700" cy="360" r="44" fill="none" stroke="#0EA5E9" stroke-width="8" stroke-dasharray="198 78" stroke-dashoffset="66" transform="rotate(-90 700 360)"/>
+  <circle cx="700" cy="360" r="28" fill="none" stroke="#38BDF8" stroke-width="8" stroke-dasharray="132 44" stroke-dashoffset="66" transform="rotate(-90 700 360)"/>
+  <text x="700" y="356" font-size="14" fill="#0F172A" text-anchor="middle" font-weight="700">1,248</text>
+  <text x="700" y="372" font-size="9" fill="#64748B" text-anchor="middle">toplam</text>
+
+  <!-- Legend -->
+  <rect x="770" y="320" width="10" height="10" rx="2" fill="#0284C7"/>
+  <text x="786" y="330" font-size="10" fill="#334155">Kalamış Marina</text>
+  <text x="786" y="342" font-size="10" fill="#64748B" font-weight="600">468 çağrı (37%)</text>
+
+  <rect x="770" y="360" width="10" height="10" rx="2" fill="#0EA5E9"/>
+  <text x="786" y="370" font-size="10" fill="#334155">Göcek Marina</text>
+  <text x="786" y="382" font-size="10" fill="#64748B" font-weight="600">384 çağrı (31%)</text>
+
+  <rect x="770" y="400" width="10" height="10" rx="2" fill="#38BDF8"/>
+  <text x="786" y="410" font-size="10" fill="#334155">Bodrum Marina</text>
+  <text x="786" y="422" font-size="10" fill="#64748B" font-weight="600">396 çağrı (32%)</text>
+
+  <!-- Chart 3: Satış Kaçırma Sebepleri -->
+  <rect x="924" y="236" width="336" height="280" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="940" y="264" font-size="13" fill="#0F172A" font-weight="700">Satış Kaçırma Sebepleri</text>
+  <text x="940" y="280" font-size="10" fill="#94A3B8">Fırsat kaybı analizi (son 30 gün)</text>
+
+  <!-- Bar chart - horizontal -->
+  <text x="940" y="312" font-size="11" fill="#334155">Fiyat Yüksek Bulundu</text>
+  <rect x="940" y="318" width="280" height="20" rx="4" fill="#FEE2E2"/>
+  <rect x="940" y="318" width="210" height="20" rx="4" fill="#EF4444"/>
+  <text x="1163" y="332" font-size="10" fill="#0F172A" font-weight="600">48%</text>
+
+  <text x="940" y="358" font-size="11" fill="#334155">Geç Dönüş / Yanıt</text>
+  <rect x="940" y="364" width="280" height="20" rx="4" fill="#FEF3C7"/>
+  <rect x="940" y="364" width="150" height="20" rx="4" fill="#F59E0B"/>
+  <text x="1104" y="378" font-size="10" fill="#0F172A" font-weight="600">34%</text>
+
+  <text x="940" y="404" font-size="11" fill="#334155">Rakip Teklif</text>
+  <rect x="940" y="410" width="280" height="20" rx="4" fill="#F0FDF4"/>
+  <rect x="940" y="410" width="62" height="20" rx="4" fill="#10B981"/>
+  <text x="1016" y="424" font-size="10" fill="#0F172A" font-weight="600">14%</text>
+
+  <text x="940" y="450" font-size="11" fill="#334155">Hizmet Kapsamı Dışı</text>
+  <rect x="940" y="456" width="280" height="20" rx="4" fill="#F5F3FF"/>
+  <rect x="940" y="456" width="18" height="20" rx="4" fill="#8B5CF6"/>
+  <text x="972" y="470" font-size="10" fill="#0F172A" font-weight="600">4%</text>
+
+  <!-- Insight box -->
+  <rect x="940" y="490" width="280" height="20" rx="6" fill="#FFF7ED" stroke="#FED7AA" stroke-width="1"/>
+  <text x="952" y="504" font-size="9" fill="#92400E">💡 Fiyat politikası gözden geçirilmeli — 48% kaybın önlenebilir</text>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       BOTTOM TABLE — Son Çağrılar
+  ════════════════════════════════════════════════════════════════ -->
+  <rect x="240" y="536" width="1020" height="340" rx="12" fill="#FFFFFF" stroke="#E2E8F0" stroke-width="1"/>
+
+  <!-- Table header -->
+  <rect x="240" y="536" width="1020" height="40" rx="12" fill="#F8FAFC"/>
+  <line x1="240" y1="576" x2="1260" y2="576" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="256" y="556" font-size="13" fill="#0F172A" font-weight="700">Son Çağrılar</text>
+  <rect x="1136" y="546" width="112" height="22" rx="6" fill="#0284C7"/>
+  <text x="1192" y="561" font-size="10" fill="#FFF" text-anchor="middle" font-weight="600">+ Çağrı Ekle</text>
+
+  <!-- Table col headers -->
+  <rect x="240" y="576" width="1020" height="32" fill="#F1F5F9"/>
+  <text x="264" y="597" font-size="10" fill="#64748B" font-weight="700">ARAYAN</text>
+  <text x="400" y="597" font-size="10" fill="#64748B" font-weight="700">MARİNA</text>
+  <text x="520" y="597" font-size="10" fill="#64748B" font-weight="700">KONU</text>
+  <text x="680" y="597" font-size="10" fill="#64748B" font-weight="700">SÜRE</text>
+  <text x="760" y="597" font-size="10" fill="#64748B" font-weight="700">DUYGU</text>
+  <text x="860" y="597" font-size="10" fill="#64748B" font-weight="700">DURUM</text>
+  <text x="980" y="597" font-size="10" fill="#64748B" font-weight="700">ÖNCELİK</text>
+  <text x="1100" y="597" font-size="10" fill="#64748B" font-weight="700">EYLEM</text>
+
+  <!-- Row 1 - Acil/kırmızı -->
+  <rect x="240" y="608" width="1020" height="44" fill="#FFF5F5"/>
+  <rect x="240" y="608" width="3" height="44" fill="#EF4444"/>
+  <circle cx="260" cy="630" r="12" fill="#FEE2E2"/>
+  <text x="260" y="634" font-size="10" fill="#DC2626" text-anchor="middle" font-weight="700">AY</text>
+  <text x="284" y="627" font-size="11" fill="#0F172A" font-weight="600">Ahmet Yılmaz</text>
+  <text x="284" y="642" font-size="10" fill="#64748B">+90 532 xxx xx xx</text>
+  <text x="400" y="634" font-size="11" fill="#334155">Kalamış</text>
+  <text x="520" y="627" font-size="11" fill="#334155">Motor Arızası</text>
+  <text x="520" y="642" font-size="10" fill="#64748B">Seninle Motoryat 42</text>
+  <text x="680" y="634" font-size="11" fill="#334155">5:12 dk</text>
+  <rect x="754" y="622" width="56" height="16" rx="8" fill="#DCFCE7"/>
+  <text x="782" y="634" font-size="9" fill="#16A34A" text-anchor="middle" font-weight="600">😊 Pozitif</text>
+  <rect x="848" y="622" width="72" height="16" rx="8" fill="#FEE2E2"/>
+  <text x="884" y="634" font-size="9" fill="#DC2626" text-anchor="middle" font-weight="700">🔴 ACİL</text>
+  <rect x="974" y="622" width="72" height="16" rx="8" fill="#FEF2F2"/>
+  <text x="1010" y="634" font-size="9" fill="#DC2626" text-anchor="middle" font-weight="600">⚡ Yüksek</text>
+  <rect x="1096" y="622" width="88" height="22" rx="6" fill="#0284C7"/>
+  <text x="1140" y="637" font-size="9" fill="#FFF" text-anchor="middle" font-weight="600">Servis Emri →</text>
+
+  <!-- Divider -->
+  <line x1="240" y1="652" x2="1260" y2="652" stroke="#F1F5F9" stroke-width="1"/>
+
+  <!-- Row 2 -->
+  <rect x="240" y="652" width="1020" height="44" fill="#FFFFFF"/>
+  <rect x="240" y="652" width="3" height="44" fill="#0284C7"/>
+  <circle cx="260" cy="674" r="12" fill="#E0F2FE"/>
+  <text x="260" y="678" font-size="10" fill="#0284C7" text-anchor="middle" font-weight="700">FK</text>
+  <text x="284" y="671" font-size="11" fill="#0F172A" font-weight="600">Fatma Kaya</text>
+  <text x="284" y="686" font-size="10" fill="#64748B">+90 543 xxx xx xx</text>
+  <text x="400" y="674" font-size="11" fill="#334155">Göcek</text>
+  <text x="520" y="671" font-size="11" fill="#334155">Sezon Bakımı</text>
+  <text x="520" y="686" font-size="10" fill="#64748B">Beneteau Oceanis 45</text>
+  <text x="680" y="674" font-size="11" fill="#334155">3:44 dk</text>
+  <rect x="754" y="666" width="56" height="16" rx="8" fill="#DCFCE7"/>
+  <text x="782" y="678" font-size="9" fill="#16A34A" text-anchor="middle" font-weight="600">😊 Pozitif</text>
+  <rect x="848" y="666" width="72" height="16" rx="8" fill="#E0F2FE"/>
+  <text x="884" y="678" font-size="9" fill="#0284C7" text-anchor="middle" font-weight="600">🔵 Normal</text>
+  <rect x="974" y="666" width="72" height="16" rx="8" fill="#E0F2FE"/>
+  <text x="1010" y="678" font-size="9" fill="#0284C7" text-anchor="middle" font-weight="600">Orta</text>
+  <rect x="1096" y="666" width="88" height="22" rx="6" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="1"/>
+  <text x="1140" y="681" font-size="9" fill="#475569" text-anchor="middle" font-weight="600">Detay Gör →</text>
+
+  <!-- Divider -->
+  <line x1="240" y1="696" x2="1260" y2="696" stroke="#F1F5F9" stroke-width="1"/>
+
+  <!-- Row 3 - Cevapsız -->
+  <rect x="240" y="696" width="1020" height="44" fill="#FFFFFF"/>
+  <rect x="240" y="696" width="3" height="44" fill="#F59E0B"/>
+  <circle cx="260" cy="718" r="12" fill="#FEF3C7"/>
+  <text x="260" y="722" font-size="10" fill="#B45309" text-anchor="middle" font-weight="700">MD</text>
+  <text x="284" y="715" font-size="11" fill="#0F172A" font-weight="600">Mehmet Deniz</text>
+  <text x="284" y="730" font-size="10" fill="#64748B">+90 555 xxx xx xx</text>
+  <text x="400" y="718" font-size="11" fill="#334155">Bodrum</text>
+  <text x="520" y="715" font-size="11" fill="#334155">Cevapsız Çağrı</text>
+  <text x="520" y="730" font-size="10" fill="#94A3B8">— (bilinmiyor)</text>
+  <text x="680" y="718" font-size="11" fill="#94A3B8">—</text>
+  <rect x="754" y="710" width="56" height="16" rx="8" fill="#F1F5F9"/>
+  <text x="782" y="722" font-size="9" fill="#64748B" text-anchor="middle">😐 Nötr</text>
+  <rect x="848" y="710" width="80" height="16" rx="8" fill="#FEF3C7"/>
+  <text x="888" y="722" font-size="9" fill="#B45309" text-anchor="middle" font-weight="600">⚠ Cevapsız</text>
+  <rect x="974" y="710" width="72" height="16" rx="8" fill="#FEF3C7"/>
+  <text x="1010" y="722" font-size="9" fill="#B45309" text-anchor="middle" font-weight="600">Takip Et</text>
+  <rect x="1096" y="710" width="88" height="22" rx="6" fill="#FEF3C7" stroke="#FCD34D" stroke-width="1"/>
+  <text x="1140" y="725" font-size="9" fill="#92400E" text-anchor="middle" font-weight="600">Geri Ara →</text>
+
+  <!-- Row 4 -->
+  <rect x="240" y="740" width="1020" height="44" fill="#FFFFFF"/>
+  <rect x="240" y="740" width="3" height="44" fill="#10B981"/>
+  <circle cx="260" cy="762" r="12" fill="#D1FAE5"/>
+  <text x="260" y="766" font-size="10" fill="#065F46" text-anchor="middle" font-weight="700">ZA</text>
+  <text x="284" y="759" font-size="11" fill="#0F172A" font-weight="600">Zeynep Arslan</text>
+  <text x="284" y="774" font-size="10" fill="#64748B">+90 532 xxx xx xx</text>
+  <text x="400" y="762" font-size="11" fill="#334155">Marmaris</text>
+  <text x="520" y="759" font-size="11" fill="#334155">Tekne Alım Talebi</text>
+  <text x="520" y="774" font-size="10" fill="#64748B">Bavaria Cruiser 51</text>
+  <text x="680" y="762" font-size="11" fill="#334155">8:20 dk</text>
+  <rect x="754" y="754" width="56" height="16" rx="8" fill="#DCFCE7"/>
+  <text x="782" y="766" font-size="9" fill="#16A34A" text-anchor="middle" font-weight="600">😊 Pozitif</text>
+  <rect x="848" y="754" width="80" height="16" rx="8" fill="#D1FAE5"/>
+  <text x="888" y="766" font-size="9" fill="#065F46" text-anchor="middle" font-weight="600">✅ Tamamlandı</text>
+  <rect x="974" y="754" width="72" height="16" rx="8" fill="#D1FAE5"/>
+  <text x="1010" y="766" font-size="9" fill="#065F46" text-anchor="middle" font-weight="600">Düşük</text>
+  <rect x="1096" y="754" width="88" height="22" rx="6" fill="#10B981"/>
+  <text x="1140" y="769" font-size="9" fill="#FFF" text-anchor="middle" font-weight="600">CRM Ekle →</text>
+
+  <!-- Pagination -->
+  <text x="256" y="860" font-size="11" fill="#64748B">1-4 / 1,248 çağrı gösteriliyor</text>
+  <rect x="1064" y="845" width="32" height="24" rx="4" fill="#F1F5F9" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="1080" y="861" font-size="11" fill="#64748B" text-anchor="middle">←</text>
+  <rect x="1100" y="845" width="32" height="24" rx="4" fill="#0284C7"/>
+  <text x="1116" y="861" font-size="11" fill="#FFF" text-anchor="middle">1</text>
+  <rect x="1136" y="845" width="32" height="24" rx="4" fill="#F1F5F9" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="1152" y="861" font-size="11" fill="#64748B" text-anchor="middle">2</text>
+  <rect x="1172" y="845" width="32" height="24" rx="4" fill="#F1F5F9" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="1188" y="861" font-size="11" fill="#64748B" text-anchor="middle">3</text>
+  <rect x="1208" y="845" width="32" height="24" rx="4" fill="#F1F5F9" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="1224" y="861" font-size="11" fill="#64748B" text-anchor="middle">→</text>
+
+  <!-- Screen label watermark -->
+  <text x="640" y="890" font-size="10" fill="#CBD5E1" text-anchor="middle">Miço Usta Admin — 01 Çağrı Analitiği Dashboard  •  Issue #9 Wireframe</text>
+</svg>

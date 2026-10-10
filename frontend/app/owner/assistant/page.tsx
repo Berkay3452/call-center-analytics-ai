@@ -9,103 +9,197 @@ function makeId() {
   return `msg-${msgCounter}`;
 }
 
-// Statik örnek yanıtlar — backend AI entegrasyonu gelene kadar
-const MOCK_REPLIES = [
-  "Merhaba! Size nasıl yardımcı olabilirim?",
-  "Teknenizle ilgili detaylı bilgi verebilir misiniz?",
-  "Randevunuzu en kısa sürede oluşturuyorum.",
-  "Başka bir sorunuz var mı?",
+const PRESET_QUESTIONS = [
+  "Son motor bakımım ne zaman yapıldı?",
+  "Bu ayki marina masrafım ne kadar?",
+  "Sintine alarmı çaldığında ilk ne yapmalıyım?",
+  "Akü voltajım normal seviyede mi?",
 ];
 
-// Karşılama mesajı ID'si.
-const WELCOME_ID = makeId();
+const MOCK_ASSISTANT_KNOWLEDGE: Record<
+  string,
+  { reply: string; citation: ChatMessage["citation"] }
+> = {
+  "Son motor bakımım ne zaman yapıldı?": {
+    reply:
+      "Tekneniz Poyraz (Motoryat 42) için son periyodik motor bakımı 15 Ağustos 2024 tarihinde Kalamış Marina'da usta Mehmet Şimşek tarafından yapılmıştır. Motor yağı, yakıt filtreleri ve impeller değişimi tamamlanmıştır.",
+    citation: {
+      sourceTitle: "15 Ağustos 2024 Tarihli Usta Servis Raporu",
+      date: "15.08.2024",
+      callId: "call-001",
+      excerpt: "Ana makine 250 saatlik periyodik bakımı ve filtre değişimleri tamamlandı.",
+    },
+  },
+  "Bu ayki marina masrafım ne kadar?": {
+    reply:
+      "Kalamış Marina sözleşmenize göre Ekim 2024 dönemi bağlama ve elektrik/su tüketim toplamınız 14.250 TL olarak muhasebeleştirilmiştir. Son ödeme tarihi 25 Ekim'dir.",
+    citation: {
+      sourceTitle: "Kalamış Marina İskele C-12 Hizmet Faturası",
+      date: "01.10.2024",
+      excerpt: "12m motoryat standart bağlama ve sayaç tüketim bedeli.",
+    },
+  },
+  "Sintine alarmı çaldığında ilk ne yapmalıyım?": {
+    reply:
+      "Sintine alarmı devreye girdiğinde derhal: 1) Sintine otomatik pompasının (float switch) çalıştığını kontrol edin, 2) Şaft kovanı ve deniz suyu vanalarını (seacock) su sızıntısına karşı gözleyin, 3) Akü ana şalterinin açık olduğundan emin olun. Gerekirse Miço Usta acil destek hattından yerinde usta çağırabilirsiniz.",
+    citation: {
+      sourceTitle: "Miço Usta Acil Güvenlik Kılavuzu & Çağrı Analiz Kaydı",
+      date: "09.10.2024",
+      callId: "call-001",
+      excerpt: "Sintine su seviyesi alarmı acil müdahale adımları.",
+    },
+  },
+};
+
+const INITIAL_MESSAGES: ChatMessage[] = [
+  {
+    id: "msg-welcome",
+    role: "assistant",
+    content:
+      "Merhaba! Ben Miço Usta Tekne Asistanı. Teknenizin bakım geçmişi, marina kayıtları ve teknik durumu hakkında size yardımcı olabilirim.",
+    timestamp: "2024-10-09T09:00:00Z",
+  },
+];
 
 export default function AssistantPage() {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: WELCOME_ID,
-      role: "assistant",
-      content:
-        "Merhaba! Ben Miço Usta AI asistanı. Size nasıl yardımcı olabilirim?",
-      // Karşılama mesajı saatsizdir: prerender sırasında new Date() çağrılmaz ve
-      // arayüz boş timestamp'te saati göstermez.
-      timestamp: "",
-    },
-  ]);
-
+  const [messages, setMessages] = useState<ChatMessage[]>(INITIAL_MESSAGES);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
 
-  const sendMessage = useCallback(async () => {
-    const text = input.trim();
-    if (!text || loading) return;
+  const sendMessage = useCallback(
+    async (textToSend?: string) => {
+      const text = (textToSend ?? input).trim();
+      if (!text || loading) return;
 
-    const userMsg: ChatMessage = {
-      id: makeId(),
-      role: "user",
-      content: text,
-      timestamp: new Date().toISOString(),
-    };
+      const userMsg: ChatMessage = {
+        id: makeId(),
+        role: "user",
+        content: text,
+        timestamp: new Date().toISOString(),
+      };
 
-    setMessages((prev) => [...prev, userMsg]);
-    setInput("");
-    setLoading(true);
+      setMessages((prev) => [...prev, userMsg]);
+      setInput("");
+      setLoading(true);
 
-    // Simüle edilmiş gecikme ve yanıt
-    await new Promise<void>((resolve) => setTimeout(resolve, 800));
+      // Simüle edilmiş AI gecikmesi
+      await new Promise<void>((resolve) => setTimeout(resolve, 800));
 
-    const reply = MOCK_REPLIES[Math.floor(Math.random() * MOCK_REPLIES.length)];
-    const assistantMsg: ChatMessage = {
-      id: makeId(),
-      role: "assistant",
-      content: reply ?? "Anlıyorum.",
-      timestamp: new Date().toISOString(),
-    };
+      const matched = MOCK_ASSISTANT_KNOWLEDGE[text];
+      const assistantMsg: ChatMessage = matched
+        ? {
+            id: makeId(),
+            role: "assistant",
+            content: matched.reply,
+            timestamp: new Date().toISOString(),
+            citation: matched.citation,
+          }
+        : {
+            id: makeId(),
+            role: "assistant",
+            content:
+              `"${text}" sorunuzla ilgili kayıtlar inceleniyor. Teknenizin servis geçmişinde ilgili teknik rapor oluşturulduğunda size detaylı bilgi sunulacaktır.`,
+            timestamp: new Date().toISOString(),
+            citation: {
+              sourceTitle: "Miço Usta Entegre Tekne Bilgi Bankası",
+              date: "Bugün",
+              excerpt: "Tekne seyir defteri ve çağrı transkripti arşivi.",
+            },
+          };
 
-    setMessages((prev) => [...prev, assistantMsg]);
-    setLoading(false);
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [input, loading]);
+      setMessages((prev) => [...prev, assistantMsg]);
+      setLoading(false);
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    },
+    [input, loading],
+  );
 
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)]">
-      <h1 className="text-2xl font-bold text-gray-900 mb-4">
-        🤖 Asistan Sohbet
-      </h1>
+      {/* Üst Başlık */}
+      <div className="mb-4 flex items-center justify-between border-b pb-3">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            🤖 Miço Usta AI Tekne Asistanı
+          </h1>
+          <p className="text-xs text-gray-500">
+            Kayıtlı Tekneniz: <strong className="text-slate-800">Poyraz (Motoryat 42)</strong> • Kalamış Marina
+          </p>
+        </div>
+        <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200">
+          ● Çevrimiçi & Servis Geçmişi Bağlı
+        </span>
+      </div>
 
-      {/* Mesaj alanı */}
-      <div className="flex-1 overflow-y-auto rounded-xl border border-gray-200 bg-white p-4 space-y-4 shadow-sm">
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+      {/* Hızlı Soru Öneri Butonları */}
+      <div className="mb-3 flex flex-wrap gap-2">
+        {PRESET_QUESTIONS.map((q) => (
+          <button
+            key={q}
+            type="button"
+            onClick={() => void sendMessage(q)}
+            disabled={loading}
+            className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:border-sky-300 hover:bg-sky-50 transition-all disabled:opacity-50"
           >
-            <div
-              className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm ${
-                msg.role === "user"
-                  ? "bg-blue-600 text-white rounded-br-sm"
-                  : "bg-gray-100 text-gray-800 rounded-bl-sm"
-              }`}
-            >
-              <p>{msg.content}</p>
-              {msg.timestamp && (
-                <p
-                  className={`mt-1 text-[10px] ${
-                    msg.role === "user" ? "text-blue-200" : "text-gray-400"
-                  }`}
-                >
-                  {new Date(msg.timestamp).toLocaleTimeString("tr-TR")}
-                </p>
-              )}
-            </div>
-          </div>
+            💬 {q}
+          </button>
         ))}
+      </div>
+
+      {/* Mesaj Listesi */}
+      <div className="flex-1 overflow-y-auto rounded-xl border border-gray-200 bg-white p-5 space-y-4 shadow-sm">
+        {messages.map((msg) => {
+          const isUser = msg.role === "user";
+
+          return (
+            <div
+              key={msg.id}
+              className={`flex ${isUser ? "justify-end" : "justify-start"}`}
+            >
+              <div
+                className={`max-w-[80%] rounded-2xl p-4 text-sm ${
+                  isUser
+                    ? "bg-sky-600 text-white rounded-br-sm"
+                    : "bg-slate-100 text-slate-900 rounded-bl-sm border border-slate-200"
+                }`}
+              >
+                <p className="leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+
+                {/* Kaynak Atıf Kartı */}
+                {!isUser && msg.citation && (
+                  <div className="mt-3 rounded-lg border border-sky-200 bg-sky-50/80 p-2.5 text-xs text-slate-800">
+                    <div className="flex items-center gap-1.5 font-bold text-sky-800">
+                      <span>📌</span>
+                      <span>{msg.citation.sourceTitle}</span>
+                      <span className="text-[10px] text-slate-400">({msg.citation.date})</span>
+                    </div>
+                    {msg.citation.excerpt && (
+                      <p className="mt-1 text-[11px] text-slate-600 italic">
+                        &ldquo;{msg.citation.excerpt}&rdquo;
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {msg.timestamp && (
+                  <p
+                    className={`mt-2 text-[10px] ${
+                      isUser ? "text-sky-200" : "text-gray-400"
+                    }`}
+                  >
+                    {new Date(msg.timestamp).toLocaleTimeString("tr-TR")}
+                  </p>
+                )}
+              </div>
+            </div>
+          );
+        })}
 
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-gray-100 rounded-2xl rounded-bl-sm px-4 py-2.5 text-sm text-gray-500">
-              <span className="animate-pulse">Yazıyor…</span>
+            <div className="bg-slate-100 rounded-2xl rounded-bl-sm p-3 text-xs text-slate-500 border border-slate-200">
+              <span className="animate-pulse">Miço Usta veritabanından sorguluyor…</span>
             </div>
           </div>
         )}
@@ -113,7 +207,7 @@ export default function AssistantPage() {
         <div ref={bottomRef} />
       </div>
 
-      {/* Giriş alanı */}
+      {/* Mesaj Giriş Alanı */}
       <div className="mt-3 flex gap-2">
         <input
           type="text"
@@ -125,14 +219,14 @@ export default function AssistantPage() {
               void sendMessage();
             }
           }}
-          placeholder="Mesajınızı yazın…"
-          className="flex-1 rounded-xl border border-gray-300 px-4 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Tekneniz veya bakım kayıtları hakkında soru sorun…"
+          className="flex-1 rounded-xl border border-gray-300 px-4 py-2.5 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500"
           disabled={loading}
         />
         <button
           onClick={() => void sendMessage()}
           disabled={loading || !input.trim()}
-          className="rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+          className="rounded-xl bg-sky-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-sky-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
         >
           Gönder
         </button>

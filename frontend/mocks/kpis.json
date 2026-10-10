@@ -1,36 +1,9 @@
 [
-  {
-    "label": "Toplam Çağrı",
-    "value": 1248,
-    "unit": "adet",
-    "changePercent": 12.4
-  },
-  {
-    "label": "Ortalama Süre",
-    "value": "4:32",
-    "unit": "dk",
-    "changePercent": -3.1
-  },
-  {
-    "label": "Cevapsız Çağrı",
-    "value": 87,
-    "unit": "adet",
-    "changePercent": -8.5
-  },
-  {
-    "label": "Müşteri Memnuniyeti",
-    "value": 4.3,
-    "unit": "/ 5",
-    "changePercent": 5.0
-  },
-  {
-    "label": "Pozitif Duygu",
-    "value": "68%",
-    "changePercent": 2.2
-  },
-  {
-    "label": "Çözüm Oranı",
-    "value": "91%",
-    "changePercent": 0.5
-  }
+  { "label": "Gelen Çağrı", "value": 1248, "unit": "adet", "changePercent": 12.4 },
+  { "label": "Yeni Müşteri", "value": 87, "unit": "tekne", "changePercent": 6.1 },
+  { "label": "Servis Talebi", "value": 432, "unit": "adet", "changePercent": 9.8 },
+  { "label": "Teklif Talebi", "value": 214, "unit": "adet", "changePercent": -2.3 },
+  { "label": "Acil Servis", "value": 23, "unit": "adet", "changePercent": 15.0, "variant": "urgent" },
+  { "label": "Satışa Dönüşen", "value": "%68", "changePercent": 3.2, "variant": "success" },
+  { "label": "Ort. Cevap Süresi", "value": "4:32", "unit": "dk", "changePercent": -3.1 }
 ]

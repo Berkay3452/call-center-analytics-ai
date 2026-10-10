@@ -2,56 +2,209 @@
   {
     "id": "call-001",
     "caller": "Ahmet Yılmaz",
-    "startedAt": "2024-10-01T09:05:00Z",
+    "callerPhone": "+90 532 412 88 90",
+    "boatName": "Poyraz",
+    "boatModel": "Motoryat 42 (2019)",
+    "startedAt": "2024-10-09T09:05:00Z",
     "durationSec": 312,
     "status": "completed",
-    "sentiment": "positive",
-    "transcript": "Merhaba, teknem için sezon sonu bakım randevusu almak istiyorum.",
-    "summary": "Tekne bakım randevusu talebi. Müşteri memnun, randevu onaylandı.",
-    "tags": ["bakım", "randevu", "memnun"]
+    "callType": "acil",
+    "urgency": "acil",
+    "location": "Kalamış Marina",
+    "analysisStatus": "tamam",
+    "transcript": "Müşteri: Merhaba, Kalamış Marina'dayım. Motoryatımın ana makinesi çalışıyor ama gaz kolunu ittiğimde devir yükselmiyor, ayrıca sintinede su uyarısı verdi. Acil servis gönderebilir misiniz?\nTemsilci: Merhaba Ahmet Bey, geçmiş olsun. Hemen Kalamış nöbetçi teknisyenimizi yönlendiriyorum. Teknenizin adı Poyraz, bağlı olduğu iskele C-12 miydi?\nMüşteri: Evet doğru, C-12'deyim. Lütfen acele edin, açılmamız gerekiyordu.",
+    "summary": "Müşteri Kalamış Marina'daki teknesinde motorun devir almadığını ve sintine su uyarısı verdiğini bildirdi. Acil yerinde servis talebi alındı.",
+    "keyPoints": [
+      "Motor gaz yemiyor / devir yükselmiyor",
+      "Sintine alarmı aktif",
+      "Kalamış C-12 iskelesinde acil servis bekleniyor"
+    ],
+    "crm": {
+      "requestCategory": "motor_arizasi",
+      "location": "Kalamış Marina",
+      "problem": "Ana makine devir almıyor ve sintinede su seviyesi alarmı var",
+      "serviceMode": "yerinde_servis",
+      "urgency": "acil",
+      "potentialJob": "Motor arıza tespiti ve sintine pompası revizyonu",
+      "nextAction": "servis_randevusu_olustur",
+      "evidence": {
+        "location": "Kalamış Marina'dayım",
+        "problem": "gaz kolunu ittiğimde devir yükselmiyor, ayrıca sintinede su uyarısı verdi",
+        "nextAction": "Acil servis gönderebilir misiniz?"
+      }
+    },
+    "sales": {
+      "outcome": "satisa_donustu",
+      "lossReason": null,
+      "evidence": "Nöbetçi teknisyen onaylandı, servis kaydı açıldı.",
+      "confidence": 0.95
+    },
+    "tags": ["acil", "motor_arizasi", "sintine", "kalamis"]
   },
   {
     "id": "call-002",
     "caller": "Fatma Kaya",
-    "startedAt": "2024-10-01T11:20:00Z",
-    "durationSec": 95,
+    "callerPhone": "+90 543 219 44 33",
+    "boatName": "Albatros",
+    "boatModel": "Beneteau Oceanis 45",
+    "startedAt": "2024-10-09T11:20:00Z",
+    "durationSec": 224,
     "status": "completed",
-    "sentiment": "negative",
-    "transcript": "Geçen hafta yaptırdığım tamir hâlâ düzelmedi, şikâyetçiyim.",
-    "summary": "Tamir şikayeti. Müşteri memnuniyetsiz, teknik ekip yönlendirildi.",
-    "tags": ["şikayet", "tamir", "takip"]
+    "callType": "servis",
+    "urgency": "normal",
+    "location": "Göcek D-Marin",
+    "analysisStatus": "tamam",
+    "transcript": "Müşteri: Merhaba Miço Usta, Göcek D-Marin'de teknem var. Sezon sonu kışlama ve periyodik motor bakımı için fiyat ve randevu almak istiyorum.\nTemsilci: Merhaba Fatma Hanım, Beneteau 45 tekneniz için kışlama paketi ve 250 saatlik filtre/yağ bakım teklifimizi hazırlayalım. Yarın teklifi iletelim mi?\nMüşteri: Çok iyi olur, e-posta adresime gönderin lütfen.",
+    "summary": "Müşteri Göcek D-Marin'deki Beneteau 45 yelkenlisi için sezon sonu kışlama ve 250 saatlik periyodik motor bakımı teklifi istedi.",
+    "keyPoints": [
+      "Göcek D-Marin",
+      "Sezon sonu kışlama ve filtre/yağ bakımı",
+      "Teklif e-posta ile iletilecek"
+    ],
+    "crm": {
+      "requestCategory": "periyodik_bakim",
+      "location": "Göcek D-Marin",
+      "problem": "Sezon sonu kışlama ve periyodik motor yağ/filtre değişimi",
+      "serviceMode": "yerinde_servis",
+      "urgency": "normal",
+      "potentialJob": "250 saatlik periyodik motor bakımı + kışlama paketi",
+      "nextAction": "teklif_hazirla",
+      "evidence": {
+        "location": "Göcek D-Marin'de teknem var",
+        "problem": "Sezon sonu kışlama ve periyodik motor bakımı",
+        "nextAction": "fiyat ve randevu almak istiyorum"
+      }
+    },
+    "sales": {
+      "outcome": "beklemede",
+      "lossReason": null,
+      "evidence": "Teklif e-postayla gönderilmek üzere onay bekliyor.",
+      "confidence": 0.88
+    },
+    "tags": ["periyodik_bakim", "kis_bakimi", "gocek", "teklif"]
   },
   {
     "id": "call-003",
     "caller": "Mehmet Deniz",
-    "startedAt": "2024-10-01T13:45:00Z",
+    "callerPhone": "+90 555 771 00 12",
+    "boatName": "Poseidon",
+    "boatModel": "Bavaria Cruiser 46",
+    "startedAt": "2024-10-09T13:45:00Z",
     "durationSec": 0,
     "status": "missed",
-    "sentiment": "neutral",
+    "callType": "servis",
+    "urgency": "yuksek",
+    "location": "Bodrum Milta Marina",
+    "analysisStatus": "kismi",
     "transcript": "",
-    "summary": "Cevapsız çağrı.",
-    "tags": ["cevapsız"]
+    "summary": "Bodrum Milta Marina'dan kayıtlı Mehmet Deniz'den gelen cevapsız çağrı. Müşterinin açık servis talebi bulunuyor.",
+    "keyPoints": [
+      "Cevapsız çağrı",
+      "Bodrum Milta Marina",
+      "Geri arama gerekiyor"
+    ],
+    "crm": {
+      "requestCategory": "diger",
+      "location": "Bodrum Milta Marina",
+      "problem": "Cevapsız çağrı - arama nedeni henüz bilinmiyor",
+      "serviceMode": "yerinde_servis",
+      "urgency": "yuksek",
+      "potentialJob": "Müşteri talep tespiti",
+      "nextAction": "geri_ara",
+      "evidence": {
+        "location": "Sistem profil kaydı: Bodrum Milta Marina"
+      }
+    },
+    "sales": {
+      "outcome": "beklemede",
+      "lossReason": null,
+      "evidence": "Geri dönüş yapılmadı.",
+      "confidence": 0.5
+    },
+    "tags": ["cevapsiz", "geri_ara", "bodrum"]
   },
   {
     "id": "call-004",
-    "caller": "Zeynep Arslan",
-    "startedAt": "2024-10-02T08:30:00Z",
-    "durationSec": 480,
+    "caller": "Burak Çelik",
+    "callerPhone": "+90 533 889 12 67",
+    "boatName": "Rüzgar",
+    "boatModel": "Jeanneau Sun Odyssey 440",
+    "startedAt": "2024-10-09T15:10:00Z",
+    "durationSec": 185,
     "status": "completed",
-    "sentiment": "positive",
-    "transcript": "Yeni tekne modeli hakkında bilgi almak istedim, çok yardımcı oldunuz.",
-    "summary": "Yeni tekne modeli sorgusu. Müşteri satın alma sürecine yönlendirildi.",
-    "tags": ["satış", "bilgi", "memnun"]
+    "callType": "teklif",
+    "urgency": "dusuk",
+    "location": "Tuzla Marina",
+    "analysisStatus": "tamam",
+    "transcript": "Müşteri: İyi günler, baş pervane montajı (bow thruster) için verdiğiniz 4.500 Euro teklifi değerlendirdik fakat bütçemizin çok üzerinde kaldı. Başka bir marinadaki ustanın fiyatı yarı yarıya.\nTemsilci: Burak Bey orijinal tünel ve garantili montaj yapıyoruz ancak bütçenizi anlıyoruz.\nMüşteri: Teşekkürler, şimdilik iptal edelim.",
+    "summary": "Müşteri Tuzla Marina'da baş pervane montajı teklifini yüksek bulduğu ve rakip ustanın daha uygun olduğunu belirttiği için işlemi iptal etti.",
+    "keyPoints": [
+      "Tuzla Marina",
+      "Baş pervane montaj teklifi",
+      "Fiyat yüksekliği nedeniyle iptal"
+    ],
+    "crm": {
+      "requestCategory": "elektrik_arizasi",
+      "location": "Tuzla Marina",
+      "problem": "Baş pervane montajı ve elektrik tesisatı",
+      "serviceMode": "atolyede",
+      "urgency": "dusuk",
+      "potentialJob": "Bow thruster montajı",
+      "nextAction": "aksiyon_yok",
+      "evidence": {
+        "location": "Tuzla Marina",
+        "problem": "baş pervane montajı (bow thruster)",
+        "nextAction": "şimdilik iptal edelim"
+      }
+    },
+    "sales": {
+      "outcome": "kaybedildi",
+      "lossReason": "fiyat",
+      "evidence": "Müşteri teklifi yüksek buldu ve rakip ustanın fiyatını gerekçe gösterdi.",
+      "confidence": 0.98
+    },
+    "tags": ["kaybedildi", "fiyat", "bow_thruster", "tuzla"]
   },
   {
     "id": "call-005",
-    "caller": "Ali Öztürk",
-    "startedAt": "2024-10-02T14:10:00Z",
-    "durationSec": 210,
+    "caller": "Deniz Saygın",
+    "callerPhone": "+90 542 660 33 21",
+    "boatName": "Martı",
+    "boatModel": "Lagoon 42 Katamaran",
+    "startedAt": "2024-10-09T16:30:00Z",
+    "durationSec": 290,
     "status": "completed",
-    "sentiment": "neutral",
-    "transcript": "Fatura konusunda sormak istediğim birkaç şey vardı.",
-    "summary": "Fatura sorgusu. Bilgi verildi, işlem tamamlandı.",
-    "tags": ["fatura", "bilgi"]
+    "callType": "yeni_musteri",
+    "urgency": "normal",
+    "location": "Yalıkavak Marina",
+    "analysisStatus": "tamam",
+    "transcript": "Müşteri: Merhaba, Yalıkavak Marina'ya yeni bağlandık. Sintine su seviye sensörleri ve jeneratör devreye girmiyor. Hafta sonu seyre çıkacağız, usta yönlendirebilir misiniz?\nTemsilci: Hoş geldiniz Deniz Bey. Elektrik ve jeneratör teknisyenimizi yarın 10:00 için görevlendiriyorum.\nMüşteri: Süper, onaylıyorum teşekkür ederim.",
+    "summary": "Yeni müşteri Yalıkavak Marina'da Lagoon 42 katamaranda sintine sensörü ve jeneratör arızası bildirdi. Yarın sabah için yerinde servis planlandı.",
+    "keyPoints": [
+      "Yeni müşteri kaydı",
+      "Yalıkavak Marina",
+      "Jeneratör ve sintine sensörü arızası"
+    ],
+    "crm": {
+      "requestCategory": "elektrik_arizasi",
+      "location": "Yalıkavak Marina",
+      "problem": "Jeneratör çalışmıyor, sintine su seviye sensörleri arızalı",
+      "serviceMode": "yerinde_servis",
+      "urgency": "normal",
+      "potentialJob": "Jeneratör arıza tespiti ve sintine sensör değişimi",
+      "nextAction": "usta_ata",
+      "evidence": {
+        "location": "Yalıkavak Marina'ya yeni bağlandık",
+        "problem": "Sintine su seviye sensörleri ve jeneratör devreye girmiyor",
+        "nextAction": "usta yönlendirebilir misiniz?"
+      }
+    },
+    "sales": {
+      "outcome": "satisa_donustu",
+      "lossReason": null,
+      "evidence": "Müşteri randevuyu onayladı, usta ataması yapıldı.",
+      "confidence": 0.92
+    },
+    "tags": ["yeni_musteri", "elektrik", "jenerator", "yalikavak"]
   }
 ]
