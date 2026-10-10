@@ -19,6 +19,14 @@
     },
     {
       "speaker": "rep",
+      "text": "Duman hâlâ çıkıyor mu, koku nasıl, yanık kablo mu yakıt mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yanık plastik gibi kokuyor, koyu duman azaldı."
+    },
+    {
+      "speaker": "rep",
       "text": "Tekneden iskeleye inebilir misiniz? Marina güvenlik ekibini de arıyorum. Tekne adı ve konumunuz?"
     },
     {
@@ -48,6 +56,10 @@
     {
       "speaker": "customer",
       "text": "Peki, bekliyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hattan ayrılmayın, ben buradayım."
     }
   ]
 }

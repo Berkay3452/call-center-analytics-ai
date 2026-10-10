@@ -19,6 +19,14 @@
     },
     {
       "speaker": "rep",
+      "text": "Motor çalışırken voltmetre kaç volt gösteriyor?"
+    },
+    {
+      "speaker": "customer",
+      "text": "On iki buçuk civarı, motoru rölantide tutunca tekrar düşüyor."
+    },
+    {
+      "speaker": "rep",
       "text": "Elektrik tarafında inceleme gerekir. Bu hafta sonu denize çıkacak mısınız?"
     },
     {

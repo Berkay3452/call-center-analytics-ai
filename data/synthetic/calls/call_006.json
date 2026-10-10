@@ -19,6 +19,14 @@
     },
     {
       "speaker": "rep",
+      "text": "Çatlakların çevresinde kabarcık ya da su sızması var mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Birkaç yerde kabarcık var, dokununca yumuşak."
+    },
+    {
+      "speaker": "rep",
       "text": "Keşif için usta gönderip ardından yazılı teklif hazırlıyoruz. Keşif iki gün içinde yapılabilir."
     },
     {
@@ -48,6 +56,10 @@
     {
       "speaker": "customer",
       "text": "Sağ olun."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dilerim."
     }
   ]
 }

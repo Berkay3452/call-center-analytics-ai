@@ -19,6 +19,14 @@
     },
     {
       "speaker": "rep",
+      "text": "Motor ne zaman tekliyor, yüksek devirde mi boşta mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yüksek devirde, özellikle gaz verince. Boşta düzgün çalışıyor."
+    },
+    {
+      "speaker": "rep",
       "text": "Anlıyorum. İlk talebinizin kaydı görünmüyor, sistemde bir aksaklık olmuş olabilir. Yarın ilk iş ustamızı gönderebilirim."
     },
     {
@@ -31,6 +39,14 @@
     },
     {
       "speaker": "customer",
+      "text": "Bugün mü? Üç gündür kimse bakmadı, şimdi nasıl bugüne sığdırıyorsunuz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Haklısınız, ekibimiz bugün yoğun ama sizin için yer açabilirim, ilk aramayı ben yapacağım."
+    },
+    {
+      "speaker": "customer",
       "text": "Hayır, geç kaldınız. Üç gündür dönüş yapılmaması beni çok rahatsız etti. Artık beklemeyeceğim, talebi iptal edin."
     },
     {
@@ -40,6 +56,10 @@
     {
       "speaker": "customer",
       "text": "Görüşürüz."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dilerim."
     }
   ]
 }

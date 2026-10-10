@@ -23,11 +23,27 @@
     },
     {
       "speaker": "customer",
+      "text": "Kullandığım bakım hangisiydi, tarihini söyleyebilir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Ocak ayında periyodik bakım yapılmış, motor yağı ve filtre değişimi."
+    },
+    {
+      "speaker": "customer",
       "text": "Anladım. Hafta sonu ofis açık mı?"
     },
     {
       "speaker": "rep",
       "text": "Cumartesi dokuz ile on yedi arası açığız, pazar yalnızca acil hat çalışıyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Acil durumda pazar günü usta gelebiliyor mu?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Acil hat pazar günü de açık, nöbetçi usta Göcek bölgesine yönlendirilir."
     },
     {
       "speaker": "customer",
@@ -40,6 +56,10 @@
     {
       "speaker": "customer",
       "text": "Hayır, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dilerim."
     }
   ]
 }

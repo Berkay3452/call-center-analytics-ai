@@ -11,6 +11,14 @@
     },
     {
       "speaker": "rep",
+      "text": "Dün saat kaçta bırakmıştınız, hatırlıyor musunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Öğleden sonra üç gibi, ustanız [İSİM] teslim aldı."
+    },
+    {
+      "speaker": "rep",
       "text": "Bakayım. Servis emri ne için açılmıştı?"
     },
     {
@@ -36,6 +44,14 @@
     {
       "speaker": "rep",
       "text": "Hayır, şimdilik not düşülmemiş."
+    },
+    {
+      "speaker": "customer",
+      "text": "Fatura ne kadar tutar, onu da öğrenebilir miyim?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Paketiniz kapsamında, ek bir ücret görünmüyor."
     },
     {
       "speaker": "customer",

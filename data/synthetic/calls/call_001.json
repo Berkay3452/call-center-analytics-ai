@@ -3,7 +3,7 @@
   "turns": [
     {
       "speaker": "rep",
-      "text": "Miço Usta, merhaba, ben Selim. Size nasıl yardımcı olabilirim?"
+      "text": "Miço Usta, merhaba, ben [İSİM]. Size nasıl yardımcı olabilirim?"
     },
     {
       "speaker": "customer",

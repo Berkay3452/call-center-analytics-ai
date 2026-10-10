@@ -27,6 +27,14 @@
     },
     {
       "speaker": "rep",
+      "text": "Karaya çekmede vinç kapasitesi önemli, katamaranın genişliği kaç metre?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yedi metre yirmi."
+    },
+    {
+      "speaker": "rep",
       "text": "Lagoon 42 için karaya çekme ve beş aylık bekleme dahil, tüm kalemleriyle toplam yüz yirmi bin lira civarında bir teklif çıkıyor."
     },
     {
@@ -48,6 +56,10 @@
     {
       "speaker": "customer",
       "text": "Gerek yok, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dilerim."
     }
   ]
 }

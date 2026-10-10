@@ -15,7 +15,8 @@ Bu ilk partidir: şimdilik yalnızca **metin ve etiket**. Sese çevirme (TTS) so
 ## Görüşme dosyası
 
 - `speaker`: `rep` (firma temsilcisi) veya `customer` (müşteri). Backend'deki `Speaker` ile aynı değerler.
-- `text` **zaten maskelenmiştir**: agent'lar yalnızca maskeli metni görür. Telefon `[TELEFON]`, kişi adı `[İSİM]` olarak yazılır. Tekne adı ve marina kişisel veri sayılmaz, açık yazılır.
+- `text` **zaten maskelenmiştir**: agent'lar yalnızca maskeli metni görür. Telefon `[TELEFON]`, kişi adı (müşteri ve çalışan) `[İSİM]` olarak yazılır. Tekne adı ve marina kişisel veri sayılmaz, açık yazılır.
+- Her görüşme 15–30 konuşma sırasıdır ve sıralar müşteri/temsilci arasında değişir.
 
 ## Etiket dosyası (`truth`)
 

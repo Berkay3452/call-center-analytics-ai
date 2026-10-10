@@ -46,7 +46,7 @@ def test_dialogue_format(cid: str) -> None:
 
     assert doc["call_id"] == cid
     turns = doc["turns"]
-    assert len(turns) >= 10
+    assert 15 <= len(turns) <= 30  # issue #12: 15–30 konuşma sırası
     assert {t["speaker"] for t in turns} == {"rep", "customer"}
     assert all(t["text"].strip() for t in turns)
     # Ardışık iki tur aynı konuşmacıya ait olmamalı (doğal diyalog akışı).
@@ -58,6 +58,15 @@ def test_transcript_has_no_unmasked_personal_data(cid: str) -> None:
     text = " ".join(t["text"] for t in calls()[cid]["turns"])
 
     assert "@" not in text
+    # Müşteri adları metinde açık geçmemeli; agent'lar yalnızca maskeli metni görür.
+    names = {
+        part
+        for m in load(DATA / "calls_meta.json")
+        for part in m["customer_ref"]["customer"].split()
+    }
+    leaked = {n for n in names if re.search(rf"{re.escape(n)}", text)}
+    assert not leaked, f"maskesiz müşteri adı: {leaked}"
+    assert "Selim" not in text, "maskesiz çalışan adı"
     assert not re.search(r"\d{6,}", text.replace(" ", "")), "uzun rakam dizisi (telefon/kimlik?)"
 
 
