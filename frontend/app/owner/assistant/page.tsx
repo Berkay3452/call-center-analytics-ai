@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
-import type { ChatMessage } from "@/lib/types";
+import type { ChatMessage, CitationCard } from "@/lib/types";
 
 let msgCounter = 0;
 function makeId() {
@@ -16,40 +16,52 @@ const PRESET_QUESTIONS = [
   "Akü voltajım normal seviyede mi?",
 ];
 
+/** Asistan bilgi tabanı: citation → citations dizisine taşındı */
 const MOCK_ASSISTANT_KNOWLEDGE: Record<
   string,
-  { reply: string; citation: ChatMessage["citation"] }
+  { reply: string; citations: CitationCard[] }
 > = {
   "Son motor bakımım ne zaman yapıldı?": {
     reply:
       "Tekneniz Poyraz (Motoryat 42) için son periyodik motor bakımı 15 Ağustos 2024 tarihinde Kalamış Marina'da usta Mehmet Şimşek tarafından yapılmıştır. Motor yağı, yakıt filtreleri ve impeller değişimi tamamlanmıştır.",
-    citation: {
-      sourceTitle: "15 Ağustos 2024 Tarihli Usta Servis Raporu",
-      date: "15.08.2024",
-      callId: "call-001",
-      excerpt: "Ana makine 250 saatlik periyodik bakımı ve filtre değişimleri tamamlandı.",
-    },
+    citations: [
+      {
+        sourceTitle: "15 Ağustos 2024 Tarihli Usta Servis Raporu",
+        date: "15.08.2024",
+        callId: "call-001",
+        excerpt:
+          "Ana makine 250 saatlik periyodik bakımı ve filtre değişimleri tamamlandı.",
+      },
+    ],
   },
   "Bu ayki marina masrafım ne kadar?": {
     reply:
       "Kalamış Marina sözleşmenize göre Ekim 2024 dönemi bağlama ve elektrik/su tüketim toplamınız 14.250 TL olarak muhasebeleştirilmiştir. Son ödeme tarihi 25 Ekim'dir.",
-    citation: {
-      sourceTitle: "Kalamış Marina İskele C-12 Hizmet Faturası",
-      date: "01.10.2024",
-      excerpt: "12m motoryat standart bağlama ve sayaç tüketim bedeli.",
-    },
+    citations: [
+      {
+        sourceTitle: "Kalamış Marina İskele C-12 Hizmet Faturası",
+        date: "01.10.2024",
+        excerpt: "12m motoryat standart bağlama ve sayaç tüketim bedeli.",
+      },
+    ],
   },
   "Sintine alarmı çaldığında ilk ne yapmalıyım?": {
     reply:
       "Sintine alarmı devreye girdiğinde derhal: 1) Sintine otomatik pompasının (float switch) çalıştığını kontrol edin, 2) Şaft kovanı ve deniz suyu vanalarını (seacock) su sızıntısına karşı gözleyin, 3) Akü ana şalterinin açık olduğundan emin olun. Gerekirse Miço Usta acil destek hattından yerinde usta çağırabilirsiniz.",
-    citation: {
-      sourceTitle: "Miço Usta Acil Güvenlik Kılavuzu & Çağrı Analiz Kaydı",
-      date: "09.10.2024",
-      callId: "call-001",
-      excerpt: "Sintine su seviyesi alarmı acil müdahale adımları.",
-    },
+    citations: [
+      {
+        sourceTitle: "Miço Usta Acil Güvenlik Kılavuzu & Çağrı Analiz Kaydı",
+        date: "09.10.2024",
+        callId: "call-001",
+        excerpt: "Sintine su seviyesi alarmı acil müdahale adımları.",
+      },
+    ],
   },
 };
+
+/** "Bulamadım" yanıtı — citations boş dizi olarak gelir */
+const NOT_FOUND_REPLY =
+  "Bu konuda kayıtlarda bilgi bulamadım. Daha fazla bilgi için Miço Usta servis ekibinizle iletişime geçebilirsiniz.";
 
 const INITIAL_MESSAGES: ChatMessage[] = [
   {
@@ -58,6 +70,7 @@ const INITIAL_MESSAGES: ChatMessage[] = [
     content:
       "Merhaba! Ben Miço Usta Tekne Asistanı. Teknenizin bakım geçmişi, marina kayıtları ve teknik durumu hakkında size yardımcı olabilirim.",
     timestamp: "2024-10-09T09:00:00Z",
+    citations: [],
   },
 ];
 
@@ -77,6 +90,7 @@ export default function AssistantPage() {
         role: "user",
         content: text,
         timestamp: new Date().toISOString(),
+        citations: [],
       };
 
       setMessages((prev) => [...prev, userMsg]);
@@ -93,19 +107,14 @@ export default function AssistantPage() {
             role: "assistant",
             content: matched.reply,
             timestamp: new Date().toISOString(),
-            citation: matched.citation,
+            citations: matched.citations,
           }
         : {
             id: makeId(),
             role: "assistant",
-            content:
-              `"${text}" sorunuzla ilgili kayıtlar inceleniyor. Teknenizin servis geçmişinde ilgili teknik rapor oluşturulduğunda size detaylı bilgi sunulacaktır.`,
+            content: NOT_FOUND_REPLY,
             timestamp: new Date().toISOString(),
-            citation: {
-              sourceTitle: "Miço Usta Entegre Tekne Bilgi Bankası",
-              date: "Bugün",
-              excerpt: "Tekne seyir defteri ve çağrı transkripti arşivi.",
-            },
+            citations: [], // Boş dizi → kaynak kartı gizlenir
           };
 
       setMessages((prev) => [...prev, assistantMsg]);
@@ -128,7 +137,7 @@ export default function AssistantPage() {
           </p>
         </div>
         <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200">
-          ● Çevrimiçi & Servis Geçmişi Bağlı
+          ● Çevrimiçi &amp; Servis Geçmişi Bağlı
         </span>
       </div>
 
@@ -151,6 +160,8 @@ export default function AssistantPage() {
       <div className="flex-1 overflow-y-auto rounded-xl border border-gray-200 bg-white p-5 space-y-4 shadow-sm">
         {messages.map((msg) => {
           const isUser = msg.role === "user";
+          const hasCitations =
+            !isUser && Array.isArray(msg.citations) && msg.citations.length > 0;
 
           return (
             <div
@@ -166,20 +177,34 @@ export default function AssistantPage() {
               >
                 <p className="leading-relaxed whitespace-pre-wrap">{msg.content}</p>
 
-                {/* Kaynak Atıf Kartı */}
-                {!isUser && msg.citation && (
-                  <div className="mt-3 rounded-lg border border-sky-200 bg-sky-50/80 p-2.5 text-xs text-slate-800">
-                    <div className="flex items-center gap-1.5 font-bold text-sky-800">
-                      <span>📌</span>
-                      <span>{msg.citation.sourceTitle}</span>
-                      <span className="text-[10px] text-slate-400">({msg.citation.date})</span>
-                    </div>
-                    {msg.citation.excerpt && (
-                      <p className="mt-1 text-[11px] text-slate-600 italic">
-                        &ldquo;{msg.citation.excerpt}&rdquo;
-                      </p>
-                    )}
+                {/* Kaynak Atıf Kartları (citations dizisi) */}
+                {hasCitations && (
+                  <div className="mt-3 space-y-2">
+                    {msg.citations!.map((c, idx) => (
+                      <div
+                        key={idx}
+                        className="rounded-lg border border-sky-200 bg-sky-50/80 p-2.5 text-xs text-slate-800"
+                      >
+                        <div className="flex items-center gap-1.5 font-bold text-sky-800">
+                          <span>📌</span>
+                          <span>{c.sourceTitle}</span>
+                          <span className="text-[10px] text-slate-400">({c.date})</span>
+                        </div>
+                        {c.excerpt && (
+                          <p className="mt-1 text-[11px] text-slate-600 italic">
+                            &ldquo;{c.excerpt}&rdquo;
+                          </p>
+                        )}
+                      </div>
+                    ))}
                   </div>
+                )}
+
+                {/* "Bulamadım" bilgi notu — asistan yanıtı ama citations yok */}
+                {!isUser && !hasCitations && msg.id !== "msg-welcome" && (
+                  <p className="mt-2 text-[11px] text-slate-400 italic">
+                    ℹ️ Bu yanıt için kayıt kaynağı bulunamadı.
+                  </p>
                 )}
 
                 {msg.timestamp && (

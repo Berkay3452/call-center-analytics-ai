@@ -214,16 +214,76 @@ export interface CountItem {
 // ---------------------------------------------------------------------------
 export type MessageRole = "user" | "assistant";
 
+/** Tekil kaynak atıf kartı */
+export interface CitationCard {
+  sourceTitle: string;
+  date: string;
+  callId?: string;
+  excerpt?: string;
+}
+
 export interface ChatMessage {
   id: string;
   role: MessageRole;
   content: string;
   timestamp: string;
-  /** Kaynak atıf kartı (örn. "Kaynak: 12 Ekim tarihli usta görüşmesi") */
-  citation?: {
-    sourceTitle: string;
-    date: string;
-    callId?: string;
-    excerpt?: string;
-  };
+  /**
+   * Birden fazla kaynak kartı listesi.
+   * Boş dizi veya undefined → kaynak kartı gösterilmez ("bulamadım" durumu).
+   */
+  citations?: CitationCard[];
+  /**
+   * @deprecated Geriye dönük uyumluluk için saklı. `citations[0]` kullanın.
+   */
+  citation?: CitationCard;
 }
+
+// ---------------------------------------------------------------------------
+// Günlük Çağrı Trendi
+// ---------------------------------------------------------------------------
+export interface DailyCallPoint {
+  date: string;
+  label: string;
+  count: number;
+}
+
+// ---------------------------------------------------------------------------
+// Arıza Kategorisi İstatistiği
+// ---------------------------------------------------------------------------
+export interface FailureCategoryItem {
+  category: string;
+  label: string;
+  count: number;
+  pct: number;
+  color: string;
+}
+
+// ---------------------------------------------------------------------------
+// Marina İstatistiği
+// ---------------------------------------------------------------------------
+export interface MarinaStatItem {
+  name: string;
+  count: number;
+  pct: number;
+  tag: string;
+}
+
+// ---------------------------------------------------------------------------
+// Kayıp Nedeni İstatistiği
+// ---------------------------------------------------------------------------
+export interface LossReasonItem {
+  reason: LossReason;
+  label: string;
+  pct: number;
+  count: number;
+  color: string;
+}
+
+// ---------------------------------------------------------------------------
+// Analiz Durumu Etiketi
+// ---------------------------------------------------------------------------
+export const ANALYSIS_STATUS_LABELS: Record<AnalysisStatus, string> = {
+  tamam: "Tamam",
+  kismi: "Kısmi",
+  basarisiz: "Başarısız",
+};

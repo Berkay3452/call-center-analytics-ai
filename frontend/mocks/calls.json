@@ -206,5 +206,43 @@
       "confidence": 0.92
     },
     "tags": ["yeni_musteri", "elektrik", "jenerator", "yalikavak"]
+  },
+  {
+    "id": "call-006",
+    "caller": "Selin Arslan",
+    "callerPhone": "+90 530 447 22 88",
+    "boatName": "Ufuk",
+    "boatModel": "Azimut 55 (2021)",
+    "startedAt": "2024-10-09T17:45:00Z",
+    "durationSec": 143,
+    "status": "completed",
+    "callType": "servis",
+    "urgency": "yuksek",
+    "location": "Göcek D-Marin",
+    "analysisStatus": "basarisiz",
+    "transcript": "Müşteri: Merhaba, dümen hidroliği kaçırıyor sanırım. Sesli bir ses var. Uzaktan destek alabilir miyim?\nTemsilci: Anladım Selin Hanım, şu an uzaktan bağlanamıyoruz, ama…\nMüşteri: (hat kesildi)",
+    "summary": "Göcek D-Marin'de bulunan Azimut 55 teknesinde dümen hidrolik sistemi arızası bildirildi. Hat kesilmesi nedeniyle analiz tamamlanamadı.",
+    "keyPoints": [
+      "Dümen hidroliği kaçırıyor",
+      "Hat kesilmesi nedeniyle görüşme yarıda kesildi",
+      "Analiz başarısız — eksik transkript"
+    ],
+    "crm": {
+      "requestCategory": "motor_arizasi",
+      "location": "Göcek D-Marin",
+      "problem": "Dümen hidrolik sistemi olası kaçak — transkript eksik",
+      "serviceMode": "uzaktan_destek",
+      "urgency": "yuksek",
+      "potentialJob": "Hidrolik sistem incelemesi",
+      "nextAction": "geri_ara",
+      "evidence": {}
+    },
+    "sales": {
+      "outcome": "beklemede",
+      "lossReason": null,
+      "evidence": "Görüşme tamamlanamadı.",
+      "confidence": 0.3
+    },
+    "tags": ["basarisiz_analiz", "dumen", "gocek", "hat_kesildi"]
   }
 ]

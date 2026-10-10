@@ -1,10 +1,27 @@
 import { PlaceholderCard } from "@/components/PlaceholderCard";
-import { fetchKpis } from "@/lib/api";
+import {
+  fetchDailyCalls,
+  fetchFailureCategories,
+  fetchKpis,
+  fetchLossReasons,
+  fetchMarinaStats,
+} from "@/lib/api";
+import { EMPTY_LABEL } from "@/lib/types";
 
 export const metadata = { title: "Çağrı Analitiği Dashboard | Miço Usta" };
 
 export default async function AnalyticsPage() {
-  const kpis = await fetchKpis();
+  const [kpis, dailyCalls, failureCategories, marinaStats, lossReasons] =
+    await Promise.all([
+      fetchKpis(),
+      fetchDailyCalls(),
+      fetchFailureCategories(),
+      fetchMarinaStats(),
+      fetchLossReasons(),
+    ]);
+
+  // Bar grafik ölçekleme: en yüksek değeri 100% kabul et
+  const maxCount = Math.max(...dailyCalls.map((d) => d.count), 1);
 
   return (
     <div className="space-y-6">
@@ -77,7 +94,7 @@ export default async function AnalyticsPage() {
                     : "text-gray-900"
                 }`}
               >
-                {kpi.value}
+                {kpi.value ?? EMPTY_LABEL}
                 {kpi.unit && (
                   <span className="ml-1 text-xs font-normal text-gray-400">
                     {kpi.unit}
@@ -100,6 +117,28 @@ export default async function AnalyticsPage() {
         })}
       </div>
 
+      {/* Günlük Çağrı Trendi Grafiği */}
+      <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <h2 className="text-sm font-bold text-gray-900">Günlük Çağrı Sayısı Trendi</h2>
+        <p className="text-xs text-gray-400 mb-5">Son 7 güne ait çağrı hacmi</p>
+
+        <div className="flex items-end gap-3 h-40">
+          {dailyCalls.map((day) => {
+            const heightPct = Math.round((day.count / maxCount) * 100);
+            return (
+              <div key={day.date} className="flex flex-1 flex-col items-center gap-1">
+                {/* Sayı etiketi */}
+                <span className="text-[10px] font-bold text-sky-700">{day.count}</span>
+                {/* Bar */}
+                <div className="w-full rounded-t-md bg-sky-500 transition-all" style={{ height: `${heightPct}%` }} />
+                {/* Gün etiketi */}
+                <span className="text-[10px] text-gray-500 font-medium">{day.label ?? EMPTY_LABEL}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* 3 Temel Analiz Grafiği */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* 1. En Sık Tekne Arızaları */}
@@ -112,16 +151,10 @@ export default async function AnalyticsPage() {
           </p>
 
           <div className="space-y-3">
-            {[
-              { name: "Motor & Tahrik Arızası", count: 213, pct: 45, color: "bg-sky-600" },
-              { name: "Elektrik Sistemi & Jeneratör", count: 168, pct: 35, color: "bg-sky-500" },
-              { name: "Sintine & Su Basma Alarmı", count: 128, pct: 27, color: "bg-sky-400" },
-              { name: "Periyodik Sezon Bakımı", count: 91, pct: 19, color: "bg-slate-400" },
-              { name: "Gövde, Zehirli & Tutya", count: 67, pct: 14, color: "bg-slate-300" },
-            ].map((item) => (
-              <div key={item.name} className="space-y-1">
+            {failureCategories.map((item) => (
+              <div key={item.category} className="space-y-1">
                 <div className="flex justify-between text-xs">
-                  <span className="font-semibold text-gray-700">{item.name}</span>
+                  <span className="font-semibold text-gray-700">{item.label ?? EMPTY_LABEL}</span>
                   <span className="font-bold text-gray-900">{item.count}</span>
                 </div>
                 <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
@@ -145,16 +178,10 @@ export default async function AnalyticsPage() {
           </p>
 
           <div className="space-y-3">
-            {[
-              { name: "Kalamış Marina (İstanbul)", count: 468, pct: 37, tag: "En Yüksek" },
-              { name: "Göcek D-Marin (Muğla)", count: 384, pct: 31, tag: "Sezon Yoğun" },
-              { name: "Bodrum Milta Marina", count: 246, pct: 20, tag: "Normal" },
-              { name: "Tuzla Marina / Tersaneler", count: 98, pct: 8, tag: "Bakım" },
-              { name: "Yalıkavak Marina", count: 52, pct: 4, tag: "VIP" },
-            ].map((m) => (
+            {marinaStats.map((m) => (
               <div key={m.name} className="flex items-center justify-between border-b pb-2 text-xs">
                 <div>
-                  <p className="font-semibold text-gray-800">{m.name}</p>
+                  <p className="font-semibold text-gray-800">{m.name ?? EMPTY_LABEL}</p>
                   <span className="text-[10px] text-gray-400">{m.pct}% toplam çağrı</span>
                 </div>
                 <div className="text-right">
@@ -175,15 +202,10 @@ export default async function AnalyticsPage() {
           </p>
 
           <div className="space-y-3">
-            {[
-              { reason: "Fiyat Yüksek Bulundu", pct: 48, count: 54, color: "bg-red-500" },
-              { reason: "Geç Dönüş / Yanıt Gecikmesi", pct: 34, count: 38, color: "bg-orange-500" },
-              { reason: "Rakip Servis / Yerel Usta Tercihi", pct: 14, count: 16, color: "bg-amber-500" },
-              { reason: "Takvim / Usta Müsait Değil", pct: 4, count: 5, color: "bg-slate-400" },
-            ].map((loss) => (
+            {lossReasons.map((loss) => (
               <div key={loss.reason} className="space-y-1">
                 <div className="flex justify-between text-xs">
-                  <span className="font-semibold text-gray-700">{loss.reason}</span>
+                  <span className="font-semibold text-gray-700">{loss.label ?? EMPTY_LABEL}</span>
                   <span className="font-bold text-gray-900">%{loss.pct} ({loss.count})</span>
                 </div>
                 <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">

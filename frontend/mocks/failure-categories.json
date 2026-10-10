@@ -1,0 +1,7 @@
+[
+  { "category": "motor_arizasi",    "label": "Motor & Tahrik Arızası",         "count": 213, "pct": 45, "color": "bg-sky-600" },
+  { "category": "elektrik_arizasi", "label": "Elektrik Sistemi & Jeneratör",   "count": 168, "pct": 35, "color": "bg-sky-500" },
+  { "category": "yakit_sistemi",    "label": "Sintine & Su Basma Alarmı",      "count": 128, "pct": 27, "color": "bg-sky-400" },
+  { "category": "periyodik_bakim",  "label": "Periyodik Sezon Bakımı",         "count": 91,  "pct": 19, "color": "bg-slate-400" },
+  { "category": "govde_ve_kil",     "label": "Gövde, Zehirli & Tutya",         "count": 67,  "pct": 14, "color": "bg-slate-300" }
+]

@@ -1,0 +1,6 @@
+[
+  { "reason": "fiyat",    "label": "Fiyat Yüksek Bulundu",              "pct": 48, "count": 54, "color": "bg-red-500" },
+  { "reason": "gec_donus","label": "Geç Dönüş / Yanıt Gecikmesi",       "pct": 34, "count": 38, "color": "bg-orange-500" },
+  { "reason": "rakip",    "label": "Rakip Servis / Yerel Usta Tercihi", "pct": 14, "count": 16, "color": "bg-amber-500" },
+  { "reason": "takvim",   "label": "Takvim / Usta Müsait Değil",        "pct": 4,  "count": 5,  "color": "bg-slate-400" }
+]
