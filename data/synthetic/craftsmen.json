@@ -1,0 +1,50 @@
+[
+  {
+    "id": "e94e599a-9883-5f31-9046-a3f68be8cb89",
+    "code": "craft_001",
+    "full_name": "Mehmet Şimşek",
+    "specialty": "Makine, ana motor, jeneratör ve yakıt sistemi",
+    "phone": "+90 532 101 10 01",
+    "created_at": "2024-10-02T08:30:00+00:00"
+  },
+  {
+    "id": "19bde69a-30dc-51f0-8c41-f0616dedc38f",
+    "code": "craft_002",
+    "full_name": "Hakan Aksoy",
+    "specialty": "Elektrik & Elektronik, akü, redresör ve navigasyon",
+    "phone": "+90 532 101 10 02",
+    "created_at": "2024-10-03T08:30:00+00:00"
+  },
+  {
+    "id": "e566dd72-72b3-5f19-bfcb-85e589ef2ee7",
+    "code": "craft_003",
+    "full_name": "Selim Kaya",
+    "specialty": "Makine, enjektör, turbo ve periyodik motor bakımı",
+    "phone": "+90 532 101 10 03",
+    "created_at": "2024-10-04T08:30:00+00:00"
+  },
+  {
+    "id": "4ae98d52-0426-50e6-b8ef-0f58e65830fc",
+    "code": "craft_004",
+    "full_name": "Murat Demirci",
+    "specialty": "Temizlik & Tekne Bakımı, gövde, osmoz ve karina boyası",
+    "phone": "+90 532 101 10 04",
+    "created_at": "2024-10-05T08:30:00+00:00"
+  },
+  {
+    "id": "9f1c6668-f66c-50cf-b61b-2abd0342e042",
+    "code": "craft_005",
+    "full_name": "Kadir Öztürk",
+    "specialty": "Su & Sıhhi Tesisat, sintine, hidrofor ve güvenlik ekipmanı",
+    "phone": "+90 532 101 10 05",
+    "created_at": "2024-10-06T08:30:00+00:00"
+  },
+  {
+    "id": "46d36d79-79e9-584d-9f59-5cec5cf1fe39",
+    "code": "craft_006",
+    "full_name": "Serkan Aydın",
+    "specialty": "Mekanik & Hidrolik, dümen, şaft, pervane ve iklimlendirme",
+    "phone": "+90 532 101 10 06",
+    "created_at": "2024-10-07T08:30:00+00:00"
+  }
+]

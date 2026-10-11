@@ -1,0 +1,164 @@
+[
+  {
+    "id": "c57e2519-87f4-597e-be0c-80889768255a",
+    "code": "cust_001",
+    "full_name": "Burak Çelik",
+    "phone": "+90 533 889 12 67",
+    "email": "burak.celik@example.com",
+    "marina": "Tuzla Marina",
+    "created_at": "2024-11-06T09:30:00+00:00"
+  },
+  {
+    "id": "8ff32870-b5ca-5689-a6af-3548246f014e",
+    "code": "cust_002",
+    "full_name": "Fatma Kaya",
+    "phone": "+90 543 219 44 33",
+    "email": "fatma.kaya@example.com",
+    "marina": "Göcek D-Marin",
+    "created_at": "2024-11-11T09:30:00+00:00"
+  },
+  {
+    "id": "cb138ca4-1453-5ef6-9537-713c5b7ecb4f",
+    "code": "cust_003",
+    "full_name": "Mehmet Deniz",
+    "phone": "+90 555 771 00 12",
+    "email": "mehmet.deniz@example.com",
+    "marina": "Bodrum Milta Marina",
+    "created_at": "2024-11-16T09:30:00+00:00"
+  },
+  {
+    "id": "9229ce36-c20d-5231-ac87-49cf9dab33f1",
+    "code": "cust_004",
+    "full_name": "Kemal Aydoğan",
+    "phone": "+90 532 614 90 11",
+    "email": "kemal.aydogan@example.com",
+    "marina": "Kalamış Marina",
+    "created_at": "2024-11-21T09:30:00+00:00"
+  },
+  {
+    "id": "9842dca9-e44c-5a01-9cec-c38d6b81ec99",
+    "code": "cust_005",
+    "full_name": "Deniz Saygın",
+    "phone": "+90 542 660 33 21",
+    "email": "deniz.saygin@example.com",
+    "marina": "Yalıkavak Marina",
+    "created_at": "2024-11-26T09:30:00+00:00"
+  },
+  {
+    "id": "ef45665d-b254-5f88-8963-ed5b147b4480",
+    "code": "cust_006",
+    "full_name": "Selin Arslan",
+    "phone": "+90 530 447 22 88",
+    "email": "selin.arslan@example.com",
+    "marina": "Göcek D-Marin",
+    "created_at": "2024-12-01T09:30:00+00:00"
+  },
+  {
+    "id": "32c23a8d-ac0e-55a6-970c-d8d35020ec0f",
+    "code": "cust_007",
+    "full_name": "Okan Yurdakul",
+    "phone": "+90 535 908 41 72",
+    "email": "okan.yurdakul@example.com",
+    "marina": "Tuzla Marina",
+    "created_at": "2024-12-06T09:30:00+00:00"
+  },
+  {
+    "id": "606bd734-644f-5c21-af2f-dc734c4ecd67",
+    "code": "cust_008",
+    "full_name": "Ahmet Yılmaz",
+    "phone": "+90 532 412 88 90",
+    "email": "ahmet.yilmaz@example.com",
+    "marina": "Kalamış Marina",
+    "created_at": "2024-12-11T09:30:00+00:00"
+  },
+  {
+    "id": "e293092d-f2f9-5502-a146-39824734ea35",
+    "code": "cust_009",
+    "full_name": "Zeynep Karaca",
+    "phone": "+90 544 318 65 09",
+    "email": "zeynep.karaca@example.com",
+    "marina": "Göcek D-Marin",
+    "created_at": "2024-12-16T09:30:00+00:00"
+  },
+  {
+    "id": "06c9dc80-787b-5f45-b454-84746bf2dff9",
+    "code": "cust_010",
+    "full_name": "Cem Baykal",
+    "phone": "+90 536 702 19 84",
+    "email": "cem.baykal@example.com",
+    "marina": "Bodrum Milta Marina",
+    "created_at": "2024-12-21T09:30:00+00:00"
+  },
+  {
+    "id": "3e5b33db-334f-5270-af21-5830419fe177",
+    "code": "cust_011",
+    "full_name": "Sadiye Demir",
+    "phone": "+90 555 314 13 45",
+    "email": "sadiye.demir@example.com",
+    "marina": "Tuzla Marina",
+    "created_at": "2025-01-17T11:00:00+00:00"
+  },
+  {
+    "id": "1570da39-b49f-5210-bd43-4561bfeb4e75",
+    "code": "cust_012",
+    "full_name": "Aliihsan Korutürk",
+    "phone": "+90 533 428 27 23",
+    "email": "aliihsan.koruturk@example.com",
+    "marina": "Kalamış Marina",
+    "created_at": "2025-01-24T11:00:00+00:00"
+  },
+  {
+    "id": "4474ffcb-b9ff-561e-809e-410080ace250",
+    "code": "cust_013",
+    "full_name": "Satrettin Yüksel",
+    "phone": "+90 555 958 79 21",
+    "email": "satrettin.yuksel@example.com",
+    "marina": "Ataköy Marina",
+    "created_at": "2025-01-31T11:00:00+00:00"
+  },
+  {
+    "id": "837c0782-f6c7-5eb4-abbd-6182999001ab",
+    "code": "cust_014",
+    "full_name": "Muhammet Yaman",
+    "phone": "+90 544 632 14 13",
+    "email": "muhammet.yaman@example.com",
+    "marina": "Pendik Marinturk Marina",
+    "created_at": "2025-02-07T11:00:00+00:00"
+  },
+  {
+    "id": "578aa504-644d-56a9-bd3a-f48162f5ac2b",
+    "code": "cust_015",
+    "full_name": "Şüküfe Sakarya",
+    "phone": "+90 532 423 39 74",
+    "email": "sukufe.sakarya@example.com",
+    "marina": "İstinye Tekne Park",
+    "created_at": "2025-02-14T11:00:00+00:00"
+  },
+  {
+    "id": "43dc038d-f33b-54ec-99e2-6b3a0887da96",
+    "code": "cust_016",
+    "full_name": "Temime Korutürk",
+    "phone": "+90 544 227 81 35",
+    "email": "temime.koruturk@example.com",
+    "marina": "Göcek D-Marin",
+    "created_at": "2025-02-21T11:00:00+00:00"
+  },
+  {
+    "id": "58fc0f8b-188c-5e35-b492-52db3a0547f7",
+    "code": "cust_017",
+    "full_name": "Hasgül Çorlu",
+    "phone": "+90 555 865 99 79",
+    "email": "hasgul.corlu@example.com",
+    "marina": "Bodrum Milta Marina",
+    "created_at": "2025-02-28T11:00:00+00:00"
+  },
+  {
+    "id": "2389f25f-1e17-5ea9-b836-fd772a011c99",
+    "code": "cust_018",
+    "full_name": "Mübetcel Şafak",
+    "phone": "+90 542 425 67 85",
+    "email": "mubetcel.safak@example.com",
+    "marina": "Yalıkavak Marina",
+    "created_at": "2025-03-07T11:00:00+00:00"
+  }
+]

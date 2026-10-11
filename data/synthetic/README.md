@@ -11,6 +11,15 @@ Bu ilk partidir: şimdilik yalnızca **metin ve etiket**. Sese çevirme (TTS) so
 | `calls/call_NNN.json` | Görüşme metni: `{"call_id", "turns": [{"speaker", "text"}]}` |
 | `truth/call_NNN.truth.json` | Doğru etiketler (aşağıda) |
 | `calls_meta.json` | Santral/CRM bilgisi ve müşteri/tekne referansı |
+| `customers_boats.json` | Müşteri ve tekne birleşik referans listesi (#12 ve #23 ortak sözleşmesi) |
+| `marinas.json` | İstanbul/Marmara/Ege marinaları (10 marina) |
+| `customers.json` | Sentetik müşteriler (18 müşteri; sahte telefon ve `@example.com` e-posta) |
+| `boats.json` | Müşterilere bağlı tekneler (23 tekne; tip, model, boy, motor, yıl, marina) |
+| `craftsmen.json` | Ustalar ve uzmanlık alanları (6 usta) |
+| `service_orders.json` | Geçmiş 1–2 yıla ait servis emirleri (61 kayıt) |
+| `boat_notes.json` | Türkçe usta notları / tekne karnesi (85 not; Miço AI RAG kaynağı) |
+| `expenses.json` | Tekne bakım ve marina giderleri (62 kayıt; Miço AI gider aracı kaynağı) |
+| `subscriptions.json` | Yıllık bakım ve kışlama paketleri (15 kayıt; kalan hak aracı kaynağı) |
 
 ## Görüşme dosyası
 
@@ -55,3 +64,10 @@ Değerler `backend/app/domain/enums.py` ile birebir aynıdır; kategori ve sonra
 ## Değişiklik kuralı
 
 Etiket değiştirmek ölçüm sonuçlarını değiştirir; bir etiketi düzeltirseniz nedenini PR'da yazın. Yeni çağrı eklerken `backend/tests/test_synthetic_calls.py` formatı denetler.
+
+## Veritabanına yüklenen çağrı verisi hakkında
+
+`python -m scripts.seed` 10 çağrıyı da yükler: `calls`, `transcripts`, `transcript_segments` ve **doğru etiketleri `analysis_results` tablosuna sürüm 1 olarak** (Admin Çağrı Analitiği ekranı API hazır olmadan da dolsun diye). Dikkat:
+- Bu satırlar yapay zekânın değil **elle yazılmış doğru etiketlerin** sonucudur (güven 1.0, `agent_runs` yok).
+- Gerçek analiz aynı çağrı için **sürüm 2** olarak eklenmelidir (`UNIQUE (call_id, version)`).
+- `audio_path` ve `audio_sha256` boştur; ses dosyaları (TTS) gelince doldurulur.
