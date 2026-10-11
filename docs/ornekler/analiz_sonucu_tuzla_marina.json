@@ -7,7 +7,7 @@
     "reason": "Müşteri motor arızası bildirip usta talep ediyor."
   },
   "crm": {
-    "request_category": "motor_arizasi",
+    "request_category": "makine",
     "location": "Tuzla Marina",
     "problem": "Motor çalışıyor ama gaz verildiğinde devir yükselmiyor",
     "service_mode": "yerinde_servis",

@@ -216,7 +216,7 @@ async def test_call_classifier_on_hoca_scenario() -> None:
 
 CRM_JSON = json.dumps(
     {
-        "request_category": "motor_arizasi",
+        "request_category": "makine",
         "location": "Tuzla Marina",
         "problem": "Motor gaz verince devir almıyor",
         "service_mode": "yerinde_servis",
@@ -253,7 +253,7 @@ async def test_crm_extraction_on_hoca_scenario() -> None:
     assert result.status == "ok"
     crm = result.output
     assert crm is not None
-    assert crm.request_category == RequestCategory.MOTOR_ARIZASI
+    assert crm.request_category == RequestCategory.MAKINE
     assert crm.location == "Tuzla Marina"
     assert crm.problem == "Motor gaz verince devir almıyor"
     assert crm.service_mode == ServiceMode.YERINDE_SERVIS
@@ -264,7 +264,7 @@ async def test_crm_extraction_on_hoca_scenario() -> None:
 
 
 async def test_crm_extraction_keeps_unknown_fields_null() -> None:
-    sparse = '{"request_category": "motor_arizasi", "evidence": {}}'
+    sparse = '{"request_category": "makine", "evidence": {}}'
 
     result = await CrmExtractionAgent(model=scripted(sparse)).run(tuzla_ctx())
 

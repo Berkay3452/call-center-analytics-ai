@@ -37,7 +37,7 @@ Miço Usta'nın mevcut panelleri (Gösterge Paneli, Servis Emirleri, Tekne Sahib
     7. Ortalama Yanıt Süresi (4:32 dk)
   - **Grafik ve İstatistik Modülleri:**
     - *Günlük Çağrı Sayısı Trendi:* Son 7 güne ait çağrı hacmi sütun grafiği (Issue #36).
-    - *En Sık Tekne Arızaları:* `RequestCategory` değerlerine göre: Motor arızası (%32), Elektrik arızası (%25), Yakıt sistemi (%19), Periyodik bakım (%14), Gövde ve kıl bakımı (%10). Bir çağrının tek kategorisi olduğu için yüzdeler toplamı %100'dür.
+    - *En Sık Tekne Arızaları:* `RequestCategory` (Miço Usta hizmet kategorileri) değerlerine göre: Makine (%32), Elektrik & Elektronik (%25), Su & Sıhhi Tesisat (%19), Mekanik & Hidrolik (%14), Temizlik & Tekne Bakımı (%10). Bir çağrının tek kategorisi olduğu için yüzdeler toplamı %100'dür.
     - *En Yoğun Marinalar:* Kalamış (%37), Göcek (%31), Bodrum (%20), Tuzla (%8), Yalıkavak (%4).
     - *Satış Kaçırma Sebepleri:* Fiyat yüksek (%48), Geç dönüş (%34), Rakip usta tercihi (%14), Takvim uyuşmazlığı (%4).
   - **Son Çağrılar Tablosu:** Arayan kişi, tekne adı, marina, konu, süre, analiz durumu rozeti (`tamam`, `kismi`, `basarisiz`), aciliyet rozeti ve tek tıkla servis emrine geçiş linki (Issue #36).
@@ -53,7 +53,7 @@ Miço Usta'nın mevcut panelleri (Gösterge Paneli, Servis Emirleri, Tekne Sahib
     - **Özetleme Agent'ı özeti:** En fazla 3 cümlelik Türkçe özet ve en fazla 3 anahtar madde (`CallSummary`).
   - **Sağ Panel (7 Alanlı CRM Servis Emri):**
     - Hocanın şart koştuğu ve `backend/app/schemas/analysis.py` (`CrmExtraction`) ile tanımlanan **7 Temel CRM Alanı**:
-      1. `request_category` (Müşteri Talebi): *Motor Arızası*
+      1. `request_category` (Müşteri Talebi): *Makine*
       2. `location` (Marina / Lokasyon): *Kalamış Marina İskele C-12*
       3. `problem` (Problem Tanımı): *Ana makine devir almıyor, sintine su seviyesi alarmı aktif*
       4. `service_mode` (Hizmet Biçimi): *Yerinde Servis (yerinde_servis)*
@@ -92,7 +92,7 @@ Miço Usta'nın mevcut panelleri (Gösterge Paneli, Servis Emirleri, Tekne Sahib
 | Ekrandaki Alan | Backend Şeması | `backend/app/domain/enums.py` Karşılığı |
 |---|---|---|
 | **Çağrı Tipi** | `CallClassification.call_type` | `CallType` (`yeni_musteri`, `servis`, `teklif`, `acil`, `bilgi`) |
-| **Müşteri Talebi** | `CrmExtraction.request_category` | `RequestCategory` (`motor_arizasi`, `elektrik_arizasi`, `periyodik_bakim`...) |
+| **Müşteri Talebi** | `CrmExtraction.request_category` | `RequestCategory` (`makine`, `elektrik_elektronik`, `su_sihhi_tesisat`...; Miço Usta hizmet kategorileri) |
 | **Hizmet Biçimi** | `CrmExtraction.service_mode` | `ServiceMode` (`yerinde_servis`, `atolyede`, `uzaktan_destek`) |
 | **Aciliyet** | `CrmExtraction.urgency` | `Urgency` (`dusuk`, `normal`, `yuksek`, `acil`) |
 | **Sonraki Aksiyon** | `CrmExtraction.next_action` | `NextAction` (`servis_randevusu_olustur`, `teklif_hazirla`, `usta_ata`...) |

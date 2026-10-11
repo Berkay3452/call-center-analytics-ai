@@ -8,11 +8,11 @@
     "service_mode": null,
     "urgency": "dusuk",
     "potential_job": null,
-    "next_action": "bilgi_ver"
+    "next_action": "aksiyon_yok"
   },
   "sales": {
     "outcome": "beklemede",
     "loss_reason": null
   },
-  "notes": "Bilgi çağrısı: kategori, problem, hizmet biçimi ve potansiyel iş yok, null beklenir."
+  "notes": "Bilgi çağrısı: kategori, problem, hizmet biçimi ve potansiyel iş yok, null beklenir. Bilgi görüşmede verildi, müşteri kendisi arayacak: firmanın sonraki adımı yok (aksiyon_yok)."
 }

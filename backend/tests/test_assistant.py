@@ -191,8 +191,8 @@ def test_last_maintenance_and_package_values() -> None:
 
     assert last is not None and (last.on, last.boat_name) == (date(2026, 8, 15), "Poyraz")
     assert pkg is not None and (pkg.plan, pkg.remaining, pkg.total) == ("Gold", 1, 2)
-    assert tools.get_last_maintenance(OWNER_A, category="elektrik_arizasi") is not None
-    assert tools.get_last_maintenance(OWNER_A, category="kis_bakimi") is None
+    assert tools.get_last_maintenance(OWNER_A, category="elektrik_elektronik") is not None
+    assert tools.get_last_maintenance(OWNER_A, category="iklimlendirme") is None
 
 
 # --- Arama (sahte): yetki ---

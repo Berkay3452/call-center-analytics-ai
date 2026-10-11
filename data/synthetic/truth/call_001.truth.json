@@ -2,7 +2,7 @@
   "call_id": "call_001",
   "call_type": "servis",
   "crm": {
-    "request_category": "motor_arizasi",
+    "request_category": "makine",
     "location": "Tuzla Marina",
     "problem": "Motor gaz verildiğinde devir yükselmiyor",
     "service_mode": "yerinde_servis",
@@ -14,5 +14,5 @@
     "outcome": "satisa_donustu",
     "loss_reason": null
   },
-  "notes": "Hocanın örnek senaryosu. Yarın talebi ve cumartesi denize çıkış nedeniyle aciliyet yüksek."
+  "notes": "Hocanın örnek senaryosu. Yarın talebi ve cumartesi denize çıkış nedeniyle aciliyet yüksek. Motor devir sorunu: makine."
 }

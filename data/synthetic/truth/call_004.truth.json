@@ -2,7 +2,7 @@
   "call_id": "call_004",
   "call_type": "servis",
   "crm": {
-    "request_category": "yakit_sistemi",
+    "request_category": "makine",
     "location": "Kalamış Marina",
     "problem": "Motor arada bir tekliyor, yakıt filtresi tıkanmış olabilir",
     "service_mode": "yerinde_servis",
@@ -14,5 +14,5 @@
     "outcome": "kaybedildi",
     "loss_reason": "gec_donus"
   },
-  "notes": "Kayıp nedeni geç dönüş: müşteri üç gündür dönüş yapılmadığını söylüyor."
+  "notes": "Kayıp nedeni geç dönüş: müşteri üç gündür dönüş yapılmadığını söylüyor. Belirti motor teklemesi (müşterinin yakıt filtresi tahmini değil): makine; Miço Usta'da yakıt filtresi de Makine kategorisinde."
 }

@@ -2,7 +2,7 @@
   "call_id": "call_010",
   "call_type": "acil",
   "crm": {
-    "request_category": "motor_arizasi",
+    "request_category": "elektrik_elektronik",
     "location": "Bodrum Milta Marina",
     "problem": "Makine dairesinde duman ve yangın alarmı",
     "service_mode": "yerinde_servis",
@@ -14,5 +14,5 @@
     "outcome": "satisa_donustu",
     "loss_reason": null
   },
-  "notes": "Yangın/duman: acil."
+  "notes": "Duman ve yanık plastik kokusu: elektrik_elektronik (kural: duman/yanık kablo kokusu elektrik)."
 }

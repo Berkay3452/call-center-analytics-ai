@@ -46,6 +46,11 @@ jobs:
               - 'backend/**'
               - 'infra/**'
               - '.github/workflows/backend-ci.yml'
+              # Backend testlerinin denetlediği paylaşılan sözleşmeler (enum tutarlılığı, sentetik veri)
+              - 'data/synthetic/**'
+              - 'docs/enums.md'
+              - 'docs/db_schema.md'
+              - 'frontend/lib/types.ts'
 
   lint:
     name: Lint (ruff)

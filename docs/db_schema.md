@@ -247,7 +247,7 @@ erDiagram
 | `started_at` | `TIMESTAMPTZ` | ✅ | — | Çağrının başladığı zaman |
 | `answer_delay_s` | `INTEGER` | — | — | Cevap süresi (saniye); çağrının kaç saniyede açıldığı |
 | `duration_s` | `INTEGER` | — | — | Çağrı süresi (saniye) |
-| `switchboard_outcome` | `TEXT` | — | — | Santral sonucu. CHECK: `randevu_olusturuldu`, `usta_yonlendirildi`, `iptal`, `bilgi_verildi`, `kayit_olusturuldu` |
+| `switchboard_outcome` | `TEXT` | — | — | Santral sonucu. CHECK: `randevu_olusturuldu`, `usta_yonlendirildi`, `kayit_olusturuldu`, `bilgi_verildi`, `geri_aranacak`, `iptal` |
 | `audio_path` | `TEXT` | — | — | Storage'taki ses dosyası yolu (ör. `call-audio/call_001.wav`) |
 | `audio_sha256` | `CHAR(64)` | — | — | Ses dosyasının SHA-256 özeti; aynı dosya tekrar yüklenirse uyarı verilir |
 | `customer_id` | `UUID` | — | — | `customers(id)` FK; arayan müşteri **eşleştirilince** doldurulur (CRM kaydı ve servis emri önerisi için). Eşleşme yoksa `NULL` |
@@ -352,7 +352,7 @@ Dört agent'ın birleşik çıktısı. Yeniden analiz yapılırsa aynı `call_id
 - `UNIQUE (call_id, version)`
 - `CHECK (status IN ('tamam', 'kismi', 'basarisiz'))`
 - `CHECK (call_type IS NULL OR call_type IN ('yeni_musteri', 'servis', 'teklif', 'acil', 'bilgi'))`
-- `CHECK (request_category IS NULL OR request_category IN ('motor_arizasi', 'elektrik_arizasi', 'yakit_sistemi', 'govde_ve_kil', 'periyodik_bakim', 'kis_bakimi', 'diger'))`
+- `CHECK (request_category IS NULL OR request_category IN ('makine', 'mekanik_hidrolik', 'elektrik_elektronik', 'su_sihhi_tesisat', 'iklimlendirme', 'tekne_guvenligi', 'temizlik_bakim', 'diger'))`
 - `CHECK (service_mode IS NULL OR service_mode IN ('yerinde_servis', 'atolyede', 'uzaktan_destek'))`
 - `CHECK (urgency IS NULL OR urgency IN ('dusuk', 'normal', 'yuksek', 'acil'))`
 - `CHECK (next_action IS NULL OR next_action IN ('servis_randevusu_olustur', 'teklif_hazirla', 'geri_ara', 'bilgi_ver', 'usta_ata', 'aksiyon_yok'))`
@@ -523,7 +523,7 @@ Servis emirleri. Bir teknede yapılacak/yapılmış iş.
 - `FK (customer_id) REFERENCES customers(id)`
 - `FK (craftsman_id) REFERENCES craftsmen(id)`
 - `CHECK (status IN ('yeni_atandi', 'kesifte', 'onaylandi', 'devam_ediyor', 'tamamlandi'))`
-- `CHECK (category IS NULL OR category IN ('motor_arizasi', 'elektrik_arizasi', 'yakit_sistemi', 'govde_ve_kil', 'periyodik_bakim', 'kis_bakimi', 'diger'))`
+- `CHECK (category IS NULL OR category IN ('makine', 'mekanik_hidrolik', 'elektrik_elektronik', 'su_sihhi_tesisat', 'iklimlendirme', 'tekne_guvenligi', 'temizlik_bakim', 'diger'))`
 
 ---
 
@@ -655,20 +655,20 @@ LIMIT 8;
 
 ## 7. Enum Değerleri Referansı
 
-Kaynak: `backend/app/domain/enums.py` (#7 ile uyumlu)
+Kaynak: `backend/app/domain/enums.py`; tanımlar ve kurallar `docs/enums.md` (#7)
 
 | Enum | Değerler |
 |------|----------|
 | `CallType` | `yeni_musteri`, `servis`, `teklif`, `acil`, `bilgi` |
-| `RequestCategory` | `motor_arizasi`, `elektrik_arizasi`, `yakit_sistemi`, `govde_ve_kil`, `periyodik_bakim`, `kis_bakimi`, `diger` |
-| `ServiceOrderStatus` | `yeni_atandi`, `kesifte`, `onaylandi`, `devam_ediyor`, `tamamlandi` (Miço Usta iş akışı; `enums.py`'ye #7'de eklenecek) |
+| `RequestCategory` | `makine`, `mekanik_hidrolik`, `elektrik_elektronik`, `su_sihhi_tesisat`, `iklimlendirme`, `tekne_guvenligi`, `temizlik_bakim`, `diger` (Miço Usta hizmet kategorileri) |
+| `ServiceOrderStatus` | `yeni_atandi`, `kesifte`, `onaylandi`, `devam_ediyor`, `tamamlandi` (Miço Usta iş akışı) |
 | `ServiceMode` | `yerinde_servis`, `atolyede`, `uzaktan_destek` |
 | `Urgency` | `dusuk`, `normal`, `yuksek`, `acil` |
 | `NextAction` | `servis_randevusu_olustur`, `teklif_hazirla`, `geri_ara`, `bilgi_ver`, `usta_ata`, `aksiyon_yok` |
 | `SalesOutcomeType` | `satisa_donustu`, `kaybedildi`, `beklemede` |
 | `LossReason` | `fiyat`, `gec_donus`, `rakip`, `takvim`, `guven`, `diger` |
 | `AnalysisStatus` | `tamam`, `kismi`, `basarisiz` |
-| `SwitchboardOutcome` | `randevu_olusturuldu`, `usta_yonlendirildi`, `iptal`, `bilgi_verildi`, `kayit_olusturuldu` |
+| `SwitchboardOutcome` | `randevu_olusturuldu`, `usta_yonlendirildi`, `kayit_olusturuldu`, `bilgi_verildi`, `geri_aranacak`, `iptal` |
 | `Speaker` | `customer`, `rep` |
 | `ChatRole` | `user`, `assistant` |
 | `QuestionType` | `gecmis_oneri`, `sayisal`, `kapsam_disi` |
