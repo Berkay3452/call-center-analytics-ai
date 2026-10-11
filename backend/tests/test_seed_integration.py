@@ -48,7 +48,8 @@ async def test_seeded_data_is_consistent() -> None:
         # Hocanın örnek çağrısı: Tuzla Marina'daki Rüzgar teknesi ve sahibiyle eşleşmiş olmalı.
         row = await conn.fetchrow(
             "SELECT b.name, c.full_name, a.request_category, a.next_action"
-            " FROM calls ca JOIN boats b ON b.id = ca.boat_id JOIN customers c ON c.id = ca.customer_id"
+            " FROM calls ca JOIN boats b ON b.id = ca.boat_id"
+            " JOIN customers c ON c.id = ca.customer_id"
             " JOIN analysis_results a ON a.call_id = ca.id"
             " WHERE ca.marina = 'Tuzla Marina' AND ca.customer_name = 'Burak Çelik'"
         )
