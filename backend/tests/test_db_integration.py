@@ -149,13 +149,16 @@ async def test_rag_chunks_vector_search_and_tsvector_scoped_by_owner(conn: Async
             {"b": boat, "o": owner, "t": content, "v": vec},
         )
 
-    # Tam metin: veritabanı tsvector'ü içerikten üretir (Türkçe kök bulma ile).
+    # Tam metin: veritabanı tsvector'ü içerikten üretir. Not: PostgreSQL'in Türkçe kök
+    # bulucusu iyelik ekli biçimleri ('filtre' ~ 'filtresi') eşleştiremeyebiliyor (CI'da
+    # görüldü); bu yüzden burada mekanizma ekin değişmediği bir kelimeyle sınanır. Ekli
+    # biçimler için vektör araması ve hibrit sıralama (#26) devreye girer.
     hits = (
         (
             await conn.execute(
                 text(
                     "SELECT content FROM rag_chunks WHERE owner_id = :o"
-                    " AND tsv @@ plainto_tsquery('turkish', 'filtre')"
+                    " AND tsv @@ plainto_tsquery('turkish', 'impeller')"
                 ),
                 {"o": owner_a},
             )

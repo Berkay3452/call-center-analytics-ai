@@ -652,6 +652,8 @@ LIMIT 8;
 
 > **Not:** `owner_id` filtresi HNSW indeksiyle birlikte kullanıldığında indeks önce en yakın komşuları, sonra filtreyi uygular ve `LIMIT`'ten az satır dönebilir. pgvector 0.8 ve üzerinde `SET hnsw.iterative_scan = relaxed_order;` bunu çözer. #26'da (hibrit arama) sürüm ve davranış denenmeli.
 
+> **Not (CI'da görüldü):** PostgreSQL'in `turkish` kök bulucusu iyelik ekli biçimleri her zaman köke indiremiyor: `plainto_tsquery('turkish', 'filtre')`, "filtresi" geçen metni bulamadı. Tam metin araması tek başına Türkçe çekimlerde eksik kalır; #26'da vektör araması ile birlikte (hibrit) kullanılmalı.
+
 ---
 
 ## 7. Enum Değerleri Referansı
