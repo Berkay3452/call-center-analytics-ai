@@ -28,7 +28,7 @@ dependencies = [
     "httpx~=0.28",
     "structlog>=26.1",
     "tenacity~=9.1",
-    "faker>=37.0",  # sentetik veri üretimi (#23)
+    "faker~=40.0",  # sentetik veri üretimi (#23)
 ]
 
 [project.optional-dependencies]

@@ -64,3 +64,10 @@ Değerler `backend/app/domain/enums.py` ile birebir aynıdır; kategori ve sonra
 ## Değişiklik kuralı
 
 Etiket değiştirmek ölçüm sonuçlarını değiştirir; bir etiketi düzeltirseniz nedenini PR'da yazın. Yeni çağrı eklerken `backend/tests/test_synthetic_calls.py` formatı denetler.
+
+## Veritabanına yüklenen çağrı verisi hakkında
+
+`python -m scripts.seed` 10 çağrıyı da yükler: `calls`, `transcripts`, `transcript_segments` ve **doğru etiketleri `analysis_results` tablosuna sürüm 1 olarak** (Admin Çağrı Analitiği ekranı API hazır olmadan da dolsun diye). Dikkat:
+- Bu satırlar yapay zekânın değil **elle yazılmış doğru etiketlerin** sonucudur (güven 1.0, `agent_runs` yok).
+- Gerçek analiz aynı çağrı için **sürüm 2** olarak eklenmelidir (`UNIQUE (call_id, version)`).
+- `audio_path` ve `audio_sha256` boştur; ses dosyaları (TTS) gelince doldurulur.

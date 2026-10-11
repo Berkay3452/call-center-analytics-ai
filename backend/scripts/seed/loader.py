@@ -10,7 +10,6 @@ hata vermez ve kayıt sayısını bozmaz.
 
 from __future__ import annotations
 
-import hashlib
 from datetime import date, datetime
 from decimal import Decimal
 from pathlib import Path
@@ -325,8 +324,10 @@ async def seed_database(
 
                 cust = customer_by_name.get(cref["customer"])
                 boat = boat_by_pair.get((cref["customer"], cref["boat"]))
-                audio_rel = f"call-audio/{cid}.wav"
-                audio_hash = hashlib.sha256(cid.encode("utf-8")).hexdigest()
+                # Ses dosyaları henüz yok (TTS/STT sonraki adım). Var olmayan bir dosyaya
+                # işaret etmek arayüzde "oynat" düğmesini kırar; ses eklenince doldurulur.
+                audio_rel = None
+                audio_hash = None
 
                 await conn.execute(
                     """
@@ -461,7 +462,7 @@ async def seed_database(
                         analysis_uuid,
                         call_uuid,
                         truth["call_type"],
-                        truth.get("notes") or "Ground truth etiketi.",
+                        "Sentetik doğru etiket (ground truth)",
                         crm["request_category"],
                         crm["location"],
                         crm["problem"],
@@ -471,7 +472,7 @@ async def seed_database(
                         crm["next_action"],
                         sales["outcome"],
                         sales["loss_reason"],
-                        truth.get("notes"),
+                        None,  # kanıt alıntısı: etiket notları kullanıcıya gösterilmez
                         summary_text,
                     )
 

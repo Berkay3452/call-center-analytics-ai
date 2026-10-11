@@ -405,19 +405,6 @@
   {
     "id": "7b87a798-08c4-5f1e-8b86-6a96bd4d8e61",
     "code": "exp_032",
-    "boat_id": "75c72199-5ece-5352-b393-4261bfb4386c",
-    "boat_name": "Meltem",
-    "owner_id": "3e5b33db-334f-5270-af21-5830419fe177",
-    "service_order_id": "8e3e7105-f9d2-5bc8-b341-79dc967a6606",
-    "amount": "12250.00",
-    "currency": "TRY",
-    "description": "Marin klima deniz suyu sirkülasyon pompası temizliği ve gaz basıncı kontrolü",
-    "expense_date": "2026-06-09",
-    "created_at": "2026-06-09T17:15:00+00:00"
-  },
-  {
-    "id": "0a27fae0-4a60-5bac-bfcc-cc5b3b5f689d",
-    "code": "exp_033",
     "boat_id": "46687c0e-dece-5c31-b956-c7aad93046b3",
     "boat_name": "Bora",
     "owner_id": "1570da39-b49f-5210-bd43-4561bfeb4e75",
@@ -429,8 +416,8 @@
     "created_at": "2025-09-25T17:15:00+00:00"
   },
   {
-    "id": "d95cded7-b9f6-55e4-9d23-67424678a6a7",
-    "code": "exp_034",
+    "id": "0a27fae0-4a60-5bac-bfcc-cc5b3b5f689d",
+    "code": "exp_033",
     "boat_id": "46687c0e-dece-5c31-b956-c7aad93046b3",
     "boat_name": "Bora",
     "owner_id": "1570da39-b49f-5210-bd43-4561bfeb4e75",
@@ -442,8 +429,8 @@
     "created_at": "2026-02-12T17:15:00+00:00"
   },
   {
-    "id": "a47b4b60-8919-54af-9ad9-d709fe3de8f2",
-    "code": "exp_035",
+    "id": "d95cded7-b9f6-55e4-9d23-67424678a6a7",
+    "code": "exp_034",
     "boat_id": "ed410144-fd94-590a-8166-02fcc2f9949a",
     "boat_name": "Çapariz",
     "owner_id": "4474ffcb-b9ff-561e-809e-410080ace250",
@@ -455,8 +442,8 @@
     "created_at": "2025-10-18T17:15:00+00:00"
   },
   {
-    "id": "0a2f3e7a-a1a4-5f21-b66e-213c1f366c11",
-    "code": "exp_036",
+    "id": "a47b4b60-8919-54af-9ad9-d709fe3de8f2",
+    "code": "exp_035",
     "boat_id": "ed410144-fd94-590a-8166-02fcc2f9949a",
     "boat_name": "Çapariz",
     "owner_id": "4474ffcb-b9ff-561e-809e-410080ace250",
@@ -468,21 +455,8 @@
     "created_at": "2026-03-07T17:15:00+00:00"
   },
   {
-    "id": "9c00c8b3-03a8-57c5-849c-f84f44e72ad2",
-    "code": "exp_037",
-    "boat_id": "ed410144-fd94-590a-8166-02fcc2f9949a",
-    "boat_name": "Çapariz",
-    "owner_id": "4474ffcb-b9ff-561e-809e-410080ace250",
-    "service_order_id": "e2d3deda-617a-50c2-88ca-b14f8becffaa",
-    "amount": "19200.00",
-    "currency": "TRY",
-    "description": "Gövde pasta-cila, tik güverte bakımı ve bimini tente dikiş yenileme",
-    "expense_date": "2026-07-25",
-    "created_at": "2026-07-25T17:15:00+00:00"
-  },
-  {
-    "id": "da8d5818-9f2f-5db5-a6d7-a65d2ad70238",
-    "code": "exp_038",
+    "id": "0a2f3e7a-a1a4-5f21-b66e-213c1f366c11",
+    "code": "exp_036",
     "boat_id": "6c4e8766-b15f-5f7a-a3d8-6baf11cc8d37",
     "boat_name": "Pruva",
     "owner_id": "837c0782-f6c7-5eb4-abbd-6182999001ab",
@@ -494,8 +468,8 @@
     "created_at": "2025-11-10T17:15:00+00:00"
   },
   {
-    "id": "38f12092-88c6-5568-b938-d37584584379",
-    "code": "exp_039",
+    "id": "9c00c8b3-03a8-57c5-849c-f84f44e72ad2",
+    "code": "exp_037",
     "boat_id": "6c4e8766-b15f-5f7a-a3d8-6baf11cc8d37",
     "boat_name": "Pruva",
     "owner_id": "837c0782-f6c7-5eb4-abbd-6182999001ab",
@@ -507,8 +481,8 @@
     "created_at": "2026-03-30T17:15:00+00:00"
   },
   {
-    "id": "f2a2c195-aee4-556b-9668-a45c44b5e242",
-    "code": "exp_040",
+    "id": "da8d5818-9f2f-5db5-a6d7-a65d2ad70238",
+    "code": "exp_038",
     "boat_id": "f71ed7c0-1d45-5f0a-8b8e-76f5c2f06c64",
     "boat_name": "Kalyon",
     "owner_id": "578aa504-644d-56a9-bd3a-f48162f5ac2b",
@@ -520,8 +494,8 @@
     "created_at": "2025-12-03T17:15:00+00:00"
   },
   {
-    "id": "42fc3dc6-3e19-50b9-95d9-b7357d819387",
-    "code": "exp_041",
+    "id": "38f12092-88c6-5568-b938-d37584584379",
+    "code": "exp_039",
     "boat_id": "f71ed7c0-1d45-5f0a-8b8e-76f5c2f06c64",
     "boat_name": "Kalyon",
     "owner_id": "578aa504-644d-56a9-bd3a-f48162f5ac2b",
@@ -533,21 +507,8 @@
     "created_at": "2026-04-22T17:15:00+00:00"
   },
   {
-    "id": "166d5d9f-fc40-5f7f-9f5a-920864beb466",
-    "code": "exp_042",
-    "boat_id": "f71ed7c0-1d45-5f0a-8b8e-76f5c2f06c64",
-    "boat_name": "Kalyon",
-    "owner_id": "578aa504-644d-56a9-bd3a-f48162f5ac2b",
-    "service_order_id": "960e99fd-a8b4-5f73-825d-85131fb18239",
-    "amount": "14800.00",
-    "currency": "TRY",
-    "description": "Ana makine devir düşüklüğü tespiti, Racor yakıt filtresi ve turbo kontrolü",
-    "expense_date": "2026-09-09",
-    "created_at": "2026-09-09T17:15:00+00:00"
-  },
-  {
-    "id": "75d30138-b86b-51d1-90e4-7d8172179a36",
-    "code": "exp_043",
+    "id": "f2a2c195-aee4-556b-9668-a45c44b5e242",
+    "code": "exp_040",
     "boat_id": "09554089-d4a1-53ff-8e3b-6acdc918c3a1",
     "boat_name": "İmbat",
     "owner_id": "43dc038d-f33b-54ec-99e2-6b3a0887da96",
@@ -559,21 +520,8 @@
     "created_at": "2025-12-26T17:15:00+00:00"
   },
   {
-    "id": "eeb46c3b-c914-51a0-8147-f0ce4f1d9522",
-    "code": "exp_044",
-    "boat_id": "09554089-d4a1-53ff-8e3b-6acdc918c3a1",
-    "boat_name": "İmbat",
-    "owner_id": "43dc038d-f33b-54ec-99e2-6b3a0887da96",
-    "service_order_id": "87470050-2cca-518b-a616-09cb6ec76c3e",
-    "amount": "14800.00",
-    "currency": "TRY",
-    "description": "Ana makine devir düşüklüğü tespiti, Racor yakıt filtresi ve turbo kontrolü",
-    "expense_date": "2026-05-15",
-    "created_at": "2026-05-15T17:15:00+00:00"
-  },
-  {
-    "id": "076c6783-80c1-5530-a594-77b8c58ac2d7",
-    "code": "exp_045",
+    "id": "42fc3dc6-3e19-50b9-95d9-b7357d819387",
+    "code": "exp_041",
     "boat_id": "3572c4ce-4176-508d-a248-f03a69215796",
     "boat_name": "Yıldırım",
     "owner_id": "58fc0f8b-188c-5e35-b492-52db3a0547f7",
@@ -585,8 +533,8 @@
     "created_at": "2026-01-18T17:15:00+00:00"
   },
   {
-    "id": "648e7359-5cb1-57d1-aa6b-2d38ca557cff",
-    "code": "exp_046",
+    "id": "166d5d9f-fc40-5f7f-9f5a-920864beb466",
+    "code": "exp_042",
     "boat_id": "3572c4ce-4176-508d-a248-f03a69215796",
     "boat_name": "Yıldırım",
     "owner_id": "58fc0f8b-188c-5e35-b492-52db3a0547f7",
@@ -598,8 +546,8 @@
     "created_at": "2026-06-07T17:15:00+00:00"
   },
   {
-    "id": "afa7b0ed-ed1e-58b3-a423-6eb99bba00f6",
-    "code": "exp_047",
+    "id": "75d30138-b86b-51d1-90e4-7d8172179a36",
+    "code": "exp_043",
     "boat_id": "3572c4ce-4176-508d-a248-f03a69215796",
     "boat_name": "Yıldırım",
     "owner_id": "58fc0f8b-188c-5e35-b492-52db3a0547f7",
@@ -611,8 +559,8 @@
     "created_at": "2025-02-22T17:15:00+00:00"
   },
   {
-    "id": "0aa614fe-cade-52a8-ac4e-ca5880a5d053",
-    "code": "exp_048",
+    "id": "eeb46c3b-c914-51a0-8147-f0ce4f1d9522",
+    "code": "exp_044",
     "boat_id": "2390dd90-84ee-522c-a56d-905a07cc97e2",
     "boat_name": "Fora",
     "owner_id": "2389f25f-1e17-5ea9-b836-fd772a011c99",
@@ -624,21 +572,8 @@
     "created_at": "2026-02-10T17:15:00+00:00"
   },
   {
-    "id": "1255713b-a8fe-5ceb-a1c9-373ca7f7ae35",
-    "code": "exp_049",
-    "boat_id": "2390dd90-84ee-522c-a56d-905a07cc97e2",
-    "boat_name": "Fora",
-    "owner_id": "2389f25f-1e17-5ea9-b836-fd772a011c99",
-    "service_order_id": "24ad6a9d-e3c1-5e49-a2b2-b7d9813444cd",
-    "amount": "24500.00",
-    "currency": "TRY",
-    "description": "Servis akü grubu değişimi (3x 140Ah AGM) ve şarj regülatörü kalibrasyonu",
-    "expense_date": "2026-06-30",
-    "created_at": "2026-06-30T17:15:00+00:00"
-  },
-  {
-    "id": "6f4d0fa2-48fd-56a2-8899-84961c818abf",
-    "code": "exp_050",
+    "id": "076c6783-80c1-5530-a594-77b8c58ac2d7",
+    "code": "exp_045",
     "boat_id": "a90fc1ad-ce8f-5444-b736-d6b03b8946bd",
     "boat_name": "Yakamoz",
     "owner_id": "c57e2519-87f4-597e-be0c-80889768255a",
@@ -650,8 +585,8 @@
     "created_at": "2026-03-05T17:15:00+00:00"
   },
   {
-    "id": "2084eb05-2aca-5563-93bb-bec9a94690c0",
-    "code": "exp_051",
+    "id": "648e7359-5cb1-57d1-aa6b-2d38ca557cff",
+    "code": "exp_046",
     "boat_id": "a90fc1ad-ce8f-5444-b736-d6b03b8946bd",
     "boat_name": "Yakamoz",
     "owner_id": "c57e2519-87f4-597e-be0c-80889768255a",
@@ -663,8 +598,8 @@
     "created_at": "2026-07-23T17:15:00+00:00"
   },
   {
-    "id": "a7ede046-abfc-58a3-ab6d-8ddf99411c6a",
-    "code": "exp_052",
+    "id": "afa7b0ed-ed1e-58b3-a423-6eb99bba00f6",
+    "code": "exp_047",
     "boat_id": "a90fc1ad-ce8f-5444-b736-d6b03b8946bd",
     "boat_name": "Yakamoz",
     "owner_id": "c57e2519-87f4-597e-be0c-80889768255a",
@@ -676,8 +611,8 @@
     "created_at": "2025-04-09T17:15:00+00:00"
   },
   {
-    "id": "c646fef2-84d8-50c9-9188-23dabe81dcd1",
-    "code": "exp_053",
+    "id": "0aa614fe-cade-52a8-ac4e-ca5880a5d053",
+    "code": "exp_048",
     "boat_id": "4026f512-2629-5635-8d17-8bdbabc4d7a9",
     "boat_name": "Kutup",
     "owner_id": "8ff32870-b5ca-5689-a6af-3548246f014e",
@@ -689,21 +624,8 @@
     "created_at": "2026-03-28T17:15:00+00:00"
   },
   {
-    "id": "71245b28-2794-5bc3-a18d-dff7f22a26a8",
-    "code": "exp_054",
-    "boat_id": "4026f512-2629-5635-8d17-8bdbabc4d7a9",
-    "boat_name": "Kutup",
-    "owner_id": "8ff32870-b5ca-5689-a6af-3548246f014e",
-    "service_order_id": "c023487f-b15d-5bd2-a53a-479e6c5db138",
-    "amount": "11200.00",
-    "currency": "TRY",
-    "description": "Marin klima deniz suyu sirkülasyon pompası temizliği ve gaz basıncı kontrolü",
-    "expense_date": "2026-08-15",
-    "created_at": "2026-08-15T17:15:00+00:00"
-  },
-  {
-    "id": "d5a53b5d-cae5-56a5-9d8d-33883f52d976",
-    "code": "exp_055",
+    "id": "1255713b-a8fe-5ceb-a1c9-373ca7f7ae35",
+    "code": "exp_049",
     "boat_id": "3ef7f6c7-06cf-5104-8917-da25c0bb2ed7",
     "boat_name": "Pusula",
     "owner_id": "cb138ca4-1453-5ef6-9537-713c5b7ecb4f",
@@ -715,8 +637,8 @@
     "created_at": "2026-04-20T17:15:00+00:00"
   },
   {
-    "id": "03013d9b-6e14-5f8d-8f61-1bf995ff6b4e",
-    "code": "exp_056",
+    "id": "6f4d0fa2-48fd-56a2-8899-84961c818abf",
+    "code": "exp_050",
     "boat_id": "3ef7f6c7-06cf-5104-8917-da25c0bb2ed7",
     "boat_name": "Pusula",
     "owner_id": "cb138ca4-1453-5ef6-9537-713c5b7ecb4f",
@@ -728,8 +650,8 @@
     "created_at": "2026-09-07T17:15:00+00:00"
   },
   {
-    "id": "130b0b71-02d5-573d-b1b3-d2c869a3cecb",
-    "code": "exp_057",
+    "id": "2084eb05-2aca-5563-93bb-bec9a94690c0",
+    "code": "exp_051",
     "boat_id": "3ef7f6c7-06cf-5104-8917-da25c0bb2ed7",
     "boat_name": "Pusula",
     "owner_id": "cb138ca4-1453-5ef6-9537-713c5b7ecb4f",
@@ -741,8 +663,8 @@
     "created_at": "2025-05-25T17:15:00+00:00"
   },
   {
-    "id": "51a81953-2a3a-5381-ae91-740987b86d85",
-    "code": "exp_058",
+    "id": "a7ede046-abfc-58a3-ab6d-8ddf99411c6a",
+    "code": "exp_052",
     "boat_id": "b4f2b080-2cfd-5f21-8424-5d6a63a39187",
     "boat_name": "Zıpkın",
     "owner_id": "9842dca9-e44c-5a01-9cec-c38d6b81ec99",
@@ -754,8 +676,8 @@
     "created_at": "2026-05-13T17:15:00+00:00"
   },
   {
-    "id": "d226f962-37b6-580d-ac1d-41c16ba59ec0",
-    "code": "exp_059",
+    "id": "c646fef2-84d8-50c9-9188-23dabe81dcd1",
+    "code": "exp_053",
     "boat_id": "b4f2b080-2cfd-5f21-8424-5d6a63a39187",
     "boat_name": "Zıpkın",
     "owner_id": "9842dca9-e44c-5a01-9cec-c38d6b81ec99",
@@ -767,8 +689,8 @@
     "created_at": "2025-01-28T17:15:00+00:00"
   },
   {
-    "id": "9cd716f1-c06d-5fd4-97d9-d0f9c8e37b07",
-    "code": "exp_060",
+    "id": "71245b28-2794-5bc3-a18d-dff7f22a26a8",
+    "code": "exp_054",
     "boat_id": "96fc5527-28df-5b88-8f6f-d0e135104e07",
     "boat_name": "Yelkovan",
     "owner_id": "606bd734-644f-5c21-af2f-dc734c4ecd67",
@@ -780,8 +702,8 @@
     "created_at": "2026-06-05T17:15:00+00:00"
   },
   {
-    "id": "30bc9419-c833-54f3-9bd4-1a492a49a4f4",
-    "code": "exp_061",
+    "id": "d5a53b5d-cae5-56a5-9d8d-33883f52d976",
+    "code": "exp_055",
     "boat_id": "96fc5527-28df-5b88-8f6f-d0e135104e07",
     "boat_name": "Yelkovan",
     "owner_id": "606bd734-644f-5c21-af2f-dc734c4ecd67",
@@ -793,8 +715,8 @@
     "created_at": "2025-02-20T17:15:00+00:00"
   },
   {
-    "id": "44b72533-1887-57ba-81f4-5d8c8a781b61",
-    "code": "exp_062",
+    "id": "03013d9b-6e14-5f8d-8f61-1bf995ff6b4e",
+    "code": "exp_056",
     "boat_id": "96fc5527-28df-5b88-8f6f-d0e135104e07",
     "boat_name": "Yelkovan",
     "owner_id": "606bd734-644f-5c21-af2f-dc734c4ecd67",

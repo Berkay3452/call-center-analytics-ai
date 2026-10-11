@@ -802,6 +802,7 @@ def generate_dataset(seed: int = SEED) -> dict[str, Any]:
 
     # Tüm tekneler için geçmiş 1–2 yıla yayılan servis emirleri, usta notları ve giderler
     base_date = date(2025, 1, 15)
+    open_orders = 0
     for b_idx, boat in enumerate(boats):
         num_services = 3 if b_idx % 2 == 0 else 2
         for s_idx in range(num_services):
@@ -817,8 +818,11 @@ def generate_dataset(seed: int = SEED) -> dict[str, Any]:
             day_offset = (b_idx * 23 + s_idx * 140) % 610
             srv_date = base_date + timedelta(days=day_offset)
 
-            if srv_date > date(2026, 9, 20) and s_idx == num_services - 1:
-                status = SERVICE_STATUSES[(b_idx + s_idx) % 4]
+            # Son dönemdeki (Ağustos sonrası) son servis emirleri henüz bitmemiş durumda olsun:
+            # Miço Usta'nın iş akışı (yeni atandı, keşifte, onaylandı, devam ediyor) görünsün.
+            if srv_date > date(2026, 5, 1) and s_idx == num_services - 1:
+                status = SERVICE_STATUSES[open_orders % 4]  # sırayla dört açık durum
+                open_orders += 1
                 completed_at = None
             else:
                 status = ServiceOrderStatus.TAMAMLANDI.value
