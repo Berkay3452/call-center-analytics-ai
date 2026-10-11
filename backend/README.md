@@ -51,6 +51,18 @@ uv export --frozen --no-hashes --no-emit-project --only-dev -o requirements-dev.
 
 Supabase kurulmadan `/api/v1` uçlarını denemek için `.env` içinde `AUTH_DEV_BYPASS=true` yapın (yalnızca `APP_ENV=local`).
 
+## Sentetik veri üretimi ve veritabanı doldurma (seed)
+
+Miço Usta sentetik kayıtlarını (`data/synthetic/*.json`) üretmek ve tüm sentetik veriyi (müşteriler, tekneler, ustalar, servis kayıtları, usta notları, giderler, abonelikler, RAG parçaları + 10 çağrı verisi) veritabanına yüklemek için önce `uv run alembic upgrade head` ile şemayı kurun, ardından `backend/` klasöründe:
+
+```
+uv run python -m scripts.seed                  # JSON dosyalarını üretir + veritabanını doldurur (idempotent)
+uv run python -m scripts.seed --generate-only  # Veritabanına bağlanmadan yalnızca JSON dosyalarını üretir
+uv run python -m scripts.seed --reset          # Tabloları TRUNCATE ile temizleyip sıfırdan doldurur
+```
+
+Script sabit tohum (`SEED = 42`, `Faker('tr_TR')`) kullanır; her çalıştırmada aynı veriyi üretir ve ikinci çalıştırmada `ON CONFLICT DO UPDATE` ile mevcut kayıtları bozmadan günceller.
+
 ## Agent'ları gerçek LLM ile değerlendirme
 
 `.env`'de LLM ayarları doluyken (geçici seçim: Gemini, bkz. #13) agent'lar sentetik çağrılarda (`data/synthetic/`) çalıştırılıp doğru etiketlerle karşılaştırılır:

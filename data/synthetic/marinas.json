@@ -1,0 +1,52 @@
+[
+  {
+    "id": "marina_001",
+    "name": "Tuzla Marina",
+    "region": "İstanbul / Marmara"
+  },
+  {
+    "id": "marina_002",
+    "name": "Kalamış Marina",
+    "region": "İstanbul / Marmara"
+  },
+  {
+    "id": "marina_003",
+    "name": "Ataköy Marina",
+    "region": "İstanbul / Marmara"
+  },
+  {
+    "id": "marina_004",
+    "name": "Pendik Marinturk Marina",
+    "region": "İstanbul / Marmara"
+  },
+  {
+    "id": "marina_005",
+    "name": "İstinye Tekne Park",
+    "region": "İstanbul / Boğaz"
+  },
+  {
+    "id": "marina_006",
+    "name": "Göcek D-Marin",
+    "region": "Muğla / Ege"
+  },
+  {
+    "id": "marina_007",
+    "name": "Bodrum Milta Marina",
+    "region": "Muğla / Ege"
+  },
+  {
+    "id": "marina_008",
+    "name": "Yalıkavak Marina",
+    "region": "Muğla / Ege"
+  },
+  {
+    "id": "marina_009",
+    "name": "Marmaris Netsel Marina",
+    "region": "Muğla / Ege"
+  },
+  {
+    "id": "marina_010",
+    "name": "Çeşme Marina",
+    "region": "İzmir / Ege"
+  }
+]
