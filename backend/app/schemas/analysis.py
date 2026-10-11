@@ -55,7 +55,7 @@ class CrmExtraction(BaseModel):
     """
 
     request_category: RequestCategory | None = Field(
-        default=None, description="Müşteri talebinin kategorisi (ör. motor arızası)."
+        default=None, description="Müşteri talebinin Miço Usta hizmet kategorisi (ör. makine)."
     )
     location: str | None = Field(
         default=None, description="Marina veya lokasyon (ör. Tuzla Marina)."
