@@ -28,6 +28,9 @@ Enum değerlerinin tam listesi [§7'de](#7-enum-değerleri-referansı) verilmiş
 
 ```mermaid
 erDiagram
+    customers ||--o{ calls : "called_by"
+    boats ||--o{ calls : "about"
+    customers ||--o{ rag_chunks : "owner_of"
     calls ||--o| transcripts : "has"
     transcripts ||--|{ transcript_segments : "contains"
     calls ||--o{ analysis_results : "analyzed_by"
@@ -52,6 +55,8 @@ erDiagram
         int duration_s
         text switchboard_outcome
         text audio_path
+        uuid customer_id FK
+        uuid boat_id FK
         char64 audio_sha256
         text customer_name
         text customer_phone
@@ -179,6 +184,7 @@ erDiagram
         uuid boat_id FK
         uuid customer_id FK
         uuid craftsman_id FK
+        text category
         text description
         text status
         timestamptz scheduled_at
@@ -244,6 +250,8 @@ erDiagram
 | `switchboard_outcome` | `TEXT` | — | — | Santral sonucu. CHECK: `randevu_olusturuldu`, `usta_yonlendirildi`, `iptal`, `bilgi_verildi`, `kayit_olusturuldu` |
 | `audio_path` | `TEXT` | — | — | Storage'taki ses dosyası yolu (ör. `call-audio/call_001.wav`) |
 | `audio_sha256` | `CHAR(64)` | — | — | Ses dosyasının SHA-256 özeti; aynı dosya tekrar yüklenirse uyarı verilir |
+| `customer_id` | `UUID` | — | — | `customers(id)` FK; arayan müşteri **eşleştirilince** doldurulur (CRM kaydı ve servis emri önerisi için). Eşleşme yoksa `NULL` |
+| `boat_id` | `UUID` | — | — | `boats(id)` FK; konuşulan tekne eşleştirilince doldurulur, yoksa `NULL` |
 | `customer_name` | `TEXT` | — | — | Arayan müşteri adı (çağrı bilgisinden) |
 | `customer_phone` | `TEXT` | — | — | Müşteri telefon numarası |
 | `boat_name` | `TEXT` | — | — | Tekne adı |
@@ -255,6 +263,7 @@ erDiagram
 **Kısıtlamalar:**
 - `PK (id)`
 - `UNIQUE (audio_sha256)` — aynı dosyanın tekrar yüklenmesini engeller
+- `FK (customer_id) REFERENCES customers(id)`, `FK (boat_id) REFERENCES boats(id)` (ikisi de `ON DELETE SET NULL`)
 - `CHECK (switchboard_outcome IN (...))` — geçerli santral sonuçları
 
 ---
@@ -349,6 +358,7 @@ Dört agent'ın birleşik çıktısı. Yeniden analiz yapılırsa aynı `call_id
 - `CHECK (next_action IS NULL OR next_action IN ('servis_randevusu_olustur', 'teklif_hazirla', 'geri_ara', 'bilgi_ver', 'usta_ata', 'aksiyon_yok'))`
 - `CHECK (sales_outcome IS NULL OR sales_outcome IN ('satisa_donustu', 'kaybedildi', 'beklemede'))`
 - `CHECK (loss_reason IS NULL OR loss_reason IN ('fiyat', 'gec_donus', 'rakip', 'takvim', 'guven', 'diger'))`
+- `CHECK (loss_reason IS NULL OR sales_outcome = 'kaybedildi')` ve `CHECK (sales_outcome IS DISTINCT FROM 'kaybedildi' OR loss_reason IS NOT NULL)` — kayıp nedeni yalnızca `kaybedildi` iken dolu, `kaybedildi` iken zorunlu (`SalesAnalysis` şemasındaki kural)
 - `CHECK (call_type_confidence IS NULL OR (call_type_confidence >= 0 AND call_type_confidence <= 1))`
 - `CHECK (sales_confidence IS NULL OR (sales_confidence >= 0 AND sales_confidence <= 1))`
 
@@ -364,12 +374,12 @@ Her agent çalışmasının kaydı. Orkestratör tarafından yazılır; süre, m
 |-------|-----|---------|------------|----------|
 | `id` | `UUID` | ✅ | `gen_random_uuid()` | Birincil anahtar |
 | `analysis_id` | `UUID` | ✅ | — | `analysis_results(id)` FK |
-| `agent_name` | `TEXT` | ✅ | — | Agent adı (ör. `call_classifier`, `crm_extraction`) |
-| `status` | `TEXT` | ✅ | — | Agent durumu (ör. `ok`, `error`, `timeout`) |
+| `agent_name` | `TEXT` | ✅ | — | Agent adı. CHECK: `call_classifier`, `crm_extraction`, `sales_analyzer`, `summarizer` (`backend/app/agents/names.py`) |
+| `status` | `TEXT` | ✅ | — | Agent durumu. CHECK: `ok`, `failed`, `skipped` (`AgentResult.status`) |
 | `attempts` | `SMALLINT` | ✅ | `1` | Deneme sayısı (ilk çalıştırma + yeniden denemeler) |
 | `latency_ms` | `INTEGER` | — | — | Toplam süre (milisaniye) |
 | `error` | `TEXT` | — | — | Hata mesajı (varsa) |
-| `error_kind` | `TEXT` | — | — | Hata türü (ör. `validation`, `timeout`, `llm_error`) |
+| `error_kind` | `TEXT` | — | — | Hata türü. CHECK: `validation` (şemaya uymadı), `runtime` (LLM/ağ/kod hatası), `timeout` (`AgentResult.error_kind`) |
 | `model` | `TEXT` | — | — | Kullanılan LLM modeli |
 | `prompt_version` | `TEXT` | — | — | Prompt sürümü (ölçüm takibi için) |
 | `tokens_in` | `INTEGER` | ✅ | `0` | Giriş token sayısı |
@@ -379,6 +389,9 @@ Her agent çalışmasının kaydı. Orkestratör tarafından yazılır; süre, m
 **Kısıtlamalar:**
 - `PK (id)`
 - `FK (analysis_id) REFERENCES analysis_results(id) ON DELETE CASCADE`
+- `CHECK (agent_name IN ('call_classifier', 'crm_extraction', 'sales_analyzer', 'summarizer'))`
+- `CHECK (status IN ('ok', 'failed', 'skipped'))`
+- `CHECK (error_kind IS NULL OR error_kind IN ('validation', 'runtime', 'timeout'))`
 
 ---
 
@@ -431,18 +444,18 @@ Tekne karnesi, usta notları, giderler ve abonelik verilerinin RAG için parçal
 |-------|-----|---------|------------|----------|
 | `id` | `UUID` | ✅ | `gen_random_uuid()` | Birincil anahtar |
 | `source_kind` | `TEXT` | ✅ | — | Kaynak türü. CHECK: `service_record`, `boat_note`, `expense`, `subscription` |
-| `source_id` | `UUID` | ✅ | — | Kaynağın orijinal tablosundaki ID'si |
+| `source_id` | `UUID` | ✅ | — | Kaynağın orijinal tablosundaki ID'si (`source_kind`'a göre `service_orders`, `boat_notes`, `expenses` veya `subscriptions`). Birden fazla tabloya işaret ettiği için FK **tanımlanmaz**; tutarlılık indeksleme sürecinde sağlanır |
 | `boat_id` | `UUID` | — | — | İlişkili tekne; `boats(id)` FK |
-| `owner_id` | `UUID` | ✅ | — | Tekne sahibi ID'si; **yetkilendirme** bu sütunla yapılır |
+| `owner_id` | `UUID` | ✅ | — | Tekne sahibi; `customers(id)` FK. **Yetkilendirme** bu sütunla yapılır |
 | `chunk_index` | `SMALLINT` | ✅ | `0` | Aynı kaynağın kaçıncı parçası |
 | `content` | `TEXT` | ✅ | — | Parça metni |
 | `embedding` | `vector(1024)` | — | — | bge-m3 gömme vektörü |
-| `tsv` | `tsvector` | — | — | Türkçe tam metin arama indeksi |
+| `tsv` | `tsvector` | — | — | Türkçe tam metin arama vektörü. Öneri: `GENERATED ALWAYS AS (to_tsvector('turkish', content)) STORED` |
 | `created_at` | `TIMESTAMPTZ` | ✅ | `now()` | Oluşturma zamanı |
 
 **Kısıtlamalar:**
 - `PK (id)`
-- `FK (boat_id) REFERENCES boats(id)`
+- `FK (boat_id) REFERENCES boats(id)`, `FK (owner_id) REFERENCES customers(id)`
 - `UNIQUE (source_kind, source_id, chunk_index)` — aynı parça tekrar eklenmez
 - `CHECK (source_kind IN ('service_record', 'boat_note', 'expense', 'subscription'))`
 
@@ -498,8 +511,9 @@ Servis emirleri. Bir teknede yapılacak/yapılmış iş.
 | `boat_id` | `UUID` | ✅ | — | `boats(id)` FK |
 | `customer_id` | `UUID` | ✅ | — | `customers(id)` FK |
 | `craftsman_id` | `UUID` | — | — | `craftsmen(id)` FK; atanan usta |
-| `description` | `TEXT` | — | — | Servis açıklaması |
-| `status` | `TEXT` | — | — | Servis durumu (ör. bekliyor, devam_ediyor, tamamlandi) |
+| `category` | `TEXT` | — | — | İşin kategorisi. CHECK: enum `RequestCategory`. Miço AI'nın `get_last_maintenance(category=...)` aracı bunu kullanır |
+| `description` | `TEXT` | — | — | Servis açıklaması (yapılan iş) |
+| `status` | `TEXT` | ✅ | `'yeni_atandi'` | Servis emri durumu (Miço Usta iş akışı). CHECK: `yeni_atandi`, `kesifte`, `onaylandi`, `devam_ediyor`, `tamamlandi` |
 | `scheduled_at` | `TIMESTAMPTZ` | — | — | Planlanan tarih |
 | `completed_at` | `TIMESTAMPTZ` | — | — | Tamamlanma tarihi |
 | `created_at` | `TIMESTAMPTZ` | ✅ | `now()` | Kayıt oluşturma zamanı |
@@ -508,6 +522,8 @@ Servis emirleri. Bir teknede yapılacak/yapılmış iş.
 - `FK (boat_id) REFERENCES boats(id)`
 - `FK (customer_id) REFERENCES customers(id)`
 - `FK (craftsman_id) REFERENCES craftsmen(id)`
+- `CHECK (status IN ('yeni_atandi', 'kesifte', 'onaylandi', 'devam_ediyor', 'tamamlandi'))`
+- `CHECK (category IS NULL OR category IN ('motor_arizasi', 'elektrik_arizasi', 'yakit_sistemi', 'govde_ve_kil', 'periyodik_bakim', 'kis_bakimi', 'diger'))`
 
 ---
 
@@ -595,6 +611,7 @@ Bakım paketleri / abonelikler. Miço AI "kalan paket hakkım ne kadar" sorusunu
 |-------|--------|-----|-------|
 | `calls` | `ix_calls_started_at` | B-tree | Tarih aralığına göre KPI sorguları |
 | `calls` | `uq_calls_audio_sha256` | Unique (B-tree) | Tekrar yükleme kontrolü |
+| `calls` | `ix_calls_customer_id` | B-tree | Müşterinin çağrı geçmişi |
 | `transcripts` | `uq_transcripts_call_id` | Unique (B-tree) | Bir çağrıya bir transkript |
 | `transcript_segments` | `ix_segments_transcript_id` | B-tree | Segmentleri transkripte göre getirme |
 | `analysis_results` | `ix_analysis_call_id` | B-tree | Çağrıya göre analiz sonuçlarını bulma |
@@ -632,6 +649,8 @@ ORDER BY embedding <=> :query_vector
 LIMIT 8;
 ```
 
+> **Not:** `owner_id` filtresi HNSW indeksiyle birlikte kullanıldığında indeks önce en yakın komşuları, sonra filtreyi uygular ve `LIMIT`'ten az satır dönebilir. pgvector 0.8 ve üzerinde `SET hnsw.iterative_scan = relaxed_order;` bunu çözer. #26'da (hibrit arama) sürüm ve davranış denenmeli.
+
 ---
 
 ## 7. Enum Değerleri Referansı
@@ -642,6 +661,7 @@ Kaynak: `backend/app/domain/enums.py` (#7 ile uyumlu)
 |------|----------|
 | `CallType` | `yeni_musteri`, `servis`, `teklif`, `acil`, `bilgi` |
 | `RequestCategory` | `motor_arizasi`, `elektrik_arizasi`, `yakit_sistemi`, `govde_ve_kil`, `periyodik_bakim`, `kis_bakimi`, `diger` |
+| `ServiceOrderStatus` | `yeni_atandi`, `kesifte`, `onaylandi`, `devam_ediyor`, `tamamlandi` (Miço Usta iş akışı; `enums.py`'ye #7'de eklenecek) |
 | `ServiceMode` | `yerinde_servis`, `atolyede`, `uzaktan_destek` |
 | `Urgency` | `dusuk`, `normal`, `yuksek`, `acil` |
 | `NextAction` | `servis_randevusu_olustur`, `teklif_hazirla`, `geri_ara`, `bilgi_ver`, `usta_ata`, `aksiyon_yok` |
@@ -652,4 +672,7 @@ Kaynak: `backend/app/domain/enums.py` (#7 ile uyumlu)
 | `Speaker` | `customer`, `rep` |
 | `ChatRole` | `user`, `assistant` |
 | `QuestionType` | `gecmis_oneri`, `sayisal`, `kapsam_disi` |
+| `AgentName` | `call_classifier`, `crm_extraction`, `sales_analyzer`, `summarizer` |
+| `AgentStatus` | `ok`, `failed`, `skipped` |
+| `AgentErrorKind` | `validation`, `runtime`, `timeout` |
 | `SourceKind` | `service_record`, `boat_note`, `expense`, `subscription` |
