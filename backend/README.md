@@ -14,6 +14,7 @@ Komutlar `backend/` klasöründe çalıştırılır.
 1. Python 3.12'yi ve bağımlılıkları `.venv` içine kurun: `uv sync --extra ai`
 2. Ortam dosyasını oluşturun: `.env.example` dosyasını `.env` olarak kopyalayıp doldurun.
 3. Yerel veritabanı ve Redis'i başlatın (repo kökünden): `docker compose -f infra/docker-compose.yml up -d`
+4. Veritabanı şemasını kurun: `uv run alembic upgrade head` (Supabase için `.env`'deki `DATABASE_URL`'i değiştirmeniz yeterli). Şema tasarımı: `docs/db_schema.md`; model değişince `uv run alembic revision --autogenerate -m "aciklama"` ile yeni migration üretip gözden geçirin.
 
 STT bağımlılıkları (torch, faster-whisper, pyannote) büyüktür ve donanım kararı netleşince kurulacaktır: `uv sync --extra ai --extra stt`
 

@@ -5,7 +5,8 @@
 #   2. lint      : ruff ile kod stili ve olası hatalar (hatalar PR'da ilgili satıra yorum olarak düşer).
 #   3. typecheck : mypy ile tip kontrolü.
 #   4. test      : pytest + kapsam (coverage) raporu (özet, iş sayfasının "Summary" kısmında görünür).
-#   5. smoke     : Gerçek PostgreSQL + Redis ile API ve Celery işçisini ayağa kaldırıp uçtan uca dener.
+#   5. smoke     : Gerçek PostgreSQL + Redis ile migration'ı uygular, veritabanı testlerini çalıştırır,
+#                  API ve Celery işçisini ayağa kaldırıp uçtan uca dener.
 #   6. dependencies: Bağımlılık sürümleri tutarlı mı (pyproject.toml, uv.lock, requirements.txt)?
 #   7. backend-ci: Tüm sonuçları toplayan tek kontrol. Branch korumasında "zorunlu kontrol" olarak bu seçilir.
 
@@ -170,6 +171,18 @@ jobs:
           cache-dependency-glob: backend/uv.lock
       - name: Bağımlılıkları kur
         run: uv sync --locked --extra ai
+      - name: Migration (upgrade → model farkı yok mu → downgrade → tekrar upgrade)
+        # Şema gerçek PostgreSQL + pgvector üzerinde kurulur, geri alınır ve yeniden kurulur;
+        # `alembic check` modeller ile migration arasında fark kalmadığını doğrular.
+        run: |
+          uv run alembic upgrade head
+          uv run alembic check
+          uv run alembic downgrade base
+          uv run alembic upgrade head
+      - name: Veritabanı entegrasyon testleri (CHECK kısıtları, tsvector, vektör araması)
+        env:
+          RUN_DB_TESTS: "1"
+        run: uv run pytest tests/test_db_integration.py -q -p no:cacheprovider
       - name: API ve Celery işçisini başlat
         run: |
           uv run uvicorn app.main:app --port 8000 > uvicorn.log 2>&1 &

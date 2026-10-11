@@ -2,6 +2,7 @@
 
 **Issue:** #5 · **Sürüm:** Taslak v1 · **Tarih:** 2026-10-11
 **Kaynak:** Sistem mimarisi v3.1 §9, agent çıktı şemaları (#14), enum listeleri (#7)
+**Uygulama:** modeller `backend/app/db/models/`, migration `backend/migrations/versions/` (#6). Bu belge ile modeller arasındaki fark testlerle yakalanır (`tests/test_db_schema.py`).
 
 > Sütun adları **İngilizce**, açıklamalar **Türkçe**'dir.
 > 🔶 işaretli tablolar **dış kaynak**tır — Miço Usta'nın gerçek şeması hocadan alınca değişebilir.

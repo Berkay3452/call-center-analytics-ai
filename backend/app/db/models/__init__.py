@@ -1,6 +1,46 @@
-"""ORM modelleri.
+"""ORM modelleri: şemanın Python karşılığı (docs/db_schema.md).
 
-Hafta 3'te veritabanı şeması (calls, transcripts, analyses, segment_chunks …) Supabase
-migration'larıyla oluşturulunca, karşılık gelen modeller bu pakete eklenecek.
-Her model `app.db.base.Base`'den türetilir.
+Alembic `Base.metadata` üzerinden bu paketi okur; yeni model eklenince buraya da eklenmelidir.
+- `ai.py`: AI servisi tabloları
+- `external.py`: Miço Usta tarafı tablolar (dış kaynak; canlıda yalnızca okunur)
 """
+
+from app.db.base import Base
+from app.db.models.ai import (
+    AgentRun,
+    AnalysisResult,
+    Call,
+    ChatMessage,
+    ChatSession,
+    RagChunk,
+    Transcript,
+    TranscriptSegment,
+)
+from app.db.models.external import (
+    Boat,
+    BoatNote,
+    Craftsman,
+    Customer,
+    Expense,
+    ServiceOrder,
+    Subscription,
+)
+
+__all__ = [
+    "AgentRun",
+    "AnalysisResult",
+    "Base",
+    "Boat",
+    "BoatNote",
+    "Call",
+    "ChatMessage",
+    "ChatSession",
+    "Craftsman",
+    "Customer",
+    "Expense",
+    "RagChunk",
+    "ServiceOrder",
+    "Subscription",
+    "Transcript",
+    "TranscriptSegment",
+]
