@@ -2,6 +2,7 @@
 
 **Issue:** #5 · **Sürüm:** Taslak v1 · **Tarih:** 2026-10-11
 **Kaynak:** Sistem mimarisi v3.1 §9, agent çıktı şemaları (#14), enum listeleri (#7)
+**Uygulama:** modeller `backend/app/db/models/`, migration `backend/migrations/versions/` (#6). Bu belge ile modeller arasındaki fark testlerle yakalanır (`tests/test_db_schema.py`).
 
 > Sütun adları **İngilizce**, açıklamalar **Türkçe**'dir.
 > 🔶 işaretli tablolar **dış kaynak**tır — Miço Usta'nın gerçek şeması hocadan alınca değişebilir.
@@ -650,6 +651,8 @@ LIMIT 8;
 ```
 
 > **Not:** `owner_id` filtresi HNSW indeksiyle birlikte kullanıldığında indeks önce en yakın komşuları, sonra filtreyi uygular ve `LIMIT`'ten az satır dönebilir. pgvector 0.8 ve üzerinde `SET hnsw.iterative_scan = relaxed_order;` bunu çözer. #26'da (hibrit arama) sürüm ve davranış denenmeli.
+
+> **Not (CI'da görüldü):** PostgreSQL'in `turkish` kök bulucusu iyelik ekli biçimleri her zaman köke indiremiyor: `plainto_tsquery('turkish', 'filtre')`, "filtresi" geçen metni bulamadı. Tam metin araması tek başına Türkçe çekimlerde eksik kalır; #26'da vektör araması ile birlikte (hibrit) kullanılmalı.
 
 ---
 

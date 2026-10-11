@@ -25,7 +25,10 @@ class UUIDPrimaryKeyMixin:
     """UUID birincil anahtar; değeri veritabanı üretir (gen_random_uuid)."""
 
     id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True), primary_key=True, server_default=text("gen_random_uuid()")
+        PG_UUID(as_uuid=True),
+        primary_key=True,
+        server_default=text("gen_random_uuid()"),
+        sort_order=-100,  # tablolarda ilk sütun olsun
     )
 
 
