@@ -22,8 +22,8 @@ Bu ilk partidir: şimdilik yalnızca **metin ve etiket**. Sese çevirme (TTS) so
 
 ```
 call_type            yeni_musteri | servis | teklif | acil | bilgi
-crm.request_category motor_arizasi | elektrik_arizasi | yakit_sistemi | govde_ve_kil |
-                     periyodik_bakim | kis_bakimi | diger | null
+crm.request_category makine | mekanik_hidrolik | elektrik_elektronik | su_sihhi_tesisat |
+                     iklimlendirme | tekne_guvenligi | temizlik_bakim | diger | null
 crm.location         serbest metin | null
 crm.problem          serbest metin | null
 crm.service_mode     yerinde_servis | atolyede | uzaktan_destek | null
@@ -36,7 +36,7 @@ sales.loss_reason    yalnızca outcome=kaybedildi iken dolu
 notes                etiketin neden böyle olduğuna dair kısa not
 ```
 
-Değerler `backend/app/domain/enums.py` ile birebir aynıdır. Konuşmada geçmeyen alan `null`'dır (agent'ın uydurmaması beklenir). Serbest metin alanları (`problem`, `potential_job`) ölçümde birebir değil, anlam olarak karşılaştırılır.
+Değerler `backend/app/domain/enums.py` ile birebir aynıdır; kategori ve sonraki aksiyon kuralları `docs/enums.md`'de. Konuşmada geçmeyen alan `null`'dır (agent'ın uydurmaması beklenir). Serbest metin alanları (`problem`, `potential_job`) ölçümde birebir değil, anlam olarak karşılaştırılır.
 
 ## Santral bilgisi (`calls_meta.json`)
 

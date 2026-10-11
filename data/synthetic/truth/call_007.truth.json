@@ -2,7 +2,7 @@
   "call_id": "call_007",
   "call_type": "yeni_musteri",
   "crm": {
-    "request_category": "periyodik_bakim",
+    "request_category": "makine",
     "location": "Tuzla Marina",
     "problem": null,
     "service_mode": "yerinde_servis",
@@ -14,5 +14,5 @@
     "outcome": "satisa_donustu",
     "loss_reason": null
   },
-  "notes": "Yeni müşteri; arıza yok, problem null beklenir."
+  "notes": "Yeni müşteri; arıza yok, problem null beklenir. Yıllık bakım paketinde motor yağ bakımı var: makine."
 }

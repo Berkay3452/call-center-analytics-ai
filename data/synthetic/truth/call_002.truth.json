@@ -2,7 +2,7 @@
   "call_id": "call_002",
   "call_type": "acil",
   "crm": {
-    "request_category": "diger",
+    "request_category": "su_sihhi_tesisat",
     "location": "Göcek D-Marin",
     "problem": "Tekne su alıyor, sintine pompası seviyeyi düşüremiyor",
     "service_mode": "yerinde_servis",
@@ -14,5 +14,5 @@
     "outcome": "satisa_donustu",
     "loss_reason": null
   },
-  "notes": "Su alma: kategori listesinde karşılığı yok, diger beklenir."
+  "notes": "Su alma ve sintine: Miço Usta'da sintine sistemleri Su & Sıhhi Tesisat kategorisinde."
 }

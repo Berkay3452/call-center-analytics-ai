@@ -1,8 +1,12 @@
 """Sabit değer listeleri (enum). Değerler küçük harf, Türkçe karakter ve boşluk içermez.
 
-Bu dosya GEÇİCİDİR: değerler #14 için yazıldı ve #7'de (Melih) Miço Usta'nın kategorileriyle
-kesinleştirilecek. Değer eklemek serbesttir; silmek veya yeniden adlandırmak veritabanını ve
-etiketleri etkilediği için ekibe haber verilerek yapılır.
+Kesinleşti (#7). Talep kategorileri ve servis emri durumları Miço Usta uygulamasından alındı
+(Sistem Yönetimi > Hizmetler ve Operasyon & CRM > Servis Emirleri, 11 Ekim 2026). Ayrıntılı
+tanımlar ve kurallar: docs/enums.md.
+
+Değer eklemek serbesttir; silmek veya yeniden adlandırmak veritabanını (CHECK), agent
+prompt'larını, sentetik etiketleri ve frontend tiplerini etkilediği için hepsi birlikte
+güncellenir.
 
 Arayüzde gösterilecek Türkçe karşılıklar `LABELS_TR` sözlüğündedir.
 """
@@ -21,14 +25,21 @@ class CallType(StrEnum):
 
 
 class RequestCategory(StrEnum):
-    """Müşteri talebinin kategorisi (CRM: "Müşteri talebi")."""
+    """Müşteri talebinin kategorisi (CRM: "Müşteri talebi").
 
-    MOTOR_ARIZASI = "motor_arizasi"
-    ELEKTRIK_ARIZASI = "elektrik_arizasi"
-    YAKIT_SISTEMI = "yakit_sistemi"
-    GOVDE_VE_KIL = "govde_ve_kil"
-    PERIYODIK_BAKIM = "periyodik_bakim"
-    KIS_BAKIMI = "kis_bakimi"
+    Miço Usta'nın hizmet kategorileriyle birebir aynıdır; CRM önerisi servis emrine dönüşürken
+    kategorisi bu listeden biri olmak zorundadır. Kategoriler Miço Usta'da yönetici tarafından
+    değiştirilebildiği için ileride bu liste uygulamanın API'sinden okunabilir. Pasif olan
+    "Kaptan Kiralama" bilerek yoktur (servis emri açılamaz).
+    """
+
+    MAKINE = "makine"
+    MEKANIK_HIDROLIK = "mekanik_hidrolik"
+    ELEKTRIK_ELEKTRONIK = "elektrik_elektronik"
+    SU_SIHHI_TESISAT = "su_sihhi_tesisat"
+    IKLIMLENDIRME = "iklimlendirme"
+    TEKNE_GUVENLIGI = "tekne_guvenligi"
+    TEMIZLIK_BAKIM = "temizlik_bakim"
     DIGER = "diger"
 
 
@@ -68,6 +79,27 @@ class SalesOutcomeType(StrEnum):
     BEKLEMEDE = "beklemede"
 
 
+class ServiceOrderStatus(StrEnum):
+    """Servis emri durumu (Miço Usta iş akışı: Yeni Atandı → ... → Tamamlandı)."""
+
+    YENI_ATANDI = "yeni_atandi"
+    KESIFTE = "kesifte"
+    ONAYLANDI = "onaylandi"
+    DEVAM_EDIYOR = "devam_ediyor"
+    TAMAMLANDI = "tamamlandi"
+
+
+class SwitchboardOutcome(StrEnum):
+    """Santral/CRM'de çağrının kapanış sonucu (çağrı bilgisi; ses dosyasından çıkmaz)."""
+
+    RANDEVU_OLUSTURULDU = "randevu_olusturuldu"
+    USTA_YONLENDIRILDI = "usta_yonlendirildi"
+    KAYIT_OLUSTURULDU = "kayit_olusturuldu"
+    BILGI_VERILDI = "bilgi_verildi"
+    GERI_ARANACAK = "geri_aranacak"
+    IPTAL = "iptal"
+
+
 class LossReason(StrEnum):
     """Satışın kaybedilme nedeni (yalnızca `kaybedildi` iken)."""
 
@@ -85,12 +117,13 @@ LABELS_TR: dict[StrEnum, str] = {
     CallType.TEKLIF: "Teklif talebi",
     CallType.ACIL: "Acil servis",
     CallType.BILGI: "Bilgi",
-    RequestCategory.MOTOR_ARIZASI: "Motor arızası",
-    RequestCategory.ELEKTRIK_ARIZASI: "Elektrik arızası",
-    RequestCategory.YAKIT_SISTEMI: "Yakıt sistemi",
-    RequestCategory.GOVDE_VE_KIL: "Gövde ve kıl bakımı",
-    RequestCategory.PERIYODIK_BAKIM: "Periyodik bakım",
-    RequestCategory.KIS_BAKIMI: "Kış bakımı",
+    RequestCategory.MAKINE: "Makine",
+    RequestCategory.MEKANIK_HIDROLIK: "Mekanik & Hidrolik",
+    RequestCategory.ELEKTRIK_ELEKTRONIK: "Elektrik & Elektronik",
+    RequestCategory.SU_SIHHI_TESISAT: "Su & Sıhhi Tesisat",
+    RequestCategory.IKLIMLENDIRME: "İklimlendirme & Havalandırma",
+    RequestCategory.TEKNE_GUVENLIGI: "Tekne Güvenlik Hizmetleri",
+    RequestCategory.TEMIZLIK_BAKIM: "Temizlik & Tekne Bakımı",
     RequestCategory.DIGER: "Diğer",
     ServiceMode.YERINDE_SERVIS: "Yerinde servis",
     ServiceMode.ATOLYEDE: "Atölyede servis",
@@ -108,6 +141,17 @@ LABELS_TR: dict[StrEnum, str] = {
     SalesOutcomeType.SATISA_DONUSTU: "Satışa dönüştü",
     SalesOutcomeType.KAYBEDILDI: "Kaybedildi",
     SalesOutcomeType.BEKLEMEDE: "Beklemede",
+    ServiceOrderStatus.YENI_ATANDI: "Yeni Atandı",
+    ServiceOrderStatus.KESIFTE: "Keşifte",
+    ServiceOrderStatus.ONAYLANDI: "Onaylandı",
+    ServiceOrderStatus.DEVAM_EDIYOR: "Devam Ediyor",
+    ServiceOrderStatus.TAMAMLANDI: "Tamamlandı",
+    SwitchboardOutcome.RANDEVU_OLUSTURULDU: "Randevu oluşturuldu",
+    SwitchboardOutcome.USTA_YONLENDIRILDI: "Usta yönlendirildi",
+    SwitchboardOutcome.KAYIT_OLUSTURULDU: "Kayıt oluşturuldu",
+    SwitchboardOutcome.BILGI_VERILDI: "Bilgi verildi",
+    SwitchboardOutcome.GERI_ARANACAK: "Geri aranacak",
+    SwitchboardOutcome.IPTAL: "İptal",
     LossReason.FIYAT: "Fiyat",
     LossReason.GEC_DONUS: "Geç dönüş",
     LossReason.RAKIP: "Rakip",

@@ -53,7 +53,7 @@ Miço Usta'nın mevcut panelleri (Gösterge Paneli, Servis Emirleri, Tekne Sahib
     - **Özetleme Agent'ı özeti:** En fazla 3 cümlelik Türkçe özet ve en fazla 3 anahtar madde (`CallSummary`).
   - **Sağ Panel (7 Alanlı CRM Servis Emri):**
     - Hocanın şart koştuğu ve `backend/app/schemas/analysis.py` (`CrmExtraction`) ile tanımlanan **7 Temel CRM Alanı**:
-      1. `request_category` (Müşteri Talebi): *Motor Arızası*
+      1. `request_category` (Müşteri Talebi): *Makine*
       2. `location` (Marina / Lokasyon): *Kalamış Marina İskele C-12*
       3. `problem` (Problem Tanımı): *Ana makine devir almıyor, sintine su seviyesi alarmı aktif*
       4. `service_mode` (Hizmet Biçimi): *Yerinde Servis (yerinde_servis)*
@@ -92,7 +92,7 @@ Miço Usta'nın mevcut panelleri (Gösterge Paneli, Servis Emirleri, Tekne Sahib
 | Ekrandaki Alan | Backend Şeması | `backend/app/domain/enums.py` Karşılığı |
 |---|---|---|
 | **Çağrı Tipi** | `CallClassification.call_type` | `CallType` (`yeni_musteri`, `servis`, `teklif`, `acil`, `bilgi`) |
-| **Müşteri Talebi** | `CrmExtraction.request_category` | `RequestCategory` (`motor_arizasi`, `elektrik_arizasi`, `periyodik_bakim`...) |
+| **Müşteri Talebi** | `CrmExtraction.request_category` | `RequestCategory` (`makine`, `elektrik_elektronik`, `su_sihhi_tesisat`...; Miço Usta hizmet kategorileri) |
 | **Hizmet Biçimi** | `CrmExtraction.service_mode` | `ServiceMode` (`yerinde_servis`, `atolyede`, `uzaktan_destek`) |
 | **Aciliyet** | `CrmExtraction.urgency` | `Urgency` (`dusuk`, `normal`, `yuksek`, `acil`) |
 | **Sonraki Aksiyon** | `CrmExtraction.next_action` | `NextAction` (`servis_randevusu_olustur`, `teklif_hazirla`, `usta_ata`...) |

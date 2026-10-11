@@ -20,7 +20,7 @@
       "Kalamış C-12 iskelesinde acil servis bekleniyor"
     ],
     "crm": {
-      "requestCategory": "motor_arizasi",
+      "requestCategory": "makine",
       "location": "Kalamış Marina",
       "problem": "Ana makine devir almıyor ve sintinede su seviyesi alarmı var",
       "serviceMode": "yerinde_servis",
@@ -39,7 +39,7 @@
       "evidence": "Nöbetçi teknisyen onaylandı, servis kaydı açıldı.",
       "confidence": 0.95
     },
-    "tags": ["acil", "motor_arizasi", "sintine", "kalamis"]
+    "tags": ["acil", "makine", "sintine", "kalamis"]
   },
   {
     "id": "call-002",
@@ -62,7 +62,7 @@
       "Teklif e-posta ile iletilecek"
     ],
     "crm": {
-      "requestCategory": "periyodik_bakim",
+      "requestCategory": "makine",
       "location": "Göcek D-Marin",
       "problem": "Sezon sonu kışlama ve periyodik motor yağ/filtre değişimi",
       "serviceMode": "yerinde_servis",
@@ -144,7 +144,7 @@
       "Fiyat yüksekliği nedeniyle iptal"
     ],
     "crm": {
-      "requestCategory": "elektrik_arizasi",
+      "requestCategory": "elektrik_elektronik",
       "location": "Tuzla Marina",
       "problem": "Baş pervane montajı ve elektrik tesisatı",
       "serviceMode": "atolyede",
@@ -186,7 +186,7 @@
       "Jeneratör ve sintine sensörü arızası"
     ],
     "crm": {
-      "requestCategory": "elektrik_arizasi",
+      "requestCategory": "elektrik_elektronik",
       "location": "Yalıkavak Marina",
       "problem": "Jeneratör çalışmıyor, sintine su seviye sensörleri arızalı",
       "serviceMode": "yerinde_servis",
@@ -228,7 +228,7 @@
       "Analiz başarısız — eksik transkript"
     ],
     "crm": {
-      "requestCategory": "motor_arizasi",
+      "requestCategory": "makine",
       "location": "Göcek D-Marin",
       "problem": "Dümen hidrolik sistemi olası kaçak — transkript eksik",
       "serviceMode": "uzaktan_destek",

@@ -2,7 +2,7 @@
   "call_id": "call_005",
   "call_type": "teklif",
   "crm": {
-    "request_category": "kis_bakimi",
+    "request_category": "makine",
     "location": "Yalıkavak Marina",
     "problem": null,
     "service_mode": "atolyede",
@@ -14,5 +14,5 @@
     "outcome": "kaybedildi",
     "loss_reason": "fiyat"
   },
-  "notes": "Arıza yok, problem null beklenir."
+  "notes": "Arıza yok, problem null beklenir. Çok kalemli kış bakımında en ağır kalem motor kışlaması: makine."
 }
