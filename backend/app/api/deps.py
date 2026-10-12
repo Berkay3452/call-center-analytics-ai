@@ -12,6 +12,7 @@ from app.core.security import (
     SERVICE_KEY_HEADER,
     USER_ID_HEADER,
     ServiceCaller,
+    normalize_user_id,
     require_owner_id_value,
     verify_service_key,
 )
@@ -41,8 +42,7 @@ async def require_service_key(
 ) -> ServiceCaller:
     """Servis anahtarını doğrular; `X-User-Id` varsa bağlama ekler (admin uçlarında opsiyonel)."""
     verify_service_key(x_service_key, settings)
-    normalized_owner_id = x_user_id.strip() if x_user_id and x_user_id.strip() else None
-    return ServiceCaller(authenticated=True, owner_id=normalized_owner_id)
+    return ServiceCaller(authenticated=True, owner_id=normalize_user_id(x_user_id))
 
 
 ServiceCallerDep = Annotated[ServiceCaller, Depends(require_service_key)]

@@ -13,6 +13,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 AppEnv = Literal["local", "test", "staging", "prod"]
 
 
+PLACEHOLDER_SERVICE_KEY = "change-me-in-local-env"
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -114,6 +117,15 @@ class Settings(BaseSettings):
         # Güvenlik: kimlik doğrulama atlatma yalnızca yerel geliştirme ve testte açılabilir.
         if self.auth_dev_bypass and self.app_env not in ("local", "test"):
             raise ValueError("AUTH_DEV_BYPASS yalnızca APP_ENV=local veya test iken açılabilir.")
+        return self
+
+    @model_validator(mode="after")
+    def _guard_service_key(self) -> "Settings":
+        # Güvenlik: canlıda boş veya örnek dosyadaki varsayılan servis anahtarı kullanılamaz.
+        if self.is_production and not self.auth_dev_bypass:
+            key = self.service_api_key.get_secret_value() if self.service_api_key else ""
+            if len(key) < 32 or key == PLACEHOLDER_SERVICE_KEY:
+                raise ValueError("SERVICE_API_KEY canlıda en az 32 karakterli, özel olmalıdır.")
         return self
 
 

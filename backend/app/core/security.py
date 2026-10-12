@@ -6,6 +6,7 @@ Anahtar sabit zamanlı karşılaştırma (`secrets.compare_digest`) ile doğrula
 """
 
 import secrets
+from uuid import UUID
 
 from pydantic import BaseModel
 
@@ -48,8 +49,22 @@ def verify_service_key(provided_key: str | None, settings: Settings) -> None:
         raise UnauthorizedError("Geçersiz servis anahtarı.")
 
 
-def require_owner_id_value(raw_user_id: str | None) -> str:
-    """Tekne sahibi uçları için `X-User-Id` başlığının dolu olduğunu doğrular."""
+def normalize_user_id(raw_user_id: str | None) -> str | None:
+    """`X-User-Id` değerini UUID olarak doğrular (veritabanında `owner_id` UUID'dir).
+
+    Boş değer `None` döner; dolu ama UUID olmayan değer 400 hatasıdır.
+    """
     if raw_user_id is None or not raw_user_id.strip():
+        return None
+    try:
+        return str(UUID(raw_user_id.strip()))
+    except ValueError:
+        raise AppError("Kullanıcı kimliği (X-User-Id) geçerli bir UUID olmalıdır.") from None
+
+
+def require_owner_id_value(raw_user_id: str | None) -> str:
+    """Tekne sahibi uçları için `X-User-Id` başlığının dolu ve geçerli olduğunu doğrular."""
+    owner_id = normalize_user_id(raw_user_id)
+    if owner_id is None:
         raise AppError("Tekne sahibi kimliği (X-User-Id) zorunludur.")
-    return raw_user_id.strip()
+    return owner_id

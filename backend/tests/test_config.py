@@ -26,3 +26,11 @@ def test_broker_defaults_to_redis(settings_factory: Callable[..., Settings]) -> 
     s = settings_factory(redis_url="redis://r:6379/0")
     assert s.broker_url == "redis://r:6379/0"
     assert s.result_backend_url == "redis://r:6379/0"
+
+
+def test_prod_rejects_weak_service_key(settings_factory: Callable[..., Settings]) -> None:
+    for weak in (None, "change-me-in-local-env", "kisa"):
+        with pytest.raises(ValueError):
+            settings_factory(app_env="prod", service_api_key=weak)
+    ok = settings_factory(app_env="prod", service_api_key="x" * 40)
+    assert ok.is_production

@@ -49,6 +49,8 @@ uv export --frozen --no-hashes --no-emit-project --only-dev -o requirements-dev.
 | Lint + format | `uv run ruff check .` ve `uv run ruff format .` |
 | Tip kontrolü | `uv run mypy app tests` |
 
+`X-User-Id` her zaman UUID olmalıdır (veritabanındaki `owner_id`). Canlıda `SERVICE_API_KEY` en az 32 karakter olmalıdır. Admin uçlarında rol ayrımını .NET uygulaması yapar; bu servis yalnızca servis anahtarını doğrular.
+
 Servis anahtarı kurulmadan `/api/v1` uçlarını denemek için `.env` içinde `AUTH_DEV_BYPASS=true` yapın (yalnızca `APP_ENV=local`).
 
 ## Sentetik veri üretimi ve veritabanı doldurma (seed)
