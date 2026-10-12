@@ -23,7 +23,6 @@ dependencies = [
     "celery[redis]~=5.6",
     "redis>=5",
     # Kimlik doğrulama (Supabase JWT / JWKS)
-    "pyjwt[crypto]~=2.15",
     # Yardımcılar
     "httpx~=0.28",
     "structlog>=26.1",
