@@ -47,13 +47,13 @@ class Settings(BaseSettings):
     # --- Sağlık kontrolü ---
     health_check_timeout_s: float = 2.0
 
-    # --- Supabase Auth / Storage ---
+    # --- Servis Anahtarı / Supabase Storage ---
+    # .NET API'nin Python servisini çağırırken `X-Service-Key` ile gönderdiği paylaşılan anahtar.
+    service_api_key: SecretStr | None = None
     supabase_url: str | None = None
-    supabase_jwks_url: str | None = None  # boşsa supabase_url'den türetilir
-    supabase_jwt_audience: str = "authenticated"
     supabase_service_role_key: SecretStr | None = None  # yalnızca backend; asla frontend'e verilmez
     storage_bucket: str = "call-audio"
-    # Yalnızca local/test: Supabase kurulmadan uçları denemek için JWT doğrulamasını atlar.
+    # Yalnızca local/test: servis anahtarı kurulmadan uçları denemek için doğrulamayı atlar.
     auth_dev_bypass: bool = False
 
     # --- LLM (ücretsiz, OpenAI-uyumlu API sağlayıcıları) ---
@@ -104,14 +104,6 @@ class Settings(BaseSettings):
     @property
     def result_backend_url(self) -> str:
         return self.celery_result_backend or self.redis_url
-
-    @property
-    def jwks_url(self) -> str | None:
-        if self.supabase_jwks_url:
-            return self.supabase_jwks_url
-        if self.supabase_url:
-            return f"{self.supabase_url.rstrip('/')}/auth/v1/.well-known/jwks.json"
-        return None
 
     @property
     def is_production(self) -> bool:

@@ -16,6 +16,7 @@ from app.main import create_app
 
 UNREACHABLE_DB = "postgresql+asyncpg://postgres:postgres@127.0.0.1:1/test"
 UNREACHABLE_REDIS = "redis://127.0.0.1:1/0"
+TEST_SERVICE_KEY = "test-service-secret-key"
 
 
 def make_settings(**overrides: Any) -> Settings:
@@ -24,6 +25,7 @@ def make_settings(**overrides: Any) -> Settings:
         "database_url": UNREACHABLE_DB,
         "redis_url": UNREACHABLE_REDIS,
         "health_check_timeout_s": 1.0,
+        "service_api_key": TEST_SERVICE_KEY,
         "supabase_url": None,
         "auth_dev_bypass": False,
     }

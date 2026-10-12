@@ -49,7 +49,7 @@ uv export --frozen --no-hashes --no-emit-project --only-dev -o requirements-dev.
 | Lint + format | `uv run ruff check .` ve `uv run ruff format .` |
 | Tip kontrolü | `uv run mypy app tests` |
 
-Supabase kurulmadan `/api/v1` uçlarını denemek için `.env` içinde `AUTH_DEV_BYPASS=true` yapın (yalnızca `APP_ENV=local`).
+Servis anahtarı kurulmadan `/api/v1` uçlarını denemek için `.env` içinde `AUTH_DEV_BYPASS=true` yapın (yalnızca `APP_ENV=local`).
 
 ## Sentetik veri üretimi ve veritabanı doldurma (seed)
 
@@ -81,14 +81,15 @@ python -m scripts.evaluate --fast <model> --smart <model>  # modeli .env'i deği
 |-----|----------|
 | `GET /health` | Süreç ayakta mı (canlılık) |
 | `GET /health/ready` | Veritabanı ve Redis erişilebilir mi (hazır olma; değilse 503) |
-| `GET /api/v1/me` | Oturumdaki kullanıcı (Supabase JWT) |
+| `GET /api/v1/me` | Servis anahtarı doğrulaması (`X-Service-Key`, isteğe bağlı `X-User-Id`) |
+| `GET /api/v1/me/owner` | Tekne sahibi kimliği doğrulaması (`X-Service-Key` + zorunlu `X-User-Id`) |
 
 ## Klasör Yapısı
 
 | Klasör | İçerik |
 |--------|--------|
-| `app/core` | Ayarlar, loglama, hata yönetimi, JWT doğrulama, istek kimliği ara katmanı |
-| `app/api` | Route'lar ve bağımlılıklar (oturum, kullanıcı, rol) |
+| `app/core` | Ayarlar, loglama, hata yönetimi, servis anahtarı doğrulama, istek kimliği ara katmanı |
+| `app/api` | Route'lar ve bağımlılıklar (oturum, servis anahtarı, kullanıcı kimliği) |
 | `app/db` | Async SQLAlchemy motoru, oturumlar, model tabanı (şema Supabase migration'larından gelir) |
 | `app/schemas` | API istek/yanıt şemaları |
 | `app/services` | İş mantığı |

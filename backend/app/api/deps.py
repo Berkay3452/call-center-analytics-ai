@@ -1,16 +1,20 @@
-"""FastAPI bağımlılıkları: ayarlar, veritabanı oturumu, Redis, mevcut kullanıcı ve rol kontrolü."""
+"""FastAPI bağımlılıkları: ayarlar, DB oturumu, Redis, servis anahtarı ve kullanıcı kimliği."""
 
-from collections.abc import AsyncIterator, Callable, Coroutine
-from typing import Annotated, Any
+from collections.abc import AsyncIterator
+from typing import Annotated
 
-from fastapi import Depends, Request
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi import Depends, Header, Request
 from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import Settings, get_settings
-from app.core.errors import ForbiddenError, UnauthorizedError
-from app.core.security import DEV_USER, CurrentUser, Role, verify_access_token
+from app.core.security import (
+    SERVICE_KEY_HEADER,
+    USER_ID_HEADER,
+    ServiceCaller,
+    require_owner_id_value,
+    verify_service_key,
+)
 
 SettingsDep = Annotated[Settings, Depends(get_settings)]
 
@@ -29,30 +33,24 @@ def get_redis(request: Request) -> Redis:
 SessionDep = Annotated[AsyncSession, Depends(get_db_session)]
 RedisDep = Annotated[Redis, Depends(get_redis)]
 
-_bearer = HTTPBearer(auto_error=False)
 
-
-async def get_current_user(
+async def require_service_key(
     settings: SettingsDep,
-    credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(_bearer)],
-) -> CurrentUser:
-    if settings.auth_dev_bypass:
-        # Yalnızca local/test (Settings doğrulayıcısı garanti eder).
-        return DEV_USER
-    if credentials is None or credentials.scheme.lower() != "bearer":
-        raise UnauthorizedError("Oturum bulunamadı.")
-    return await verify_access_token(credentials.credentials, settings)
+    x_service_key: Annotated[str | None, Header(alias=SERVICE_KEY_HEADER)] = None,
+    x_user_id: Annotated[str | None, Header(alias=USER_ID_HEADER)] = None,
+) -> ServiceCaller:
+    """Servis anahtarını doğrular; `X-User-Id` varsa bağlama ekler (admin uçlarında opsiyonel)."""
+    verify_service_key(x_service_key, settings)
+    normalized_owner_id = x_user_id.strip() if x_user_id and x_user_id.strip() else None
+    return ServiceCaller(authenticated=True, owner_id=normalized_owner_id)
 
 
-CurrentUserDep = Annotated[CurrentUser, Depends(get_current_user)]
+ServiceCallerDep = Annotated[ServiceCaller, Depends(require_service_key)]
 
 
-def require_role(*roles: Role) -> Callable[..., Coroutine[Any, Any, CurrentUser]]:
-    """Kullanım: `user: Annotated[CurrentUser, Depends(require_role("admin"))]`"""
+async def require_owner_id(caller: ServiceCallerDep) -> str:
+    """Tekne sahibi uçları için servis anahtarını ve zorunlu `X-User-Id` başlığını doğrular."""
+    return require_owner_id_value(caller.owner_id)
 
-    async def _checker(user: CurrentUserDep) -> CurrentUser:
-        if user.role not in roles:
-            raise ForbiddenError("Bu işlem için yetkiniz yok.")
-        return user
 
-    return _checker
+OwnerIdDep = Annotated[str, Depends(require_owner_id)]

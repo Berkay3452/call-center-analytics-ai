@@ -1,72 +1,55 @@
-"""Kimlik doğrulama: Supabase Auth JWT'lerinin JWKS ile doğrulanması.
+"""Kimlik doğrulama: Servis Anahtarı (`X-Service-Key`) ve kullanıcı kimliği (`X-User-Id`).
 
-Frontend, Supabase'ten aldığı access token'ı `Authorization: Bearer <jwt>` ile gönderir.
-Backend imzayı Supabase'in açık anahtarlarıyla (JWKS) doğrular;
-parola hiçbir zaman backend'e gelmez.
-
-Not: Backend veritabanına service-role ile bağlandığı için RLS'i atlar.
-Bu yüzden yetki kontrolü (rol) mutlaka backend kodunda yapılır (bkz. api/deps.py).
+Mevcut Miço Usta .NET API'si, Python AI servisini paylaşılan servis anahtarı (`X-Service-Key`)
+ile çağırır ve tekne sahibinin kimliğini ayrı bir başlıkta (`X-User-Id`) iletir (Mimari v3.1 §8).
+Anahtar sabit zamanlı karşılaştırma (`secrets.compare_digest`) ile doğrulanır.
 """
 
-from functools import lru_cache
-from typing import Literal
-from uuid import UUID
+import secrets
 
-import jwt
 from pydantic import BaseModel
-from starlette.concurrency import run_in_threadpool
 
 from app.core.config import Settings
-from app.core.errors import ServiceUnavailableError, UnauthorizedError
+from app.core.errors import AppError, ServiceUnavailableError, UnauthorizedError
 
-Role = Literal["admin", "analyst"]
-_ALLOWED_ALGORITHMS = ["ES256", "RS256"]
-
-
-class CurrentUser(BaseModel):
-    id: UUID
-    email: str | None = None
-    role: Role = "analyst"
+SERVICE_KEY_HEADER = "X-Service-Key"
+USER_ID_HEADER = "X-User-Id"
 
 
-# Yerel geliştirmede (AUTH_DEV_BYPASS=true) kullanılan sabit kullanıcı.
-DEV_USER = CurrentUser(
-    id=UUID("00000000-0000-0000-0000-000000000001"), email="dev@local", role="admin"
-)
+class ServiceCaller(BaseModel):
+    """Doğrulanmış servis çağrısı bağlamı.
+
+    Admin uçlarında `owner_id` isteğe bağlıdır (`None` olabilir);
+    tekne sahibi uçlarında `X-User-Id` başlığı zorunludur ve `owner_id` dolu gelir.
+    """
+
+    authenticated: bool = True
+    owner_id: str | None = None
 
 
-@lru_cache(maxsize=4)
-def _jwks_client(jwks_url: str) -> jwt.PyJWKClient:
-    # Anahtarlar önbelleğe alınır; Supabase anahtar döndürürse otomatik yenilenir.
-    return jwt.PyJWKClient(jwks_url, cache_keys=True, lifespan=3600)
+def verify_service_key(provided_key: str | None, settings: Settings) -> None:
+    """`X-Service-Key` başlığını sabit zamanlı karşılaştırma ile doğrular."""
+    if settings.auth_dev_bypass:
+        # Yalnızca local/test (Settings doğrulayıcısı garanti eder).
+        return
 
+    if not provided_key:
+        raise UnauthorizedError("Servis anahtarı eksik.")
 
-async def verify_access_token(token: str, settings: Settings) -> CurrentUser:
-    jwks_url = settings.jwks_url
-    if not jwks_url:
-        raise ServiceUnavailableError("Kimlik doğrulama yapılandırılmamış (SUPABASE_URL eksik).")
+    if settings.service_api_key is None or not settings.service_api_key.get_secret_value():
+        raise ServiceUnavailableError("Kimlik doğrulama yapılandırılmamış (SERVICE_API_KEY eksik).")
 
-    try:
-        # PyJWKClient ağ çağrısı yapar ve senkrondur → event loop'u bloklamamak için thread'de.
-        signing_key = await run_in_threadpool(
-            _jwks_client(jwks_url).get_signing_key_from_jwt, token
-        )
-        claims = jwt.decode(
-            token,
-            signing_key.key,
-            algorithms=_ALLOWED_ALGORITHMS,
-            audience=settings.supabase_jwt_audience,
-        )
-    except jwt.PyJWKClientConnectionError as exc:
-        raise ServiceUnavailableError("Kimlik doğrulama anahtarlarına ulaşılamadı.") from exc
-    except jwt.PyJWTError as exc:
-        raise UnauthorizedError("Geçersiz veya süresi dolmuş oturum.") from exc
-
-    # TODO(Hafta 3): rol, `profiles` tablosundan okunacak. Şimdilik Supabase app_metadata'dan.
-    app_metadata = claims.get("app_metadata") or {}
-    role = app_metadata.get("role", "analyst")
-    return CurrentUser(
-        id=UUID(claims["sub"]),
-        email=claims.get("email"),
-        role=role if role in ("admin", "analyst") else "analyst",
+    expected = settings.service_api_key.get_secret_value()
+    is_valid = secrets.compare_digest(
+        provided_key.encode("utf-8"),
+        expected.encode("utf-8"),
     )
+    if not is_valid:
+        raise UnauthorizedError("Geçersiz servis anahtarı.")
+
+
+def require_owner_id_value(raw_user_id: str | None) -> str:
+    """Tekne sahibi uçları için `X-User-Id` başlığının dolu olduğunu doğrular."""
+    if raw_user_id is None or not raw_user_id.strip():
+        raise AppError("Tekne sahibi kimliği (X-User-Id) zorunludur.")
+    return raw_user_id.strip()
