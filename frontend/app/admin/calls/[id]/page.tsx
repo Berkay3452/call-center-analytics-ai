@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCallById, getCalls } from "@/lib/api/client";
+import { isApiError } from "@/lib/api/errors";
 import type {
   CallDetail,
   Urgency,
@@ -51,8 +52,10 @@ export default async function CallDetailPage({ params }: Props) {
 
   try {
     call = await getCallById(id);
-  } catch {
-    notFound();
+  } catch (err) {
+    // Yalnızca "kayıt yok" 404'tür; sunucu/ağ hatası gizlenmez (hata sayfasına düşer).
+    if (isApiError(err) && err.status === 404) notFound();
+    throw err;
   }
 
   if (!call) notFound();
@@ -67,7 +70,9 @@ export default async function CallDetailPage({ params }: Props) {
   const urgency = crm?.urgency;
   const urgencyStyle = urgency ? URGENCY_COLOR[urgency] : URGENCY_COLOR.dusuk;
   const callType = classification?.call_type;
-  const analysisStatus = call.analysis?.status ?? (call.state === "tamam" ? "tamam" : "kismi");
+  const inProgress =
+    call.state === "beklemede" || call.state === "yaziya_cevriliyor" || call.state === "isleniyor";
+  const analysisStatus = call.analysis?.status ?? (call.state === "basarisiz" ? "basarisiz" : "kismi");
 
   return (
     <div className="space-y-6">
@@ -81,17 +86,22 @@ export default async function CallDetailPage({ params }: Props) {
         </Link>
 
         <div className="flex items-center gap-2">
-          {analysisStatus === "kismi" && (
+          {inProgress && (
+            <span className="inline-flex items-center rounded-md bg-sky-50 px-2.5 py-1 text-xs font-semibold text-sky-800 border border-sky-200">
+              ⏳ Analiz sürüyor
+            </span>
+          )}
+          {!inProgress && analysisStatus === "kismi" && (
             <span className="inline-flex items-center rounded-md bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-800 border border-amber-200">
               ⚠️ Kısmi Analiz — Eksik Bilgi Mevcut
             </span>
           )}
-          {analysisStatus === "basarisiz" && (
+          {!inProgress && analysisStatus === "basarisiz" && (
             <span className="inline-flex items-center rounded-md bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-800 border border-red-200">
               ✕ Analiz Başarısız — Transkript Eksik
             </span>
           )}
-          {analysisStatus === "tamam" && (
+          {!inProgress && analysisStatus === "tamam" && (
             <span className="inline-flex items-center rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800 border border-emerald-200">
               ✓ Analiz Tamamlandı
             </span>

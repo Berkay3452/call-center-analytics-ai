@@ -52,12 +52,15 @@ export function isMockEnabled(): boolean {
   return true;
 }
 
+/**
+ * API taban adresi.
+ * - Sunucu tarafında (Server Component): AI servisi doğrudan çağrılır (API_URL).
+ * - Tarayıcıda: servis anahtarı tarayıcıya verilmez; istekler Next.js'in kendi
+ *   `/api/backend` uç noktasından geçer, anahtarı orası ekler (app/api/backend/[...path]).
+ */
 export function getApiBaseUrl(): string {
-  return (
-    process.env.NEXT_PUBLIC_API_URL ??
-    process.env.API_URL ??
-    "http://localhost:8000/api/v1"
-  );
+  if (typeof window !== "undefined") return "/api/backend";
+  return process.env.API_URL ?? "http://localhost:8000/api/v1";
 }
 
 export interface RequestOptions extends RequestInit {
@@ -103,10 +106,12 @@ export async function apiFetch<T>(
     headers.set("Content-Type", "application/json");
   }
 
-  const serviceKey =
-    process.env.NEXT_PUBLIC_SERVICE_KEY ?? process.env.SERVICE_KEY;
-  if (serviceKey && !headers.has("X-Service-Key")) {
-    headers.set("X-Service-Key", serviceKey);
+  // Servis anahtarı yalnızca sunucuda eklenir (NEXT_PUBLIC_ ile tarayıcıya sızdırılmaz).
+  if (typeof window === "undefined") {
+    const serviceKey = process.env.SERVICE_KEY;
+    if (serviceKey && !headers.has("X-Service-Key")) {
+      headers.set("X-Service-Key", serviceKey);
+    }
   }
 
   if (options.userId && !headers.has("X-User-Id")) {

@@ -187,6 +187,8 @@ export interface Call {
   urgency: Urgency | null;
   location: string | null;
   analysisStatus: AnalysisStatus;
+  /** Analiz henüz bitmediyse süreç aşaması (beklemede, yaziya_cevriliyor, isleniyor). */
+  pendingState?: "beklemede" | "yaziya_cevriliyor" | "isleniyor";
   transcript: string;
   summary: string;
   keyPoints?: string[];
