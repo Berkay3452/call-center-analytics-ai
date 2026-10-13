@@ -90,7 +90,13 @@ Arayüz `GET /calls/{id}/status` ile durumu 2–3 saniyede bir sorar; `tamam`, `
   4. Hata olursa `ErrorEvent`; akış kapanır.
   Metin, **kaynak kontrolü bittikten sonra** akıtılır: desteklenmeyen iddia cevaptan düşürüldüğü için ekrandaki cümle sonradan silinmez. Akış koparsa arayüz `GET /chat/sessions/{id}` ile kayıtlı cevabı alabilir.
 
-## 5. Örnekler
+## 5. Frontend bağlantısı (#10)
+
+- **OpenAPI belgesi:** `frontend/openapi.json` (tek kopya). TypeScript tipleri `npm run gen:api` ile `frontend/lib/api/schema.ts` içine üretilir. Alan listesi backend şemalarıyla uyumlu kalsın diye `test_api_contract.py` karşılaştırır.
+- **Mock/gerçek geçişi:** `NEXT_PUBLIC_USE_MOCKS=true` iken `frontend/mocks/` (örneklerin kopyası), `false` iken gerçek servis. Ayarlar `frontend/.env.example` dosyasında.
+- **Servis anahtarı tarayıcıya verilmez.** Sunucu bileşenleri servisi `API_URL` ile doğrudan çağırır; tarayıcıdaki kod `/api/backend/...` vekil uç noktasından geçer ve anahtarı (`SERVICE_KEY`) orası ekler.
+
+## 6. Örnekler
 
 | Dosya | Şema |
 |---|---|
@@ -108,8 +114,8 @@ Arayüz `GET /calls/{id}/status` ile durumu 2–3 saniyede bir sorar; `tamam`, `
 
 Arayüz bu dosyaları mock olarak kullanabilir; gerçek uç gelince yalnızca `lib/api.ts` değişir.
 
-## 6. Şema değiştirirken
+## 7. Şema değiştirirken
 1. `backend/app/schemas/api.py` (veya `analysis.py`, `assistant.py`)
-2. `frontend/lib/api-types.ts`
+2. `frontend/lib/api-types.ts` ve `frontend/openapi.json` (sonra `npm run gen:api`)
 3. Bu dosya ve `docs/ornekler/api/` örnekleri
 4. `uv run pytest tests/test_api_contract.py`
