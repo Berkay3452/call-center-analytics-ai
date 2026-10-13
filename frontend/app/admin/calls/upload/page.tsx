@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
@@ -22,13 +22,27 @@ const MARINA_OPTIONS = [
   "Diğer",
 ];
 
-const CALL_TYPE_OPTIONS = [
-  { value: "servis", label: "Servis Talebi" },
-  { value: "yeni_musteri", label: "Yeni Müşteri" },
-  { value: "teklif", label: "Teklif Talebi" },
-  { value: "acil", label: "Acil Servis (🚨)" },
-  { value: "bilgi", label: "Bilgi / Danışma" },
-];
+const MAX_AUDIO_BYTES = 25 * 1024 * 1024;
+const POLL_INTERVAL_MS = 2500;
+const POLL_TIMEOUT_MS = 5 * 60 * 1000;
+
+/** Süreç aşamasına göre ilerleme çubuğu ve açıklama (yüzdeler yaklaşıktır). */
+const STATE_INFO: Record<CallState, { percent: number; message: string }> = {
+  beklemede: { percent: 15, message: "Çağrı sıraya alındı." },
+  yaziya_cevriliyor: { percent: 40, message: "Ses dosyası metne dönüştürülüyor (STT)." },
+  isleniyor: {
+    percent: 70,
+    message: "Agent'lar çağrıyı analiz ediyor (kategori, CRM alanları, satış, özet).",
+  },
+  tamam: { percent: 100, message: "Analiz tamamlandı. Sonuç ekranına aktarılıyorsunuz..." },
+  kismi: {
+    percent: 100,
+    message: "Analiz kısmen tamamlandı; bazı alanlar boş kalabilir. Sonuca aktarılıyorsunuz...",
+  },
+  basarisiz: { percent: 100, message: "Analiz başarısız oldu." },
+};
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const SAMPLE_TRANSCRIPT = `Temsilci: Miço Usta, buyurun.
 Müşteri: Merhaba, Tuzla Marina'da teknem var. Motor çalışıyor ama gaz verdiğimde devir yükselmiyor.
@@ -45,11 +59,11 @@ export default function CallUploadPage() {
   const [mode, setMode] = useState<UploadMode>("audio");
 
   // Form alanları
-  const [customerName, setCustomerName] = useState("Burak Çelik");
-  const [customerPhone, setCustomerPhone] = useState("+90 532 123 45 67");
-  const [boatName, setBoatName] = useState("Rüzgar");
-  const [boatModel, setBoatModel] = useState("Jeanneau Merry Fisher 795");
-  const [marina, setMarina] = useState("Tuzla Marina");
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [boatName, setBoatName] = useState("");
+  const [boatModel, setBoatModel] = useState("");
+  const [marina, setMarina] = useState("");
   const [transcript, setTranscript] = useState("");
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
@@ -66,8 +80,22 @@ export default function CallUploadPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [createdCallId, setCreatedCallId] = useState<string | null>(null);
 
+  // Sayfadan çıkılınca sorgulama ve yönlendirme durur.
+  const cancelled = useRef(false);
+  useEffect(() => {
+    cancelled.current = false;
+    return () => {
+      cancelled.current = true;
+    };
+  }, []);
+
   // Dosya seçimi
   const handleFileChange = (file: File) => {
+    if (file.size > MAX_AUDIO_BYTES) {
+      setErrorMessage("Ses dosyası 25 MB'ı aşıyor. Daha küçük bir dosya seçin.");
+      return;
+    }
+    setErrorMessage(null);
     setAudioFile(file);
     if (audioUrl) {
       URL.revokeObjectURL(audioUrl);
@@ -120,11 +148,11 @@ export default function CallUploadPage() {
 
     setIsSubmitting(true);
     setAnalysisState("beklemede");
-    setProgressPercent(15);
+    setProgressPercent(STATE_INFO.beklemede.percent);
     setStatusMessage("Çağrı kaydı oluşturuluyor ve sunucuya iletiliyor...");
 
     try {
-      let callId = "11111111-1111-4111-8111-111111111111";
+      let callId: string;
 
       if (mode === "audio" && audioFile) {
         const formData = new FormData();
@@ -136,8 +164,7 @@ export default function CallUploadPage() {
         if (boatModel) formData.append("boat_model", boatModel);
         if (marina) formData.append("marina", marina);
 
-        const accepted = await createCallWithAudio(formData);
-        callId = accepted.call_id;
+        callId = (await createCallWithAudio(formData)).call_id;
       } else {
         const payload: CallCreate = {
           started_at: new Date().toISOString(),
@@ -148,48 +175,40 @@ export default function CallUploadPage() {
           marina: marina || null,
           transcript: transcript.trim() || null,
         };
-
-        const accepted = await createCall(payload);
-        callId = accepted.call_id;
+        callId = (await createCall(payload)).call_id;
       }
 
       setCreatedCallId(callId);
 
-      // Simüle / Polling Analiz Adımları
-      if (mode === "audio") {
-        await new Promise((r) => setTimeout(r, 1200));
-        setAnalysisState("yaziya_cevriliyor");
-        setProgressPercent(40);
-        setStatusMessage("Ses dosyası Whisper AI ile metne dönüştürülüyor...");
+      // Gerçek durumu sunucudan sorgula; bitene (tamam/kismi/basarisiz) kadar devam et.
+      const deadline = Date.now() + POLL_TIMEOUT_MS;
+      let state: CallState = "beklemede";
+      while (!cancelled.current) {
+        const res = await getCallStatus(callId);
+        state = res.state;
+        setAnalysisState(state);
+        setProgressPercent(STATE_INFO[state].percent);
+        setStatusMessage(STATE_INFO[state].message);
+        if (state === "tamam" || state === "kismi" || state === "basarisiz") {
+          if (state === "basarisiz") setErrorMessage(res.error ?? "Analiz tamamlanamadı.");
+          break;
+        }
+        if (Date.now() > deadline) {
+          throw new Error("Analiz beklenenden uzun sürdü. Çağrı listesinden sonucu kontrol edin.");
+        }
+        await sleep(POLL_INTERVAL_MS);
       }
 
-      await new Promise((r) => setTimeout(r, 1400));
-      setAnalysisState("isleniyor");
-      setProgressPercent(70);
-      setStatusMessage("Yapay zekâ agent'ları çağrıyı analiz ediyor (Kategori, 7 Alanlı CRM, Satış & Özet)...");
-
-      await new Promise((r) => setTimeout(r, 1600));
-
-      // Durumu sorgula
-      try {
-        const statusRes = await getCallStatus(callId);
-        setAnalysisState(statusRes.state);
-      } catch {
-        setAnalysisState("tamam");
+      if (state !== "basarisiz" && !cancelled.current) {
+        await sleep(1200);
+        if (!cancelled.current) router.push(`/admin/calls/${callId}`);
       }
-
-      setProgressPercent(100);
-      setStatusMessage("Analiz başarıyla tamamlandı! Sonuç ekranına aktarılıyorsunuz...");
-
-      // 1.5 saniye sonra detay sayfasına yönlendir
-      setTimeout(() => {
-        router.push(`/admin/calls/${callId}`);
-      }, 1500);
     } catch (err: unknown) {
       setAnalysisState("basarisiz");
       setProgressPercent(100);
-      const msg = err instanceof Error ? err.message : "Analiz işlemi sırasında bir hata meydana geldi.";
-      setErrorMessage(msg);
+      setErrorMessage(
+        err instanceof Error ? err.message : "Analiz işlemi sırasında bir hata meydana geldi.",
+      );
       setStatusMessage("Analiz başarısız oldu.");
     }
   };
@@ -525,6 +544,7 @@ export default function CallUploadPage() {
                 onChange={(e) => setMarina(e.target.value)}
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500 bg-white"
               >
+                <option value="">Seçiniz (isteğe bağlı)</option>
                 {MARINA_OPTIONS.map((m) => (
                   <option key={m} value={m}>
                     {m}
@@ -533,21 +553,6 @@ export default function CallUploadPage() {
               </select>
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold uppercase text-gray-600 mb-1">
-                Çağrı Tipi / Kategori
-              </label>
-              <select
-                defaultValue="servis"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500 bg-white"
-              >
-                {CALL_TYPE_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
           </div>
         </div>
 
