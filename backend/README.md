@@ -79,13 +79,16 @@ python -m scripts.evaluate --fast <model> --smart <model>  # modeli .env'i deği
 
 ## Uç Noktalar
 
-Tüm uçların sözleşmesi (şemalar, yetki başlıkları, örnek JSON'lar): `docs/api.md`. Aşağıdakiler şu an çalışan uçlardır.
+Analiz arka planda Celery işçisinde çalışır (`-Q default,analysis,index`); LLM ayarları `.env`'de dolu olmalıdır. Tüm uçların sözleşmesi (şemalar, yetki başlıkları, örnek JSON'lar): `docs/api.md`. Aşağıdakiler şu an çalışan uçlardır.
 
 | Yol | Açıklama |
 |-----|----------|
 | `GET /health` | Süreç ayakta mı (canlılık) |
 | `GET /health/ready` | Veritabanı ve Redis erişilebilir mi (hazır olma; değilse 503) |
 | `GET /api/v1/me` | Servis anahtarı doğrulaması (`X-Service-Key`, isteğe bağlı `X-User-Id`) |
+| `POST /api/v1/calls` | Transkriptli çağrıyı kaydeder, analizi kuyruğa alır (202); ayrıntı `docs/api.md` |
+| `POST /api/v1/calls/{id}/analyze` | Çağrıyı yeniden analiz eder (yeni sürüm) |
+| `GET /api/v1/calls/{id}/status` | İşlenme durumu |
 | `GET /api/v1/me/owner` | Tekne sahibi kimliği doğrulaması (`X-Service-Key` + zorunlu `X-User-Id`) |
 
 ## Klasör Yapısı

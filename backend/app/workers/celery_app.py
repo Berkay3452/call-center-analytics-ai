@@ -22,7 +22,7 @@ celery_app = Celery(
     "call_center",
     broker=settings.broker_url,
     backend=settings.result_backend_url,
-    include=["app.workers.tasks.system"],
+    include=["app.workers.tasks.system", "app.workers.tasks.analysis"],
 )
 
 celery_app.conf.update(

@@ -2,7 +2,7 @@
 
 import uuid
 from datetime import datetime
-from typing import Any
+from typing import Any, get_args
 
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
@@ -37,9 +37,12 @@ from app.domain.enums import (
     SwitchboardOutcome,
     Urgency,
 )
+from app.schemas.api import CallState
 from app.schemas.assistant import QuestionType
 
 ANALYSIS_STATUSES = ("tamam", "kismi", "basarisiz")
+# Çağrının işlenme durumu (API sözleşmesindeki CallState ile aynı liste).
+CALL_STATES = get_args(CallState)
 AGENT_NAMES = (CALL_CLASSIFIER, CRM_EXTRACTION, SALES_ANALYZER, SUMMARIZER)
 AGENT_STATUSES = ("ok", "failed", "skipped")
 AGENT_ERROR_KINDS = ("validation", "runtime", "timeout")
@@ -74,6 +77,7 @@ class Call(UUIDPrimaryKeyMixin, Base):
     __tablename__ = "calls"
     __table_args__ = (
         in_enum("switchboard_outcome", SwitchboardOutcome),
+        in_values("state", CALL_STATES, nullable=False, name="state"),
         UniqueConstraint("audio_sha256", name="uq_calls_audio_sha256"),
         Index("ix_calls_started_at", "started_at"),
         Index("ix_calls_customer_id", "customer_id"),
@@ -95,6 +99,9 @@ class Call(UUIDPrimaryKeyMixin, Base):
     boat_name: Mapped[str | None] = mapped_column(Text)
     boat_model: Mapped[str | None] = mapped_column(Text)
     marina: Mapped[str | None] = mapped_column(Text)
+    # İşlenme durumu: beklemede → yaziya_cevriliyor → isleniyor → tamam | kismi | basarisiz.
+    state: Mapped[str] = mapped_column(Text, nullable=False, server_default=text("'beklemede'"))
+    error: Mapped[str | None] = mapped_column(Text)  # state=basarisiz ise nedeni
     created_at: Mapped[datetime] = _now()
     updated_at: Mapped[datetime] = _now(onupdate=True)
 

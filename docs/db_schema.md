@@ -64,6 +64,8 @@ erDiagram
         text boat_name
         text boat_model
         text marina
+        text state
+        text error
         timestamptz created_at
         timestamptz updated_at
     }
@@ -258,6 +260,8 @@ erDiagram
 | `boat_name` | `TEXT` | — | — | Tekne adı |
 | `boat_model` | `TEXT` | — | — | Tekne modeli (ör. Jeanneau Sun Odyssey 440) |
 | `marina` | `TEXT` | — | — | Marina adı (ör. Tuzla Marina) |
+| `state` | `TEXT` | ✅ | `'beklemede'` | İşlenme durumu: `beklemede`, `yaziya_cevriliyor`, `isleniyor`, `tamam`, `kismi`, `basarisiz` (#48) |
+| `error` | `TEXT` | — | — | `state = basarisiz` ise nedeni |
 | `created_at` | `TIMESTAMPTZ` | ✅ | `now()` | Kayıt oluşturma zamanı |
 | `updated_at` | `TIMESTAMPTZ` | ✅ | `now()` | Son güncelleme zamanı |
 
@@ -266,6 +270,7 @@ erDiagram
 - `UNIQUE (audio_sha256)` — aynı dosyanın tekrar yüklenmesini engeller
 - `FK (customer_id) REFERENCES customers(id)`, `FK (boat_id) REFERENCES boats(id)` (ikisi de `ON DELETE SET NULL`)
 - `CHECK (switchboard_outcome IN (...))` — geçerli santral sonuçları
+- `CHECK (state IN (...))` — geçerli işlenme durumları (API sözleşmesindeki `CallState`)
 
 ---
 

@@ -64,7 +64,7 @@ Başka kullanıcının sohbet oturumu istenirse 404 döner (varlığı da sızd�
 
 Arayüz `GET /calls/{id}/status` ile durumu 2–3 saniyede bir sorar; `tamam`, `kismi` veya `basarisiz` gelince durur.
 
-> **Not (#48):** `calls` tablosunda henüz durum ve hata sütunu yok. #48 bir migration ile `state` ve `error` sütunlarını ekler. O zamana kadar #51, analizi olan çağrıyı analiz durumuyla, olmayanı `beklemede` olarak döndürür.
+> `calls.state` ve `calls.error` sütunları #48 ile eklendi; seed verisindeki analizli çağrılar `tamam` durumundadır.
 
 ### CRM önerileri
 - `CrmRecordItem`: hocanın 7 alanı (`request_category`, `location`, `problem`, `service_mode`, `urgency`, `potential_job`, `next_action`), alıntılar (`evidence`) ve kaynağı olan çağrı. Her çağrının en son analiz sürümünden gelir.
