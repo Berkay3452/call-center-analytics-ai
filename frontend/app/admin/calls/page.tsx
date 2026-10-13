@@ -117,12 +117,18 @@ export default async function CallsPage() {
                 </td>
                 {/* Analiz Durumu Sütunu */}
                 <td className="px-4 py-3">
-                  <span
-                    className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${ANALYSIS_STATUS_BADGE[call.analysisStatus]}`}
-                  >
-                    {ANALYSIS_STATUS_ICON[call.analysisStatus]}{" "}
-                    {labelOf(ANALYSIS_STATUS_LABELS, call.analysisStatus)}
-                  </span>
+                  {call.pendingState ? (
+                    <span className="inline-flex items-center gap-1 rounded-full border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-xs font-semibold text-sky-700">
+                      ⏳ {call.pendingState === "beklemede" ? "Sırada" : "İşleniyor"}
+                    </span>
+                  ) : (
+                    <span
+                      className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${ANALYSIS_STATUS_BADGE[call.analysisStatus]}`}
+                    >
+                      {ANALYSIS_STATUS_ICON[call.analysisStatus]}{" "}
+                      {labelOf(ANALYSIS_STATUS_LABELS, call.analysisStatus)}
+                    </span>
+                  )}
                 </td>
                 <td className="px-4 py-3 text-sm">
                   {call.sales.outcome === "satisa_donustu" && (

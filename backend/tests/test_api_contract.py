@@ -20,6 +20,8 @@ ROOT = Path(__file__).parents[2]
 API_TYPES_TS = ROOT / "frontend" / "lib" / "api-types.ts"
 EXAMPLES = ROOT / "docs" / "ornekler" / "api"
 API_DOC = ROOT / "docs" / "api.md"
+OPENAPI = ROOT / "frontend" / "openapi.json"
+FRONTEND_MOCKS = ROOT / "frontend" / "mocks"
 
 # Frontend'de aynı adla interface'i olan backend modelleri.
 SHARED_MODELS: list[type[BaseModel]] = [
@@ -181,3 +183,33 @@ def test_enum_dict_keys_are_enums() -> None:
         json.loads((EXAMPLES / "kpi_ozeti.json").read_text(encoding="utf-8"))
     )
     assert all(isinstance(k, StrEnum) for k in kpi.by_category)
+
+
+# --- Frontend: OpenAPI belgesi ve mock kopyaları -------------------------------------------
+
+
+@pytest.mark.parametrize("model", SHARED_MODELS, ids=lambda m: m.__name__)
+def test_openapi_properties_match_backend_models(model: type[BaseModel]) -> None:
+    """`frontend/openapi.json` (tip üretiminin kaynağı) backend şemalarından ayrışmasın."""
+    schemas = json.loads(OPENAPI.read_text(encoding="utf-8"))["components"]["schemas"]
+    assert model.__name__ in schemas, f"openapi.json içinde {model.__name__} yok"
+    assert set(schemas[model.__name__]["properties"]) == set(model.model_fields)
+
+
+def test_openapi_paths_are_documented() -> None:
+    paths = json.loads(OPENAPI.read_text(encoding="utf-8"))["paths"]
+    doc = API_DOC.read_text(encoding="utf-8")
+    for path, methods in paths.items():
+        for method in methods:
+            assert f"`{method.upper()} {path}`" in doc, (method, path)
+
+
+def test_frontend_mocks_are_copies_of_examples() -> None:
+    """Frontend mock'ları docs/ornekler/api ile aynı kalmalı (tek kaynak: ornekler)."""
+    for example in EXAMPLES.iterdir():
+        mock = FRONTEND_MOCKS / example.name
+        assert mock.exists(), f"frontend/mocks/{example.name} yok"
+        assert (
+            mock.read_text(encoding="utf-8").splitlines()
+            == example.read_text(encoding="utf-8").splitlines()
+        ), f"frontend/mocks/{example.name} örnekten farklı; ornekler'den kopyalayın"
