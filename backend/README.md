@@ -75,6 +75,19 @@ uv run python -m scripts.seed --reset          # Tabloları TRUNCATE ile temizle
 
 Script sabit tohum (`SEED = 42`, `Faker('tr_TR')`) kullanır; her çalıştırmada aynı veriyi üretir ve ikinci çalıştırmada `ON CONFLICT DO UPDATE` ile mevcut kayıtları bozmadan günceller.
 
+## Miço AI araması (RAG, #26)
+
+Tekne karnesi (usta notları ve servis kayıtları) hibrit aranır: **vektör** (bge-m3) + **Türkçe tam metin**, sonuçlar RRF ile birleştirilir; her arama `owner_id` ile sınırlıdır. Embedding modeli Docker'da TEI servisiyle CPU'da çalışır (Python'a torch kurulmaz):
+
+```
+docker compose -f ../infra/docker-compose.yml --profile rag up -d   # ilk açılışta ~2,3 GB model iner
+uv run python -m scripts.rag_index            # seed sonrası: vektörü olmayan parçaları doldurur
+uv run python -m scripts.rag_eval             # 14 örnek soruda isabet@1, isabet@3, MRR
+uv run python -m scripts.rag_eval --mode text # karşılaştırma: yalnızca tam metin (veya --mode vector)
+```
+
+Servis olmadan denemek için `EMBEDDING_PROVIDER=hash` (modelsiz, yalnızca kelime örtüşmesi; gerçek kalite ölçümü için kullanılmaz).
+
 ## Agent'ları gerçek LLM ile değerlendirme
 
 `.env`'de LLM ayarları doluyken (geçici seçim: Gemini, bkz. #13) agent'lar sentetik çağrılarda (`data/synthetic/`) çalıştırılıp doğru etiketlerle karşılaştırılır:
@@ -116,7 +129,7 @@ Analiz arka planda Celery işçisinde çalışır (`-Q default,analysis,index`);
 | `app/agents` | Agent sözleşmesi (`base.py`), LLM agent tabanı (`llm_agent.py`), dört analiz agent'ı, prompt'lar (`prompts/`), alıntı doğrulama (`grounding.py`), LangGraph orkestratörü (`orchestrator.py`), varsayılan akış (`registry.py`) |
 | `app/assistant` | Miço AI (Tekne Sahibi asistanı): planlayıcı, hazır araçlar, tekne karnesi araması, cevap üretimi, kaynak kontrolü; dışa açılan tek giriş `answer_question` (çağrı analizinden bağımsız) |
 | `app/stt` | STT: sağlayıcı sözleşmesi (`base.py`), faster-whisper / Whisper API / stub (`providers.py`), konuşmacı ayrımı ve turlar (`pipeline.py`), WER/CER (`metrics.py`) |
-| `app/rag` | Embedding sözleşmesi; RAG bileşenleri buraya gelecek |
+| `app/rag` | RAG: embedding sağlayıcıları (`embedders.py`: bge-m3/TEI, OpenAI uyumlu, hash), indeksleme (`indexer.py`), hibrit arama (`search.py`) |
 | `tests` | Testler (gerçek veritabanı/Redis/LLM gerektirmez) |
 
 ## Kurallar
