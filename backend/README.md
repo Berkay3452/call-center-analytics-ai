@@ -16,7 +16,17 @@ Komutlar `backend/` klasöründe çalıştırılır.
 3. Yerel veritabanı ve Redis'i başlatın (repo kökünden): `docker compose -f infra/docker-compose.yml up -d`
 4. Veritabanı şemasını kurun: `uv run alembic upgrade head` (Supabase için `.env`'deki `DATABASE_URL`'i değiştirmeniz yeterli). Şema tasarımı: `docs/db_schema.md`; model değişince `uv run alembic revision --autogenerate -m "aciklama"` ile yeni migration üretip gözden geçirin.
 
-STT bağımlılıkları (torch, faster-whisper, pyannote) büyüktür ve donanım kararı netleşince kurulacaktır: `uv sync --extra ai --extra stt`
+STT (ses → metin, #15) için: `uv sync --extra ai --extra stt` (faster-whisper; CPU'da çalışır, torch gerekmez). Model ilk kullanımda indirilir (`small` ≈ 500 MB). Sağlayıcı `.env`'deki `STT_PROVIDER` ile seçilir:
+
+| Sağlayıcı | Ne zaman |
+|---|---|
+| `faster_whisper` | Yerel, ücretsiz, ses dışarı çıkmaz. CPU'da `WHISPER_MODEL=small` (hız/doğruluk dengesi) veya `base` (hızlı) |
+| `openai_compatible` | OpenAI uyumlu Whisper API'si (ör. Groq `whisper-large-v3`); hızlı ama ses üçüncü tarafa gider, `STT_API_KEY` gerekir |
+| `stub` | STT kurmadan zinciri denemek için: ses dosyasının yanındaki `.txt` transkripti okur |
+
+Konuşmacı ayrımı: santral kaydı stereo ise `STT_CHANNEL_LAYOUT=stereo_rep_left` (temsilci sol kanal) ile her kanal ayrı yazıya çevrilir. Mono kayıtta konuşmacılar ayrılamaz.
+
+Sağlayıcıları karşılaştırma (doğruluk WER/CER ve hız RTF): `python -m scripts.stt_benchmark --audio <ses klasörü> --providers faster_whisper,openai_compatible`. Referans metin aynı adlı sentetik çağrıdan (`call_001.wav` → `data/synthetic/calls/call_001.json`) veya ses yanındaki `.txt`'den alınır.
 
 ### uv kullanmadan kurulum (requirements.txt)
 
@@ -104,7 +114,7 @@ Analiz arka planda Celery işçisinde çalışır (`-Q default,analysis,index`);
 | `app/llm` | Ücretsiz, OpenAI-uyumlu LLM sağlayıcıları için istemci fabrikası |
 | `app/agents` | Agent sözleşmesi (`base.py`), LLM agent tabanı (`llm_agent.py`), dört analiz agent'ı, prompt'lar (`prompts/`), alıntı doğrulama (`grounding.py`), LangGraph orkestratörü (`orchestrator.py`), varsayılan akış (`registry.py`) |
 | `app/assistant` | Miço AI (Tekne Sahibi asistanı): planlayıcı, hazır araçlar, tekne karnesi araması, cevap üretimi, kaynak kontrolü; dışa açılan tek giriş `answer_question` (çağrı analizinden bağımsız) |
-| `app/stt` | STT sağlayıcı sözleşmesi |
+| `app/stt` | STT: sağlayıcı sözleşmesi (`base.py`), faster-whisper / Whisper API / stub (`providers.py`), konuşmacı ayrımı ve turlar (`pipeline.py`), WER/CER (`metrics.py`) |
 | `app/rag` | Embedding sözleşmesi; RAG bileşenleri buraya gelecek |
 | `tests` | Testler (gerçek veritabanı/Redis/LLM gerektirmez) |
 

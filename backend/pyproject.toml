@@ -39,10 +39,13 @@ ai = [
     "langgraph~=1.2",
     "mcp~=2.2",
 ]
-# Ses → metin katmanı. torch içerir ve büyüktür; donanım kararı netleşince kurulacak.
+# Ses → metin katmanı (yerel, CPU). faster-whisper CTranslate2 kullanır; torch gerekmez.
+# Model tabanlı konuşmacı ayrımı (pyannote, torch) CPU'da yavaş olduğu için şimdilik yok.
 stt = [
     "faster-whisper~=1.2",
-    "pyannote.audio~=4.0",
+    # faster-whisper 1.2, PyAV'nin 16+ sürümlerinde kaldırılan `metadata_errors` parametresini
+    # kullanıyor; daha yenisiyle ses dosyası hiç çözülemiyor (testle yakalandı).
+    "av>=14,<16",
 ]
 
 [dependency-groups]

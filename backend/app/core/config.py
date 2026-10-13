@@ -76,11 +76,22 @@ class Settings(BaseSettings):
     llm_timeout_s: float = 60.0
     llm_max_retries: int = 3
 
-    # --- STT (ses → metin) ---
-    stt_provider: Literal["faster_whisper", "openai_compatible"] = "faster_whisper"
-    whisper_model: str = "small"  # GPU varsa: large-v3
-    whisper_compute_type: str = "int8"  # GPU varsa: float16
-    hf_token: SecretStr | None = None  # pyannote modeli için Hugging Face token
+    # --- STT (ses → metin) --- (#15; sağlayıcılar `app/stt/`)
+    # faster_whisper: yerel, CPU'da çalışır (`stt` ekstrası). openai_compatible: Whisper API'si
+    # (ör. Groq). stub: ses yanındaki .txt dosyasını okur; STT kurulmadan zinciri denemek için.
+    stt_provider: Literal["faster_whisper", "openai_compatible", "stub"] = "faster_whisper"
+    stt_language: str = "tr"
+    # Konuşmacı ayrımı: santral kaydı stereo ise her kanal bir konuşmacıdır (temsilci sol/sağ).
+    # Mono kayıtta konuşmacı ayrılamaz ("unknown"); model tabanlı ayrım sonraki adımdır.
+    stt_channel_layout: Literal["mono", "stereo_rep_left", "stereo_rep_right"] = "mono"
+    whisper_model: str = "small"  # CPU için small/medium; GPU varsa large-v3
+    whisper_compute_type: str = "int8"  # CPU: int8; GPU varsa float16
+    whisper_cpu_threads: int = Field(default=0, ge=0)  # 0: otomatik
+    whisper_beam_size: int = Field(default=5, ge=1)
+    stt_api_base_url: str = "https://api.groq.com/openai/v1"
+    stt_api_key: SecretStr | None = None
+    stt_api_model: str = "whisper-large-v3"
+    stt_timeout_s: float = 300.0
 
     # --- RAG / Embedding ---
     embedding_provider: Literal["tei", "openai_compatible"] = "tei"
