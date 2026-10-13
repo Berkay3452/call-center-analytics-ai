@@ -44,6 +44,7 @@ SHARED_MODELS: list[type[BaseModel]] = [
     api.CrmRecordItem,
     api.SegmentIn,
     api.CallCreate,
+    api.AudioCallMeta,
     api.CallAccepted,
     api.CallStatus,
     api.ChatQuestion,

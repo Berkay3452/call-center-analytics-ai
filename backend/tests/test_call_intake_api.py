@@ -41,11 +41,14 @@ class Spy:
         self.enqueued: list[UUID] = []
         self.enqueue_error: Exception | None = None
         self.states: list[tuple[str, str | None]] = []
+        self.kinds: list[str] = []
+        self.reanalysis_kind = "analysis"
 
-    def enqueue(self, call_id: UUID) -> str:
+    def enqueue(self, call_id: UUID, kind: str) -> str:
         if self.enqueue_error:
             raise self.enqueue_error
         self.enqueued.append(call_id)
+        self.kinds.append(kind)
         return "task-1"
 
 
@@ -57,11 +60,12 @@ def spy(monkeypatch: pytest.MonkeyPatch) -> Spy:
         spy.created = payload  # type: ignore[attr-defined]
         return CALL_ID
 
-    async def request_analysis(session: Any, call_id: UUID) -> None:
+    async def request_analysis(session: Any, call_id: UUID) -> str:
         if call_id != CALL_ID:
             raise NotFoundError("Çağrı bulunamadı.")
         if getattr(spy, "busy", False):
             raise ConflictError("Çağrı şu anda işleniyor.")
+        return spy.reanalysis_kind
 
     async def set_state(session: Any, call_id: UUID, state: str, error: str | None = None) -> None:
         spy.states.append((state, error))
@@ -103,6 +107,7 @@ async def test_create_call_returns_202_and_enqueues(api: httpx.AsyncClient, spy:
     assert resp.status_code == 202
     assert resp.json() == {"call_id": str(CALL_ID), "state": "beklemede", "task_id": "task-1"}
     assert spy.enqueued == [CALL_ID]
+    assert spy.kinds == ["analysis"]
     assert spy.session.commits == 1  # görev başlamadan kayıt işlenmiş olmalı
 
 
@@ -133,7 +138,7 @@ async def test_enqueue_failure_marks_call_failed(api: httpx.AsyncClient, spy: Sp
     resp = await api.post("/api/v1/calls", json=BODY, headers=HEADERS)
 
     assert resp.status_code == 503
-    assert spy.states == [("basarisiz", "Analiz kuyruğa alınamadı.")]
+    assert spy.states == [("basarisiz", "Görev kuyruğa alınamadı.")]
     assert spy.session.commits == 2  # kayıt + başarısız durumu
 
 
@@ -142,6 +147,18 @@ async def test_reanalyze_enqueues(api: httpx.AsyncClient, spy: Spy) -> None:
 
     assert resp.status_code == 202
     assert spy.enqueued == [CALL_ID]
+    assert spy.kinds == ["analysis"]
+
+
+async def test_reanalyze_audio_call_without_transcript_restarts_stt(
+    api: httpx.AsyncClient, spy: Spy
+) -> None:
+    spy.reanalysis_kind = "stt"
+
+    resp = await api.post(f"/api/v1/calls/{CALL_ID}/analyze", headers=HEADERS)
+
+    assert resp.status_code == 202
+    assert spy.kinds == ["stt"]
 
 
 async def test_reanalyze_unknown_call_is_404(api: httpx.AsyncClient, spy: Spy) -> None:
@@ -179,3 +196,106 @@ async def test_invalid_call_id_is_422(api: httpx.AsyncClient) -> None:
     resp = await api.get("/api/v1/calls/abc/status", headers=HEADERS)
 
     assert resp.status_code == 422
+
+
+# --- Sesli çağrı: POST /calls/audio (#49) -------------------------------------------------
+
+
+@pytest.fixture
+async def audio_api(
+    spy: Spy, tmp_path: Any, monkeypatch: pytest.MonkeyPatch
+) -> AsyncIterator[httpx.AsyncClient]:
+    from app.services import audio_ingest
+
+    async def create_audio_call(session: Any, meta: Any, stored: Any) -> UUID:
+        if getattr(spy, "duplicate", False):
+            raise audio_ingest.DuplicateAudioError(
+                "Bu ses dosyası daha önce yüklendi.", details={"call_id": str(CALL_ID)}
+            )
+        spy.audio_meta = meta  # type: ignore[attr-defined]
+        spy.stored = stored  # type: ignore[attr-defined]
+        return CALL_ID
+
+    monkeypatch.setattr(call_intake.audio_ingest, "create_audio_call", create_audio_call)
+    app = create_app(make_settings(audio_storage_dir=str(tmp_path), audio_max_mb=1))
+
+    async def fake_session() -> AsyncIterator[FakeSession]:
+        yield spy.session
+
+    app.dependency_overrides[get_db_session] = fake_session
+    app.dependency_overrides[call_intake.get_enqueue] = lambda: spy.enqueue
+    async for c in _client_for(app):
+        yield c
+
+
+FORM = {"started_at": "2026-10-13T09:00:00Z", "customer_name": "Burak Çelik", "marina": "Tuzla"}
+
+
+async def test_audio_upload_stores_file_and_starts_stt(
+    audio_api: httpx.AsyncClient, spy: Spy, tmp_path: Any
+) -> None:
+    resp = await audio_api.post(
+        "/api/v1/calls/audio",
+        data=FORM,
+        files={"file": ("cagri.wav", b"RIFF-sahte-ses", "audio/wav")},
+        headers=HEADERS,
+    )
+
+    assert resp.status_code == 202, resp.text
+    assert spy.kinds == ["stt"]
+    stored = spy.stored  # type: ignore[attr-defined]
+    assert (tmp_path / stored.relative_path).read_bytes() == b"RIFF-sahte-ses"
+    assert spy.audio_meta.customer_name == "Burak Çelik"  # type: ignore[attr-defined]
+
+
+async def test_audio_upload_rejects_unsupported_format(audio_api: httpx.AsyncClient) -> None:
+    resp = await audio_api.post(
+        "/api/v1/calls/audio",
+        data=FORM,
+        files={"file": ("notlar.pdf", b"%PDF", "application/pdf")},
+        headers=HEADERS,
+    )
+
+    assert resp.status_code == 415
+    assert resp.json()["error"]["code"] == "unsupported_media_type"
+
+
+async def test_audio_upload_rejects_too_large_file(audio_api: httpx.AsyncClient) -> None:
+    resp = await audio_api.post(
+        "/api/v1/calls/audio",
+        data=FORM,
+        files={"file": ("uzun.mp3", b"0" * (1024 * 1024 + 1), "audio/mpeg")},
+        headers=HEADERS,
+    )
+
+    assert resp.status_code == 413
+
+
+async def test_audio_upload_duplicate_returns_existing_call(
+    audio_api: httpx.AsyncClient, spy: Spy
+) -> None:
+    spy.duplicate = True  # type: ignore[attr-defined]
+
+    resp = await audio_api.post(
+        "/api/v1/calls/audio",
+        data=FORM,
+        files={"file": ("cagri.wav", b"RIFF", "audio/wav")},
+        headers=HEADERS,
+    )
+
+    assert resp.status_code == 409
+    assert resp.json()["error"]["details"]["call_id"] == str(CALL_ID)
+    assert spy.enqueued == []
+
+
+async def test_audio_upload_requires_file_and_started_at(audio_api: httpx.AsyncClient) -> None:
+    no_file = await audio_api.post("/api/v1/calls/audio", data=FORM, headers=HEADERS)
+    no_date = await audio_api.post(
+        "/api/v1/calls/audio",
+        data={"customer_name": "X"},
+        files={"file": ("c.wav", b"RIFF", "audio/wav")},
+        headers=HEADERS,
+    )
+
+    assert no_file.status_code == 422
+    assert no_date.status_code == 422

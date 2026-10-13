@@ -54,7 +54,7 @@ uv export --frozen --no-hashes --no-emit-project --only-dev -o requirements-dev.
 |----|-------|
 | API (geliştirme) | `uv run uvicorn app.main:app --reload` |
 | API dokümantasyonu | http://localhost:8000/docs |
-| Celery işçisi (Windows) | `uv run celery -A app.workers.celery_app worker -Q default,analysis,index --pool=solo -l info` |
+| Celery işçisi (Windows) | `uv run celery -A app.workers.celery_app worker -Q default,stt,analysis,index --pool=solo -l info` |
 | Testler | `uv run pytest` |
 | Lint + format | `uv run ruff check .` ve `uv run ruff format .` |
 | Tip kontrolü | `uv run mypy app tests` |
@@ -97,7 +97,8 @@ Analiz arka planda Celery işçisinde çalışır (`-Q default,analysis,index`);
 | `GET /health/ready` | Veritabanı ve Redis erişilebilir mi (hazır olma; değilse 503) |
 | `GET /api/v1/me` | Servis anahtarı doğrulaması (`X-Service-Key`, isteğe bağlı `X-User-Id`) |
 | `POST /api/v1/calls` | Transkriptli çağrıyı kaydeder, analizi kuyruğa alır (202); ayrıntı `docs/api.md` |
-| `POST /api/v1/calls/{id}/analyze` | Çağrıyı yeniden analiz eder (yeni sürüm) |
+| `POST /api/v1/calls/audio` | Ses kaydını yükler (multipart); STT → analiz arka planda (202) |
+| `POST /api/v1/calls/{id}/analyze` | Çağrıyı yeniden işler: yeni analiz sürümü, transkript yoksa yeniden STT |
 | `GET /api/v1/calls/{id}/status` | İşlenme durumu |
 | `GET /api/v1/me/owner` | Tekne sahibi kimliği doğrulaması (`X-Service-Key` + zorunlu `X-User-Id`) |
 

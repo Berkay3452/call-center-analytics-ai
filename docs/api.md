@@ -36,7 +36,7 @@ Admin/tekne sahibi rol ayrımını .NET uygulaması yapar. Tekne sahibi uçları
 | `GET /crm` | Admin | `CallFilters` (sorgu) | `Page` of `CrmRecordItem` | #51 |
 | `GET /analytics/summary` | Admin | `PeriodFilter` (sorgu) | `KpiSummary` | #52 |
 | `POST /calls` | Admin | `CallCreate` (JSON) | 202 `CallAccepted` | #48 |
-| `POST /calls/audio` | Admin | multipart: `file` (wav/mp3/m4a, en fazla 25 MB) + `CallCreate` alanları (transcript hariç) | 202 `CallAccepted` | #49 |
+| `POST /calls/audio` | Admin | multipart: `file` (wav/mp3/m4a/ogg/flac/aac/webm, en fazla 25 MB) + `AudioCallMeta` alanları | 202 `CallAccepted`; aynı ses daha önce yüklendiyse 409 (`details.call_id`) | #49 |
 | `POST /calls/{call_id}/analyze` | Admin | — | 202 `CallAccepted` (yeni analiz sürümü) | #48 |
 | `GET /calls/{call_id}/status` | Admin | — | `CallStatus` | #48 |
 | `POST /chat/messages` | Tekne sahibi | `ChatQuestion` | `ChatReply` | #28 |
@@ -71,6 +71,7 @@ Arayüz `GET /calls/{id}/status` ile durumu 2–3 saniyede bir sorar; `tamam`, `
 
 ### Çağrı alma
 - `CallCreate`: sesi olmayan çağrı (geliştirme ve sentetik veri için). `transcript` (düz metin) veya `SegmentIn` listesinden biri zorunlu.
+- `AudioCallMeta`: sesli çağrının form alanları (`CallCreate` ile aynı, transkript hariç). Akış: ses kaydedilir → `yaziya_cevriliyor` (STT) → `isleniyor` (agent'lar) → sonuç. STT hata verirse `POST /calls/{id}/analyze` yeniden yazıya çevirmeyi başlatır.
 - `CallAccepted`: oluşturulan çağrının kimliği, durumu ve arka plan görevinin kimliği.
 - `CallStatus`: anlık durum, biten son analiz sürümü, hata.
 
