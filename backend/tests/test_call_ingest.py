@@ -4,8 +4,8 @@ import pytest
 
 from app.agents.summarizer import find_personal_data
 from app.schemas.api import SegmentIn
-from app.services.call_ingest import _with_timings, parse_transcript
 from app.services.masking import mask_text
+from app.services.transcript_text import parse_transcript, with_timings
 
 # --- Ayrıştırma ---------------------------------------------------------------------------
 
@@ -46,7 +46,7 @@ def test_parse_transcript_does_not_treat_other_colons_as_speakers() -> None:
 
 
 def test_timings_are_sequential_and_respect_given_values() -> None:
-    timed = _with_timings(
+    timed = with_timings(
         [
             SegmentIn(speaker="rep", text="Buyurun."),
             SegmentIn(speaker="customer", text="Merhaba " * 20),

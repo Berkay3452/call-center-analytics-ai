@@ -111,8 +111,8 @@ jobs:
           version: ${{ env.UV_VERSION }}
           enable-cache: true
           cache-dependency-glob: backend/uv.lock
-      - name: Bağımlılıkları kur
-        run: uv sync --locked --extra ai
+      - name: Bağımlılıkları kur (STT ekstrası dahil; model indirilmez)
+        run: uv sync --locked --extra ai --extra stt
       - name: Pytest
         run: >
           uv run pytest

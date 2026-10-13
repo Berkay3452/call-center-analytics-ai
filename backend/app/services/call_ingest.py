@@ -9,8 +9,6 @@ Durumlar: beklemede → (yaziya_cevriliyor) → isleniyor → tamam | kismi | ba
 Her geçiş ayrı bir işlemde kaydedilir; arayüz `GET /calls/{id}/status` ile ilerlemeyi görür.
 """
 
-import re
-from collections.abc import Sequence
 from typing import Protocol
 from uuid import UUID
 
@@ -18,28 +16,17 @@ import structlog
 from sqlalchemy import func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from app.agents.base import AnalysisContext, CallInfo, Segment, Speaker
+from app.agents.base import AnalysisContext, CallInfo, Segment
 from app.agents.orchestrator import OrchestrationResult
 from app.core.errors import ConflictError, NotFoundError
 from app.db.models.ai import AnalysisResult as AnalysisRow
 from app.db.models.ai import Call, Transcript, TranscriptSegment
-from app.schemas.api import CallCreate, CallState, CallStatus, SegmentIn
+from app.schemas.api import CallCreate, CallState, CallStatus
 from app.services.analysis_store import save_analysis, save_transcript
 from app.services.masking import mask_text
+from app.services.transcript_text import parse_transcript, with_timings
 
 log = structlog.get_logger(__name__)
-
-_SPEAKER_PREFIXES: dict[str, Speaker] = {
-    "müşteri": "customer",
-    "musteri": "customer",
-    "customer": "customer",
-    "temsilci": "rep",
-    "rep": "rep",
-    "agent": "rep",
-}
-_LINE = re.compile(r"^\s*([^\W\d_]+)\s*:\s*(.*)$")
-# Konuşma süresi bilinmeyen segmentler için tahmini hız (karakter başına ms).
-_MS_PER_CHAR = 65
 
 
 class AnalysisRunner(Protocol):
@@ -52,47 +39,6 @@ class NoTranscriptError(ConflictError):
     """Analiz edilecek transkript yok."""
 
     code = "no_transcript"
-
-
-def parse_transcript(text: str) -> list[SegmentIn]:
-    """Düz metni konuşmacı satırlarına böler ("Müşteri: ..." / "Temsilci: ...").
-
-    Konuşmacı etiketi olmayan satır öncekine eklenir; hiç etiket yoksa tek müşteri segmenti olur.
-    """
-    segments: list[SegmentIn] = []
-    for raw_line in text.splitlines():
-        line = raw_line.strip()
-        if not line:
-            continue
-        match = _LINE.match(line)
-        speaker = _SPEAKER_PREFIXES.get(match.group(1).lower()) if match else None
-        if match and speaker:
-            body = match.group(2).strip()
-            if body:
-                segments.append(SegmentIn(speaker=speaker, text=body))
-        elif segments:
-            last = segments[-1]
-            segments[-1] = last.model_copy(update={"text": f"{last.text} {line}"})
-        else:
-            segments.append(SegmentIn(speaker="customer", text=line))
-    return segments
-
-
-def _with_timings(segments: Sequence[SegmentIn]) -> list[tuple[SegmentIn, int, int]]:
-    """Zaman bilgisi olmayan segmentlere tahmini süre verir (sıralı, örtüşmeyen)."""
-    out: list[tuple[SegmentIn, int, int]] = []
-    cursor = 0
-    for seg in segments:
-        start = seg.start_ms if seg.start_ms is not None else cursor
-        end = (
-            seg.end_ms
-            if seg.end_ms is not None
-            else start + max(1000, len(seg.text) * _MS_PER_CHAR)
-        )
-        end = max(end, start)
-        out.append((seg, start, end))
-        cursor = end
-    return out
 
 
 async def create_call(session: AsyncSession, payload: CallCreate) -> UUID:
@@ -119,7 +65,7 @@ async def create_call(session: AsyncSession, payload: CallCreate) -> UUID:
     await session.flush()
 
     names = [payload.customer_name]
-    timed = _with_timings(segments_in)
+    timed = with_timings(segments_in)
     segments = [
         Segment(
             idx=i,
