@@ -9,7 +9,8 @@ Durumlar: beklemede → (yaziya_cevriliyor) → isleniyor → tamam | kismi | ba
 Her geçiş ayrı bir işlemde kaydedilir; arayüz `GET /calls/{id}/status` ile ilerlemeyi görür.
 """
 
-from typing import Protocol
+from collections.abc import Sequence
+from typing import Literal, Protocol
 from uuid import UUID
 
 import structlog
@@ -21,7 +22,7 @@ from app.agents.orchestrator import OrchestrationResult
 from app.core.errors import ConflictError, NotFoundError
 from app.db.models.ai import AnalysisResult as AnalysisRow
 from app.db.models.ai import Call, Transcript, TranscriptSegment
-from app.schemas.api import CallCreate, CallState, CallStatus
+from app.schemas.api import CallCreate, CallState, CallStatus, SegmentIn
 from app.services.analysis_store import save_analysis, save_transcript
 from app.services.masking import mask_text
 from app.services.transcript_text import parse_transcript, with_timings
@@ -64,7 +65,18 @@ async def create_call(session: AsyncSession, payload: CallCreate) -> UUID:
     session.add(call)
     await session.flush()
 
-    names = [payload.customer_name]
+    await store_segments(session, call.id, segments_in, names=[payload.customer_name])
+    return call.id
+
+
+async def store_segments(
+    session: AsyncSession,
+    call_id: UUID,
+    segments_in: Sequence[SegmentIn],
+    *,
+    names: Sequence[str | None] = (),
+) -> None:
+    """Konuşma turlarını maskeleyip transkript olarak yazar (metinle gelen çağrı ve STT ortak)."""
     timed = with_timings(segments_in)
     segments = [
         Segment(
@@ -76,8 +88,7 @@ async def create_call(session: AsyncSession, payload: CallCreate) -> UUID:
         )
         for i, (seg, start, end) in enumerate(timed)
     ]
-    await save_transcript(session, call.id, segments, raw_texts=[s.text for s, _, _ in timed])
-    return call.id
+    await save_transcript(session, call_id, segments, raw_texts=[s.text for s, _, _ in timed])
 
 
 async def set_state(
@@ -86,10 +97,15 @@ async def set_state(
     await session.execute(update(Call).where(Call.id == call_id).values(state=state, error=error))
 
 
-async def request_analysis(session: AsyncSession, call_id: UUID) -> None:
-    """Analizi (yeniden) başlatmak için çağrıyı `beklemede`ye alır. Commit çağıranındır.
+AnalysisKind = Literal["analysis", "stt"]
 
-    Çağrı yoksa 404; zaten işleniyorsa 409 (aynı anda iki analiz çalışmasın); transkript yoksa 409.
+
+async def request_analysis(session: AsyncSession, call_id: UUID) -> AnalysisKind:
+    """Çağrıyı (yeniden) işlemeye alır ve hangi görevin başlatılacağını döner. Commit çağıranındır.
+
+    - Transkript varsa: yeniden analiz (`analysis`, yeni sürüm).
+    - Transkript yok ama ses varsa (ör. STT hata vermişti): önce yazıya çevirme (`stt`).
+    Çağrı yoksa 404; zaten işleniyorsa 409; ne transkript ne ses varsa 409.
     """
     call = await session.get(Call, call_id, with_for_update=True)
     if call is None:
@@ -99,9 +115,10 @@ async def request_analysis(session: AsyncSession, call_id: UUID) -> None:
     has_text = await session.scalar(
         select(func.count()).select_from(Transcript).where(Transcript.call_id == call_id)
     )
-    if not has_text:
-        raise NoTranscriptError("Çağrının transkripti yok; önce ses yazıya çevrilmeli.")
+    if not has_text and not call.audio_path:
+        raise NoTranscriptError("Çağrının transkripti ve ses kaydı yok.")
     await set_state(session, call_id, "beklemede")
+    return "analysis" if has_text else "stt"
 
 
 async def get_status(session: AsyncSession, call_id: UUID) -> CallStatus:

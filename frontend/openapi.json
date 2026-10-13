@@ -767,6 +767,22 @@
           }
         }
       },
+      "AudioCallMeta": {
+        "type": "object",
+        "description": "POST /calls/audio form alanları (ses dosyası `file` alanında).",
+        "required": ["started_at"],
+        "properties": {
+          "started_at": { "type": "string", "format": "date-time" },
+          "duration_s": { "type": "integer", "nullable": true },
+          "answer_delay_s": { "type": "integer", "nullable": true },
+          "switchboard_outcome": { "$ref": "#/components/schemas/SwitchboardOutcome" },
+          "customer_name": { "type": "string", "nullable": true },
+          "customer_phone": { "type": "string", "nullable": true },
+          "boat_name": { "type": "string", "nullable": true },
+          "boat_model": { "type": "string", "nullable": true },
+          "marina": { "type": "string", "nullable": true }
+        }
+      },
       "CallAccepted": {
         "type": "object",
         "required": ["call_id", "state", "task_id"],

@@ -56,6 +56,9 @@ class Settings(BaseSettings):
     supabase_url: str | None = None
     supabase_service_role_key: SecretStr | None = None  # yalnızca backend; asla frontend'e verilmez
     storage_bucket: str = "call-audio"
+    # Yüklenen çağrı sesleri: geliştirmede yerel klasör (backend/'e göre), canlıda bulut deposu.
+    audio_storage_dir: str = "storage/audio"
+    audio_max_mb: int = Field(default=25, ge=1)
     # Yalnızca local/test: servis anahtarı kurulmadan uçları denemek için doğrulamayı atlar.
     auth_dev_bypass: bool = False
 

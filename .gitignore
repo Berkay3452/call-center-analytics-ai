@@ -23,6 +23,7 @@ data/processed/
 data/datasets/
 data/synthetic/**/*.wav
 data/synthetic/**/*.mp3
+backend/storage/
 
 # --- Model önbellekleri ---
 /models/

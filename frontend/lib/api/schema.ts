@@ -398,6 +398,19 @@ export interface components {
             transcript?: string | null;
             segments?: components["schemas"]["SegmentIn"][] | null;
         };
+        /** @description POST /calls/audio form alanları (ses dosyası `file` alanında). */
+        AudioCallMeta: {
+            /** Format: date-time */
+            started_at: string;
+            duration_s?: number | null;
+            answer_delay_s?: number | null;
+            switchboard_outcome?: components["schemas"]["SwitchboardOutcome"];
+            customer_name?: string | null;
+            customer_phone?: string | null;
+            boat_name?: string | null;
+            boat_model?: string | null;
+            marina?: string | null;
+        };
         CallAccepted: {
             /** Format: uuid */
             call_id: string;

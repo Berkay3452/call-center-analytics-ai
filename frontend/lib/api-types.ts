@@ -219,6 +219,19 @@ export interface CallCreate {
   segments?: SegmentIn[];
 }
 
+/** POST /calls/audio: multipart form alanları (ses dosyası `file` alanında). */
+export interface AudioCallMeta {
+  started_at: IsoDateTime;
+  duration_s?: number | null;
+  answer_delay_s?: number | null;
+  switchboard_outcome?: SwitchboardOutcome | null;
+  customer_name?: string | null;
+  customer_phone?: string | null;
+  boat_name?: string | null;
+  boat_model?: string | null;
+  marina?: string | null;
+}
+
 export interface CallAccepted {
   call_id: string;
   state: CallState;

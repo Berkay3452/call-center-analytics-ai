@@ -209,6 +209,23 @@ class CallCreate(BaseModel):
         return self
 
 
+class AudioCallMeta(BaseModel):
+    """`POST /calls/audio` form alanları (multipart; ses dosyası `file` alanında).
+
+    `CallCreate` ile aynı çağrı bilgileri, transkript hariç: metin STT ile üretilir.
+    """
+
+    started_at: datetime
+    duration_s: int | None = Field(default=None, ge=0)
+    answer_delay_s: int | None = Field(default=None, ge=0)
+    switchboard_outcome: SwitchboardOutcome | None = None
+    customer_name: str | None = None
+    customer_phone: str | None = None
+    boat_name: str | None = None
+    boat_model: str | None = None
+    marina: str | None = None
+
+
 class CallAccepted(BaseModel):
     """`POST /calls`, `POST /calls/audio` ve `POST /calls/{id}/analyze` yanıtı (202)."""
 
