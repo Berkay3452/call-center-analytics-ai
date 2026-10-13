@@ -1,0 +1,73 @@
+{
+  "call_id": "call_025",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, ilk defa arıyorum. Geçen ay tekne aldım, Marmaris'te duruyor, ben İstanbul'dayım. Temizlik ve bakımını yaptırabilir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Hoş geldiniz, hayırlı olsun. Teknenizin modeli nedir?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Mavi Yolculuk, Beneteau Oceanis 34.1."
+    },
+    {
+      "speaker": "rep",
+      "text": "İç ve dış temizlik, güverte yıkama, tente ve döşeme bakımı, havalandırma için içeriye girip çıkma gibi bir aylık paketimiz var."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ben teknede olmayacağım, anahtar nasıl olur?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Marina ofisinde anahtar teslim sistemi var, yetkili ekip alır ve geri bırakır, her ziyarette size fotoğraflı rapor göndeririz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bu çok işime yarar. Fiyatı nedir?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Bu boyda tekne için aylık dokuz bin beş yüz lira, altı aylık alırsanız yüzde on indirim var."
+    },
+    {
+      "speaker": "customer",
+      "text": "Altı aylık alayım, kış boyunca bakımı olsun. Yalnız motorun kışlanmasını da sorabilir miyim?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Onu ayrıca konuşuruz, ilk adım olarak temizlik paketini başlatalım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Olur, hemen başlasın."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kaydınızı açıyorum. İlk ziyareti pazartesi planlayabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Pazartesi olur, marina ofisine haber verin."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yazılı bilgiler e-postanıza gelecek."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler, iyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hoş geldiniz, iyi günler."
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "call_id": "call_011",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "elektrik_elektronik",
+    "location": "Tuzla Marina",
+    "problem": "Navigasyon ekranı çalışırken donuyor ve kendiliğinden yeniden başlıyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": "Navigasyon ekranı besleme ve kablo kontrolü",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Belirti navigasyon cihazının donması: elektrik & elektronik. Müşteri cuma günü randevuyu kabul ediyor."
+}

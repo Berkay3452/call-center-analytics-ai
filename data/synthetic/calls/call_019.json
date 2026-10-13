@@ -1,0 +1,73 @@
+{
+  "call_id": "call_019",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, teknemin yangın tüplerini ve can salını yıllık kontrole getirmem gerekiyor, teklif alabilir miyim?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii. Tekne adı ve marina?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yıldırım, İstinye Tekne Park."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kaç adet yangın tüpü var, can salı kaç kişilik?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Makine dairesinde otomatik sistem, kabinlerde dört adet portatif tüp. Can salı sekiz kişilik."
+    },
+    {
+      "speaker": "rep",
+      "text": "Otomatik sistemin basınç kontrolü ve dört tüpün dolum ve muayenesi yapılır. Can salı için sertifikalı atölyeye gönderilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Can salını götürmeniz mi gerekiyor?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, yılda bir katlama kontrolü atölyede yapılıyor, üç gün sürer, geri teslim ederiz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Fiyat nedir?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Tüpler yirmi bin lira, can salı katlama ve test on yedi bin lira, toplam otuz yedi bin lira."
+    },
+    {
+      "speaker": "customer",
+      "text": "Makul görünüyor, geçen yıl daha fazlasına yaptırmıştım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kabul ederseniz bu hafta içinde ustamızı gönderebilirim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Kabul ediyorum. Cuma günü uygun musunuz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Cuma öğleden önce İstinye'de olur. Randevunuzu oluşturuyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Harika, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederim, iyi günler."
+    }
+  ]
+}

@@ -65,7 +65,7 @@ Servis anahtarı kurulmadan `/api/v1` uçlarını denemek için `.env` içinde `
 
 ## Sentetik veri üretimi ve veritabanı doldurma (seed)
 
-Miço Usta sentetik kayıtlarını (`data/synthetic/*.json`) üretmek ve tüm sentetik veriyi (müşteriler, tekneler, ustalar, servis kayıtları, usta notları, giderler, abonelikler, RAG parçaları + 10 çağrı verisi) veritabanına yüklemek için önce `uv run alembic upgrade head` ile şemayı kurun, ardından `backend/` klasöründe:
+Miço Usta sentetik kayıtlarını (`data/synthetic/*.json`) üretmek ve tüm sentetik veriyi (müşteriler, tekneler, ustalar, servis kayıtları, usta notları, giderler, abonelikler, RAG parçaları + 30 çağrı verisi) veritabanına yüklemek için önce `uv run alembic upgrade head` ile şemayı kurun, ardından `backend/` klasöründe:
 
 ```
 uv run python -m scripts.seed                  # JSON dosyalarını üretir + veritabanını doldurur (idempotent)
@@ -93,7 +93,8 @@ Servis olmadan denemek için `EMBEDDING_PROVIDER=hash` (modelsiz, yalnızca keli
 `.env`'de LLM ayarları doluyken (geçici seçim: Gemini, bkz. #13) agent'lar sentetik çağrılarda (`data/synthetic/`) çalıştırılıp doğru etiketlerle karşılaştırılır:
 
 ```
-python -m scripts.evaluate                                 # 10 çağrının hepsi
+python -m scripts.evaluate                                 # çağrıların hepsi
+python -m scripts.evaluate --split test                    # 20 çağrılık dokunulmaz test kümesi
 python -m scripts.evaluate --calls call_001,call_004       # seçili çağrılar
 python -m scripts.evaluate --fast <model> --smart <model>  # modeli .env'i değiştirmeden dene
 ```

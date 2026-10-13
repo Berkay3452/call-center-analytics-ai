@@ -1,0 +1,81 @@
+{
+  "call_id": "call_018",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Çeşme'deki teknemin şanzımanı vites geçerken sert vuruyor, gürültü de yapıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geçmiş olsun. Tekne adı ve modeli?"
+    },
+    {
+      "speaker": "customer",
+      "text": "İmbat, Beneteau First 36."
+    },
+    {
+      "speaker": "rep",
+      "text": "İleri ve geri vitesin ikisinde de mi oluyor?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Geri vitesinde daha çok. Sürekli değil, soğukken daha belirgin."
+    },
+    {
+      "speaker": "rep",
+      "text": "Şanzıman yağı ya da kumanda kablosu ayarı olabilir. Ustamız yerinde kontrol eder."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bu hafta içinde gelebilir mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Perşembe sabah Çeşme'ye gidecek bir ustamız var, size yazabilirim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki. Arıza tespiti için nasıl bir ücret var?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Ziyaret ücreti dokuz bin lira, parça gerekiyorsa ayrıca."
+    },
+    {
+      "speaker": "customer",
+      "text": "Anladım. Aslında marinadaki başka bir servis firması var, onlar daha önce yağ değişimi yapmıştı."
+    },
+    {
+      "speaker": "rep",
+      "text": "İsterseniz biz de yaparız, kayıtlarınızda daha önce bize geldiğiniz görünüyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet geldim ama marinadaki firma tekneyi tanıyor, hem yakın hem de fiyat olarak benzer."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum. Bizimle devam etmeyi düşünür müsünüz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Hayır, onlarla çalışacağım. Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii, başka bir ihtiyacınızda bize ulaşabilirsiniz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Olur, iyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dilerim."
+    }
+  ]
+}

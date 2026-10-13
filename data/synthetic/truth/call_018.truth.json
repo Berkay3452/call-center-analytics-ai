@@ -1,0 +1,18 @@
+{
+  "call_id": "call_018",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "mekanik_hidrolik",
+    "location": "Çeşme Marina",
+    "problem": "Şanzıman vites geçişleri sert ve gürültülü",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": "Şanzıman yağ ve kumanda kablosu kontrolü",
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "rakip"
+  },
+  "notes": "Müşteri başka bir firmayla çalışacağını söylüyor: rakip. Belirti şanzıman: mekanik & hidrolik."
+}

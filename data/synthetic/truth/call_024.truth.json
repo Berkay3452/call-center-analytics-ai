@@ -1,0 +1,18 @@
+{
+  "call_id": "call_024",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "su_sihhi_tesisat",
+    "location": "Tuzla Marina",
+    "problem": "Hidrofor sürekli devreye giriyor, musluk açık olmasa da çalışıyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": "Hidrofor basınç şalteri ve sızıntı kontrolü",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Hidrofor: su & sıhhi tesisat. Müşteri randevuyu kabul ediyor."
+}

@@ -1,0 +1,81 @@
+{
+  "call_id": "call_030",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Ataköy'deki teknemin kamara ısıtıcısı çalışmıyor, kış gelmeden baktırmak istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tekne adı nedir?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Meltem."
+    },
+    {
+      "speaker": "rep",
+      "text": "Isıtıcı hiç mi çalışmıyor, yoksa çalışıp sönüyor mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Düğmeye basınca bir iki saniye ses veriyor, sonra kapanıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yakıt ya da ateşleme kısmında sorun olabilir. Ustamızın yerinde görmesi gerekir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Önümüzdeki iki gün içinde gelebilir mi? Hafta sonu seyre çıkacağım, ondan önce çalışması lazım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Önümüzdeki iki gün Ataköy'deki ustamız izinde, diğer ustalar da dolu."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki cuma olmazsa?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Cuma sabah son boş yerimiz var ama öğleden sonra başka bir tekneye gidecek, süre yetmeyebilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yani cumartesi öncesi bitmeyebilir."
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, garanti edemem. En erken gelecek salı için yer verebilirim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Salı benim için çok geç, hafta sonu için lazımdı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum. Başka bir ustaya yönlendirmek gerekir ama o da bizim takvimimizde yok."
+    },
+    {
+      "speaker": "customer",
+      "text": "O zaman başka bir servis bulacağım, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii, uygun olamadığımız için üzgünüm."
+    },
+    {
+      "speaker": "customer",
+      "text": "Önemli değil, iyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dilerim."
+    }
+  ]
+}

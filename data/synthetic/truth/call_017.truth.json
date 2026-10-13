@@ -1,0 +1,18 @@
+{
+  "call_id": "call_017",
+  "call_type": "acil",
+  "crm": {
+    "request_category": "su_sihhi_tesisat",
+    "location": "Göcek D-Marin",
+    "problem": "Tuvalet gider vanası kırıldı, tekneye su giriyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "acil",
+    "potential_job": "Acil vana değişimi ve su alma kontrolü",
+    "next_action": "usta_ata"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Teknenin su alması acil. Belirti gider vanası ve su: su & sıhhi tesisat."
+}

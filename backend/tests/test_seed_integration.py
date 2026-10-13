@@ -22,9 +22,9 @@ EXPECTED_AT_LEAST = {
     "boats": 20,
     "craftsmen": 5,
     "boat_notes": 60,
-    "calls": 10,
-    "transcripts": 10,
-    "analysis_results": 10,
+    "calls": 30,
+    "transcripts": 30,
+    "analysis_results": 30,
 }
 
 
@@ -38,7 +38,7 @@ async def test_seed_fills_empty_database_and_is_idempotent() -> None:
     assert first == second == third
     for table, minimum in EXPECTED_AT_LEAST.items():
         assert first[table] >= minimum, (table, first[table])
-    assert first["transcript_segments"] >= 10 * 15
+    assert first["transcript_segments"] >= 30 * 15
     assert first["rag_chunks"] >= first["boat_notes"]
 
 
@@ -52,6 +52,7 @@ async def test_seeded_data_is_consistent() -> None:
             " JOIN customers c ON c.id = ca.customer_id"
             " JOIN analysis_results a ON a.call_id = ca.id"
             " WHERE ca.marina = 'Tuzla Marina' AND ca.customer_name = 'Burak Çelik'"
+            " AND b.name = 'Rüzgar'"
         )
         assert row is not None
         assert (row["name"], row["request_category"], row["next_action"]) == (
@@ -60,11 +61,15 @@ async def test_seeded_data_is_consistent() -> None:
             "servis_randevusu_olustur",
         )
 
-        # Her çağrı bir müşteriye ve tekneye bağlanmış olmalı.
-        unmatched = await conn.fetchval(
-            "SELECT count(*) FROM calls WHERE customer_id IS NULL OR boat_id IS NULL"
-        )
-        assert unmatched == 0
+        # Kayıtlı müşteriler çağrılarına bağlanmış olmalı; yalnızca ilk kez arayan üç kişi
+        # (yeni müşteri senaryoları) eşleşmemiş kalır.
+        unmatched = {
+            r["customer_name"]
+            for r in await conn.fetch(
+                "SELECT customer_name FROM calls WHERE customer_id IS NULL OR boat_id IS NULL"
+            )
+        }
+        assert unmatched == {"Volkan Tekin", "Ece Aksoy", "Tuncay Erdem"}
 
         # RAG parçalarının sahibi, teknenin sahibiyle aynı olmalı (yetkilendirme verisi).
         wrong_owner = await conn.fetchval(

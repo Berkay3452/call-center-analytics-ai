@@ -1,0 +1,73 @@
+{
+  "call_id": "call_027",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Yalıkavak'taki katamaranımda rıhtım elektriğini takınca ana sigorta atıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geçmiş olsun. Tekne adı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Martı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tekne içinde bir şey çalışmıyorken de mi atıyor, yoksa belirli bir cihaz açılınca mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Hiçbir şey açık değilken de atıyor, sadece rıhtıma bağlayınca."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kaçak akım rölesi ya da kara elektriği giriş soketi olabilir. Marina kablosunu başka bir tekneyle denediniz mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Marina yetkilisi başka kabloyla denedi, yine attı, yani sorun bende."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anladım. Ustamız panoyu ve şarj cihazı girişini kontrol etmeli. Bu hafta uygun musunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Bu hafta bilmiyorum, eşimin programına bakmam lazım. Ben zaten motor ve jeneratörle idare ediyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Acil bir güvenlik riski görünmüyor, planlı bir iş olarak değerlendirebiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet. Siz bana haftaya başı gibi dönebilir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Elbette, pazartesi sizi arayıp müsait günü belirleyelim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Olur, bir de ustanın ölçü cihazı var mıdır?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, kaçak akım ve izolasyon ölçümü yapacak cihazla gelir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, haftaya konuşuruz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teşekkürler, iyi günler."
+    }
+  ]
+}

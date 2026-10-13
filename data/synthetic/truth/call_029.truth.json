@@ -1,0 +1,18 @@
+{
+  "call_id": "call_029",
+  "call_type": "bilgi",
+  "crm": {
+    "request_category": null,
+    "location": "Bodrum Milta Marina",
+    "problem": null,
+    "service_mode": null,
+    "urgency": "dusuk",
+    "potential_job": null,
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Randevu saati teyidi: bilgi görüşmede verildi, yeni iş yok. Kategori null, aksiyon yok."
+}
