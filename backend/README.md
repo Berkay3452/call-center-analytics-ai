@@ -96,7 +96,7 @@ Tüm uçların sözleşmesi (şemalar, yetki başlıkları, örnek JSON'lar): `d
 | `app/api` | Route'lar ve bağımlılıklar (oturum, servis anahtarı, kullanıcı kimliği) |
 | `app/db` | Async SQLAlchemy motoru, oturumlar, model tabanı (şema Supabase migration'larından gelir) |
 | `app/schemas` | API istek/yanıt şemaları |
-| `app/services` | İş mantığı |
+| `app/services` | İş mantığı; `analysis_store.py`: transkript ve analiz sonuçlarını veritabanına yazma/okuma, `DbRunRecorder` |
 | `app/workers` | Celery uygulaması ve kuyruklar (stt, analysis, index) |
 | `app/llm` | Ücretsiz, OpenAI-uyumlu LLM sağlayıcıları için istemci fabrikası |
 | `app/agents` | Agent sözleşmesi (`base.py`), LLM agent tabanı (`llm_agent.py`), dört analiz agent'ı, prompt'lar (`prompts/`), alıntı doğrulama (`grounding.py`), LangGraph orkestratörü (`orchestrator.py`), varsayılan akış (`registry.py`) |

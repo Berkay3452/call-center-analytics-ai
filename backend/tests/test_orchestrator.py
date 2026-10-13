@@ -297,3 +297,17 @@ async def test_result_converts_to_analysis_result() -> None:
     assert analysis.classification is None
     assert set(analysis.errors) == {CALL_CLASSIFIER}
     assert {r.agent for r in analysis.runs} == {CALL_CLASSIFIER, "x"}
+
+
+class _BrokenRecorder:
+    async def record(self, result: OrchestrationResult) -> None:
+        raise ConnectionError("veritabanı yok")
+
+
+async def test_recorder_failure_does_not_lose_the_result() -> None:
+    orch = Orchestrator([[fake(CALL_CLASSIFIER)]], recorder=_BrokenRecorder())
+
+    result = await orch.run(make_ctx())
+
+    assert result.status == "tamam"
+    assert result.outputs[CALL_CLASSIFIER] == {"label": CALL_CLASSIFIER}

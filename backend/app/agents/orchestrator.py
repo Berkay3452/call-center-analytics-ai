@@ -269,7 +269,11 @@ class Orchestrator:
             runs=[AgentRun.from_result(r) for r in ordered],
             latency_ms=int((time.perf_counter() - started) * 1000),
         )
-        await self.recorder.record(outcome)
+        try:
+            await self.recorder.record(outcome)
+        except Exception:
+            # Kayıt hatası (ör. veritabanı) pahalı LLM sonucunu çöpe atmamalı; çağıran sonucu alır.
+            log.exception("analysis.record_failed", call_id=str(ctx.call_id))
         return outcome
 
 
