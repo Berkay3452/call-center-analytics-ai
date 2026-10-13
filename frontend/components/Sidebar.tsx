@@ -24,6 +24,7 @@ interface NavItem {
 const ADMIN_NAV: NavItem[] = [
   { href: "/admin/analytics", label: "Çağrı Analitiği", icon: "📊" },
   { href: "/admin/calls", label: "Çağrılar", icon: "📞" },
+  { href: "/admin/calls/upload", label: "Çağrı Yükle", icon: "🎙️" },
   { href: "/admin/crm", label: "CRM Önerisi", icon: "💡" },
 ];
 
@@ -54,7 +55,10 @@ export function Sidebar() {
       {/* Navigasyon */}
       <nav className="flex-1 overflow-y-auto p-3 space-y-1">
         {navItems.map((item) => {
-          const isActive = pathname.startsWith(item.href);
+          const isActive =
+            item.href === "/admin/calls"
+              ? pathname === "/admin/calls" || /^\/admin\/calls\/[0-9a-fA-F-]+$/.test(pathname)
+              : pathname.startsWith(item.href);
           return (
             <Link
               key={item.href}
