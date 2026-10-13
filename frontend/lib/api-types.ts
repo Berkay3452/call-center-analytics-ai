@@ -309,3 +309,32 @@ export interface ChatSessionDetail {
   session: ChatSessionOut;
   messages: ChatMessageOut[];
 }
+
+// ---------------------------------------------------------------------------
+// Akışlı cevap (SSE) — POST /chat/messages/stream
+// Her olay: `event: <type>` + `data: <JSON>`. Metin kaynak kontrolünden sonra akar.
+// ---------------------------------------------------------------------------
+export type StreamStage = "araniyor" | "hazirlaniyor" | "dogrulaniyor";
+
+export interface StatusEvent {
+  type: "status";
+  stage: StreamStage;
+}
+
+export interface DeltaEvent {
+  type: "delta";
+  text: string;
+}
+
+export interface DoneEvent {
+  type: "done";
+  reply: ChatReply;
+}
+
+export interface ErrorEvent {
+  type: "error";
+  code: string;
+  message: string;
+}
+
+export type ChatStreamEvent = StatusEvent | DeltaEvent | DoneEvent | ErrorEvent;

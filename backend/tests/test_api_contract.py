@@ -49,6 +49,10 @@ SHARED_MODELS: list[type[BaseModel]] = [
     api.ChatReply,
     api.ChatSessionOut,
     api.ChatSessionDetail,
+    api.StatusEvent,
+    api.DeltaEvent,
+    api.DoneEvent,
+    api.ErrorEvent,
 ]
 
 # Örnek dosya → doğrulandığı model.
@@ -97,6 +101,7 @@ def test_page_fields_match() -> None:
         ("CallState", set(get_args(api.CallState))),
         ("Speaker", set(get_args(api.Speaker))),
         ("SourceKind", set(get_args(assistant.SourceKind))),
+        ("StreamStage", set(get_args(api.StreamStage))),
         ("QuestionType", {m.value for m in assistant.QuestionType}),
         ("SwitchboardOutcome", {m.value for m in SwitchboardOutcome}),
     ],
@@ -113,6 +118,25 @@ def test_examples_validate(filename: str) -> None:
 
 def test_every_example_is_checked() -> None:
     assert {p.name for p in EXAMPLES.glob("*.json")} == set(EXAMPLE_MODELS)
+
+
+def test_stream_example_is_valid_sse() -> None:
+    raw = (EXAMPLES / "sohbet_akisi.sse").read_text(encoding="utf-8")
+    events = [block for block in raw.split("\n\n") if block.strip()]
+    types: list[str] = []
+    text = ""
+    for block in events:
+        name, data = block.splitlines()
+        parsed = api.chat_stream_event_adapter.validate_json(data.removeprefix("data: "))
+        assert name == f"event: {parsed.type}"
+        types.append(parsed.type)
+        if isinstance(parsed, api.DeltaEvent):
+            text += parsed.text
+        if isinstance(parsed, api.DoneEvent):
+            assert parsed.reply.answer.content == text  # parçalar birleşince tam cevap
+    assert types[0] == "status"
+    assert types[-1] == "done"
+    assert types.count("done") == 1
 
 
 def test_every_shared_model_is_documented() -> None:
