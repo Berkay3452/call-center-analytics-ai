@@ -79,6 +79,8 @@ python -m scripts.evaluate --fast <model> --smart <model>  # modeli .env'i deği
 
 ## Uç Noktalar
 
+Tüm uçların sözleşmesi (şemalar, yetki başlıkları, örnek JSON'lar): `docs/api.md`. Aşağıdakiler şu an çalışan uçlardır.
+
 | Yol | Açıklama |
 |-----|----------|
 | `GET /health` | Süreç ayakta mı (canlılık) |

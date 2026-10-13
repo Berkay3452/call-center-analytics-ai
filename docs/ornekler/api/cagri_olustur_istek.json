@@ -1,0 +1,44 @@
+{
+  "started_at": "2026-10-12T09:05:00Z",
+  "duration_s": 184,
+  "answer_delay_s": 12,
+  "switchboard_outcome": null,
+  "customer_name": "Burak Çelik",
+  "customer_phone": null,
+  "boat_name": "Rüzgar",
+  "boat_model": null,
+  "marina": "Tuzla Marina",
+  "transcript": null,
+  "segments": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, buyurun.",
+      "start_ms": null,
+      "end_ms": null
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Tuzla Marina'da teknem var. Motor çalışıyor ama gaz verdiğimde devir yükselmiyor.",
+      "start_ms": null,
+      "end_ms": null
+    },
+    {
+      "speaker": "rep",
+      "text": "Geçmiş olsun. Teknenin adını alabilir miyim?",
+      "start_ms": null,
+      "end_ms": null
+    },
+    {
+      "speaker": "customer",
+      "text": "Rüzgar. Yarın bir usta gelebilir mi?",
+      "start_ms": null,
+      "end_ms": null
+    },
+    {
+      "speaker": "rep",
+      "text": "Usta uygunluğuna bakıp sizi bilgilendireceğiz.",
+      "start_ms": null,
+      "end_ms": null
+    }
+  ]
+}

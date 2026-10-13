@@ -1,0 +1,81 @@
+{
+  "period_start": "2026-10-06",
+  "period_end": "2026-10-12",
+  "total_calls": 30,
+  "analyzed_calls": 28,
+  "new_customers": 4,
+  "service_requests": 13,
+  "quote_requests": 6,
+  "urgent_requests": 3,
+  "converted_sales": 11,
+  "conversion_rate": 0.393,
+  "lost_by_reason": {
+    "fiyat": 4,
+    "gec_donus": 2,
+    "rakip": 1
+  },
+  "top_problems": [
+    {
+      "name": "Motor devir sorunu",
+      "count": 5
+    },
+    {
+      "name": "Akü şarj tutmuyor",
+      "count": 4
+    }
+  ],
+  "busiest_marinas": [
+    {
+      "name": "Tuzla Marina",
+      "count": 9
+    },
+    {
+      "name": "Kalamış Marina",
+      "count": 7
+    }
+  ],
+  "by_category": {
+    "makine": 11,
+    "elektrik_elektronik": 7,
+    "su_sihhi_tesisat": 4,
+    "temizlik_bakim": 3,
+    "diger": 3
+  },
+  "by_urgency": {
+    "acil": 3,
+    "yuksek": 9,
+    "normal": 12,
+    "dusuk": 4
+  },
+  "daily_calls": [
+    {
+      "day": "2026-10-06",
+      "count": 4
+    },
+    {
+      "day": "2026-10-07",
+      "count": 6
+    },
+    {
+      "day": "2026-10-08",
+      "count": 3
+    },
+    {
+      "day": "2026-10-09",
+      "count": 7
+    },
+    {
+      "day": "2026-10-10",
+      "count": 5
+    },
+    {
+      "day": "2026-10-11",
+      "count": 2
+    },
+    {
+      "day": "2026-10-12",
+      "count": 3
+    }
+  ],
+  "avg_answer_delay_s": 14.5
+}
