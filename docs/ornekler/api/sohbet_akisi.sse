@@ -1,0 +1,21 @@
+event: status
+data: {"type": "status", "stage": "araniyor"}
+
+event: status
+data: {"type": "status", "stage": "dogrulaniyor"}
+
+event: delta
+data: {"type": "delta", "text": "Rüzgar teknenizin son ba"}
+
+event: delta
+data: {"type": "delta", "text": "kımı 15 Ağustos 2026'da "}
+
+event: delta
+data: {"type": "delta", "text": "yapıldı (motor yağı ve f"}
+
+event: delta
+data: {"type": "delta", "text": "iltre değişimi)."}
+
+event: done
+data: {"type": "done", "reply": {"session_id": "5e8c2a40-3f1b-4d6e-9a7c-0b1d2e3f4a5b", "question": {"id": "6a7b8c9d-0e1f-4a2b-8c3d-4e5f6a7b8c9d", "role": "user", "content": "Teknemin son bakımı ne zamandı?", "created_at": "2026-10-12T09:05:00Z", "question_type": null, "sources": [], "found": true}, "answer": {"id": "7b8c9d0e-1f2a-4b3c-9d4e-5f6a7b8c9d0e", "role": "assistant", "content": "Rüzgar teknenizin son bakımı 15 Ağustos 2026'da yapıldı (motor yağı ve filtre değişimi).", "created_at": "2026-10-12T09:05:03Z", "question_type": "sayisal", "sources": [{"kind": "service_record", "record_id": "9c0d1e2f-3a4b-4c5d-8e6f-7a8b9c0d1e2f", "title": "15 Ağustos 2026 servis kaydı", "date": "2026-08-15", "excerpt": "Motor yağı ve yağ filtresi değiştirildi."}], "found": true}}}
+

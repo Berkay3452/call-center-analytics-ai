@@ -40,6 +40,7 @@ Admin/tekne sahibi rol ayrımını .NET uygulaması yapar. Tekne sahibi uçları
 | `POST /calls/{call_id}/analyze` | Admin | — | 202 `CallAccepted` (yeni analiz sürümü) | #48 |
 | `GET /calls/{call_id}/status` | Admin | — | `CallStatus` | #48 |
 | `POST /chat/messages` | Tekne sahibi | `ChatQuestion` | `ChatReply` | #28 |
+| `POST /chat/messages/stream` | Tekne sahibi | `ChatQuestion` | SSE akışı (`ChatStreamEvent`, bkz. §4) | #28 |
 | `GET /chat/sessions` | Tekne sahibi | — | `ChatSessionOut` listesi (yeniden eskiye) | #28 |
 | `GET /chat/sessions/{session_id}` | Tekne sahibi | — | `ChatSessionDetail` | #28 |
 
@@ -81,7 +82,13 @@ Arayüz `GET /calls/{id}/status` ile durumu 2–3 saniyede bir sorar; `tamam`, `
 - `ChatQuestion`: `question` ve isteğe bağlı `session_id` (boşsa yeni oturum, başlık ilk sorudan).
 - `ChatReply`: kaydedilen soru ve cevap (`ChatMessageOut`). Cevapta `question_type`, `sources` (`SourceRef` kaynak kartları) ve `found` (false ise "bulamadım" durumu).
 - `ChatSessionOut`, `ChatSessionDetail`: oturum listesi ve geçmiş.
-- Cevap tek seferde döner (vize). Akış (streaming) gerekirse sonradan aynı şemayla eklenir.
+- `StatusEvent`, `DeltaEvent`, `DoneEvent`, `ErrorEvent`: akış olayları (`ChatStreamEvent`).
+- **Akışlı cevap:** arayüz `POST /chat/messages/stream` kullanır (Server-Sent Events, `text/event-stream`); `POST /chat/messages` aynı cevabı tek seferde döner (test ve yedek). Her olay `event: <tür>` ve `data: <JSON>` satırlarıdır, olaylar boş satırla ayrılır. Sıra:
+  1. `StatusEvent` (`araniyor`, `dogrulaniyor`): arayüz "Kayıtlar aranıyor…" gibi durum gösterir.
+  2. `DeltaEvent`: cevap metninin parçaları; arayüz sırayla birleştirir (yazma efekti).
+  3. `DoneEvent`: kaydedilen soru/cevap (`ChatReply`), kaynak kartları ve `found`. Arayüz kaynak kartlarını bu olayda çizer.
+  4. Hata olursa `ErrorEvent`; akış kapanır.
+  Metin, **kaynak kontrolü bittikten sonra** akıtılır: desteklenmeyen iddia cevaptan düşürüldüğü için ekrandaki cümle sonradan silinmez. Akış koparsa arayüz `GET /chat/sessions/{id}` ile kayıtlı cevabı alabilir.
 
 ## 5. Örnekler
 
@@ -97,6 +104,7 @@ Arayüz `GET /calls/{id}/status` ile durumu 2–3 saniyede bir sorar; `tamam`, `
 | `sohbet_soru_istek.json` | `ChatQuestion` |
 | `sohbet_cevabi.json` | `ChatReply` |
 | `sohbet_oturumu.json` | `ChatSessionDetail` |
+| `sohbet_akisi.sse` | `ChatStreamEvent` dizisi (SSE biçimi) |
 
 Arayüz bu dosyaları mock olarak kullanabilir; gerçek uç gelince yalnızca `lib/api.ts` değişir.
 

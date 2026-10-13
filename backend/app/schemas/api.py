@@ -12,10 +12,10 @@ Kurallar:
 """
 
 from datetime import date, datetime
-from typing import Literal
+from typing import Annotated, Literal
 from uuid import UUID
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, TypeAdapter, model_validator
 
 from app.domain.enums import (
     CallType,
@@ -265,3 +265,47 @@ class ChatSessionOut(BaseModel):
 class ChatSessionDetail(BaseModel):
     session: ChatSessionOut
     messages: list[ChatMessageOut] = Field(default_factory=list)
+
+
+# --- Akışlı cevap (SSE): POST /chat/messages/stream ---------------------------------------
+#
+# Her olay SSE'de `event: <type>` ve `data: <JSON>` olarak gelir. Sıra: 1-2 `status`, ardından
+# kaynak kontrolü bittikten sonra `delta` parçaları, en sonda `done` (veya hata olursa `error`).
+# Metin kaynak kontrolünden SONRA akıtılır; böylece ekranda görünen cümle sonradan silinmez.
+
+StreamStage = Literal["araniyor", "hazirlaniyor", "dogrulaniyor"]
+
+
+class StatusEvent(BaseModel):
+    """İşlem aşaması; arayüz "Kayıtlar aranıyor…" gibi bir durum gösterir."""
+
+    type: Literal["status"] = "status"
+    stage: StreamStage
+
+
+class DeltaEvent(BaseModel):
+    """Cevap metninin bir parçası; parçalar sırayla birleştirilir."""
+
+    type: Literal["delta"] = "delta"
+    text: str
+
+
+class DoneEvent(BaseModel):
+    """Akışın sonu: kaydedilen soru/cevap, kaynak kartları ve `found` bilgisi."""
+
+    type: Literal["done"] = "done"
+    reply: ChatReply
+
+
+class ErrorEvent(BaseModel):
+    """Akış sırasında hata; bağlantı kapanır, soru kaydedilmişse yeniden denenebilir."""
+
+    type: Literal["error"] = "error"
+    code: str
+    message: str
+
+
+ChatStreamEvent = Annotated[
+    StatusEvent | DeltaEvent | DoneEvent | ErrorEvent, Field(discriminator="type")
+]
+chat_stream_event_adapter: TypeAdapter[ChatStreamEvent] = TypeAdapter(ChatStreamEvent)
