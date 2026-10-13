@@ -1,0 +1,102 @@
+[
+  {
+    "question": "Poyraz'ın aküleri değiştirildi mi?",
+    "owner_id": "606bd734-644f-5c21-af2f-dc734c4ecd67",
+    "expected_notes": [
+      "note_002"
+    ]
+  },
+  {
+    "question": "Teknemi kışa hazırladınız mı, kışlama yapıldı mı?",
+    "owner_id": "606bd734-644f-5c21-af2f-dc734c4ecd67",
+    "expected_notes": [
+      "note_031"
+    ]
+  },
+  {
+    "question": "Sintine pompasında bir sorun var mıydı?",
+    "owner_id": "606bd734-644f-5c21-af2f-dc734c4ecd67",
+    "expected_notes": [
+      "note_004"
+    ]
+  },
+  {
+    "question": "VHF telsiz anteni kontrol edildi mi?",
+    "owner_id": "606bd734-644f-5c21-af2f-dc734c4ecd67",
+    "expected_notes": [
+      "note_032"
+    ]
+  },
+  {
+    "question": "Yelkovan'ın deniz suyu vanaları ne durumda?",
+    "owner_id": "606bd734-644f-5c21-af2f-dc734c4ecd67",
+    "expected_notes": [
+      "note_085"
+    ]
+  },
+  {
+    "question": "Albatros'ta motor devir sorunu neden olmuştu?",
+    "owner_id": "8ff32870-b5ca-5689-a6af-3548246f014e",
+    "expected_notes": [
+      "note_003"
+    ]
+  },
+  {
+    "question": "Seyir sırasında titreşim vardı, ne yapıldı?",
+    "owner_id": "8ff32870-b5ca-5689-a6af-3548246f014e",
+    "expected_notes": [
+      "note_009"
+    ]
+  },
+  {
+    "question": "Kutup teknesinin klimasına bakım yapıldı mı?",
+    "owner_id": "8ff32870-b5ca-5689-a6af-3548246f014e",
+    "expected_notes": [
+      "note_073"
+    ]
+  },
+  {
+    "question": "Rüzgar'ın motor yağı ve filtreleri en son ne zaman değişti?",
+    "owner_id": "c57e2519-87f4-597e-be0c-80889768255a",
+    "expected_notes": [
+      "note_005"
+    ]
+  },
+  {
+    "question": "Şaft salmastrasından su kaçırıyor mu?",
+    "owner_id": "c57e2519-87f4-597e-be0c-80889768255a",
+    "expected_notes": [
+      "note_008",
+      "note_071"
+    ]
+  },
+  {
+    "question": "Yakamoz'da sıcak su ve su basıncı sorunu çözüldü mü?",
+    "owner_id": "c57e2519-87f4-597e-be0c-80889768255a",
+    "expected_notes": [
+      "note_069"
+    ]
+  },
+  {
+    "question": "Uzun seyre çıkmadan önce yedek yakıt filtresi almalı mıyım?",
+    "owner_id": "cb138ca4-1453-5ef6-9537-713c5b7ecb4f",
+    "expected_notes": [
+      "note_015",
+      "note_078"
+    ]
+  },
+  {
+    "question": "Yangın söndürme sistemi kontrol edildi mi?",
+    "owner_id": "cb138ca4-1453-5ef6-9537-713c5b7ecb4f",
+    "expected_notes": [
+      "note_076"
+    ]
+  },
+  {
+    "question": "Güvertede su sızıntısı riski var mı?",
+    "owner_id": "9229ce36-c20d-5231-ac87-49cf9dab33f1",
+    "expected_notes": [
+      "note_018"
+    ]
+  }
+]

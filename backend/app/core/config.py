@@ -96,11 +96,17 @@ class Settings(BaseSettings):
     stt_api_model: str = "whisper-large-v3"
     stt_timeout_s: float = 300.0
 
-    # --- RAG / Embedding ---
-    embedding_provider: Literal["tei", "openai_compatible"] = "tei"
+    # --- RAG / Embedding --- (#26; sağlayıcılar `app/rag/embedders.py`)
+    # tei: bge-m3, Docker'da TEI servisi (CPU; infra/docker-compose.yml, "rag" profili).
+    # openai_compatible: embedding API'si. hash: modelsiz, kelime tabanlı (test ve geliştirme).
+    embedding_provider: Literal["tei", "openai_compatible", "hash"] = "tei"
     embedding_model: str = "BAAI/bge-m3"
-    embedding_dim: int = 1024
+    embedding_dim: int = 1024  # rag_chunks.embedding sütunuyla aynı olmalı
     tei_url: str = "http://localhost:8080"
+    embedding_base_url: str | None = None  # openai_compatible için
+    embedding_api_key: SecretStr | None = None
+    embedding_timeout_s: float = 60.0
+    embedding_batch_size: int = Field(default=16, ge=1)
 
     # --- Türetilmiş değerler ---
     def llm_model_for(self, agent_name: str, tier: Literal["fast", "smart"]) -> str | None:

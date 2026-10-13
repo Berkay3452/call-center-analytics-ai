@@ -179,10 +179,10 @@ jobs:
           uv run alembic check
           uv run alembic downgrade base
           uv run alembic upgrade head
-      - name: Veritabanı entegrasyon testleri (CHECK kısıtları, tsvector, vektör araması, seed, analiz kaydı, çağrı ve ses akışı)
+      - name: Veritabanı entegrasyon testleri (CHECK kısıtları, tsvector, vektör araması, seed, analiz kaydı, çağrı ve ses akışı, RAG araması)
         env:
           RUN_DB_TESTS: "1"
-        run: uv run pytest tests/test_db_integration.py tests/test_seed_integration.py tests/test_analysis_store_integration.py tests/test_call_ingest_integration.py tests/test_audio_ingest_integration.py -q -p no:cacheprovider
+        run: uv run pytest tests/test_db_integration.py tests/test_seed_integration.py tests/test_analysis_store_integration.py tests/test_call_ingest_integration.py tests/test_audio_ingest_integration.py tests/test_rag_integration.py -q -p no:cacheprovider
       - name: API ve Celery işçisini başlat
         run: |
           uv run uvicorn app.main:app --port 8000 > uvicorn.log 2>&1 &
