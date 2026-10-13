@@ -79,7 +79,9 @@ def register_exception_handlers(app: FastAPI) -> None:
             status.HTTP_422_UNPROCESSABLE_CONTENT,
             "validation_error",
             "İstek doğrulanamadı.",
-            {"errors": exc.errors()},
+            # `ctx` (ör. model doğrulayıcının ValueError'u) JSON'a çevrilemez; yalnızca
+            # alan yolu, mesaj ve tür gönderilir.
+            {"errors": [{k: e[k] for k in ("loc", "msg", "type")} for e in exc.errors()]},
         )
 
     @app.exception_handler(StarletteHTTPException)

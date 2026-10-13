@@ -475,6 +475,10 @@ async def seed_database(
                         None,  # kanıt alıntısı: etiket notları kullanıcıya gösterilmez
                         summary_text,
                     )
+                    # Analizi olan çağrı "tamam" durumundadır (analizi olmayan "beklemede" kalır).
+                    await conn.execute(
+                        "UPDATE calls SET state = 'tamam', error = NULL WHERE id = $1", call_uuid
+                    )
 
         counts: dict[str, int] = {}
         for tbl in (
