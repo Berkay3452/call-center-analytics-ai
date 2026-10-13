@@ -1,0 +1,73 @@
+{
+  "call_id": "call_012",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta acil hat, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Alo, teknemde yakıt kokusu var, sintinede mazot görüyorum. Damlıyor galiba!"
+    },
+    {
+      "speaker": "rep",
+      "text": "Sakin olalım. Motor çalışıyor mu, hâlâ teknede misiniz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Motoru kapattım, tekneden iskeleye indim."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi yaptınız. Elektrikli bir şey çalıştırmayın, kıvılcım olmasın. Tekne adı ve konumunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Kutup, Kalamış Marina, F iskelesi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Damlama nereden geliyor, görebiliyor musunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yakıt filtresinin yanındaki hat bağlantısından damlıyor gibi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Sintine pompasını çalıştırmayın, yakıt denize karışabilir. Marina ofisine de haber veriyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki. Ne kadar sürer?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Kalamış'taki nöbetçi ustamız yirmi dakikada orada olur."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, bekliyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hattan ayrılmayın, ustamız sizi [TELEFON] numarasından arayacak."
+    },
+    {
+      "speaker": "customer",
+      "text": "Anladım, çok teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teknenin yakınında sigara içilmediğinden emin olun, ekibimiz yola çıktı."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, kimse yok."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geçmiş olsun."
+    }
+  ]
+}

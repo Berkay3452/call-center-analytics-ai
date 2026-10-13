@@ -1,0 +1,73 @@
+{
+  "call_id": "call_017",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta acil hat, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, teknemde su girişi var! Tuvaletin gider vanası kırıldı galiba, su fışkırıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Canınız tehlikede mi? Tekne içinde kimse var mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "İki kişiyiz, güvendeyiz ama su yükseliyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Vana kolu var mı, kapatabiliyor musunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Kolu kırıldı, kapanmıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tahta tapa ya da ahşap takoz var mı? Deliğe sıkıştırın, bez ile destekleyin. Tekne adı ve konum?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Fora, Göcek D-Marin, katamaran, C iskelesi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Sintine pompası çalışıyor mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Çalışıyor ama yetişemiyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Elle de pompalayın. Göcek'teki nöbetçi ustamızı hemen yönlendiriyorum, marinaya da haber veriyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ne kadar sürer?"
+    },
+    {
+      "speaker": "rep",
+      "text": "On beş dakika. Takozu sıkı tutun, hattan ayrılmayın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, tamam."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamız vanayı değiştirmeye gerekli parçayla geliyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geçmiş olsun, ekibimiz yolda."
+    }
+  ]
+}

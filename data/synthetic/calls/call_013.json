@@ -1,0 +1,81 @@
+{
+  "call_id": "call_013",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, teknemin salon kliması soğutmuyor, sadece hava üflüyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geçmiş olsun. Tekne adı ve marina?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Pusula, Ataköy Marina."
+    },
+    {
+      "speaker": "rep",
+      "text": "Klima deniz suyu ile çalışan tip mi, ne zamandır böyle?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet deniz suyu ile. Yaklaşık iki haftadır giderek zayıfladı, şimdi hiç soğutmuyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Süzgeç tıkanmış ya da gaz basıncı düşmüş olabilir. Ustamızın yerinde bakması gerekir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bakım ve arıza tespiti ücreti ne kadar?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yerinde arıza tespiti için ziyaret ücreti on iki bin lira, onarım çıkarsa bunun içinde değil."
+    },
+    {
+      "speaker": "customer",
+      "text": "On iki bin lira sadece bakmak için mi? Bu çok fazla."
+    },
+    {
+      "speaker": "rep",
+      "text": "Marina yolu ve usta ziyareti dahil, ama size indirimli bir ziyaret ayarlayabilirim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ne kadar indirim olur?"
+    },
+    {
+      "speaker": "rep",
+      "text": "On yüzde indirimle on bir bin iki yüz lira olur."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yine de pahalı. Başka firmaların fiyatı bunun yarısı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum, kalitemizin garantisi de var ama bütçenizi zorlamak istemem."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler, ben bu fiyata yaptırmayacağım. Kendim biraz araştırayım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii, fikrinizi değiştirirseniz bizi arayabilirsiniz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, iyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dilerim."
+    }
+  ]
+}

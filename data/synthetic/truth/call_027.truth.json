@@ -1,0 +1,18 @@
+{
+  "call_id": "call_027",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "elektrik_elektronik",
+    "location": "Yalıkavak Marina",
+    "problem": "Rıhtım elektriğine bağlanınca ana sigorta sürekli atıyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": "Kara elektriği girişi ve sigorta panosu kontrolü",
+    "next_action": "geri_ara"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Müşteri uygun tarihi sonra bildirecek, firma geri arayacak: beklemede. Sigorta ve kara elektriği: elektrik."
+}

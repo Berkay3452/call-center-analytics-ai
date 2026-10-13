@@ -1,0 +1,18 @@
+{
+  "call_id": "call_020",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "diger",
+    "location": "Bodrum Milta Marina",
+    "problem": "Karinada boya kabarması ve ahşap derz açılmaları",
+    "service_mode": "atolyede",
+    "urgency": "normal",
+    "potential_job": "Karaya çekme, karina boya ve derz onarımı",
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "guven"
+  },
+  "notes": "Müşteri işçilik garantisinden ve referanslardan şüphe duyuyor: güven. Gövde/karina onarımı: diğer."
+}

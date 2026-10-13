@@ -45,10 +45,16 @@ def test_customers_and_boats_match_calls_meta() -> None:
     customer_names = {c["full_name"] for c in ds["customers"]}
     boat_pairs = {(b["owner_name"], b["name"], b["marina"]) for b in ds["boats"]}
 
+    new_callers = set()
     for item in meta:
         ref = item["customer_ref"]
-        assert ref["customer"] in customer_names
+        if ref["customer"] not in customer_names:
+            new_callers.add(ref["customer"])  # ilk kez arayan: CRM'de henüz kayıtlı değil
+            continue
         assert (ref["customer"], ref["boat"], ref["marina"]) in boat_pairs
+
+    # Kayıtlı olmayan arayanlar bilinçli: eşleşmeyen çağrı için CRM önerisi senaryosu.
+    assert new_callers == {"Volkan Tekin", "Ece Aksoy", "Tuncay Erdem"}
 
     # Hocanın örnek çağrısı için Tuzla Marina'da tekne bulunmalı
     tuzla_boats = [b for b in ds["boats"] if b["marina"] == "Tuzla Marina"]
@@ -122,5 +128,5 @@ def test_write_synthetic_files_and_calls_bundle(tmp_path: Path) -> None:
         assert isinstance(loaded, list) and len(loaded) > 0
 
     bundle = load_calls_bundle(data_dir=DATA_DIR)
-    assert len(bundle) == 10
+    assert len(bundle) == 30
     assert bundle[0]["call_id"] == "call_001"

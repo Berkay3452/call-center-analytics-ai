@@ -1,0 +1,18 @@
+{
+  "call_id": "call_030",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "iklimlendirme",
+    "location": "Ataköy Marina",
+    "problem": "Kamara ısıtıcısı çalışmıyor, kış öncesi bakım gerekiyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": "Isıtma sistemi arıza tespiti ve bakım",
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "takvim"
+  },
+  "notes": "Usta uygunluğu müşterinin istediği zamana denk gelmiyor: takvim. Isıtma: iklimlendirme & havalandırma."
+}

@@ -1,0 +1,18 @@
+{
+  "call_id": "call_025",
+  "call_type": "yeni_musteri",
+  "crm": {
+    "request_category": "temizlik_bakim",
+    "location": "Marmaris Netsel Marina",
+    "problem": null,
+    "service_mode": "yerinde_servis",
+    "urgency": "dusuk",
+    "potential_job": "Aylık temizlik ve bakım paketi",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "İlk kez arayan müşteri temizlik paketini kabul ediyor: satışa dönüştü. Temizlik: temizlik & tekne bakımı."
+}

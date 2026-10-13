@@ -1,0 +1,73 @@
+{
+  "call_id": "call_021",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, hangi marinalarda hizmet verdiğinizi öğrenmek istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "İstanbul'da Tuzla, Pendik, Kalamış, Ataköy ve İstinye'de, Ege'de Çeşme, Bodrum, Göcek ve Marmaris'te hizmet veriyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Pendik Marinturk'te hizmet veriyor musunuz? Teknem orada."
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, Pendik'te haftanın her günü ustamız var."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çalışma saatleriniz nedir?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Hafta içi sekiz buçuk ile on yedi buçuk, cumartesi dokuz ile on yedi. Pazar yalnızca acil hat."
+    },
+    {
+      "speaker": "customer",
+      "text": "Acil hatta ne tür durumlar kabul ediliyor?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Su alma, yangın, duman, yakıt kaçağı gibi can ve tekne güvenliğini ilgilendiren durumlar."
+    },
+    {
+      "speaker": "customer",
+      "text": "Anladım. Arızalar için ücretsiz keşif yapıyor musunuz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Keşif ziyareti ücretli, ama iş verirseniz ücreti işçilikten düşüyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Güzel. Peki uygulamanızdan randevu alınabiliyor mu?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, Miço Usta uygulamasından servis talebi açabilirsiniz, biz de telefonla destek veriyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, uygulamayı indireyim. Başka sormak istediğim bir şey yok."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yardımcı olabildiysem ne mutlu bana."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dilerim."
+    }
+  ]
+}

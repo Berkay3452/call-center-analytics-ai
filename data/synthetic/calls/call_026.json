@@ -1,0 +1,81 @@
+{
+  "call_id": "call_026",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, teknemin beş yüz saatlik motor bakımı için fiyat öğrenmek istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tekne adı ve marina?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Albatros, Göcek D-Marin."
+    },
+    {
+      "speaker": "rep",
+      "text": "Çift motor mu, tek motor mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Tek motor, Volvo Penta, yüz yirmi beygir."
+    },
+    {
+      "speaker": "rep",
+      "text": "Beş yüz saat bakımda yağ ve filtreler, yakıt filtreleri, impeller, kayış ve valf ayarı yapılır."
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet tam olarak bunlar. Fiyat nedir?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Parçalar ve işçilik dahil seksen beş bin lira."
+    },
+    {
+      "speaker": "customer",
+      "text": "Seksen beş bin mi? Geçen yıl iki yüz saat bakımı kırk bine yaptırmıştım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Beş yüz saat bakım daha kapsamlı, valf ayarı ve kayış değişimi var, parçalar da orijinal."
+    },
+    {
+      "speaker": "customer",
+      "text": "Anladım ama bütçem bu kadar değil. Daha ucuz bir seçenek var mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yalnızca yağ, filtre ve impeller olarak kısa paket yapabilirim, kırk dört bin lira."
+    },
+    {
+      "speaker": "customer",
+      "text": "O da yüksek. Bu fiyatları görünce ertelemeyi düşünüyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Taksit yapabiliriz, üç taksitle yükü hafifletir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Hayır, teşekkürler. Şimdilik vazgeçiyorum, bütçeme göre bakarım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii, fiyat konusunda yardımcı olamadığım için üzgünüm."
+    },
+    {
+      "speaker": "customer",
+      "text": "Sorun değil, iyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dilerim."
+    }
+  ]
+}

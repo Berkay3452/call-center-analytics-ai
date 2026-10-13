@@ -1,0 +1,73 @@
+{
+  "call_id": "call_028",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, sizi ilk defa arıyorum. Bodrum'da teknem var, hafta sonu için kaptan lazım. Kaptan kiralama yapıyor musunuz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Hoş geldiniz. Maalesef kaptan kiralama hizmetimiz şu an aktif değil."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ya, uygulamada gördüm sanırım. Ne zaman başlayacak?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Şu an bir tarih yok. Bakım, onarım ve teknik servis hizmetleri veriyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yani kaptan bulmama yardımcı olamaz mısınız?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Başka bir firmaya yönlendirme yapamıyorum ama marina ofisi kaptan listesi tutuyor olabilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki. Teknem Bavaria C42, Bodrum Milta'da. Bakım için de sizinle çalışabilir miyim?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Elbette, motor veya elektrik bakımı gibi bir ihtiyacınız olursa yardımcı oluruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Şimdilik bakıma ihtiyacım yok, asıl derdim hafta sonu seyir için kaptan."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum. Kaptanlı hizmet verebilir hâle gelirsek duyururuz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, o zaman başka yerden bakacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlayışınız için teşekkür ederim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ben teşekkür ederim, kolay gelsin."
+    },
+    {
+      "speaker": "rep",
+      "text": "Size de iyi günler dilerim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Görüşürüz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hoş geldiniz, iyi günler."
+    }
+  ]
+}

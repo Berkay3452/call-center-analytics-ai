@@ -1,0 +1,18 @@
+{
+  "call_id": "call_013",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "iklimlendirme",
+    "location": "Ataköy Marina",
+    "problem": "Salon kliması soğutmuyor, yalnızca hava üflüyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": "Klima arıza tespiti ve gaz basıncı kontrolü",
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "fiyat"
+  },
+  "notes": "Müşteri arıza tespit ücretini pahalı bulup vazgeçiyor: fiyat. Belirti klima: iklimlendirme."
+}

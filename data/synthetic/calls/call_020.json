@@ -1,0 +1,81 @@
+{
+  "call_id": "call_020",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Bodrum'da gület teknem var, karinasında boya kabarmaları ve derzlerde açılma görüyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geçmiş olsun. Tekne adı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Çapariz, yirmi iki metre geleneksel gület."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ne zamandır fark ettiniz, su alma var mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Su alma yok ama bahardan beri yayılıyor. Karaya çekmek gerekir sanırım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, karaya çekip yüzeyi açmak gerekir. Karina boya ve derz onarımını atölyemizde yapıyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Daha önce ahşap gület işi yaptınız mı? Fiberglas teknelerle çalıştığınızı biliyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ahşap tekne deneyimimiz var, ustamız ahşap işçiliğinde on beş yıllık."
+    },
+    {
+      "speaker": "customer",
+      "text": "Referans olarak yaptığınız bir gület gösterebilir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Geçen sezon iki gület onardık ama müşteri bilgilerini paylaşamam."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yazılı garanti veriyor musunuz peki?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Boya için bir yıl, derz işi için altı ay garanti veriyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Altı ay bana kısa geliyor, ahşapta sonuç geç görülür. Referansı da gösteremiyorsunuz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum, isterseniz ustamız önce ücretsiz bir ön inceleme yapabilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Güvenemedim doğrusu, bu büyüklükte bir işi emin olmadan veremem."
+    },
+    {
+      "speaker": "rep",
+      "text": "Saygı duyuyorum, fikrinizi değiştirirseniz buradayız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler, iyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dilerim."
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "call_id": "call_014",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Çeşme Marina'da teknem var, gövdesine cila yaptırmak istiyorum. Teklif alabilir miyim?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii. Teknenin adı ve modeli nedir?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Zıpkın, Saxdor 320 GTO."
+    },
+    {
+      "speaker": "rep",
+      "text": "Gövde boyu yaklaşık dokuz buçuk metre. Cila ile birlikte wax uygulaması da ister misiniz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, UV koruyucu wax olursa iyi olur. Bir de tentenin dikişleri açıldı, onu da onartabilir miyim?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Tente dikişini de aynı ziyarette yapabiliriz. Teknede mi yapacağız, yoksa atölyeye mi getireceksiniz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknede olsun, karaya çekmek istemiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yerinde yapılır. Tente dikişinin ne kadarı açık?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Arka kısmında yaklaşık bir metre kadar."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tamam. Sezon sonu olduğu için acele yok, değil mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yok, kış gelmeden yapılsa yeter, o yüzden şimdi sadece fiyat bakıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anladım, size yazılı bir teklif hazırlayıp göndereyim, kalemleri ayrı ayrı yazarım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Olur, e-postayla gelsin."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kayıt bilgilerinizdeki adrese gönderiyorum. Beğenirseniz tarih belirleriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, bakıp dönerim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teşekkürler, iyi günler."
+    }
+  ]
+}

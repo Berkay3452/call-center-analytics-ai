@@ -1,0 +1,18 @@
+{
+  "call_id": "call_014",
+  "call_type": "teklif",
+  "crm": {
+    "request_category": "temizlik_bakim",
+    "location": "Çeşme Marina",
+    "problem": null,
+    "service_mode": "yerinde_servis",
+    "urgency": "dusuk",
+    "potential_job": "Gövde cila ve wax uygulaması ile tente dikiş onarımı",
+    "next_action": "teklif_hazirla"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Müşteri teklif istiyor, karar vermedi: beklemede. Cila ve tente: temizlik & tekne bakımı."
+}

@@ -10,7 +10,8 @@
       "boat": "Rüzgar",
       "boat_model": "Jeanneau Sun Odyssey 440",
       "marina": "Tuzla Marina"
-    }
+    },
+    "split": "gelistirme"
   },
   {
     "call_id": "call_002",
@@ -23,7 +24,8 @@
       "boat": "Albatros",
       "boat_model": "Beneteau Oceanis 45",
       "marina": "Göcek D-Marin"
-    }
+    },
+    "split": "gelistirme"
   },
   {
     "call_id": "call_003",
@@ -36,7 +38,8 @@
       "boat": "Poseidon",
       "boat_model": "Bavaria Cruiser 46",
       "marina": "Bodrum Milta Marina"
-    }
+    },
+    "split": "gelistirme"
   },
   {
     "call_id": "call_004",
@@ -49,7 +52,8 @@
       "boat": "Lodos",
       "boat_model": "Sealine F42",
       "marina": "Kalamış Marina"
-    }
+    },
+    "split": "gelistirme"
   },
   {
     "call_id": "call_005",
@@ -62,7 +66,8 @@
       "boat": "Martı",
       "boat_model": "Lagoon 42 Katamaran",
       "marina": "Yalıkavak Marina"
-    }
+    },
+    "split": "gelistirme"
   },
   {
     "call_id": "call_006",
@@ -75,7 +80,8 @@
       "boat": "Ufuk",
       "boat_model": "Azimut 55",
       "marina": "Göcek D-Marin"
-    }
+    },
+    "split": "gelistirme"
   },
   {
     "call_id": "call_007",
@@ -88,7 +94,8 @@
       "boat": "Karayel",
       "boat_model": "Fairline Targa 40",
       "marina": "Tuzla Marina"
-    }
+    },
+    "split": "gelistirme"
   },
   {
     "call_id": "call_008",
@@ -101,7 +108,8 @@
       "boat": "Poyraz",
       "boat_model": "Motoryat 42",
       "marina": "Kalamış Marina"
-    }
+    },
+    "split": "gelistirme"
   },
   {
     "call_id": "call_009",
@@ -114,7 +122,8 @@
       "boat": "Yıldız",
       "boat_model": "Princess V48",
       "marina": "Göcek D-Marin"
-    }
+    },
+    "split": "gelistirme"
   },
   {
     "call_id": "call_010",
@@ -127,6 +136,287 @@
       "boat": "Akdeniz",
       "boat_model": "Ferretti 500",
       "marina": "Bodrum Milta Marina"
-    }
+    },
+    "split": "gelistirme"
+  },
+  {
+    "call_id": "call_011",
+    "started_at": "2026-10-09T15:10:00+03:00",
+    "answer_delay_s": 6,
+    "duration_s": 171,
+    "switchboard_outcome": "randevu_olusturuldu",
+    "customer_ref": {
+      "customer": "Burak Çelik",
+      "boat": "Yakamoz",
+      "boat_model": "Beneteau Swift Trawler 41",
+      "marina": "Tuzla Marina"
+    },
+    "split": "test"
+  },
+  {
+    "call_id": "call_012",
+    "started_at": "2026-10-10T07:45:00+03:00",
+    "answer_delay_s": 2,
+    "duration_s": 126,
+    "switchboard_outcome": "usta_yonlendirildi",
+    "customer_ref": {
+      "customer": "Fatma Kaya",
+      "boat": "Kutup",
+      "boat_model": "Sirena 58",
+      "marina": "Kalamış Marina"
+    },
+    "split": "test"
+  },
+  {
+    "call_id": "call_013",
+    "started_at": "2026-10-10T11:30:00+03:00",
+    "answer_delay_s": 14,
+    "duration_s": 158,
+    "switchboard_outcome": "iptal",
+    "customer_ref": {
+      "customer": "Mehmet Deniz",
+      "boat": "Pusula",
+      "boat_model": "Elan Impression 45",
+      "marina": "Ataköy Marina"
+    },
+    "split": "test"
+  },
+  {
+    "call_id": "call_014",
+    "started_at": "2026-10-11T10:20:00+03:00",
+    "answer_delay_s": 9,
+    "duration_s": 149,
+    "switchboard_outcome": "kayit_olusturuldu",
+    "customer_ref": {
+      "customer": "Deniz Saygın",
+      "boat": "Zıpkın",
+      "boat_model": "Saxdor 320 GTO",
+      "marina": "Çeşme Marina"
+    },
+    "split": "test"
+  },
+  {
+    "call_id": "call_015",
+    "started_at": "2026-10-11T14:05:00+03:00",
+    "answer_delay_s": 11,
+    "duration_s": 192,
+    "switchboard_outcome": "geri_aranacak",
+    "customer_ref": {
+      "customer": "Volkan Tekin",
+      "boat": "Maviş",
+      "boat_model": "Beneteau Antares 9",
+      "marina": "Pendik Marinturk Marina"
+    },
+    "split": "test"
+  },
+  {
+    "call_id": "call_016",
+    "started_at": "2026-10-12T09:35:00+03:00",
+    "answer_delay_s": 8,
+    "duration_s": 102,
+    "switchboard_outcome": "bilgi_verildi",
+    "customer_ref": {
+      "customer": "Ahmet Yılmaz",
+      "boat": "Yelkovan",
+      "boat_model": "Grand Banks 42 Classic",
+      "marina": "Pendik Marinturk Marina"
+    },
+    "split": "test"
+  },
+  {
+    "call_id": "call_017",
+    "started_at": "2026-10-12T16:50:00+03:00",
+    "answer_delay_s": 3,
+    "duration_s": 119,
+    "switchboard_outcome": "usta_yonlendirildi",
+    "customer_ref": {
+      "customer": "Mübetcel Şafak",
+      "boat": "Fora",
+      "boat_model": "Fountaine Pajot Isla 40",
+      "marina": "Göcek D-Marin"
+    },
+    "split": "test"
+  },
+  {
+    "call_id": "call_018",
+    "started_at": "2026-10-13T10:40:00+03:00",
+    "answer_delay_s": 18,
+    "duration_s": 165,
+    "switchboard_outcome": "iptal",
+    "customer_ref": {
+      "customer": "Temime Korutürk",
+      "boat": "İmbat",
+      "boat_model": "Beneteau First 36",
+      "marina": "Çeşme Marina"
+    },
+    "split": "test"
+  },
+  {
+    "call_id": "call_019",
+    "started_at": "2026-10-13T13:15:00+03:00",
+    "answer_delay_s": 7,
+    "duration_s": 183,
+    "switchboard_outcome": "randevu_olusturuldu",
+    "customer_ref": {
+      "customer": "Hasgül Çorlu",
+      "boat": "Yıldırım",
+      "boat_model": "Sunseeker Predator 50",
+      "marina": "İstinye Tekne Park"
+    },
+    "split": "test"
+  },
+  {
+    "call_id": "call_020",
+    "started_at": "2026-10-13T15:55:00+03:00",
+    "answer_delay_s": 25,
+    "duration_s": 174,
+    "switchboard_outcome": "iptal",
+    "customer_ref": {
+      "customer": "Satrettin Yüksel",
+      "boat": "Çapariz",
+      "boat_model": "Bodrum Geleneksel Gulet 22m",
+      "marina": "Bodrum Milta Marina"
+    },
+    "split": "test"
+  },
+  {
+    "call_id": "call_021",
+    "started_at": "2026-10-07T09:50:00+03:00",
+    "answer_delay_s": 10,
+    "duration_s": 94,
+    "switchboard_outcome": "bilgi_verildi",
+    "customer_ref": {
+      "customer": "Aliihsan Korutürk",
+      "boat": "Bora",
+      "boat_model": "Absolute 47 Fly",
+      "marina": "Pendik Marinturk Marina"
+    },
+    "split": "test"
+  },
+  {
+    "call_id": "call_022",
+    "started_at": "2026-10-07T11:25:00+03:00",
+    "answer_delay_s": 28,
+    "duration_s": 147,
+    "switchboard_outcome": "iptal",
+    "customer_ref": {
+      "customer": "Şüküfe Sakarya",
+      "boat": "Kalyon",
+      "boat_model": "Ketch Gulet 24m",
+      "marina": "Marmaris Netsel Marina"
+    },
+    "split": "test"
+  },
+  {
+    "call_id": "call_023",
+    "started_at": "2026-10-07T14:30:00+03:00",
+    "answer_delay_s": 5,
+    "duration_s": 168,
+    "switchboard_outcome": "kayit_olusturuldu",
+    "customer_ref": {
+      "customer": "Sadiye Demir",
+      "boat": "Meltem",
+      "boat_model": "Dufour 430 Grand Large",
+      "marina": "Ataköy Marina"
+    },
+    "split": "test"
+  },
+  {
+    "call_id": "call_024",
+    "started_at": "2026-10-07T16:10:00+03:00",
+    "answer_delay_s": 4,
+    "duration_s": 155,
+    "switchboard_outcome": "randevu_olusturuldu",
+    "customer_ref": {
+      "customer": "Okan Yurdakul",
+      "boat": "Karayel",
+      "boat_model": "Fairline Targa 40",
+      "marina": "Tuzla Marina"
+    },
+    "split": "test"
+  },
+  {
+    "call_id": "call_025",
+    "started_at": "2026-10-07T17:20:00+03:00",
+    "answer_delay_s": 13,
+    "duration_s": 188,
+    "switchboard_outcome": "kayit_olusturuldu",
+    "customer_ref": {
+      "customer": "Ece Aksoy",
+      "boat": "Mavi Yolculuk",
+      "boat_model": "Beneteau Oceanis 34.1",
+      "marina": "Marmaris Netsel Marina"
+    },
+    "split": "test"
+  },
+  {
+    "call_id": "call_026",
+    "started_at": "2026-10-08T10:05:00+03:00",
+    "answer_delay_s": 8,
+    "duration_s": 161,
+    "switchboard_outcome": "iptal",
+    "customer_ref": {
+      "customer": "Fatma Kaya",
+      "boat": "Albatros",
+      "boat_model": "Beneteau Oceanis 45",
+      "marina": "Göcek D-Marin"
+    },
+    "split": "test"
+  },
+  {
+    "call_id": "call_027",
+    "started_at": "2026-10-08T13:40:00+03:00",
+    "answer_delay_s": 9,
+    "duration_s": 142,
+    "switchboard_outcome": "geri_aranacak",
+    "customer_ref": {
+      "customer": "Deniz Saygın",
+      "boat": "Martı",
+      "boat_model": "Lagoon 42 Katamaran",
+      "marina": "Yalıkavak Marina"
+    },
+    "split": "test"
+  },
+  {
+    "call_id": "call_028",
+    "started_at": "2026-10-08T15:15:00+03:00",
+    "answer_delay_s": 12,
+    "duration_s": 133,
+    "switchboard_outcome": "iptal",
+    "customer_ref": {
+      "customer": "Tuncay Erdem",
+      "boat": "Poyraz Rüzgârı",
+      "boat_model": "Bavaria C42",
+      "marina": "Bodrum Milta Marina"
+    },
+    "split": "test"
+  },
+  {
+    "call_id": "call_029",
+    "started_at": "2026-10-09T09:20:00+03:00",
+    "answer_delay_s": 6,
+    "duration_s": 91,
+    "switchboard_outcome": "bilgi_verildi",
+    "customer_ref": {
+      "customer": "Mehmet Deniz",
+      "boat": "Poseidon",
+      "boat_model": "Bavaria Cruiser 46",
+      "marina": "Bodrum Milta Marina"
+    },
+    "split": "test"
+  },
+  {
+    "call_id": "call_030",
+    "started_at": "2026-10-09T11:45:00+03:00",
+    "answer_delay_s": 16,
+    "duration_s": 152,
+    "switchboard_outcome": "iptal",
+    "customer_ref": {
+      "customer": "Sadiye Demir",
+      "boat": "Meltem",
+      "boat_model": "Dufour 430 Grand Large",
+      "marina": "Ataköy Marina"
+    },
+    "split": "test"
   }
 ]

@@ -1,0 +1,65 @@
+{
+  "call_id": "call_022",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, uzun süredir hattasınız, tam yirmi sekiz saniye çaldı. Teknemin makinesi ısınıyor, bugün çıkmam gerekiyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Bekletildiğiniz için özür dilerim. Teknenizin adı ve marinası?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Kalyon, Marmaris Netsel. Ana makine ısınıyor, egzozdan gelen su da zayıf."
+    },
+    {
+      "speaker": "rep",
+      "text": "Soğutma suyu pompasının impeller'i yenilenmemiş olabilir. Ne zaman başladı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Dün seyirde ısı göstergesi yükseldi, motoru kapattım. Bugün hava durumu uygun, çıkmam lazım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Bugün için hemen usta ayarlamam zor, ekibimiz iki işte. En erken yarın sabah gönderebilirim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yarın mı? Dün de aradım, kimse dönmedi, mesajım yanıtsız kaldı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kayıtlarınıza bakayım. Dünkü mesajınız sisteme düşmemiş olabilir, çok özür dilerim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Her seferinde böyle oluyor. Geçen sezon da randevu için üç gün beklemiştim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Haklısınız. Yarın ilk iş size ustamızı gönderebilirim, öncelik veririm."
+    },
+    {
+      "speaker": "customer",
+      "text": "Hayır, bu kadar geç dönüş yapılan bir firmaya güvenemem. Bugün çıkmak zorundayım, başka usta bulacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum, gerçekten üzgünüm. Yine de bir ihtiyacınızda bize ulaşın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, kalın sağlıcakla."
+    },
+    {
+      "speaker": "rep",
+      "text": "Güle güle, iyi seyirler."
+    }
+  ]
+}
