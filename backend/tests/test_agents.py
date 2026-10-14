@@ -596,3 +596,16 @@ async def test_agent_uses_its_own_model_name(
     assert used == ["siniflandirici"]
     assert result.status == "ok"
     assert result.model == "siniflandirici"
+
+
+def test_extract_json_object_unwraps_schema_echo() -> None:
+    from app.agents.llm_agent import extract_json_object
+
+    echoed = (
+        '{"title": "CallSummary", "properties": {"summary": "Özet.", "key_points": []},'
+        ' "required": ["summary"], "type": "object"}'
+    )
+    assert extract_json_object(echoed) == {"summary": "Özet.", "key_points": []}
+    # gerçek şema tanımı olduğu gibi kalır
+    real = '{"properties": {"summary": {"type": "string"}}, "required": ["summary"]}'
+    assert "properties" in extract_json_object(real)
