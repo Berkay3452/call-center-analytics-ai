@@ -1,30 +1,53 @@
-"""STT sağlayıcı sözleşmesi.
+"""STT sağlayıcı sözleşmesi (#15).
 
-Yerel Whisper (GPU/CPU) ve API tabanlı STT aynı arayüzü uygular; hangisinin kullanılacağı
-STT_PROVIDER ortam değişkeniyle seçilir (donanım kararı netleşince).
+Her sağlayıcı (yerel faster-whisper, Whisper API'si, stub) aynı arayüzü uygular; hangisinin
+kullanılacağı `STT_PROVIDER` ile seçilir (bkz. `app/stt/registry.py`). Sağlayıcı yalnızca
+"bu ses dosyasında ne söylendi"yi döner; konuşmacıların ayrılması ve konuşma turlarına
+dönüştürme `app/stt/pipeline.py`'dedir.
 """
 
 from pathlib import Path
 from typing import Protocol
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
+from app.agents.base import Speaker
 
 
-class Word(BaseModel):
+class SttError(Exception):
+    """STT hatası. `transient=True`: ağ/kota gibi geçici hata, yeniden denenebilir."""
+
+    def __init__(self, message: str, *, transient: bool = False) -> None:
+        super().__init__(message)
+        self.transient = transient
+
+
+class SttSegment(BaseModel):
+    """Sağlayıcının döndürdüğü zaman damgalı metin parçası."""
+
+    start_ms: int = Field(ge=0)
+    end_ms: int = Field(ge=0)
     text: str
-    start_ms: int
-    end_ms: int
-    probability: float | None = None
+    # Sağlayıcı konuşmacıyı biliyorsa (ör. stub veya konuşmacı ayıran bir API) doludur.
+    speaker: Speaker | None = None
 
 
 class TranscriptionResult(BaseModel):
     language: str
-    duration_sec: float
-    words: list[Word]
+    duration_sec: float = Field(ge=0)
+    segments: list[SttSegment]
     model: str
+
+    @property
+    def text(self) -> str:
+        return " ".join(s.text for s in self.segments)
 
 
 class Transcriber(Protocol):
+    """Ses dosyasını zaman damgalı metne çevirir. Hata durumunda `SttError` fırlatır."""
+
+    name: str
+
     async def transcribe(self, audio_path: Path, *, language: str = "tr") -> TranscriptionResult:
-        """Ses dosyasını kelime zaman damgalı metne çevirir."""
+        """Ses dosyasını metne çevirir."""
         ...

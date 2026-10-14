@@ -1,0 +1,18 @@
+{
+  "call_id": "call_019",
+  "call_type": "teklif",
+  "crm": {
+    "request_category": "tekne_guvenligi",
+    "location": "İstinye Tekne Park",
+    "problem": null,
+    "service_mode": "yerinde_servis",
+    "urgency": "dusuk",
+    "potential_job": "Yangın tüpleri ve can salı yıllık kontrolü",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Teklifi görüşmede kabul edip randevu istiyor: satışa dönüştü. Yangın tüpü ve can salı: tekne güvenliği."
+}

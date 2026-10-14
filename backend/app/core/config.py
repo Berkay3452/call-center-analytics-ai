@@ -13,6 +13,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 AppEnv = Literal["local", "test", "staging", "prod"]
 
 
+PLACEHOLDER_SERVICE_KEY = "change-me-in-local-env"
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
@@ -47,13 +50,16 @@ class Settings(BaseSettings):
     # --- Sağlık kontrolü ---
     health_check_timeout_s: float = 2.0
 
-    # --- Supabase Auth / Storage ---
+    # --- Servis Anahtarı / Supabase Storage ---
+    # .NET API'nin Python servisini çağırırken `X-Service-Key` ile gönderdiği paylaşılan anahtar.
+    service_api_key: SecretStr | None = None
     supabase_url: str | None = None
-    supabase_jwks_url: str | None = None  # boşsa supabase_url'den türetilir
-    supabase_jwt_audience: str = "authenticated"
     supabase_service_role_key: SecretStr | None = None  # yalnızca backend; asla frontend'e verilmez
     storage_bucket: str = "call-audio"
-    # Yalnızca local/test: Supabase kurulmadan uçları denemek için JWT doğrulamasını atlar.
+    # Yüklenen çağrı sesleri: geliştirmede yerel klasör (backend/'e göre), canlıda bulut deposu.
+    audio_storage_dir: str = "storage/audio"
+    audio_max_mb: int = Field(default=25, ge=1)
+    # Yalnızca local/test: servis anahtarı kurulmadan uçları denemek için doğrulamayı atlar.
     auth_dev_bypass: bool = False
 
     # --- LLM (ücretsiz, OpenAI-uyumlu API sağlayıcıları) ---
@@ -78,17 +84,34 @@ class Settings(BaseSettings):
     llm_timeout_s: float = 60.0
     llm_max_retries: int = 3
 
-    # --- STT (ses → metin) ---
-    stt_provider: Literal["faster_whisper", "openai_compatible"] = "faster_whisper"
-    whisper_model: str = "small"  # GPU varsa: large-v3
-    whisper_compute_type: str = "int8"  # GPU varsa: float16
-    hf_token: SecretStr | None = None  # pyannote modeli için Hugging Face token
+    # --- STT (ses → metin) --- (#15; sağlayıcılar `app/stt/`)
+    # faster_whisper: yerel, CPU'da çalışır (`stt` ekstrası). openai_compatible: Whisper API'si
+    # (ör. Groq). stub: ses yanındaki .txt dosyasını okur; STT kurulmadan zinciri denemek için.
+    stt_provider: Literal["faster_whisper", "openai_compatible", "stub"] = "faster_whisper"
+    stt_language: str = "tr"
+    # Konuşmacı ayrımı: santral kaydı stereo ise her kanal bir konuşmacıdır (temsilci sol/sağ).
+    # Mono kayıtta konuşmacı ayrılamaz ("unknown"); model tabanlı ayrım sonraki adımdır.
+    stt_channel_layout: Literal["mono", "stereo_rep_left", "stereo_rep_right"] = "mono"
+    whisper_model: str = "small"  # CPU için small/medium; GPU varsa large-v3
+    whisper_compute_type: str = "int8"  # CPU: int8; GPU varsa float16
+    whisper_cpu_threads: int = Field(default=0, ge=0)  # 0: otomatik
+    whisper_beam_size: int = Field(default=5, ge=1)
+    stt_api_base_url: str = "https://api.groq.com/openai/v1"
+    stt_api_key: SecretStr | None = None
+    stt_api_model: str = "whisper-large-v3"
+    stt_timeout_s: float = 300.0
 
-    # --- RAG / Embedding ---
-    embedding_provider: Literal["tei", "openai_compatible"] = "tei"
+    # --- RAG / Embedding --- (#26; sağlayıcılar `app/rag/embedders.py`)
+    # tei: bge-m3, Docker'da TEI servisi (CPU; infra/docker-compose.yml, "rag" profili).
+    # openai_compatible: embedding API'si. hash: modelsiz, kelime tabanlı (test ve geliştirme).
+    embedding_provider: Literal["tei", "openai_compatible", "hash"] = "tei"
     embedding_model: str = "BAAI/bge-m3"
-    embedding_dim: int = 1024
+    embedding_dim: int = 1024  # rag_chunks.embedding sütunuyla aynı olmalı
     tei_url: str = "http://localhost:8080"
+    embedding_base_url: str | None = None  # openai_compatible için
+    embedding_api_key: SecretStr | None = None
+    embedding_timeout_s: float = 60.0
+    embedding_batch_size: int = Field(default=16, ge=1)
 
     # --- Türetilmiş değerler ---
     def llm_model_for(self, agent_name: str, tier: Literal["fast", "smart"]) -> str | None:
@@ -111,14 +134,6 @@ class Settings(BaseSettings):
         return self.celery_result_backend or self.redis_url
 
     @property
-    def jwks_url(self) -> str | None:
-        if self.supabase_jwks_url:
-            return self.supabase_jwks_url
-        if self.supabase_url:
-            return f"{self.supabase_url.rstrip('/')}/auth/v1/.well-known/jwks.json"
-        return None
-
-    @property
     def is_production(self) -> bool:
         return self.app_env == "prod"
 
@@ -127,6 +142,15 @@ class Settings(BaseSettings):
         # Güvenlik: kimlik doğrulama atlatma yalnızca yerel geliştirme ve testte açılabilir.
         if self.auth_dev_bypass and self.app_env not in ("local", "test"):
             raise ValueError("AUTH_DEV_BYPASS yalnızca APP_ENV=local veya test iken açılabilir.")
+        return self
+
+    @model_validator(mode="after")
+    def _guard_service_key(self) -> "Settings":
+        # Güvenlik: canlıda boş veya örnek dosyadaki varsayılan servis anahtarı kullanılamaz.
+        if self.is_production and not self.auth_dev_bypass:
+            key = self.service_api_key.get_secret_value() if self.service_api_key else ""
+            if len(key) < 32 or key == PLACEHOLDER_SERVICE_KEY:
+                raise ValueError("SERVICE_API_KEY canlıda en az 32 karakterli, özel olmalıdır.")
         return self
 
 

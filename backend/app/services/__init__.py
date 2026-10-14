@@ -2,5 +2,5 @@
 
 HTTP bilmez; hata durumunda app.core.errors hatalarını fırlatır.
 
-Sıradakiler: call_service, analysis_service, dashboard_service.
+Mevcut: call_ingest, audio_ingest, analysis_store, call_reader, analytics_service.
 """

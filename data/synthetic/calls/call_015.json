@@ -1,0 +1,73 @@
+{
+  "call_id": "call_015",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, sizi ilk defa arıyorum. Pendik'te teknem var, kışa hazırlık için hangi hizmetleri veriyorsunuz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Hoş geldiniz. Teknenizin modeli ve motoru nedir?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Maviş, Beneteau Antares 9, tek dıştan takma değil, içten dizel motorlu."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kış bakımı paketimizde motor kışlama, yağ ve filtre değişimi, antifriz ve akü bakımı var. Karaya çekme isteğe bağlı."
+    },
+    {
+      "speaker": "customer",
+      "text": "Karaya çekmeden de yapılıyor mu?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, suda da yapılır ama karaya çekilirse karina kontrolü de eklenir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Fiyatlar nasıl?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Suda kış bakımı paketi yirmi sekiz bin lira, karaya çekmeli kırk bin lira civarında."
+    },
+    {
+      "speaker": "customer",
+      "text": "Anlıyorum. Siz mi ödeme planı yapıyorsunuz, yoksa peşin mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Üç taksit yapabiliyoruz, taksitli fiyat biraz farklı."
+    },
+    {
+      "speaker": "customer",
+      "text": "Önce ortağıma da soracağım, tekne ortak. Bir hafta içinde karar veririm."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii, acele yok. Sezon başı yoğunluğu için kasım ortasına kadar yer ayırtmanızı öneririm."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki, kaydımı alıp beni arayabilir misiniz? Ben şu an karar veremem."
+    },
+    {
+      "speaker": "rep",
+      "text": "Elbette, üç gün sonra sizi ben arayayım, sorularınıza yanıt vereyim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok iyi olur, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hoş geldiniz, iyi günler."
+    }
+  ]
+}

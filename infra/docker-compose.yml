@@ -34,5 +34,18 @@ services:
       timeout: 3s
       retries: 10
 
+  # Miço AI araması için embedding servisi (bge-m3, CPU). İsteğe bağlı: "rag" profiliyle açılır.
+  #   docker compose -f infra/docker-compose.yml --profile rag up -d
+  # İlk açılışta model indirilir (~2,3 GB); `hf-cache` volume'unda saklanır.
+  embeddings:
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.7
+    profiles: ["rag"]
+    command: ["--model-id", "BAAI/bge-m3", "--max-client-batch-size", "64"]
+    ports:
+      - "8080:80"
+    volumes:
+      - hf-cache:/data
+
 volumes:
   pgdata:
+  hf-cache:

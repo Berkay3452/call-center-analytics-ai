@@ -2,7 +2,8 @@
 
 Kullanım (backend/ klasöründe, .env'de LLM ayarları dolu olmalı):
 
-    python -m scripts.evaluate                                  # 10 çağrının hepsi
+    python -m scripts.evaluate                                  # çağrıların hepsi
+    python -m scripts.evaluate --split test                     # 20 çağrılık dokunulmaz küme
     python -m scripts.evaluate --calls call_001,call_004        # seçili çağrılar
     python -m scripts.evaluate --fast <model> --smart <model>   # .env'deki modelleri ez
     python -m scripts.evaluate --out sonuc.json                 # ham sonuçları da kaydet
@@ -176,6 +177,11 @@ def report(rows: list[dict[str, Any]], settings: Settings) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--calls", help="virgülle ayrılmış çağrı kimlikleri (varsayılan: hepsi)")
+    parser.add_argument(
+        "--split",
+        choices=["gelistirme", "test"],
+        help="yalnızca bu kümedeki çağrılar (test kümesi prompt ayarında kullanılmaz)",
+    )
     parser.add_argument("--fast", help="hızlı model adı (.env'i ezer)")
     parser.add_argument("--smart", help="güçlü model adı (.env'i ezer)")
     parser.add_argument("--out", help="ham sonuçların yazılacağı JSON dosyası")
@@ -189,6 +195,13 @@ def main() -> None:
     settings = Settings(**overrides)
 
     available = sorted(p.stem for p in (DATA / "calls").glob("call_*.json"))
+    if args.split:
+        in_split = {
+            m["call_id"]
+            for m in json.loads((DATA / "calls_meta.json").read_text(encoding="utf-8"))
+            if m.get("split") == args.split
+        }
+        available = [c for c in available if c in in_split]
     call_ids = args.calls.split(",") if args.calls else available
 
     rows = asyncio.run(run(call_ids, settings))

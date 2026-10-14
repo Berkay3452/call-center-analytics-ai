@@ -53,12 +53,21 @@ export default async function CallsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Çağrılar & Analizler</h1>
           <p className="text-sm text-gray-500">
             Tüm marinalardan gelen sesli görüşmeler ve yapay zekâ analiz sonuçları
           </p>
+        </div>
+        <div>
+          <Link
+            href="/admin/calls/upload"
+            className="inline-flex items-center gap-2 rounded-xl bg-sky-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-sky-700 active:scale-[0.98] transition-all"
+          >
+            <span>🎙️</span>
+            <span>+ Yeni Çağrı Yükle</span>
+          </Link>
         </div>
       </div>
 
@@ -108,12 +117,18 @@ export default async function CallsPage() {
                 </td>
                 {/* Analiz Durumu Sütunu */}
                 <td className="px-4 py-3">
-                  <span
-                    className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${ANALYSIS_STATUS_BADGE[call.analysisStatus]}`}
-                  >
-                    {ANALYSIS_STATUS_ICON[call.analysisStatus]}{" "}
-                    {labelOf(ANALYSIS_STATUS_LABELS, call.analysisStatus)}
-                  </span>
+                  {call.pendingState ? (
+                    <span className="inline-flex items-center gap-1 rounded-full border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-xs font-semibold text-sky-700">
+                      ⏳ {call.pendingState === "beklemede" ? "Sırada" : "İşleniyor"}
+                    </span>
+                  ) : (
+                    <span
+                      className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${ANALYSIS_STATUS_BADGE[call.analysisStatus]}`}
+                    >
+                      {ANALYSIS_STATUS_ICON[call.analysisStatus]}{" "}
+                      {labelOf(ANALYSIS_STATUS_LABELS, call.analysisStatus)}
+                    </span>
+                  )}
                 </td>
                 <td className="px-4 py-3 text-sm">
                   {call.sales.outcome === "satisa_donustu" && (

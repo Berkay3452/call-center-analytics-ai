@@ -19,12 +19,13 @@ export type CallType =
   | "bilgi";
 
 export type RequestCategory =
-  | "motor_arizasi"
-  | "elektrik_arizasi"
-  | "yakit_sistemi"
-  | "govde_ve_kil"
-  | "periyodik_bakim"
-  | "kis_bakimi"
+  | "makine"
+  | "mekanik_hidrolik"
+  | "elektrik_elektronik"
+  | "su_sihhi_tesisat"
+  | "iklimlendirme"
+  | "tekne_guvenligi"
+  | "temizlik_bakim"
   | "diger";
 
 export type ServiceMode =
@@ -84,12 +85,13 @@ export const CALL_TYPE_LABELS: Record<CallType, string> = {
 };
 
 export const REQUEST_CATEGORY_LABELS: Record<RequestCategory, string> = {
-  motor_arizasi: "Motor arızası",
-  elektrik_arizasi: "Elektrik arızası",
-  yakit_sistemi: "Yakıt sistemi",
-  govde_ve_kil: "Gövde ve kıl bakımı",
-  periyodik_bakim: "Periyodik bakım",
-  kis_bakimi: "Kış bakımı",
+  makine: "Makine",
+  mekanik_hidrolik: "Mekanik & Hidrolik",
+  elektrik_elektronik: "Elektrik & Elektronik",
+  su_sihhi_tesisat: "Su & Sıhhi Tesisat",
+  iklimlendirme: "İklimlendirme & Havalandırma",
+  tekne_guvenligi: "Tekne Güvenlik Hizmetleri",
+  temizlik_bakim: "Temizlik & Tekne Bakımı",
   diger: "Diğer",
 };
 
@@ -185,6 +187,8 @@ export interface Call {
   urgency: Urgency | null;
   location: string | null;
   analysisStatus: AnalysisStatus;
+  /** Analiz henüz bitmediyse süreç aşaması (beklemede, yaziya_cevriliyor, isleniyor). */
+  pendingState?: "beklemede" | "yaziya_cevriliyor" | "isleniyor";
   transcript: string;
   summary: string;
   keyPoints?: string[];

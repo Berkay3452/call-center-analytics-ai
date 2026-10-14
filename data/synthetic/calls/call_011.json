@@ -1,0 +1,81 @@
+{
+  "call_id": "call_011",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, ben [İSİM]. Size nasıl yardımcı olabilirim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Tuzla Marina'daki trawler teknemin navigasyon ekranı sürekli donuyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geçmiş olsun. Teknenizin adı nedir?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yakamoz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tamam. Ekran ne zaman donuyor, seyir sırasında mı yoksa motor çalışırken demirde de oluyor mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Daha çok motor çalışırken. Bir iki dakika donuyor, sonra kendiliğinden yeniden başlıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Harita da gidiyor mu, yoksa yalnızca ekran mı donuyor?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Ekran donuyor, harita ve rota gidiyor, geri gelince ayar kalıyor ama sinir bozucu."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anladım. Motor çalışırken voltaj dalgalanması ya da gevşek bir besleme kablosu olabilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bence de, geçen ay aküleri de değiştirmiştim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Peki, tekne kullanılabilir durumda mı, acil bir risk var mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yok, seyre çıkabiliyorum, sadece güvenmiyorum bu haliyle."
+    },
+    {
+      "speaker": "rep",
+      "text": "O zaman acil değil ama bu hafta içinde baktırmakta fayda var. Ustamız besleme hattını ve bağlantıları kontrol eder."
+    },
+    {
+      "speaker": "customer",
+      "text": "Olur. Bu hafta içinde uygun gün var mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Cuma sabah ustamızı Tuzla Marina'ya gönderebilirim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Cuma sabah olur, ben teknede olacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Randevunuzu oluşturuyorum, ustamız gelmeden önce sizi arayacak."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, iyi çalışmalar."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederim, iyi günler."
+    }
+  ]
+}

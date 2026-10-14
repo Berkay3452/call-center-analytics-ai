@@ -1,6 +1,15 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { fetchCallById, fetchCalls } from "@/lib/api";
+import { getCallById, getCalls } from "@/lib/api/client";
+import { isApiError } from "@/lib/api/errors";
+import type {
+  CallDetail,
+  Urgency,
+  CallType,
+  RequestCategory,
+  ServiceMode,
+  NextAction,
+} from "@/lib/api/types";
 import { PlaceholderCard } from "@/components/PlaceholderCard";
 import {
   CALL_TYPE_LABELS,
@@ -10,7 +19,6 @@ import {
   REQUEST_CATEGORY_LABELS,
   SERVICE_MODE_LABELS,
   URGENCY_LABELS,
-  type Urgency,
 } from "@/lib/types";
 
 interface Props {
@@ -18,8 +26,12 @@ interface Props {
 }
 
 export async function generateStaticParams() {
-  const calls = await fetchCalls();
-  return calls.map((c) => ({ id: c.id }));
+  try {
+    const res = await getCalls();
+    return res.items.map((c) => ({ id: c.id }));
+  } catch {
+    return [{ id: "11111111-1111-4111-8111-111111111111" }];
+  }
 }
 
 export async function generateMetadata({ params }: Props) {
@@ -36,12 +48,31 @@ const URGENCY_COLOR: Record<Urgency, { bg: string; text: string; border: string 
 
 export default async function CallDetailPage({ params }: Props) {
   const { id } = await params;
-  const call = await fetchCallById(id);
+  let call: CallDetail | null = null;
+
+  try {
+    call = await getCallById(id);
+  } catch (err) {
+    // Yalnızca "kayıt yok" 404'tür; sunucu/ağ hatası gizlenmez (hata sayfasına düşer).
+    if (isApiError(err) && err.status === 404) notFound();
+    throw err;
+  }
 
   if (!call) notFound();
 
+  const crm = call.analysis?.crm;
+  const sales = call.analysis?.sales;
+  const summary = call.analysis?.summary;
+  const classification = call.analysis?.classification;
+  const durationSec = call.duration_s ?? 0;
+
   // Aciliyet çıkarılamadıysa (null) nötr renk kullanılır.
-  const urgencyStyle = call.crm.urgency ? URGENCY_COLOR[call.crm.urgency] : URGENCY_COLOR.dusuk;
+  const urgency = crm?.urgency;
+  const urgencyStyle = urgency ? URGENCY_COLOR[urgency] : URGENCY_COLOR.dusuk;
+  const callType = classification?.call_type;
+  const inProgress =
+    call.state === "beklemede" || call.state === "yaziya_cevriliyor" || call.state === "isleniyor";
+  const analysisStatus = call.analysis?.status ?? (call.state === "basarisiz" ? "basarisiz" : "kismi");
 
   return (
     <div className="space-y-6">
@@ -55,29 +86,36 @@ export default async function CallDetailPage({ params }: Props) {
         </Link>
 
         <div className="flex items-center gap-2">
-          {call.analysisStatus === "kismi" && (
+          {inProgress && (
+            <span className="inline-flex items-center rounded-md bg-sky-50 px-2.5 py-1 text-xs font-semibold text-sky-800 border border-sky-200">
+              ⏳ Analiz sürüyor
+            </span>
+          )}
+          {!inProgress && analysisStatus === "kismi" && (
             <span className="inline-flex items-center rounded-md bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-800 border border-amber-200">
               ⚠️ Kısmi Analiz — Eksik Bilgi Mevcut
             </span>
           )}
-          {call.analysisStatus === "basarisiz" && (
+          {!inProgress && analysisStatus === "basarisiz" && (
             <span className="inline-flex items-center rounded-md bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-800 border border-red-200">
               ✕ Analiz Başarısız — Transkript Eksik
             </span>
           )}
-          {call.analysisStatus === "tamam" && (
+          {!inProgress && analysisStatus === "tamam" && (
             <span className="inline-flex items-center rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800 border border-emerald-200">
               ✓ Analiz Tamamlandı
             </span>
           )}
-          {call.urgency === "acil" && (
+          {urgency === "acil" && (
             <span className="inline-flex items-center rounded-md bg-red-100 px-2.5 py-1 text-xs font-bold text-red-700 border border-red-300 animate-pulse">
               🚨 ACİL SERVİS
             </span>
           )}
-          <span className="inline-flex rounded-md bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700">
-            {labelOf(CALL_TYPE_LABELS, call.callType)}
-          </span>
+          {callType && (
+            <span className="inline-flex rounded-md bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700">
+              {labelOf(CALL_TYPE_LABELS, callType as CallType)}
+            </span>
+          )}
         </div>
       </div>
 
@@ -86,17 +124,17 @@ export default async function CallDetailPage({ params }: Props) {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-xl font-bold text-gray-900">
-              {call.caller} — {call.boatName || "Tekne Bilgisi Yok"}
+              {call.customer_name ?? "İsimsiz Müşteri"} — {call.boat_name || "Tekne Bilgisi Yok"}
             </h1>
             <p className="mt-1 text-xs text-gray-500">
-              {call.callerPhone} • {call.boatModel || ""} • {call.location} •{" "}
-              {new Date(call.startedAt).toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" })}
+              {call.customer_phone ?? "Telefon Yok"} • {call.boat_model || "Model Belirtilmedi"} • {call.marina ?? "Marina Belirtilmedi"} •{" "}
+              {new Date(call.started_at).toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" })}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs text-gray-500">Analiz Güveni:</span>
             <span className="text-sm font-bold text-emerald-600">
-              %{Math.round(call.sales.confidence * 100)}
+              %{Math.round((sales?.confidence ?? 0) * 100)}
             </span>
           </div>
         </div>
@@ -113,8 +151,8 @@ export default async function CallDetailPage({ params }: Props) {
                 Ses Kaydı & Dalga Formu
               </h2>
               <span className="text-xs font-mono text-gray-500">
-                {Math.floor(call.durationSec / 60)}:
-                {String(call.durationSec % 60).padStart(2, "0")}
+                {Math.floor(durationSec / 60)}:
+                {String(durationSec % 60).padStart(2, "0")}
               </span>
             </div>
 
@@ -145,9 +183,9 @@ export default async function CallDetailPage({ params }: Props) {
               Konuşma Transkripti (Ayrıştırılmış)
             </h2>
 
-            {call.transcript ? (
+            {call.transcript?.text ? (
               <div className="space-y-3">
-                {call.transcript.split("\n").map((line, idx) => {
+                {call.transcript.text.split("\n").map((line, idx) => {
                   const isCustomer = line.startsWith("Müşteri:");
                   const text = line.replace(/^(Müşteri:|Temsilci:)\s*/, "");
 
@@ -185,10 +223,12 @@ export default async function CallDetailPage({ params }: Props) {
 
           {/* AI Görüşme Özeti */}
           <PlaceholderCard title="AI Görüşme Özeti & Önemli Noktalar">
-            <p className="text-sm text-gray-800 leading-relaxed">{call.summary}</p>
-            {call.keyPoints && call.keyPoints.length > 0 && (
+            <p className="text-sm text-gray-800 leading-relaxed">
+              {summary?.summary ?? "Özet hazırlanıyor..."}
+            </p>
+            {summary?.key_points && summary.key_points.length > 0 && (
               <ul className="mt-3 list-inside list-disc space-y-1 text-xs text-gray-600">
-                {call.keyPoints.map((point, i) => (
+                {summary.key_points.map((point, i) => (
                   <li key={i}>{point}</li>
                 ))}
               </ul>
@@ -220,7 +260,7 @@ export default async function CallDetailPage({ params }: Props) {
                   1. Müşteri Talebi (Kategori)
                 </span>
                 <span className="mt-0.5 block text-sm font-semibold text-gray-900">
-                  {labelOf(REQUEST_CATEGORY_LABELS, call.crm.requestCategory)}
+                  {labelOf(REQUEST_CATEGORY_LABELS, crm?.request_category as RequestCategory | null | undefined)}
                 </span>
               </div>
 
@@ -230,7 +270,7 @@ export default async function CallDetailPage({ params }: Props) {
                   2. Marina / Lokasyon
                 </span>
                 <span className="mt-0.5 block text-sm font-semibold text-gray-900">
-                  📍 {call.crm.location ?? EMPTY_LABEL}
+                  📍 {crm?.location ?? EMPTY_LABEL}
                 </span>
               </div>
 
@@ -240,7 +280,7 @@ export default async function CallDetailPage({ params }: Props) {
                   3. Problem Tanımı
                 </span>
                 <p className="mt-0.5 text-sm text-gray-800">
-                  {call.crm.problem ?? EMPTY_LABEL}
+                  {crm?.problem ?? EMPTY_LABEL}
                 </p>
               </div>
 
@@ -250,7 +290,7 @@ export default async function CallDetailPage({ params }: Props) {
                   4. Talep / Hizmet Biçimi
                 </span>
                 <span className="mt-0.5 block text-sm font-semibold text-gray-900">
-                  ⚙️ {labelOf(SERVICE_MODE_LABELS, call.crm.serviceMode)}
+                  ⚙️ {labelOf(SERVICE_MODE_LABELS, crm?.service_mode as ServiceMode | null | undefined)}
                 </span>
               </div>
 
@@ -260,8 +300,8 @@ export default async function CallDetailPage({ params }: Props) {
                   5. Aciliyet Seviyesi
                 </span>
                 <span className={`mt-0.5 block text-sm font-bold ${urgencyStyle.text}`}>
-                  {call.crm.urgency === "acil" && "🚨 "}
-                  {labelOf(URGENCY_LABELS, call.crm.urgency)}
+                  {crm?.urgency === "acil" && "🚨 "}
+                  {labelOf(URGENCY_LABELS, crm?.urgency as Urgency | null | undefined)}
                 </span>
               </div>
 
@@ -271,7 +311,7 @@ export default async function CallDetailPage({ params }: Props) {
                   6. Doğacak Potansiyel İş
                 </span>
                 <span className="mt-0.5 block text-sm font-semibold text-gray-900">
-                  💼 {call.crm.potentialJob ?? EMPTY_LABEL}
+                  💼 {crm?.potential_job ?? EMPTY_LABEL}
                 </span>
               </div>
 
@@ -281,19 +321,19 @@ export default async function CallDetailPage({ params }: Props) {
                   7. Önerilen Sonraki Aksiyon
                 </span>
                 <span className="mt-0.5 block text-sm font-bold text-sky-900">
-                  📋 {labelOf(NEXT_ACTION_LABELS, call.crm.nextAction)}
+                  📋 {labelOf(NEXT_ACTION_LABELS, crm?.next_action as NextAction | null | undefined)}
                 </span>
               </div>
             </div>
 
             {/* Kanıt Alıntıları */}
-            {call.crm.evidence && Object.keys(call.crm.evidence).length > 0 && (
+            {crm?.evidence && Object.keys(crm.evidence).length > 0 && (
               <div className="mt-4 rounded-lg bg-amber-50/50 p-3 border border-amber-200/60">
                 <span className="block text-[11px] font-semibold text-amber-800 uppercase mb-1">
                   🔍 Konuşmadan Kanıt Alıntıları
                 </span>
                 <div className="space-y-1 text-xs text-amber-900">
-                  {Object.entries(call.crm.evidence).map(([key, val]) => (
+                  {Object.entries(crm.evidence).map(([key, val]) => (
                     <div key={key}>
                       <span className="font-semibold text-amber-700">{key}:</span> &ldquo;{val}&rdquo;
                     </div>

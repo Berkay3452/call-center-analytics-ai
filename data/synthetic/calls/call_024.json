@@ -1,0 +1,73 @@
+{
+  "call_id": "call_024",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, ben [İSİM]. Buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, teknemin hidroforu kendi kendine sürekli çalışıyor, musluk kapalıyken bile."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geçmiş olsun. Tekne adı ve marina?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Karayel, Tuzla Marina."
+    },
+    {
+      "speaker": "rep",
+      "text": "Sıcak su ısıtıcısı da var mı, su kaybı görüyor musunuz? Sintinede su birikmesi var mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Sintine kuru ama hidrofor on beş saniyede bir devreye giriyor, ses de yapıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Basınç şalteri ya da bir bağlantıdaki küçük sızıntı olabilir. Su tankı seviyesi düşüyor mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, bir haftada yarıdan fazlası bitiyor, normalde bu kadar gitmezdi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Demek ki bir yerden sızıntı var. Acil değil ama tankınız boşalmadan baktırmalısınız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Anladım. Ne zaman gelebilir?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yarın öğleden sonra Tuzla'da bir ustamız var, uygun mudur?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Uygun, ben teknede olacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Randevunuzu oluşturuyorum, hidrofor şalterini ve su hatlarını kontrol edecek."
+    },
+    {
+      "speaker": "customer",
+      "text": "Parça gerekirse yanında olur mu?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Şalter ve fitil gibi sık kullanılan parçalar yanında olur."
+    },
+    {
+      "speaker": "customer",
+      "text": "Harika, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dilerim."
+    }
+  ]
+}

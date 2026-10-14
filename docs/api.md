@@ -1,0 +1,122 @@
+# API Sözleşmesi
+
+**Issue:** #46 · **Şemalar:** `backend/app/schemas/api.py` (+ `analysis.py`, `assistant.py`, `common.py`) · **Frontend tipleri:** `frontend/lib/api-types.ts` · **Örnekler:** `docs/ornekler/api/` · **Tarih:** 2026-10-13
+
+Bu dosya Python AI servisinin dışa açtığı uçların sözleşmesidir. Backend uçları (#48, #49, #51, #52, #28) ve arayüz ekranları (#10, #29, #53, #54) **bu şemalara göre** yazılır. Şema değişecekse önce bu dosya, `api.py` ve `api-types.ts` birlikte güncellenir; `backend/tests/test_api_contract.py` üçünün ve örnek JSON'ların uyumunu denetler.
+
+## 1. Genel kurallar
+
+| Konu | Kural |
+|---|---|
+| Önek | Tüm uçlar `/api/v1` altındadır. |
+| Alan adları | snake_case (backend ile aynı). Arayüz kendi tiplerine (`lib/types.ts`) `lib/api.ts` içinde çevirir. |
+| Tarih/saat | ISO 8601, saat dilimli (UTC): `2026-10-12T09:05:00Z`. Gün: `2026-10-12`. |
+| Boş bilgi | Konuşmada geçmeyen alan `null` gelir, uydurulmaz. Arayüz "—" gösterir. |
+| Enum değerleri | `docs/enums.md` listeleri; ekranda Türkçe karşılık `lib/types.ts` etiketlerinden. |
+| Sayfalama | Liste uçları `Page` döner: `items`, `total`, `page`, `page_size` (en fazla 100). |
+| Hata | Her hata `ErrorResponse` biçimindedir: `error.code`, `error.message`, `error.details`, `error.request_id`. |
+
+## 2. Kimlik doğrulama (#24)
+
+Servisi yalnızca Miço Usta .NET uygulaması çağırır; tarayıcı doğrudan çağırmaz (geliştirmede Next.js sunucu tarafı çağırır).
+
+| Başlık | Ne zaman | Açıklama |
+|---|---|---|
+| `X-Service-Key` | Her istekte | Paylaşılan servis anahtarı. Eksik/yanlışsa 401. |
+| `X-User-Id` | Tekne sahibi uçlarında zorunlu | Oturumdaki tekne sahibinin kimliği (UUID, `customers.id`). Eksikse veya UUID değilse 400. |
+
+Admin/tekne sahibi rol ayrımını .NET uygulaması yapar. Tekne sahibi uçları **yalnızca** `X-User-Id`'deki kişinin verisini döndürür; gövdede kimlik alınmaz.
+
+## 3. Uç listesi
+
+| Yöntem ve yol | Kim | Gövde / parametre | Yanıt | Issue |
+|---|---|---|---|---|
+| `GET /calls` | Admin | `CallFilters` (sorgu) | `Page` of `CallListItem` | #51 |
+| `GET /calls/{call_id}` | Admin | — | `CallDetail` | #51 |
+| `GET /crm` | Admin | `CallFilters` (sorgu) | `Page` of `CrmRecordItem` | #51 |
+| `GET /analytics/summary` | Admin | `PeriodFilter` (sorgu) | `KpiSummary` | #52 |
+| `POST /calls` | Admin | `CallCreate` (JSON) | 202 `CallAccepted` | #48 |
+| `POST /calls/audio` | Admin | multipart: `file` (wav/mp3/m4a/ogg/flac/aac/webm, en fazla 25 MB) + `AudioCallMeta` alanları | 202 `CallAccepted`; aynı ses daha önce yüklendiyse 409 (`details.call_id`) | #49 |
+| `POST /calls/{call_id}/analyze` | Admin | — | 202 `CallAccepted` (yeni analiz sürümü) | #48 |
+| `GET /calls/{call_id}/status` | Admin | — | `CallStatus` | #48 |
+| `POST /chat/messages` | Tekne sahibi | `ChatQuestion` | `ChatReply` | #28 |
+| `POST /chat/messages/stream` | Tekne sahibi | `ChatQuestion` | SSE akışı (`ChatStreamEvent`, bkz. §4) | #28 |
+| `GET /chat/sessions` | Tekne sahibi | — | `ChatSessionOut` listesi (yeniden eskiye) | #28 |
+| `GET /chat/sessions/{session_id}` | Tekne sahibi | — | `ChatSessionDetail` | #28 |
+
+Başka kullanıcının sohbet oturumu istenirse 404 döner (varlığı da sızdırılmaz).
+
+## 4. Şemalar
+
+### Çağrılar
+- `CallListItem`: liste satırı. Santral bilgisi + en son analizden `call_type`, `request_category`, `urgency`, `sales_outcome`, `summary`. Analiz yoksa bu alanlar `null`.
+- `CallDetail`: çağrı, `TranscriptOut` (metin + `TranscriptSegmentOut` listesi; kişisel veriler maskeli) ve en son analiz `AnalysisOut`.
+- `AnalysisOut`: bir analiz sürümü. Agent çıktıları `CallClassification`, `CrmExtraction`, `SalesAnalysis`, `CallSummary`; agent kayıtları `AgentRun`. Başarısız agent'ın alanı `null`, nedeni `errors`'ta.
+- `CallFilters`: `date_from`, `date_to`, `call_type`, `urgency`, `request_category`, `state`, `q` (müşteri/tekne/marina adında arama), `page`, `page_size`.
+
+### Çağrı durumu (`CallState`)
+| Değer | Anlamı |
+|---|---|
+| `beklemede` | Kuyrukta |
+| `yaziya_cevriliyor` | Ses STT ile yazıya çevriliyor (yalnızca sesli çağrı) |
+| `isleniyor` | Agent'lar çalışıyor |
+| `tamam` / `kismi` / `basarisiz` | Analiz sonucu (`AnalysisStatus` ile aynı) |
+
+Arayüz `GET /calls/{id}/status` ile durumu 2–3 saniyede bir sorar; `tamam`, `kismi` veya `basarisiz` gelince durur.
+
+> `calls.state` ve `calls.error` sütunları #48 ile eklendi; seed verisindeki analizli çağrılar `tamam` durumundadır.
+
+### CRM önerileri
+- `CrmRecordItem`: hocanın 7 alanı (`request_category`, `location`, `problem`, `service_mode`, `urgency`, `potential_job`, `next_action`), alıntılar (`evidence`) ve kaynağı olan çağrı. Her çağrının en son analiz sürümünden gelir.
+
+### Çağrı alma
+- `CallCreate`: sesi olmayan çağrı (geliştirme ve sentetik veri için). `transcript` (düz metin) veya `SegmentIn` listesinden biri zorunlu.
+- `AudioCallMeta`: sesli çağrının form alanları (`CallCreate` ile aynı, transkript hariç). Akış: ses kaydedilir → `yaziya_cevriliyor` (STT) → `isleniyor` (agent'lar) → sonuç. STT hata verirse `POST /calls/{id}/analyze` yeniden yazıya çevirmeyi başlatır.
+- `CallAccepted`: oluşturulan çağrının kimliği, durumu ve arka plan görevinin kimliği.
+- `CallStatus`: anlık durum, biten son analiz sürümü, hata.
+
+### KPI
+- `KpiSummary`: dönem, toplam/analiz edilen çağrı, çağrı tiplerine göre sayılar, `converted_sales` ve `conversion_rate`, `lost_by_reason`, `top_problems` ve `busiest_marinas` (`CountItem`), `by_category`, `by_urgency`, `daily_calls` (`DailyCount`; boş gün 0), `avg_answer_delay_s`.
+- `PeriodFilter`: `date_from`, `date_to`; boşsa son 30 gün. Sayılar her çağrının **en son** analiz sürümünden hesaplanır; LLM kullanılmaz.
+
+### Miço AI sohbeti
+- `ChatQuestion`: `question` ve isteğe bağlı `session_id` (boşsa yeni oturum, başlık ilk sorudan).
+- `ChatReply`: kaydedilen soru ve cevap (`ChatMessageOut`). Cevapta `question_type`, `sources` (`SourceRef` kaynak kartları) ve `found` (false ise "bulamadım" durumu).
+- `ChatSessionOut`, `ChatSessionDetail`: oturum listesi ve geçmiş.
+- `StatusEvent`, `DeltaEvent`, `DoneEvent`, `ErrorEvent`: akış olayları (`ChatStreamEvent`).
+- **Akışlı cevap:** arayüz `POST /chat/messages/stream` kullanır (Server-Sent Events, `text/event-stream`); `POST /chat/messages` aynı cevabı tek seferde döner (test ve yedek). Her olay `event: <tür>` ve `data: <JSON>` satırlarıdır, olaylar boş satırla ayrılır. Sıra:
+  1. `StatusEvent` (`araniyor`, `dogrulaniyor`): arayüz "Kayıtlar aranıyor…" gibi durum gösterir.
+  2. `DeltaEvent`: cevap metninin parçaları; arayüz sırayla birleştirir (yazma efekti).
+  3. `DoneEvent`: kaydedilen soru/cevap (`ChatReply`), kaynak kartları ve `found`. Arayüz kaynak kartlarını bu olayda çizer.
+  4. Hata olursa `ErrorEvent`; akış kapanır.
+  Metin, **kaynak kontrolü bittikten sonra** akıtılır: desteklenmeyen iddia cevaptan düşürüldüğü için ekrandaki cümle sonradan silinmez. Akış koparsa arayüz `GET /chat/sessions/{id}` ile kayıtlı cevabı alabilir.
+
+## 5. Frontend bağlantısı (#10)
+
+- **OpenAPI belgesi:** `frontend/openapi.json` (tek kopya). TypeScript tipleri `npm run gen:api` ile `frontend/lib/api/schema.ts` içine üretilir. Alan listesi backend şemalarıyla uyumlu kalsın diye `test_api_contract.py` karşılaştırır.
+- **Mock/gerçek geçişi:** `NEXT_PUBLIC_USE_MOCKS=true` iken `frontend/mocks/` (örneklerin kopyası), `false` iken gerçek servis. Ayarlar `frontend/.env.example` dosyasında.
+- **Servis anahtarı tarayıcıya verilmez.** Sunucu bileşenleri servisi `API_URL` ile doğrudan çağırır; tarayıcıdaki kod `/api/backend/...` vekil uç noktasından geçer ve anahtarı (`SERVICE_KEY`) orası ekler.
+
+## 6. Örnekler
+
+| Dosya | Şema |
+|---|---|
+| `cagri_listesi.json` | `Page` of `CallListItem` |
+| `cagri_detayi.json` | `CallDetail` (hocanın Tuzla Marina senaryosu) |
+| `crm_listesi.json` | `Page` of `CrmRecordItem` |
+| `kpi_ozeti.json` | `KpiSummary` |
+| `cagri_olustur_istek.json` | `CallCreate` |
+| `cagri_kabul.json` | `CallAccepted` |
+| `cagri_durumu.json` | `CallStatus` |
+| `sohbet_soru_istek.json` | `ChatQuestion` |
+| `sohbet_cevabi.json` | `ChatReply` |
+| `sohbet_oturumu.json` | `ChatSessionDetail` |
+| `sohbet_akisi.sse` | `ChatStreamEvent` dizisi (SSE biçimi) |
+
+Arayüz bu dosyaları mock olarak kullanabilir; gerçek uç gelince yalnızca `lib/api.ts` değişir.
+
+## 7. Şema değiştirirken
+1. `backend/app/schemas/api.py` (veya `analysis.py`, `assistant.py`)
+2. `frontend/lib/api-types.ts` ve `frontend/openapi.json` (sonra `npm run gen:api`)
+3. Bu dosya ve `docs/ornekler/api/` örnekleri
+4. `uv run pytest tests/test_api_contract.py`

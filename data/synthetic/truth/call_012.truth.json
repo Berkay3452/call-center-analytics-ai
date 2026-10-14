@@ -1,0 +1,18 @@
+{
+  "call_id": "call_012",
+  "call_type": "acil",
+  "crm": {
+    "request_category": "makine",
+    "location": "Kalamış Marina",
+    "problem": "Sintinede mazot kokusu ve yakıt hattı bağlantısından damlama",
+    "service_mode": "yerinde_servis",
+    "urgency": "acil",
+    "potential_job": "Acil yakıt kaçağı tespiti ve bağlantı onarımı",
+    "next_action": "usta_ata"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Yakıt kaçağı acil aciliyet kuralı. Belirti yakıt sistemi: makine. Müşteri ustayı kabul ediyor."
+}

@@ -2,7 +2,7 @@
   "call_id": "call_008",
   "call_type": "bilgi",
   "crm": {
-    "request_category": "periyodik_bakim",
+    "request_category": "makine",
     "location": "Kalamış Marina",
     "problem": null,
     "service_mode": "atolyede",
@@ -14,5 +14,5 @@
     "outcome": "beklemede",
     "loss_reason": null
   },
-  "notes": "Satışla ilgisi yok; sonuç beklemede."
+  "notes": "Satışla ilgisi yok; sonuç beklemede. Periyodik bakım ve filtre değişimi: makine. Firma iş bitince mesaj atacak: bilgi_ver."
 }

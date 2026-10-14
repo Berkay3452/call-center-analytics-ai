@@ -1,0 +1,73 @@
+{
+  "call_id": "call_023",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, teknemde servis akülerini yenilemek ve güneş paneli taktırmak istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Güzel bir yatırım. Tekne adı ve marina?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Meltem, Ataköy Marina."
+    },
+    {
+      "speaker": "rep",
+      "text": "Mevcut akü grubunuz kaç amper, ne kadar eski?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Üç adet yüz yirmi amper, yaklaşık beş yıllık. Kapasite düştü, gece buzdolabı yetmiyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Lityum geçiş de düşünebilirsiniz, ama maliyeti yüksek. AGM de olur."
+    },
+    {
+      "speaker": "customer",
+      "text": "İkisi için de fiyat alabilir miyim? Panel için de üç yüz watt civarı düşünüyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Panel için güverteye yer var mı, bimini üstüne mi koyacaksınız?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Bimini üstüne, ölçüleri atölyeden alıp size göndereyim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Olur. İki seçenekli yazılı teklif hazırlarım, montaj işçiliği dahil."
+    },
+    {
+      "speaker": "customer",
+      "text": "Montaj yerinde mi olacak?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, Ataköy'de teknede yapılır, iki gün sürer."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi. Teklifi gönderin, bakıp karar vereceğim, kış öncesi bitsin yeter."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anladım, bu hafta içinde göndereceğim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederim, iyi günler."
+    }
+  ]
+}

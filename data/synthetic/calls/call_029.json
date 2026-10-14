@@ -1,0 +1,73 @@
+{
+  "call_id": "call_029",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, yarın için alınmış randevumu teyit etmek istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tekne adı nedir?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Poseidon, Bodrum Milta Marina."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kayıtlarınıza bakıyorum. Yarın saat on bir buçukta ustamız Bodrum Milta'da olacak."
+    },
+    {
+      "speaker": "customer",
+      "text": "Saat değişmedi, değil mi? Daha önce on birde demiştiniz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, ustamızın önceki işi uzayınca yarım saat kaydırdık, size mesaj atılmıştı."
+    },
+    {
+      "speaker": "customer",
+      "text": "Mesajı görmemişim. Tamam, on bir buçuk bana uyar."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamız marinaya varınca sizi arayacak."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknede olacağım. Yanında hangi parçaları getirecek?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Randevu kaydında yalnızca genel kontrol var, parça gerekirse sonra planlanır."
+    },
+    {
+      "speaker": "customer",
+      "text": "Anladım. İskele numarası gerekir mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Kayıtta F iskelesi yazıyor, doğru mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, F iskelesi doğru."
+    },
+    {
+      "speaker": "rep",
+      "text": "Güzel. Başka sormak istediğiniz bir şey var mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Hayır, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederim, iyi günler."
+    }
+  ]
+}

@@ -30,8 +30,8 @@ def truths() -> dict[str, dict[str, Any]]:
     return {cid: load(DATA / "truth" / f"{cid}.truth.json") for cid in CALL_IDS}
 
 
-def test_ten_calls_with_matching_files() -> None:
-    assert len(CALL_IDS) == 10
+def test_thirty_calls_with_matching_files() -> None:
+    assert len(CALL_IDS) == 30
     assert (
         sorted(p.name.removesuffix(".truth.json") for p in (DATA / "truth").glob("*.json"))
         == CALL_IDS
@@ -102,21 +102,48 @@ def test_distribution_covers_every_class() -> None:
     t = truths()
 
     assert Counter(x["call_type"] for x in t.values()) == {
-        "acil": 2,
-        "servis": 3,
-        "teklif": 2,
-        "yeni_musteri": 1,
-        "bilgi": 2,
+        "acil": 4,
+        "servis": 11,
+        "teklif": 6,
+        "yeni_musteri": 4,
+        "bilgi": 5,
     }
     assert Counter(x["sales"]["outcome"] for x in t.values()) == {
-        "satisa_donustu": 4,
-        "kaybedildi": 4,
-        "beklemede": 2,
+        "satisa_donustu": 10,
+        "kaybedildi": 11,
+        "beklemede": 9,
     }
-    lost = sorted(
+    lost = Counter(
         x["sales"]["loss_reason"] for x in t.values() if x["sales"]["outcome"] == "kaybedildi"
     )
-    assert lost == ["fiyat", "gec_donus", "rakip", "takvim"]
+    # Altı kayıp nedeninin hepsi temsil ediliyor.
+    assert lost == {"fiyat": 3, "gec_donus": 2, "rakip": 2, "takvim": 2, "guven": 1, "diger": 1}
+
+
+def test_every_request_category_and_urgency_is_represented() -> None:
+    t = truths()
+
+    assert {x["crm"]["request_category"] for x in t.values()} == {
+        None,
+        "makine",
+        "mekanik_hidrolik",
+        "elektrik_elektronik",
+        "su_sihhi_tesisat",
+        "iklimlendirme",
+        "tekne_guvenligi",
+        "temizlik_bakim",
+        "diger",
+    }
+    assert {x["crm"]["urgency"] for x in t.values()} == {"dusuk", "normal", "yuksek", "acil"}
+
+
+def test_split_marks_untouchable_test_set() -> None:
+    """Geliştirme çağrıları (001-010) prompt ayarında kullanılabilir; test çağrılarına bakılmaz."""
+    split = {m["call_id"]: m["split"] for m in load(DATA / "calls_meta.json")}
+
+    assert set(split.values()) == {"gelistirme", "test"}
+    assert {c for c, v in split.items() if v == "gelistirme"} == set(CALL_IDS[:10])
+    assert len([v for v in split.values() if v == "test"]) == 20
 
 
 def test_hoca_scenario_is_first_call() -> None:
@@ -128,10 +155,25 @@ def test_hoca_scenario_is_first_call() -> None:
     assert (crm["urgency"], crm["next_action"]) == ("yuksek", "servis_randevusu_olustur")
 
 
-def test_customer_and_boat_pairs_are_unique() -> None:
-    refs = [
-        (m["customer_ref"]["customer"], m["customer_ref"]["boat"])
-        for m in load(DATA / "calls_meta.json")
-    ]
+def test_calls_have_unique_ids_and_start_times() -> None:
+    """Aynı müşteri birden çok kez arayabilir; ama iki çağrı aynı anda başlamaz."""
+    meta = load(DATA / "calls_meta.json")
 
-    assert len(set(refs)) == len(refs)
+    assert len({m["call_id"] for m in meta}) == len(meta)
+    assert len({m["started_at"] for m in meta}) == len(meta)
+
+
+def test_known_customers_use_their_own_boats() -> None:
+    """customers_boats.json'da kayıtlı müşteri, kendi teknesiyle aranmalı (CRM eşleşmesi)."""
+    known = {
+        (c["full_name"], b["name"]): (b["model"], b["marina"])
+        for c in load(DATA / "customers_boats.json")
+        for b in c["boats"]
+    }
+    names = {name for name, _ in known}
+    for m in load(DATA / "calls_meta.json"):
+        ref = m["customer_ref"]
+        if ref["customer"] in names:
+            pair = (ref["customer"], ref["boat"])
+            assert pair in known, f"{m['call_id']}: {pair} kayıtlı bir tekne değil"
+            assert known[pair] == (ref["boat_model"], ref["marina"]), m["call_id"]

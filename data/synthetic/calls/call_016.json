@@ -1,0 +1,73 @@
+{
+  "call_id": "call_016",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Pendik'te atölyede bekleyen teknem için arıyorum, motor revizyonu ne durumda?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Teknenin adı nedir?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yelkovan, Grand Banks."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kaydınıza bakıyorum. Revizyon için parça bekleniyor görünüyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Hangi parça, ne zaman gelir?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Turbo contası ve enjektör takımı. Tedarikçiden cuma günü bekleniyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Anlıyorum. Yani teknem ne zaman hazır olur?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Parça geldikten sonra iki üç iş günü montaj ve test, haftaya salı çarşamba gibi hazır olur."
+    },
+    {
+      "speaker": "customer",
+      "text": "Kesin bir tarih verebilir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Parçanın geldiğini onaylayınca netleştirip size haber vereceğim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki, haber verirseniz iyi olur, teknemi hafta sonu kullanmayı düşünüyordum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Bu hafta sonuna yetişmesi zor görünüyor, üzgünüm."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, anladım. Cuma günü parça gelince ben haber bekliyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Parça gelir gelmez size mesaj atacağım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dilerim."
+    }
+  ]
+}

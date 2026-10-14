@@ -16,12 +16,21 @@ def test_cors_origins_are_split(settings_factory: Callable[..., Settings]) -> No
     assert s.cors_origin_list == ["http://a.com", "http://b.com"]
 
 
-def test_jwks_url_derived_from_supabase_url(settings_factory: Callable[..., Settings]) -> None:
-    s = settings_factory(supabase_url="https://xyz.supabase.co/")
-    assert s.jwks_url == "https://xyz.supabase.co/auth/v1/.well-known/jwks.json"
+def test_service_api_key_stored_as_secret(settings_factory: Callable[..., Settings]) -> None:
+    s = settings_factory(service_api_key="my-secret-key")
+    assert s.service_api_key is not None
+    assert s.service_api_key.get_secret_value() == "my-secret-key"
 
 
 def test_broker_defaults_to_redis(settings_factory: Callable[..., Settings]) -> None:
     s = settings_factory(redis_url="redis://r:6379/0")
     assert s.broker_url == "redis://r:6379/0"
     assert s.result_backend_url == "redis://r:6379/0"
+
+
+def test_prod_rejects_weak_service_key(settings_factory: Callable[..., Settings]) -> None:
+    for weak in (None, "change-me-in-local-env", "kisa"):
+        with pytest.raises(ValueError):
+            settings_factory(app_env="prod", service_api_key=weak)
+    ok = settings_factory(app_env="prod", service_api_key="x" * 40)
+    assert ok.is_production

@@ -55,7 +55,7 @@ class CrmExtraction(BaseModel):
     """
 
     request_category: RequestCategory | None = Field(
-        default=None, description="Müşteri talebinin kategorisi (ör. motor arızası)."
+        default=None, description="Müşteri talebinin Miço Usta hizmet kategorisi (ör. makine)."
     )
     location: str | None = Field(
         default=None, description="Marina veya lokasyon (ör. Tuzla Marina)."
@@ -196,23 +196,49 @@ class CountItem(BaseModel):
     count: int = Field(ge=0)
 
 
+class DailyCount(BaseModel):
+    day: date
+    count: int = Field(ge=0)
+
+
 class KpiSummary(BaseModel):
-    """Çağrı Analitiği ekranının KPI kartları ve grafikleri (Sistem mimarisi v3.1 §6.1)."""
+    """Çağrı Analitiği ekranının KPI kartları ve grafikleri (Sistem mimarisi v3.1 §6.1).
+
+    Sayılar her çağrının en son analiz sürümünden hesaplanır (`GET /analytics/summary`, #52).
+    """
 
     period_start: date
     period_end: date
     total_calls: int = Field(ge=0, description="Gelen çağrı sayısı.")
+    analyzed_calls: int = Field(
+        default=0, ge=0, description="Analizi tamam veya kısmi olan çağrı sayısı."
+    )
     new_customers: int = Field(ge=0)
     service_requests: int = Field(ge=0)
     quote_requests: int = Field(ge=0)
     urgent_requests: int = Field(ge=0)
     converted_sales: int = Field(ge=0, description="Satışa dönüşen çağrı sayısı.")
+    conversion_rate: float | None = Field(
+        default=None,
+        ge=0,
+        le=1,
+        description="converted_sales / analyzed_calls; analiz yoksa None.",
+    )
     lost_by_reason: dict[LossReason, int] = Field(
         default_factory=dict, description="Kaybedilme nedenine göre sayı."
     )
     top_problems: list[CountItem] = Field(default_factory=list, description="En sık arızalar.")
     busiest_marinas: list[CountItem] = Field(
         default_factory=list, description="En yoğun marinalar."
+    )
+    by_category: dict[RequestCategory, int] = Field(
+        default_factory=dict, description="Talep kategorisine göre çağrı sayısı."
+    )
+    by_urgency: dict[Urgency, int] = Field(
+        default_factory=dict, description="Aciliyete göre çağrı sayısı."
+    )
+    daily_calls: list[DailyCount] = Field(
+        default_factory=list, description="Dönemdeki her gün için çağrı sayısı (boş gün 0)."
     )
     avg_answer_delay_s: float | None = Field(
         default=None,

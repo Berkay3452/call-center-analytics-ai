@@ -1,0 +1,435 @@
+[
+  {
+    "customer_id": "c57e2519-87f4-597e-be0c-80889768255a",
+    "customer_code": "cust_001",
+    "full_name": "Burak Çelik",
+    "phone": "+90 533 889 12 67",
+    "email": "burak.celik@example.com",
+    "marina": "Tuzla Marina",
+    "boats": [
+      {
+        "boat_id": "69dc9a93-16f8-582c-bb29-377971e819ca",
+        "boat_code": "boat_001",
+        "name": "Rüzgar",
+        "boat_type": "yelkenli",
+        "model": "Jeanneau Sun Odyssey 440",
+        "length_m": 13.39,
+        "engine": "Yanmar 4JH45 (45 HP)",
+        "year": 2021,
+        "marina": "Tuzla Marina"
+      },
+      {
+        "boat_id": "a90fc1ad-ce8f-5444-b736-d6b03b8946bd",
+        "boat_code": "boat_019",
+        "name": "Yakamoz",
+        "boat_type": "trawler",
+        "model": "Beneteau Swift Trawler 41",
+        "length_m": 13.43,
+        "engine": "2x Yanmar 8LV320 (640 HP)",
+        "year": 2020,
+        "marina": "Tuzla Marina"
+      }
+    ]
+  },
+  {
+    "customer_id": "8ff32870-b5ca-5689-a6af-3548246f014e",
+    "customer_code": "cust_002",
+    "full_name": "Fatma Kaya",
+    "phone": "+90 543 219 44 33",
+    "email": "fatma.kaya@example.com",
+    "marina": "Göcek D-Marin",
+    "boats": [
+      {
+        "boat_id": "1a2239f0-0dcc-5987-bd4f-c0d53da4c47e",
+        "boat_code": "boat_002",
+        "name": "Albatros",
+        "boat_type": "yelkenli",
+        "model": "Beneteau Oceanis 45",
+        "length_m": 13.85,
+        "engine": "Yanmar 4JH57 (57 HP)",
+        "year": 2019,
+        "marina": "Göcek D-Marin"
+      },
+      {
+        "boat_id": "4026f512-2629-5635-8d17-8bdbabc4d7a9",
+        "boat_code": "boat_020",
+        "name": "Kutup",
+        "boat_type": "motoryat",
+        "model": "Sirena 58",
+        "length_m": 18.58,
+        "engine": "2x CAT C8.7 (1300 HP)",
+        "year": 2022,
+        "marina": "Kalamış Marina"
+      }
+    ]
+  },
+  {
+    "customer_id": "cb138ca4-1453-5ef6-9537-713c5b7ecb4f",
+    "customer_code": "cust_003",
+    "full_name": "Mehmet Deniz",
+    "phone": "+90 555 771 00 12",
+    "email": "mehmet.deniz@example.com",
+    "marina": "Bodrum Milta Marina",
+    "boats": [
+      {
+        "boat_id": "47ca0346-2361-5dc8-8b88-f492557e860b",
+        "boat_code": "boat_003",
+        "name": "Poseidon",
+        "boat_type": "yelkenli",
+        "model": "Bavaria Cruiser 46",
+        "length_m": 14.27,
+        "engine": "Volvo Penta D2-75 (75 HP)",
+        "year": 2018,
+        "marina": "Bodrum Milta Marina"
+      },
+      {
+        "boat_id": "3ef7f6c7-06cf-5104-8917-da25c0bb2ed7",
+        "boat_code": "boat_021",
+        "name": "Pusula",
+        "boat_type": "yelkenli",
+        "model": "Elan Impression 45",
+        "length_m": 13.85,
+        "engine": "Volvo Penta D2-60 (60 HP)",
+        "year": 2019,
+        "marina": "Ataköy Marina"
+      }
+    ]
+  },
+  {
+    "customer_id": "9229ce36-c20d-5231-ac87-49cf9dab33f1",
+    "customer_code": "cust_004",
+    "full_name": "Kemal Aydoğan",
+    "phone": "+90 532 614 90 11",
+    "email": "kemal.aydogan@example.com",
+    "marina": "Kalamış Marina",
+    "boats": [
+      {
+        "boat_id": "ee023b5f-329d-5578-99fa-b0456502087e",
+        "boat_code": "boat_004",
+        "name": "Lodos",
+        "boat_type": "motoryat",
+        "model": "Sealine F42",
+        "length_m": 12.9,
+        "engine": "2x Volvo Penta D6-370 (740 HP)",
+        "year": 2017,
+        "marina": "Kalamış Marina"
+      }
+    ]
+  },
+  {
+    "customer_id": "9842dca9-e44c-5a01-9cec-c38d6b81ec99",
+    "customer_code": "cust_005",
+    "full_name": "Deniz Saygın",
+    "phone": "+90 542 660 33 21",
+    "email": "deniz.saygin@example.com",
+    "marina": "Yalıkavak Marina",
+    "boats": [
+      {
+        "boat_id": "4a910ff4-e06e-5549-8292-71ec5488893b",
+        "boat_code": "boat_005",
+        "name": "Martı",
+        "boat_type": "katamaran",
+        "model": "Lagoon 42 Katamaran",
+        "length_m": 12.8,
+        "engine": "2x Yanmar 4JH57 (114 HP)",
+        "year": 2022,
+        "marina": "Yalıkavak Marina"
+      },
+      {
+        "boat_id": "b4f2b080-2cfd-5f21-8424-5d6a63a39187",
+        "boat_code": "boat_022",
+        "name": "Zıpkın",
+        "boat_type": "motoryat",
+        "model": "Saxdor 320 GTO",
+        "length_m": 10.28,
+        "engine": "2x Mercury V8 AMS 300 (600 HP)",
+        "year": 2024,
+        "marina": "Çeşme Marina"
+      }
+    ]
+  },
+  {
+    "customer_id": "ef45665d-b254-5f88-8963-ed5b147b4480",
+    "customer_code": "cust_006",
+    "full_name": "Selin Arslan",
+    "phone": "+90 530 447 22 88",
+    "email": "selin.arslan@example.com",
+    "marina": "Göcek D-Marin",
+    "boats": [
+      {
+        "boat_id": "7626c8d4-8d45-5558-8d65-f81df8883c35",
+        "boat_code": "boat_006",
+        "name": "Ufuk",
+        "boat_type": "motoryat",
+        "model": "Azimut 55",
+        "length_m": 16.9,
+        "engine": "2x MAN i6-800 (1600 HP)",
+        "year": 2021,
+        "marina": "Göcek D-Marin"
+      }
+    ]
+  },
+  {
+    "customer_id": "32c23a8d-ac0e-55a6-970c-d8d35020ec0f",
+    "customer_code": "cust_007",
+    "full_name": "Okan Yurdakul",
+    "phone": "+90 535 908 41 72",
+    "email": "okan.yurdakul@example.com",
+    "marina": "Tuzla Marina",
+    "boats": [
+      {
+        "boat_id": "689a386a-ece1-5a25-95d8-1101cec70067",
+        "boat_code": "boat_007",
+        "name": "Karayel",
+        "boat_type": "motoryat",
+        "model": "Fairline Targa 40",
+        "length_m": 12.3,
+        "engine": "2x Volvo Penta D6-340 (680 HP)",
+        "year": 2020,
+        "marina": "Tuzla Marina"
+      }
+    ]
+  },
+  {
+    "customer_id": "606bd734-644f-5c21-af2f-dc734c4ecd67",
+    "customer_code": "cust_008",
+    "full_name": "Ahmet Yılmaz",
+    "phone": "+90 532 412 88 90",
+    "email": "ahmet.yilmaz@example.com",
+    "marina": "Kalamış Marina",
+    "boats": [
+      {
+        "boat_id": "289ee4a4-2598-5e69-8907-b044be2f85e5",
+        "boat_code": "boat_008",
+        "name": "Poyraz",
+        "boat_type": "motoryat",
+        "model": "Motoryat 42",
+        "length_m": 12.8,
+        "engine": "2x Cummins QSB 6.7 (960 HP)",
+        "year": 2019,
+        "marina": "Kalamış Marina"
+      },
+      {
+        "boat_id": "96fc5527-28df-5b88-8f6f-d0e135104e07",
+        "boat_code": "boat_023",
+        "name": "Yelkovan",
+        "boat_type": "trawler",
+        "model": "Grand Banks 42 Classic",
+        "length_m": 13.18,
+        "engine": "2x Cummins 6BT5.9M (420 HP)",
+        "year": 2016,
+        "marina": "Pendik Marinturk Marina"
+      }
+    ]
+  },
+  {
+    "customer_id": "e293092d-f2f9-5502-a146-39824734ea35",
+    "customer_code": "cust_009",
+    "full_name": "Zeynep Karaca",
+    "phone": "+90 544 318 65 09",
+    "email": "zeynep.karaca@example.com",
+    "marina": "Göcek D-Marin",
+    "boats": [
+      {
+        "boat_id": "9c85b83f-45f4-52ac-bc5b-b550e695149e",
+        "boat_code": "boat_009",
+        "name": "Yıldız",
+        "boat_type": "motoryat",
+        "model": "Princess V48",
+        "length_m": 15.49,
+        "engine": "2x Volvo Penta IPS600 (870 HP)",
+        "year": 2020,
+        "marina": "Göcek D-Marin"
+      }
+    ]
+  },
+  {
+    "customer_id": "06c9dc80-787b-5f45-b454-84746bf2dff9",
+    "customer_code": "cust_010",
+    "full_name": "Cem Baykal",
+    "phone": "+90 536 702 19 84",
+    "email": "cem.baykal@example.com",
+    "marina": "Bodrum Milta Marina",
+    "boats": [
+      {
+        "boat_id": "7013b676-e274-5e24-b578-436097d183f9",
+        "boat_code": "boat_010",
+        "name": "Akdeniz",
+        "boat_type": "motoryat",
+        "model": "Ferretti 500",
+        "length_m": 15.33,
+        "engine": "2x Cummins QSC 8.3 (1100 HP)",
+        "year": 2023,
+        "marina": "Bodrum Milta Marina"
+      }
+    ]
+  },
+  {
+    "customer_id": "3e5b33db-334f-5270-af21-5830419fe177",
+    "customer_code": "cust_011",
+    "full_name": "Sadiye Demir",
+    "phone": "+90 555 314 13 45",
+    "email": "sadiye.demir@example.com",
+    "marina": "Tuzla Marina",
+    "boats": [
+      {
+        "boat_id": "75c72199-5ece-5352-b393-4261bfb4386c",
+        "boat_code": "boat_011",
+        "name": "Meltem",
+        "boat_type": "yelkenli",
+        "model": "Dufour 430 Grand Large",
+        "length_m": 13.24,
+        "engine": "Volvo Penta D2-60 (60 HP)",
+        "year": 2020,
+        "marina": "Ataköy Marina"
+      }
+    ]
+  },
+  {
+    "customer_id": "1570da39-b49f-5210-bd43-4561bfeb4e75",
+    "customer_code": "cust_012",
+    "full_name": "Aliihsan Korutürk",
+    "phone": "+90 533 428 27 23",
+    "email": "aliihsan.koruturk@example.com",
+    "marina": "Kalamış Marina",
+    "boats": [
+      {
+        "boat_id": "46687c0e-dece-5c31-b956-c7aad93046b3",
+        "boat_code": "boat_012",
+        "name": "Bora",
+        "boat_type": "motoryat",
+        "model": "Absolute 47 Fly",
+        "length_m": 14.65,
+        "engine": "2x Volvo Penta IPS650 (960 HP)",
+        "year": 2022,
+        "marina": "Pendik Marinturk Marina"
+      }
+    ]
+  },
+  {
+    "customer_id": "4474ffcb-b9ff-561e-809e-410080ace250",
+    "customer_code": "cust_013",
+    "full_name": "Satrettin Yüksel",
+    "phone": "+90 555 958 79 21",
+    "email": "satrettin.yuksel@example.com",
+    "marina": "Ataköy Marina",
+    "boats": [
+      {
+        "boat_id": "ed410144-fd94-590a-8166-02fcc2f9949a",
+        "boat_code": "boat_013",
+        "name": "Çapariz",
+        "boat_type": "gulet",
+        "model": "Bodrum Geleneksel Gulet 22m",
+        "length_m": 22.0,
+        "engine": "Iveco Cursor 300 HP",
+        "year": 2016,
+        "marina": "Bodrum Milta Marina"
+      }
+    ]
+  },
+  {
+    "customer_id": "837c0782-f6c7-5eb4-abbd-6182999001ab",
+    "customer_code": "cust_014",
+    "full_name": "Muhammet Yaman",
+    "phone": "+90 544 632 14 13",
+    "email": "muhammet.yaman@example.com",
+    "marina": "Pendik Marinturk Marina",
+    "boats": [
+      {
+        "boat_id": "6c4e8766-b15f-5f7a-a3d8-6baf11cc8d37",
+        "boat_code": "boat_014",
+        "name": "Pruva",
+        "boat_type": "yelkenli",
+        "model": "Hanse 458",
+        "length_m": 14.04,
+        "engine": "Yanmar 4JH57 (57 HP)",
+        "year": 2021,
+        "marina": "Marmaris Netsel Marina"
+      }
+    ]
+  },
+  {
+    "customer_id": "578aa504-644d-56a9-bd3a-f48162f5ac2b",
+    "customer_code": "cust_015",
+    "full_name": "Şüküfe Sakarya",
+    "phone": "+90 532 423 39 74",
+    "email": "sukufe.sakarya@example.com",
+    "marina": "İstinye Tekne Park",
+    "boats": [
+      {
+        "boat_id": "f71ed7c0-1d45-5f0a-8b8e-76f5c2f06c64",
+        "boat_code": "boat_015",
+        "name": "Kalyon",
+        "boat_type": "gulet",
+        "model": "Ketch Gulet 24m",
+        "length_m": 24.0,
+        "engine": "2x Perkins Sabre M225Ti (450 HP)",
+        "year": 2015,
+        "marina": "Marmaris Netsel Marina"
+      }
+    ]
+  },
+  {
+    "customer_id": "43dc038d-f33b-54ec-99e2-6b3a0887da96",
+    "customer_code": "cust_016",
+    "full_name": "Temime Korutürk",
+    "phone": "+90 544 227 81 35",
+    "email": "temime.koruturk@example.com",
+    "marina": "Göcek D-Marin",
+    "boats": [
+      {
+        "boat_id": "09554089-d4a1-53ff-8e3b-6acdc918c3a1",
+        "boat_code": "boat_016",
+        "name": "İmbat",
+        "boat_type": "yelkenli",
+        "model": "Beneteau First 36",
+        "length_m": 11.0,
+        "engine": "Yanmar 3YM30AE (29 HP)",
+        "year": 2023,
+        "marina": "Çeşme Marina"
+      }
+    ]
+  },
+  {
+    "customer_id": "58fc0f8b-188c-5e35-b492-52db3a0547f7",
+    "customer_code": "cust_017",
+    "full_name": "Hasgül Çorlu",
+    "phone": "+90 555 865 99 79",
+    "email": "hasgul.corlu@example.com",
+    "marina": "Bodrum Milta Marina",
+    "boats": [
+      {
+        "boat_id": "3572c4ce-4176-508d-a248-f03a69215796",
+        "boat_code": "boat_017",
+        "name": "Yıldırım",
+        "boat_type": "motoryat",
+        "model": "Sunseeker Predator 50",
+        "length_m": 15.46,
+        "engine": "2x Volvo Penta D8-IPS800 (1200 HP)",
+        "year": 2021,
+        "marina": "İstinye Tekne Park"
+      }
+    ]
+  },
+  {
+    "customer_id": "2389f25f-1e17-5ea9-b836-fd772a011c99",
+    "customer_code": "cust_018",
+    "full_name": "Mübetcel Şafak",
+    "phone": "+90 542 425 67 85",
+    "email": "mubetcel.safak@example.com",
+    "marina": "Yalıkavak Marina",
+    "boats": [
+      {
+        "boat_id": "2390dd90-84ee-522c-a56d-905a07cc97e2",
+        "boat_code": "boat_018",
+        "name": "Fora",
+        "boat_type": "katamaran",
+        "model": "Fountaine Pajot Isla 40",
+        "length_m": 11.93,
+        "engine": "2x Volvo Penta D1-30 (60 HP)",
+        "year": 2022,
+        "marina": "Göcek D-Marin"
+      }
+    ]
+  }
+]
