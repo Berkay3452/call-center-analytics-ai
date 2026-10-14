@@ -110,6 +110,7 @@ Analiz arka planda Celery işçisinde çalışır (`-Q default,analysis,index`);
 | `GET /health` | Süreç ayakta mı (canlılık) |
 | `GET /health/ready` | Veritabanı ve Redis erişilebilir mi (hazır olma; değilse 503) |
 | `GET /api/v1/me` | Servis anahtarı doğrulaması (`X-Service-Key`, isteğe bağlı `X-User-Id`) |
+| `GET /api/v1/analytics/summary` | KPI ve analitik özeti: çağrı ve satış metrikleri, neden ve kategori dağılımları (#52) |
 | `GET /api/v1/calls` | Sayfalı çağrı listesi ve filtreleme (tarih, aciliyet, kategori, durum, serbest metin) |
 | `GET /api/v1/calls/{id}` | Çağrı detayı: santral, maskeli transkript (segmentleriyle) ve en son analiz |
 | `GET /api/v1/crm` | Sayfalı CRM kayıt/öneri listesi (7 temel alan + alıntılar) |
