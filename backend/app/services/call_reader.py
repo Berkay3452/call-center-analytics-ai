@@ -29,6 +29,7 @@ from app.schemas.api import (
 )
 from app.schemas.common import Page
 from app.services.analysis_store import get_latest_analysis
+from app.services.masking import mask_text
 
 
 def _latest_analysis_subquery() -> Any:
@@ -79,12 +80,13 @@ def _build_filter_conditions(
         conditions.append(latest_analysis.c.request_category == filters.request_category.value)
 
     if filters.q and filters.q.strip():
-        search = f"%{filters.q.strip()}%"
+        term = filters.q.strip().replace("\\", "\\\\").replace("%", r"\%").replace("_", r"\_")
+        search = f"%{term}%"
         conditions.append(
             or_(
-                Call.customer_name.ilike(search),
-                Call.boat_name.ilike(search),
-                Call.marina.ilike(search),
+                Call.customer_name.ilike(search, escape="\\"),
+                Call.boat_name.ilike(search, escape="\\"),
+                Call.marina.ilike(search, escape="\\"),
             )
         )
 
@@ -190,14 +192,18 @@ async def get_call_detail(session: AsyncSession, call_id: UUID) -> CallDetail:
         )
 
         transcript_out = TranscriptOut(
-            text=transcript_row.masked_text or transcript_row.full_text,
+            text=(
+                transcript_row.masked_text
+                if transcript_row.masked_text is not None
+                else mask_text(transcript_row.full_text)
+            ),
             segments=[
                 TranscriptSegmentOut(
                     index=seg.segment_index,
                     speaker=seg.speaker,
                     start_ms=seg.start_ms,
                     end_ms=seg.end_ms,
-                    text=seg.masked_text or seg.text,
+                    text=seg.masked_text if seg.masked_text is not None else mask_text(seg.text),
                 )
                 for seg in segments
             ],

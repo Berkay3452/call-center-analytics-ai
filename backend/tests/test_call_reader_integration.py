@@ -180,3 +180,12 @@ async def test_latest_analysis_version_is_picked_when_multiple_exist(
         assert crm_item.analysis_version == 2
         assert crm_item.request_category == RequestCategory.MAKINE
         assert crm_item.urgency == Urgency.YUKSEK
+
+
+async def test_free_text_wildcards_are_literal(factory: async_sessionmaker[AsyncSession]) -> None:
+    """`%` ve `_` joker değil, düz karakter olarak aranır."""
+    async with factory() as session:
+        page = await list_calls(session, CallFilters(q="%"))
+        assert page.total == 0
+        page = await list_calls(session, CallFilters(q="_"))
+        assert page.total == 0
