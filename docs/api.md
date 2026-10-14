@@ -41,8 +41,11 @@ Admin/tekne sahibi rol ayrımını .NET uygulaması yapar. Tekne sahibi uçları
 | `GET /calls/{call_id}/status` | Admin | — | `CallStatus` | #48 |
 | `POST /chat/messages` | Tekne sahibi | `ChatQuestion` | `ChatReply` | #28 |
 | `POST /chat/messages/stream` | Tekne sahibi | `ChatQuestion` | SSE akışı (`ChatStreamEvent`, bkz. §4) | #28 |
+| `POST /assistant/chat` | Tekne sahibi | `ChatQuestion` | SSE akışı (`token` -> `sources` -> `done`) | #28 |
 | `GET /chat/sessions` | Tekne sahibi | — | `ChatSessionOut` listesi (yeniden eskiye) | #28 |
 | `GET /chat/sessions/{session_id}` | Tekne sahibi | — | `ChatSessionDetail` | #28 |
+| `GET /assistant/sessions` | Tekne sahibi | — | `ChatSessionOut` listesi | #28 |
+| `GET /assistant/sessions/{id}` | Tekne sahibi | — | `ChatSessionDetail` | #28 |
 
 Başka kullanıcının sohbet oturumu istenirse 404 döner (varlığı da sızdırılmaz).
 
