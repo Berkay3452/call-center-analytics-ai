@@ -110,6 +110,9 @@ Analiz arka planda Celery işçisinde çalışır (`-Q default,analysis,index`);
 | `GET /health` | Süreç ayakta mı (canlılık) |
 | `GET /health/ready` | Veritabanı ve Redis erişilebilir mi (hazır olma; değilse 503) |
 | `GET /api/v1/me` | Servis anahtarı doğrulaması (`X-Service-Key`, isteğe bağlı `X-User-Id`) |
+| `GET /api/v1/calls` | Sayfalı çağrı listesi ve filtreleme (tarih, aciliyet, kategori, durum, serbest metin) |
+| `GET /api/v1/calls/{id}` | Çağrı detayı: santral, maskeli transkript (segmentleriyle) ve en son analiz |
+| `GET /api/v1/crm` | Sayfalı CRM kayıt/öneri listesi (7 temel alan + alıntılar) |
 | `POST /api/v1/calls` | Transkriptli çağrıyı kaydeder, analizi kuyruğa alır (202); ayrıntı `docs/api.md` |
 | `POST /api/v1/calls/audio` | Ses kaydını yükler (multipart); STT → analiz arka planda (202) |
 | `POST /api/v1/calls/{id}/analyze` | Çağrıyı yeniden işler: yeni analiz sürümü, transkript yoksa yeniden STT |
