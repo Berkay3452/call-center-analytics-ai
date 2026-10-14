@@ -224,6 +224,8 @@ export interface CitationCard {
   date: string;
   callId?: string;
   excerpt?: string;
+  kind?: "service_record" | "boat_note" | "expense" | "subscription" | string;
+  recordId?: string;
 }
 
 export interface ChatMessage {
@@ -236,6 +238,17 @@ export interface ChatMessage {
    * Boş dizi veya undefined → kaynak kartı gösterilmez ("bulamadım" durumu).
    */
   citations?: CitationCard[];
+  /** Bilgi bulunup bulunmadığı bayrağı */
+  found?: boolean;
+  /** Mesajın akmakta (streaming) olup olmadığı */
+  isStreaming?: boolean;
+  /** Hata durumu */
+  error?: {
+    code: string;
+    message: string;
+    requestId?: string | null;
+    isApiKeyError?: boolean;
+  };
 }
 
 // ---------------------------------------------------------------------------
