@@ -314,3 +314,50 @@ async def test_non_existent_customer_returns_404(client: AsyncClient) -> None:
     error_event = next((json.loads(d) for ev, d in events if ev == "error"), None)
     assert error_event is not None
     assert error_event["code"] == "not_found"
+
+
+# --- 5. Hata durumları (inceleme düzeltmeleri) ---
+
+
+async def test_unexpected_error_does_not_leak_details(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Beklenmeyen hatada istemciye iç hata metni değil genel mesaj gider."""
+    from app.services import assistant_chat
+
+    async def boom(*args: object, **kwargs: object) -> object:
+        raise RuntimeError("password=gizli-ic-hata-ayrintisi")
+
+    monkeypatch.setattr(assistant_chat, "answer_question", boom)
+    headers = {"X-Service-Key": TEST_SERVICE_KEY, "X-User-Id": str(AHMET_ID)}
+
+    resp = await client.post(
+        "/api/v1/assistant/chat", json={"question": "Kaç bakım hakkım kaldı?"}, headers=headers
+    )
+
+    assert "gizli-ic-hata-ayrintisi" not in resp.text
+    events = _parse_sse(resp.text)
+    assert [e[0] for e in events] == ["error"]
+    assert json.loads(events[0][1])["message"] == assistant_chat.GENERIC_ERROR_MESSAGE
+
+
+async def test_llm_unavailable_gets_polite_message_without_echoing_question(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from app.assistant.llm import AssistantLLMError
+    from app.services import assistant_chat
+
+    async def down(*args: object, **kwargs: object) -> object:
+        raise AssistantLLMError("sağlayıcı yok")
+
+    monkeypatch.setattr(assistant_chat, "answer_question", down)
+    headers = {"X-Service-Key": TEST_SERVICE_KEY, "X-User-Id": str(AHMET_ID)}
+
+    resp = await client.post(
+        "/api/v1/chat/messages", json={"question": "Gizli soru metni?"}, headers=headers
+    )
+
+    assert resp.status_code == 200
+    answer = resp.json()["answer"]
+    assert answer["content"] == assistant_chat.ASSISTANT_UNAVAILABLE_MESSAGE
+    assert "Gizli soru" not in answer["content"] and answer["found"] is False

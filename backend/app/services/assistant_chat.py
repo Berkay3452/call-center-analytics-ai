@@ -16,6 +16,7 @@ from collections.abc import AsyncIterator
 from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
+import structlog
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sse_starlette.sse import ServerSentEvent
@@ -32,6 +33,13 @@ from app.schemas.api import (
     ChatSessionOut,
 )
 from app.schemas.assistant import AssistantAnswer, AssistantRequest, QuestionType, SourceRef
+
+log = structlog.get_logger(__name__)
+
+GENERIC_ERROR_MESSAGE = "Beklenmeyen bir hata oluştu. Lütfen biraz sonra tekrar deneyin."
+ASSISTANT_UNAVAILABLE_MESSAGE = (
+    "Şu anda sorunuzu yanıtlayamıyorum. Lütfen biraz sonra tekrar deneyin."
+)
 
 
 def _chunk_text(text: str, chunk_size: int = 24) -> list[str]:
@@ -197,14 +205,12 @@ async def execute_chat_turn(
     # 2. Asistan cevabını üret
     try:
         req = AssistantRequest(question=clean_q, owner_id=str(owner_uuid))
-        answer = await answer_question(req, llm=llm)
+        answer = await answer_question(req, llm=llm, session=db)
     except AssistantLLMError:
-        # LLM erişilemezse bile sahte/yedek cevapla arayüzün kesilmesini önle
+        # LLM erişilemezse arayüz kesilmesin: nazik bir mesaj kaydedilir, ayrıntı yalnızca logda.
+        log.warning("assistant.llm_unavailable", session_id=str(chat_session.id))
         answer = AssistantAnswer(
-            answer=(
-                f"Miço Asistan: '{clean_q}' sorunuz alındı "
-                "ancak şu anda LLM servisine erişilemiyor."
-            ),
+            answer=ASSISTANT_UNAVAILABLE_MESSAGE,
             question_type=QuestionType.GECMIS_ONERI,
             sources=[],
             found=False,
@@ -274,14 +280,15 @@ async def stream_assistant_chat(
             ),
         )
         return
-    except Exception as exc:
+    except Exception:
+        log.exception("assistant.chat_failed", request_id=request_id)
         yield ServerSentEvent(
             event="error",
             data=json.dumps(
                 {
                     "type": "error",
                     "code": "internal_error",
-                    "message": str(exc),
+                    "message": GENERIC_ERROR_MESSAGE,
                     "request_id": request_id,
                 }
             ),
@@ -347,14 +354,15 @@ async def stream_chat_messages(
             ),
         )
         return
-    except Exception as exc:
+    except Exception:
+        log.exception("assistant.chat_failed", request_id=request_id)
         yield ServerSentEvent(
             event="error",
             data=json.dumps(
                 {
                     "type": "error",
                     "code": "internal_error",
-                    "message": str(exc),
+                    "message": GENERIC_ERROR_MESSAGE,
                     "request_id": request_id,
                 }
             ),
