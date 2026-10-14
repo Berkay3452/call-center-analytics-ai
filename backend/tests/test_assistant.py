@@ -145,54 +145,56 @@ async def test_llm_failure_raises_assistant_error() -> None:
 
 
 @pytest.mark.parametrize("owner", ["", "  "])
-def test_tools_require_owner(owner: str) -> None:
+async def test_tools_require_owner(owner: str) -> None:
     with pytest.raises(tools.OwnerRequiredError):
-        tools.get_expense_total(owner)
+        await tools.get_expense_total(owner)
     with pytest.raises(tools.OwnerRequiredError):
-        tools.get_remaining_package(owner)
+        await tools.get_remaining_package(owner)
     with pytest.raises(tools.OwnerRequiredError):
-        tools.get_last_maintenance(owner)
+        await tools.get_last_maintenance(owner)
     with pytest.raises(tools.OwnerRequiredError):
         search_boat_notes(owner, "yakıt")
 
 
-def test_expense_total_is_scoped_to_owner() -> None:
-    a = tools.get_expense_total(OWNER_A)
-    b = tools.get_expense_total(OWNER_B)
+async def test_expense_total_is_scoped_to_owner() -> None:
+    a = await tools.get_expense_total(OWNER_A)
+    b = await tools.get_expense_total(OWNER_B)
 
     assert a.total_try == Decimal("41950.00") and a.item_count == 3
     assert b.total_try == Decimal("6400.00") and b.item_count == 1
     assert {s.record_id for s in a.sources}.isdisjoint({s.record_id for s in b.sources})
 
 
-def test_expense_total_filters_by_date_range() -> None:
-    october = tools.get_expense_total(OWNER_A, start=date(2026, 10, 1), end=date(2026, 10, 31))
+async def test_expense_total_filters_by_date_range() -> None:
+    october = await tools.get_expense_total(
+        OWNER_A, start=date(2026, 10, 1), end=date(2026, 10, 31)
+    )
 
     assert october.total_try == Decimal("14250.00")
     assert [s.record_id for s in october.sources] == ["exp-102"]
 
 
-def test_other_owners_boat_id_returns_nothing() -> None:
-    assert tools.get_expense_total(OWNER_A, boat_id="boat-002").item_count == 0
-    assert tools.get_last_maintenance(OWNER_A, boat_id="boat-002") is None
-    assert tools.get_remaining_package(OWNER_B) is None  # B'nin paketi yok, A'nınki dönmez
+async def test_other_owners_boat_id_returns_nothing() -> None:
+    assert (await tools.get_expense_total(OWNER_A, boat_id="boat-002")).item_count == 0
+    assert await tools.get_last_maintenance(OWNER_A, boat_id="boat-002") is None
+    assert await tools.get_remaining_package(OWNER_B) is None  # B'nin paketi yok, A'nınki dönmez
 
 
-def test_unknown_owner_gets_empty_results() -> None:
-    assert tools.get_expense_total("owner-yok").item_count == 0
-    assert tools.get_last_maintenance("owner-yok") is None
-    assert tools.get_remaining_package("owner-yok") is None
+async def test_unknown_owner_gets_empty_results() -> None:
+    assert (await tools.get_expense_total("owner-yok")).item_count == 0
+    assert await tools.get_last_maintenance("owner-yok") is None
+    assert await tools.get_remaining_package("owner-yok") is None
     assert search_boat_notes("owner-yok", "yakıt filtresi") == []
 
 
-def test_last_maintenance_and_package_values() -> None:
-    last = tools.get_last_maintenance(OWNER_A)
-    pkg = tools.get_remaining_package(OWNER_A)
+async def test_last_maintenance_and_package_values() -> None:
+    last = await tools.get_last_maintenance(OWNER_A)
+    pkg = await tools.get_remaining_package(OWNER_A)
 
     assert last is not None and (last.on, last.boat_name) == (date(2026, 8, 15), "Poyraz")
     assert pkg is not None and (pkg.plan, pkg.remaining, pkg.total) == ("Gold", 1, 2)
-    assert tools.get_last_maintenance(OWNER_A, category="elektrik_elektronik") is not None
-    assert tools.get_last_maintenance(OWNER_A, category="iklimlendirme") is None
+    assert await tools.get_last_maintenance(OWNER_A, category="elektrik_elektronik") is not None
+    assert await tools.get_last_maintenance(OWNER_A, category="iklimlendirme") is None
 
 
 # --- Arama (sahte): yetki ---

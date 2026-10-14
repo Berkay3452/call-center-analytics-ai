@@ -9,6 +9,8 @@ import calendar
 from datetime import date
 from decimal import Decimal
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.assistant import tools
 from app.assistant.grounding import NOT_FOUND_MESSAGE, AnswerDraft, ground_draft
 from app.assistant.llm import AssistantLLM, load_prompt
@@ -36,7 +38,13 @@ def not_found(question_type: QuestionType, message: str = NOT_FOUND_MESSAGE) -> 
     return AssistantAnswer(answer=message, question_type=question_type, found=False)
 
 
-def numeric_answer(plan: Plan, owner_id: str, today: date) -> AssistantAnswer:
+async def numeric_answer(
+    plan: Plan,
+    owner_id: str,
+    today: date,
+    *,
+    session: AsyncSession | None = None,
+) -> AssistantAnswer:
     """Hazır aracı çalıştırıp cevabı kodla kurar."""
     qt = QuestionType.SAYISAL
     start: date | None
@@ -49,7 +57,7 @@ def numeric_answer(plan: Plan, owner_id: str, today: date) -> AssistantAnswer:
         else:
             start = end = None
             label = "Kayıtlı tüm dönemde"
-        result = tools.get_expense_total(owner_id, start=start, end=end)
+        result = await tools.get_expense_total(owner_id, start=start, end=end, session=session)
         if result.item_count == 0:
             return not_found(qt, "Bu dönem için kayıtlı bir gider bulamadım.")
         return AssistantAnswer(
@@ -61,7 +69,7 @@ def numeric_answer(plan: Plan, owner_id: str, today: date) -> AssistantAnswer:
             sources=result.sources,
         )
     if plan.tool == AssistantTool.GET_REMAINING_PACKAGE:
-        pkg = tools.get_remaining_package(owner_id)
+        pkg = await tools.get_remaining_package(owner_id, session=session)
         if pkg is None:
             return not_found(qt, "Kayıtlarda aktif bir abonelik veya paket bulamadım.")
         return AssistantAnswer(
@@ -74,7 +82,7 @@ def numeric_answer(plan: Plan, owner_id: str, today: date) -> AssistantAnswer:
             sources=pkg.sources,
         )
     if plan.tool == AssistantTool.GET_LAST_MAINTENANCE:
-        last = tools.get_last_maintenance(owner_id)
+        last = await tools.get_last_maintenance(owner_id, session=session)
         if last is None:
             return not_found(qt, "Kayıtlarda yapılmış bir bakım bulamadım.")
         return AssistantAnswer(
