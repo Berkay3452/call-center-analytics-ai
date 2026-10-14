@@ -1,5 +1,5 @@
 """Uç nokta modülleri.
 
-Mevcut: auth, call_intake, analytics.
-Sıradaki modüller: calls, chat.
+Mevcut: auth, call_intake, calls, crm, analytics.
+Sıradaki modül: chat (Miço AI sohbet).
 """
