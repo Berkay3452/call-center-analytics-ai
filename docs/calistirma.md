@@ -2,7 +2,7 @@
 
 Bu rehber, projeyi sıfırdan bilgisayarında ayağa kaldırmak isteyen herkes (Berkay, Ahmet, Melih) içindir. Sonunda şunlar çalışır durumda olur: PostgreSQL, Redis, backend API, analiz işçisi (Celery) ve frontend.
 
-> Durum: Adımlar yazıldı, **Docker kurulu temiz bir makinede uçtan uca doğrulama #58 kapsamında yapılıyor.** Bir adım çalışmazsa "Sık hatalar" bölümüne bak, orada yoksa #58'e yorum yaz.
+> Durum: **14 Ekim 2026'da temiz bir klonda (`git clone`, boş veritabanı, `.env.example`'dan) baştan sona doğrulandı.** Bir adım çalışmazsa "Sık hatalar" bölümüne bak, orada yoksa #58'e yorum yaz.
 
 ## 1. Gerekenler
 
@@ -97,7 +97,8 @@ curl -H "X-Service-Key: <SERVICE_API_KEY>" "http://localhost:8000/api/v1/calls?p
 ## 5. İsteğe bağlı parçalar
 
 - **Miço AI araması (bge-m3 embedding):** `docker compose -f infra/docker-compose.yml --profile rag up -d` (ilk açılışta ~2,3 GB model iner), sonra `backend/` içinde `uv run python -m scripts.rag_index`. Ayrıntı: `backend/README.md`.
-- **Ses → yazı (STT):** `uv sync --extra ai --extra stt`; ilk kullanımda model iner. Ayrıntı: `backend/README.md`.
+- **Ses → yazı (STT):** `uv sync --extra ai --extra stt`; ilk kullanımda model (`small`, ~500 MB) iner. Model varsayılan olarak `C:\Users\<sen>\.cache\huggingface` altına iner; C: diskin doluysa `.env` içinde `WHISPER_DOWNLOAD_ROOT=D:/models/whisper` yaz (klasörü önceden aç). Denemek için bir ses dosyası `POST /api/v1/calls/audio` ile yüklenir (`file` + `started_at` form alanları); durum `yaziya_cevriliyor` → `isleniyor` → `tamam` ilerler. Mono kayıtta konuşmacılar ayrılamaz (tek parça çıkar). Ayrıntı: `backend/README.md`.
+- **Miço AI sohbeti (gerçek veriyle):** `.env`'de `LLM_API_KEY` dolu olmalı ve arama için `EMBEDDING_PROVIDER=hash` (hızlı) ya da bge-m3 (ilk madde). Seed sahibi `606bd734-644f-5c21-af2f-dc734c4ecd67` (Ahmet Yılmaz, tekne Poyraz) ile: `curl -N -X POST -H "X-Service-Key: <anahtar>" -H "X-User-Id: 606bd734-644f-5c21-af2f-dc734c4ecd67" -H "Content-Type: application/json" -d '{"question":"Kaç bakım hakkım kaldı?"}' http://localhost:8000/api/v1/chat/messages/stream` (SSE: `status` → `delta` → `done`).
 - **Testler:** `uv run pytest` (hızlı, DB gerekmez). Gerçek veritabanı testleri: Docker ayaktayken `$env:RUN_DB_TESTS="1"; uv run pytest`.
 
 ## 6. Durdurma ve sıfırlama
@@ -108,6 +109,8 @@ docker compose -f infra/docker-compose.yml down -v     # durdur ve veritabanın�
 ```
 
 `down -v` sonrası bölüm 2'deki `alembic upgrade head` ve `seed` komutlarını tekrar çalıştır.
+
+> Dikkat: `down -v`, bge-m3 model önbelleğini (`hf-cache`, ~2,3 GB) de siler. Yalnızca veritabanını sıfırlamak için: `docker compose -f infra/docker-compose.yml down` ve ardından `docker volume rm call-center-dev_pgdata`. Veritabanı doluyken aynı sonucu `uv run python -m scripts.seed --reset` verir.
 
 ## 7. Sık hatalar
 
@@ -121,4 +124,7 @@ docker compose -f infra/docker-compose.yml down -v     # durdur ve veritabanın�
 | `/health/ready` 503 | Postgres veya Redis ayakta değil; yanıtın içinde hangisi olduğu yazar |
 | Yeni çağrı "isleniyor"da takılı | Celery işçisi çalışmıyor (sekme 3) veya `LLM_API_KEY` boş / hatalı |
 | Frontend hâlâ sahte veri gösteriyor | `.env.local` içinde `NEXT_PUBLIC_USE_MOCKS=false` yapıp `npm run dev`'i yeniden başlat |
+| Frontend gerçek backend'e bağlıyken konsolda "uncached data during prerendering" hatası, `npm run build` kırılıyor | Bilinen sorun (Next 16 Suspense kuralı, çağrı sayfaları); `npm run dev` ile sayfalar çalışır. Düzeltme planlanıyor |
+| `bge-m3` konteyneri hemen kapanıyor (çıkış kodu 137) | Bellek yetersizliği; `infra/docker-compose.yml`'deki `--max-batch-tokens 2048` ayarı bunu önler. Güncel `main`'i çektiğinden emin ol |
+| STT modeli C: diskini dolduruyor | `.env` içinde `WHISPER_DOWNLOAD_ROOT` ayarla (bölüm 5) |
 | Windows'ta Celery hata veriyor | `--pool=solo` bayrağını kullandığından emin ol |
