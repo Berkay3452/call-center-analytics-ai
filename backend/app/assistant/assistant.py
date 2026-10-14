@@ -7,6 +7,7 @@ cevap üret → kaynak kontrolü. Sohbet API'si (#28) yalnızca bu fonksiyonu ç
 from datetime import date
 
 import structlog
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.assistant.answer import history_answer, numeric_answer
 from app.assistant.llm import AssistantLLM
@@ -27,6 +28,7 @@ async def answer_question(
     *,
     llm: AssistantLLM | None = None,
     today: date | None = None,
+    session: AsyncSession | None = None,
 ) -> AssistantAnswer:
     """Tekne sahibinin sorusunu, yalnızca kendi kayıtlarına dayanarak cevaplar.
 
@@ -43,6 +45,6 @@ async def answer_question(
         # Ret, "bulamadım" durumu değildir (found=True): arayüz düz mesajı gösterir.
         return AssistantAnswer(answer=REFUSAL_MESSAGE, question_type=plan.question_type)
     if plan.question_type == QuestionType.SAYISAL:
-        return numeric_answer(plan, request.owner_id, today)
+        return await numeric_answer(plan, request.owner_id, today, session=session)
     passages = search_boat_notes(request.owner_id, request.question)
     return await history_answer(request.question, passages, llm)
