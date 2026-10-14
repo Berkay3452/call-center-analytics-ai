@@ -760,7 +760,8 @@ export async function streamAssistantChat(
       const { done, value } = await reader.read();
       if (done) break;
 
-      buffer += decoder.decode(value, { stream: true });
+      // sse-starlette olayları CRLF ile ayırır; ayrıştırmadan önce LF'ye çevrilir.
+      buffer = (buffer + decoder.decode(value, { stream: true })).replace(/\r\n/g, "\n");
       const parts = buffer.split("\n\n");
       buffer = parts.pop() ?? "";
 

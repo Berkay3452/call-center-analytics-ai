@@ -11,7 +11,10 @@ import {
   SuggestedPrompts,
 } from "@/components/assistant";
 
-const DEFAULT_OWNER_ID = "c4a5f6b7-8a9b-0c1d-2e3f-4a5b6c7d8e9f";
+// Geliştirmede tekne sahibi kimliği (gerçekte .NET uygulaması belirler). Varsayılan: seed sahibi
+// Ahmet Yılmaz (tekne Poyraz); `.env.local` içinde NEXT_PUBLIC_DEMO_OWNER_ID ile değiştirilebilir.
+const DEFAULT_OWNER_ID =
+  process.env.NEXT_PUBLIC_DEMO_OWNER_ID ?? "606bd734-644f-5c21-af2f-dc734c4ecd67";
 
 const INITIAL_MESSAGES: ChatMessage[] = [
   {
@@ -43,6 +46,8 @@ export default function AssistantPage() {
   const [lastQuestion, setLastQuestion] = useState<string | null>(null);
 
   const abortControllerRef = useRef<AbortController | null>(null);
+  // Aynı sohbetteki sorular aynı oturumda sürsün (ilk cevapla gelen session_id).
+  const sessionIdRef = useRef<string | undefined>(undefined);
 
   // Bileşen unmount olduğunda akışı kes
   useEffect(() => {
@@ -111,7 +116,7 @@ export default function AssistantPage() {
 
       try {
         await streamAssistantChat(
-          { question: trimmed },
+          { question: trimmed, session_id: sessionIdRef.current },
           DEFAULT_OWNER_ID,
           {
             onStatus: (stage) => {
@@ -128,6 +133,7 @@ export default function AssistantPage() {
               );
             },
             onDone: (reply: ChatReply) => {
+              if (reply.session_id) sessionIdRef.current = reply.session_id;
               setCurrentStage(null);
               setIsLoading(false);
               const citations = mapSourceRefsToCitationCards(reply.answer.sources);
@@ -217,6 +223,7 @@ export default function AssistantPage() {
     if (isLoading) handleStopStreaming();
     setMessages(INITIAL_MESSAGES);
     setLastQuestion(null);
+    sessionIdRef.current = undefined;
   }, [isLoading, handleStopStreaming]);
 
   return (
