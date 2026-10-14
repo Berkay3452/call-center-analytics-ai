@@ -1,5 +1,5 @@
 """Uç nokta modülleri.
 
-Sıradaki modüller (mimari dokümanı §5): calls (yükleme/listeleme), analysis (transkript ve
-analiz sonuçları), dashboard (KPI ve grafikler), chat (RAG sohbet, SSE).
+Mevcut: auth, call_intake, calls, crm.
+Sıradaki modüller: dashboard (KPI ve analitik), chat (Miço AI sohbet).
 """
