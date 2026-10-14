@@ -139,3 +139,15 @@ def test_openapi_schema_includes_analytics_summary() -> None:
     endpoint = paths["/api/v1/analytics/summary"]["get"]
     assert endpoint["operationId"] == "getKpiSummary"
     assert endpoint["summary"] == "KPI ve analitik özeti"
+
+
+def test_period_longer_than_a_year_is_rejected() -> None:
+    from app.core.errors import AppError
+    from app.services.analytics_service import _resolve_period
+
+    with pytest.raises(AppError):
+        _resolve_period(PeriodFilter(date_from=date(1900, 1, 1)))
+    start, end = _resolve_period(
+        PeriodFilter(date_from=date(2026, 1, 1), date_to=date(2026, 12, 31))
+    )
+    assert (end - start).days == 364

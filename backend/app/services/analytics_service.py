@@ -15,18 +15,29 @@ from typing import Any
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.errors import AppError
 from app.db.models.ai import AnalysisResult as AnalysisRow
 from app.db.models.ai import Call
 from app.domain.enums import CallType, LossReason, RequestCategory, SalesOutcomeType, Urgency
 from app.schemas.analysis import CountItem, DailyCount, KpiSummary
 from app.schemas.api import PeriodFilter
 
+MAX_PERIOD_DAYS = 366
+
 
 def _resolve_period(filter_params: PeriodFilter) -> tuple[date, date]:
     """Sorgu parametrelerine göre dönem başlangıç ve bitiş tarihlerini belirler.
 
-    Her ikisi de boşsa son 30 gün alınır.
+    Her ikisi de boşsa son 30 gün alınır. Dönem en fazla `MAX_PERIOD_DAYS` gün olabilir
+    (günlük liste her gün için bir satır üretir).
     """
+    period_start, period_end = _raw_period(filter_params)
+    if (period_end - period_start).days >= MAX_PERIOD_DAYS:
+        raise AppError(f"Dönem en fazla {MAX_PERIOD_DAYS} gün olabilir.")
+    return period_start, period_end
+
+
+def _raw_period(filter_params: PeriodFilter) -> tuple[date, date]:
     today = datetime.now(UTC).date()
 
     if filter_params.date_from and filter_params.date_to:

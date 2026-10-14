@@ -19,6 +19,7 @@ from sqlalchemy.ext.asyncio import (
 )
 
 from app.core.config import Settings
+from app.core.errors import AppError
 from app.domain.enums import LossReason, RequestCategory, Urgency
 from app.schemas.api import PeriodFilter
 from app.services.analytics_service import get_kpi_summary
@@ -182,3 +183,11 @@ async def test_kpi_picks_latest_analysis_version_only(
         assert summary.converted_sales == 1
         assert summary.conversion_rate == 1.0
         assert summary.lost_by_reason == {}
+
+
+async def test_period_longer_than_a_year_is_rejected(
+    factory: async_sessionmaker[AsyncSession],
+) -> None:
+    async with factory() as session:
+        with pytest.raises(AppError):
+            await get_kpi_summary(session, PeriodFilter(date_from=date(1900, 1, 1)))
