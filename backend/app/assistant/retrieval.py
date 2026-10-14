@@ -1,15 +1,25 @@
-"""Tekne karnesi araması: servis kayıtları ve usta notlarında arama.
+"""Tekne karnesi araması: servis kayıtları ve usta notlarında hibrit arama (#26, #50).
 
-SAHTE (#22): basit kelime eşleşmesi. Gerçek hibrit arama (vektör + tam metin, RRF) #26'da
-gelecek; fonksiyon imzası aynı kalır. Kurallar araçlarla aynıdır: `owner_id` zorunlu ve
-yalnızca o sahibin kayıtları aranır.
+Vektör (bge-m3) ve Türkçe tam metin sonuçları RRF ile birleştirilir (`app.rag.search`). Kurallar
+araçlarla aynıdır: `owner_id` zorunludur ve yalnızca o sahibin kayıtları aranır.
 """
 
 from dataclasses import dataclass
+from uuid import UUID
 
-from app.agents.grounding import normalize
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.assistant.tools import require_owner  # yetki kontrolü tek yerde yapılır
+from app.core.config import Settings
+from app.db.session import worker_session
+from app.rag.base import Embedder
+from app.rag.embedders import build_embedder
+from app.rag.search import hybrid_search
 from app.schemas.assistant import SourceRef
+
+# Yalnızca vektörle gelen (tam metinde geçmeyen) parçalar için alt benzerlik sınırı: ilgisiz
+# notların kaynak gösterilmesini önler. bge-m3 ile Türkçe kayıtlarda ölçülerek ayarlanır.
+MIN_SIMILARITY = 0.45
 
 
 @dataclass(frozen=True)
@@ -20,41 +30,33 @@ class Passage:
     text: str
 
 
-# Aramada anlam taşımayan sık kelimeler.
-_STOP = frozenset(
-    {"bir", "bu", "şu", "ve", "ile", "mi", "mı", "mu", "mü", "de", "da", "için", "ne", "neden"}
-    | {"nasıl", "zaman", "hangi", "var", "yok", "son", "yapıldı", "yapmalıyım", "oldu", "olur"}
-    | {"gerekir", "benim", "bana", "senin"}
-)
+async def _search(
+    session: AsyncSession, embedder: Embedder, owner_uuid: UUID, query: str, limit: int
+) -> list[Passage]:
+    hits = await hybrid_search(
+        session, embedder, owner_uuid, query, limit=limit, min_similarity=MIN_SIMILARITY
+    )
+    return [Passage(source=h.source, text=h.text) for h in hits]
 
 
-def _tokens(text: str) -> set[str]:
-    return {t for t in normalize(text).split() if len(t) > 2 and t not in _STOP}
+async def search_boat_notes(
+    owner_id: str,
+    query: str,
+    *,
+    limit: int = 3,
+    session: AsyncSession | None = None,
+    embedder: Embedder | None = None,
+) -> list[Passage]:
+    """Sorguyla en ilgili kayıtlar (en iyiden başlayarak); eşleşme veya geçerli sahip yoksa boş."""
+    clean_owner = require_owner(owner_id)
+    try:
+        owner_uuid = UUID(clean_owner)
+    except ValueError:
+        return []  # tanınmayan sahip: kimsenin kaydı dönmez
 
-
-def search_boat_notes(owner_id: str, query: str, *, limit: int = 3) -> list[Passage]:
-    """Sorguyla en çok kelime paylaşan kayıtlar (en iyiden başlayarak); eşleşme yoksa boş liste."""
-    data = require_owner(owner_id)
-    wanted = {t[:5] for t in _tokens(query)}  # kaba kök: ekleri (-ım, -ler...) yok sayar
-
-    scored: list[tuple[int, Passage]] = []
-    for note in data.notes:
-        score = len(wanted & {t[:5] for t in _tokens(note.text)})
-        if score:
-            scored.append(
-                (
-                    score,
-                    Passage(
-                        source=SourceRef(
-                            kind="boat_note",
-                            record_id=note.record_id,
-                            title=f"{note.on.strftime('%d.%m.%Y')} usta notu",
-                            date=note.on,
-                            excerpt=note.text,
-                        ),
-                        text=note.text,
-                    ),
-                )
-            )
-    scored.sort(key=lambda x: (-x[0], x[1].source.record_id))
-    return [p for _, p in scored[:limit]]
+    settings = Settings()
+    embedder = embedder or build_embedder(settings)
+    if session is not None:
+        return await _search(session, embedder, owner_uuid, query, limit)
+    async with worker_session(settings) as sess:
+        return await _search(sess, embedder, owner_uuid, query, limit)

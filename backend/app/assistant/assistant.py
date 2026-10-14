@@ -46,5 +46,5 @@ async def answer_question(
         return AssistantAnswer(answer=REFUSAL_MESSAGE, question_type=plan.question_type)
     if plan.question_type == QuestionType.SAYISAL:
         return await numeric_answer(plan, request.owner_id, today, session=session)
-    passages = search_boat_notes(request.owner_id, request.question)
+    passages = await search_boat_notes(request.owner_id, request.question, session=session)
     return await history_answer(request.question, passages, llm)

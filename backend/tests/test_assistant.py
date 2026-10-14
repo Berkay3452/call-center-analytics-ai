@@ -13,7 +13,7 @@ from app.assistant.assistant import REFUSAL_MESSAGE, answer_question
 from app.assistant.grounding import NOT_FOUND_MESSAGE, AnswerDraft, Claim, ground_draft
 from app.assistant.llm import AssistantLLM, AssistantLLMError
 from app.assistant.planner import Plan, plan_by_rules, plan_question
-from app.assistant.retrieval import Passage, search_boat_notes
+from app.assistant.retrieval import Passage
 from app.schemas.assistant import (
     AssistantAnswer,
     AssistantRequest,
@@ -21,7 +21,16 @@ from app.schemas.assistant import (
     QuestionType,
     SourceRef,
 )
+from tests import assistant_fakes
+from tests.assistant_fakes import search_boat_notes
 from tests.llm_fakes import ScriptedChatModel, scripted
+
+
+@pytest.fixture(autouse=True)
+def offline_backend(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Üretimde veritabanına giden araç ve aramayı bu dosyada sahte sürümlerle değiştirir."""
+    assistant_fakes.install(monkeypatch)
+
 
 OWNER_A = "owner-001"  # Poyraz
 OWNER_B = "owner-002"  # Albatros
@@ -153,7 +162,7 @@ async def test_tools_require_owner(owner: str) -> None:
     with pytest.raises(tools.OwnerRequiredError):
         await tools.get_last_maintenance(owner)
     with pytest.raises(tools.OwnerRequiredError):
-        search_boat_notes(owner, "yakıt")
+        await search_boat_notes(owner, "yakıt")
 
 
 async def test_expense_total_is_scoped_to_owner() -> None:
@@ -184,7 +193,7 @@ async def test_unknown_owner_gets_empty_results() -> None:
     assert (await tools.get_expense_total("owner-yok")).item_count == 0
     assert await tools.get_last_maintenance("owner-yok") is None
     assert await tools.get_remaining_package("owner-yok") is None
-    assert search_boat_notes("owner-yok", "yakıt filtresi") == []
+    assert await search_boat_notes("owner-yok", "yakıt filtresi") == []
 
 
 async def test_last_maintenance_and_package_values() -> None:
@@ -200,15 +209,15 @@ async def test_last_maintenance_and_package_values() -> None:
 # --- Arama (sahte): yetki ---
 
 
-def test_search_returns_only_own_records_even_if_other_owner_matches() -> None:
+async def test_search_returns_only_own_records_even_if_other_owner_matches() -> None:
     # "enjektör" yalnızca owner-002'nin notunda geçer.
-    assert search_boat_notes(OWNER_A, "Enjektör ayarı hakkında ne denmişti?") == []
-    own = search_boat_notes(OWNER_B, "Enjektör ayarı hakkında ne denmişti?")
+    assert await search_boat_notes(OWNER_A, "Enjektör ayarı hakkında ne denmişti?") == []
+    own = await search_boat_notes(OWNER_B, "Enjektör ayarı hakkında ne denmişti?")
     assert [p.source.record_id for p in own] == ["note-201"]
 
 
-def test_search_finds_relevant_note_first() -> None:
-    hits = search_boat_notes(OWNER_A, "Yakıt filtresi ne zaman değişmeli?")
+async def test_search_finds_relevant_note_first() -> None:
+    hits = await search_boat_notes(OWNER_A, "Yakıt filtresi ne zaman değişmeli?")
 
     assert hits and hits[0].source.record_id == "note-101"
     assert all(p.source.kind == "boat_note" for p in hits)
