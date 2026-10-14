@@ -98,6 +98,8 @@ class Settings(BaseSettings):
     whisper_compute_type: str = "int8"  # CPU: int8; GPU varsa float16
     whisper_cpu_threads: int = Field(default=0, ge=0)  # 0: otomatik
     whisper_beam_size: int = Field(default=5, ge=1)
+    # Modelin indirileceği klasör; boşsa Hugging Face varsayılanı (~/.cache/huggingface).
+    whisper_download_root: str | None = None
     stt_api_base_url: str = "https://api.groq.com/openai/v1"
     stt_api_key: SecretStr | None = None
     stt_api_model: str = "whisper-large-v3"

@@ -18,6 +18,7 @@ def build_transcriber(settings: Settings, provider: str | None = None) -> Transc
             compute_type=settings.whisper_compute_type,
             cpu_threads=settings.whisper_cpu_threads,
             beam_size=settings.whisper_beam_size,
+            download_root=settings.whisper_download_root,
         )
     if name == "openai_compatible":
         return OpenAICompatibleTranscriber(

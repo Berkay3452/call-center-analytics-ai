@@ -32,7 +32,9 @@ def _ms(seconds: float) -> int:
 
 
 @lru_cache(maxsize=2)
-def _load_whisper(model_size: str, compute_type: str, cpu_threads: int) -> Any:
+def _load_whisper(
+    model_size: str, compute_type: str, cpu_threads: int, download_root: str | None = None
+) -> Any:
     """Modeli bir kez yükler (ilk çağrıda indirilir, ~500 MB small); süreç boyunca saklanır."""
     try:
         from faster_whisper import WhisperModel
@@ -42,7 +44,11 @@ def _load_whisper(model_size: str, compute_type: str, cpu_threads: int) -> Any:
         ) from exc
     log.info("stt.model_loading", model=model_size, compute_type=compute_type)
     return WhisperModel(
-        model_size, device="cpu", compute_type=compute_type, cpu_threads=cpu_threads
+        model_size,
+        device="cpu",
+        compute_type=compute_type,
+        cpu_threads=cpu_threads,
+        download_root=download_root,
     )
 
 
@@ -56,9 +62,11 @@ class FasterWhisperTranscriber:
         compute_type: str = "int8",
         cpu_threads: int = 0,
         beam_size: int = 5,
+        download_root: str | None = None,
         model: Any = None,
     ) -> None:
         self.model_size = model_size
+        self.download_root = download_root
         self.compute_type = compute_type
         self.cpu_threads = cpu_threads
         self.beam_size = beam_size
@@ -68,7 +76,9 @@ class FasterWhisperTranscriber:
 
     def _get_model(self) -> Any:
         if self._model is None:
-            self._model = _load_whisper(self.model_size, self.compute_type, self.cpu_threads)
+            self._model = _load_whisper(
+                self.model_size, self.compute_type, self.cpu_threads, self.download_root
+            )
         return self._model
 
     def _run(self, audio: Any, language: str) -> TranscriptionResult:
