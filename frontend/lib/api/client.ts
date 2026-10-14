@@ -426,6 +426,12 @@ export async function getChatSessionDetail(
 // Asistan SSE Akış İstemcisi (#29 / #28 / docs/api.md §4)
 // ---------------------------------------------------------------------------
 
+/**
+ * Geliştirme/Seed tekne sahibi kimliği (Ahmet Yılmaz - Tekne: Poyraz).
+ * Backend testleri ve seed bu UUID'ye kayıtlıdır.
+ */
+export const DEFAULT_OWNER_ID = "606bd734-644f-5c21-af2f-dc734c4ecd67";
+
 export interface StreamChatCallbacks {
   onStatus?: (stage: StreamStage) => void;
   onDelta?: (text: string) => void;
@@ -548,7 +554,7 @@ function sleepWithSignal(ms: number, signal?: AbortSignal): Promise<void> {
  */
 export async function streamAssistantChat(
   question: ChatQuestion,
-  userId: string,
+  userId: string = DEFAULT_OWNER_ID,
   callbacks: StreamChatCallbacks,
   signal?: AbortSignal,
 ): Promise<void> {
@@ -784,9 +790,6 @@ export async function streamAssistantChat(
             if (parsed.stage) callbacks.onStatus?.(parsed.stage as StreamStage);
           } else if (eventType === "delta") {
             if (typeof parsed.text === "string") callbacks.onDelta?.(parsed.text);
-          } else if (eventType === "token") {
-            const tokenText = parsed.token ?? parsed.text;
-            if (typeof tokenText === "string") callbacks.onDelta?.(tokenText);
           } else if (eventType === "done") {
             const reply = parsed.reply ?? parsed;
             if (reply) callbacks.onDone?.(reply as ChatReply);

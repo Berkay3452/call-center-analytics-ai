@@ -8,10 +8,13 @@ export {
   getCrmRecords,
   getKpiSummary,
   askAssistant,
+  streamAssistantChat,
+  DEFAULT_OWNER_ID,
   getChatSessions,
   getChatSessionDetail,
   apiFetch,
 } from "./api/client";
+export type { StreamChatCallbacks } from "./api/client";
 export * from "./api/types";
 export * from "./api/errors";
 

@@ -38,7 +38,12 @@ export function ChatWindow({
       {messages.map((msg) => {
         const isUser = msg.role === "user";
         const isNotFound = msg.found === false || msg.content.includes("Bu konuda kayıtlarda bilgi bulamadım");
-        const hasCitations = !isUser && !isNotFound && Array.isArray(msg.citations) && msg.citations.length > 0;
+        const hasCitations =
+          !isUser &&
+          !isNotFound &&
+          !msg.isStreaming &&
+          Array.isArray(msg.citations) &&
+          msg.citations.length > 0;
         const hasError = !!msg.error;
 
         return (

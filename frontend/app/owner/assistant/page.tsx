@@ -3,15 +3,13 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import type { ChatMessage, CitationCard } from "@/lib/types";
 import type { StreamStage, SourceRef, ChatReply } from "@/lib/api/types";
-import { streamAssistantChat } from "@/lib/api/client";
+import { streamAssistantChat, DEFAULT_OWNER_ID } from "@/lib/api/client";
 import { isApiError } from "@/lib/api/errors";
 import {
   ChatWindow,
   ChatInput,
   SuggestedPrompts,
 } from "@/components/assistant";
-
-const DEFAULT_OWNER_ID = "c4a5f6b7-8a9b-0c1d-2e3f-4a5b6c7d8e9f";
 
 const INITIAL_MESSAGES: ChatMessage[] = [
   {
@@ -130,7 +128,9 @@ export default function AssistantPage() {
             onDone: (reply: ChatReply) => {
               setCurrentStage(null);
               setIsLoading(false);
-              const citations = mapSourceRefsToCitationCards(reply.answer.sources);
+              const isFound = reply.answer.found !== false;
+              // found=false durumunda veya kaynak yoksa kartlar gösterilmez
+              const citations = isFound ? mapSourceRefsToCitationCards(reply.answer.sources) : [];
               setMessages((prev) =>
                 prev.map((m) =>
                   m.id === assistantMsgId
@@ -138,7 +138,7 @@ export default function AssistantPage() {
                         ...m,
                         content: reply.answer.content || m.content,
                         citations,
-                        found: reply.answer.found,
+                        found: isFound,
                         isStreaming: false,
                       }
                     : m,
