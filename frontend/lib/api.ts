@@ -31,6 +31,8 @@ import type {
   LossReasonItem,
   MarinaStatItem,
   AnalysisStatus,
+  RequestCategory,
+  LossReason,
 } from "@/lib/types";
 import type { CallState } from "./api/types";
 
@@ -181,33 +183,57 @@ export async function fetchCrmSuggestions(): Promise<CrmSuggestion[]> {
 }
 
 // ---------------------------------------------------------------------------
-// Günlük çağrı trendi (son 7 gün)
+// Günlük çağrı trendi (getApiKpiSummary üzerinden)
 // ---------------------------------------------------------------------------
-export async function fetchDailyCalls(): Promise<DailyCallPoint[]> {
-  const data = await import("@/mocks/daily-calls.json");
-  return data.default as unknown as DailyCallPoint[];
+export async function fetchDailyCalls(filter?: { date_from?: string; date_to?: string }): Promise<DailyCallPoint[]> {
+  const summary = await getApiKpiSummary(filter);
+  return summary.daily_calls.map((d) => ({
+    date: d.day,
+    label: d.day,
+    count: d.count,
+  }));
 }
 
 // ---------------------------------------------------------------------------
-// Arıza kategorileri (RequestCategory bazlı)
+// Arıza kategorileri (RequestCategory bazlı, getApiKpiSummary üzerinden)
 // ---------------------------------------------------------------------------
-export async function fetchFailureCategories(): Promise<FailureCategoryItem[]> {
-  const data = await import("@/mocks/failure-categories.json");
-  return data.default as unknown as FailureCategoryItem[];
+export async function fetchFailureCategories(filter?: { date_from?: string; date_to?: string }): Promise<FailureCategoryItem[]> {
+  const summary = await getApiKpiSummary(filter);
+  const total = Object.values(summary.by_category).reduce((a, b) => a + b, 0) || 1;
+  return Object.entries(summary.by_category).map(([category, count]) => ({
+    category: category as RequestCategory,
+    label: category,
+    count,
+    pct: Math.round((count / total) * 100),
+    color: "bg-sky-500",
+  }));
 }
 
 // ---------------------------------------------------------------------------
-// Marina istatistikleri
+// Marina istatistikleri (busiest_marinas, getApiKpiSummary üzerinden)
 // ---------------------------------------------------------------------------
-export async function fetchMarinaStats(): Promise<MarinaStatItem[]> {
-  const data = await import("@/mocks/marina-stats.json");
-  return data.default as unknown as MarinaStatItem[];
+export async function fetchMarinaStats(filter?: { date_from?: string; date_to?: string }): Promise<MarinaStatItem[]> {
+  const summary = await getApiKpiSummary(filter);
+  const total = summary.busiest_marinas.reduce((a, b) => a + b.count, 0) || 1;
+  return summary.busiest_marinas.map((m) => ({
+    name: m.name,
+    count: m.count,
+    pct: Math.round((m.count / total) * 100),
+    tag: m.name,
+  }));
 }
 
 // ---------------------------------------------------------------------------
-// Kayıp nedenleri (LossReason bazlı)
+// Kayıp nedenleri (LossReason bazlı, getApiKpiSummary üzerinden)
 // ---------------------------------------------------------------------------
-export async function fetchLossReasons(): Promise<LossReasonItem[]> {
-  const data = await import("@/mocks/loss-reasons.json");
-  return data.default as unknown as LossReasonItem[];
+export async function fetchLossReasons(filter?: { date_from?: string; date_to?: string }): Promise<LossReasonItem[]> {
+  const summary = await getApiKpiSummary(filter);
+  const total = Object.values(summary.lost_by_reason).reduce((a, b) => a + b, 0) || 1;
+  return Object.entries(summary.lost_by_reason).map(([reason, count]) => ({
+    reason: reason as LossReason,
+    label: reason,
+    count,
+    pct: Math.round((count / total) * 100),
+    color: "bg-amber-500",
+  }));
 }

@@ -7,6 +7,7 @@ import { isApiError } from "@/lib/api/errors";
 import type { KpiSummary } from "@/lib/api/types";
 import {
   EMPTY_LABEL,
+  labelOf,
   LOSS_REASON_LABELS,
   LossReason,
   REQUEST_CATEGORY_LABELS,
@@ -15,20 +16,11 @@ import {
   Urgency,
 } from "@/lib/types";
 
-// Marina opsiyonları
-const MARINA_OPTIONS = [
-  { value: "all", label: "⚓ Tüm Marinalar" },
-  { value: "kalamis", label: "Kalamış Marina" },
-  { value: "tuzla", label: "Tuzla Marina" },
-  { value: "gocek", label: "Göcek D-Marin" },
-  { value: "bodrum", label: "Bodrum Milta Marina" },
-  { value: "yalikavak", label: "Yalıkavak Marina" },
-];
-
-// Tarih aralığı opsiyonları
+// Tarih aralığı opsiyonları (Sentetik seed verileri 5-13 Ekim 2026 arasındadır)
 const DATE_RANGE_OPTIONS = [
+  { value: "30", label: "Son 30 Gün (Varsayılan)" },
+  { value: "oct2026", label: "Ekim 2026 (Demo Seed Dönemi)" },
   { value: "7", label: "Son 7 Gün" },
-  { value: "30", label: "Son 30 Gün" },
   { value: "90", label: "Son 3 Ay (Sezon)" },
   { value: "all", label: "Tüm Dönem" },
 ];
@@ -63,8 +55,15 @@ const LOSS_COLORS: Record<string, string> = {
   diger: "bg-gray-400",
 };
 
-/** Belirtilen gün sayısına göre ISO tarih aralığı üretir. */
+/** Belirtilen aralık anahtarına göre ISO tarih aralığı (date_from, date_to) üretir. */
 function getDateRange(rangeKey: string): { date_from?: string; date_to?: string } {
+  if (rangeKey === "oct2026") {
+    return {
+      date_from: "2026-10-01",
+      date_to: "2026-10-31",
+    };
+  }
+
   if (rangeKey === "all") return {};
 
   const days = parseInt(rangeKey, 10);
@@ -99,8 +98,6 @@ export default function AnalyticsDashboard() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<{ message: string; code?: string; requestId?: string | null } | null>(null);
   const [dateRange, setDateRange] = useState<string>("30");
-  const [selectedMarina, setSelectedMarina] = useState<string>("all");
-
   const [reloadKey, setReloadKey] = useState<number>(0);
 
   const handleRefresh = () => {
@@ -155,7 +152,7 @@ export default function AnalyticsDashboard() {
     };
   }, [dateRange, reloadKey]);
 
-  // Günlük çağrı grafiği için maksimum değer
+  // Günlük çağrı grafiği için maksimum değer (0 ise 1 kabul et)
   const dailyCalls = data?.daily_calls ?? [];
   const maxDailyCount = Math.max(...dailyCalls.map((d) => d.count), 1);
 
@@ -171,7 +168,7 @@ export default function AnalyticsDashboard() {
   const lossEntries = Object.entries(data?.lost_by_reason ?? {}) as [LossReason, number][];
   const totalLossCount = lossEntries.reduce((acc, [, val]) => acc + val, 0);
 
-  // Marinalar (eğer filtre seçildiyse de tüm marinalar listelenir)
+  // Marinalar (En yoğun marinalar)
   const marinas = data?.busiest_marinas ?? [];
   const totalMarinaCalls = marinas.reduce((acc, m) => acc + m.count, 0);
 
@@ -192,21 +189,19 @@ export default function AnalyticsDashboard() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {/* Marina Seçimi */}
-          <select
-            value={selectedMarina}
-            onChange={(e) => setSelectedMarina(e.target.value)}
-            disabled={isLoading}
-            className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 disabled:opacity-50"
-          >
-            {MARINA_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+          {/* Marina Seçimi (Backend desteği henüz bulunmadığından disabled) */}
+          <div className="relative">
+            <select
+              value="all"
+              disabled
+              title="Marina bazlı filtreleme API desteği henüz eklenmedi (Tüm Marinalar gösteriliyor)"
+              className="rounded-lg border border-gray-200 bg-gray-100 px-3 py-1.5 text-xs font-semibold text-gray-500 shadow-sm cursor-not-allowed opacity-80 focus:outline-none"
+            >
+              <option value="all">⚓ Tüm Marinalar (Filtre Yakında)</option>
+            </select>
+          </div>
 
-          {/* Tarih Filtresi */}
+          {/* Tarih Filtresi (date_from & date_to API sorgusu) */}
           <select
             value={dateRange}
             onChange={(e) => handleDateRangeChange(e.target.value)}
@@ -356,9 +351,9 @@ export default function AnalyticsDashboard() {
       {/* Veri Görselleştirme (Gerçek KPI'lar) */}
       {!isLoading && !error && data && data.total_calls > 0 && (
         <div className="space-y-6">
-          {/* KPI Kartları Izgarası (7 Kart) */}
+          {/* Üst KPI Kartları Izgarası (7 Kart) */}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
-            {/* 1. Gelen Çağrı */}
+            {/* 1. Gelen Çağrı (total_calls) */}
             <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
                 Gelen Çağrı
@@ -372,7 +367,7 @@ export default function AnalyticsDashboard() {
               </p>
             </div>
 
-            {/* 2. Yeni Müşteri */}
+            {/* 2. Yeni Müşteri (new_customers) */}
             <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
                 Yeni Müşteri
@@ -386,7 +381,7 @@ export default function AnalyticsDashboard() {
               </p>
             </div>
 
-            {/* 3. Servis Talebi */}
+            {/* 3. Servis Talebi (service_requests) */}
             <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
                 Servis Talebi
@@ -400,7 +395,7 @@ export default function AnalyticsDashboard() {
               </p>
             </div>
 
-            {/* 4. Teklif Talebi */}
+            {/* 4. Teklif Talebi (quote_requests) */}
             <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
                 Teklif Talebi
@@ -414,7 +409,7 @@ export default function AnalyticsDashboard() {
               </p>
             </div>
 
-            {/* 5. Acil Servis (🚨 Kırmızı Vurgu) */}
+            {/* 5. Acil Servis (urgent_requests - 🚨 Kırmızı Vurgu) */}
             <div className="rounded-xl border border-red-300 bg-red-50/70 p-4 shadow-sm">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-red-800">
                 🚨 Acil Servis
@@ -428,7 +423,7 @@ export default function AnalyticsDashboard() {
               </p>
             </div>
 
-            {/* 6. Satışa Dönüş Oranı (✓ Yeşil Vurgu) */}
+            {/* 6. Satışa Dönüş Oranı (converted_sales / conversion_rate - ✓ Yeşil Vurgu) */}
             <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 shadow-sm">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
                 Satışa Dönüşen
@@ -443,7 +438,7 @@ export default function AnalyticsDashboard() {
               </p>
             </div>
 
-            {/* 7. Ort. Cevap Süresi */}
+            {/* 7. Ort. Cevap Süresi (avg_answer_delay_s) */}
             <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
                 Ort. Yanıt Süresi
@@ -462,7 +457,7 @@ export default function AnalyticsDashboard() {
             </div>
           </div>
 
-          {/* Günlük Çağrı Trendi Grafiği */}
+          {/* Günlük Çağrı Trendi Grafiği (daily_calls - boş günler için 0 gösterimi) */}
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
             <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between mb-4">
               <div>
@@ -490,7 +485,11 @@ export default function AnalyticsDashboard() {
             ) : (
               <div className="flex items-end gap-2 sm:gap-3 h-44 pt-6 pb-2 border-b border-gray-100 overflow-x-auto">
                 {dailyCalls.map((day) => {
-                  const heightPct = Math.max(Math.round((day.count / maxDailyCount) * 100), 6);
+                  const isZero = day.count === 0;
+                  // 0 olan günler için en az 4px taban çizgisi, diğerleri oransal
+                  const heightPct = isZero
+                    ? 4
+                    : Math.max(Math.round((day.count / maxDailyCount) * 100), 8);
                   const isMax = day.count === maxDailyCount && day.count > 0;
 
                   return (
@@ -498,10 +497,14 @@ export default function AnalyticsDashboard() {
                       key={day.day}
                       className="flex min-w-[2.5rem] flex-1 flex-col items-center gap-1.5 group"
                     >
-                      {/* Sayı etiketi */}
+                      {/* Sayı etiketi (boş günler için 0 gösterimi) */}
                       <span
                         className={`text-[10px] font-bold transition-transform group-hover:scale-110 ${
-                          isMax ? "text-sky-700 font-extrabold" : "text-gray-600"
+                          isZero
+                            ? "text-gray-300 font-normal"
+                            : isMax
+                            ? "text-sky-700 font-extrabold"
+                            : "text-gray-600"
                         }`}
                       >
                         {day.count}
@@ -512,7 +515,9 @@ export default function AnalyticsDashboard() {
                         <div
                           style={{ height: `${heightPct}%` }}
                           className={`w-full rounded-t-md transition-all group-hover:opacity-90 ${
-                            isMax
+                            isZero
+                              ? "bg-gray-200"
+                              : isMax
                               ? "bg-sky-600 shadow-sm ring-2 ring-sky-300"
                               : "bg-sky-400"
                           }`}
@@ -523,7 +528,11 @@ export default function AnalyticsDashboard() {
                       {/* Tarih / Gün Etiketi */}
                       <span
                         className={`text-[9px] sm:text-[10px] font-medium text-center truncate max-w-full ${
-                          isMax ? "text-sky-900 font-bold" : "text-gray-500"
+                          isZero
+                            ? "text-gray-400"
+                            : isMax
+                            ? "text-sky-900 font-bold"
+                            : "text-gray-500"
                         }`}
                       >
                         {formatDayLabel(day.day)}
@@ -537,7 +546,7 @@ export default function AnalyticsDashboard() {
 
           {/* 3 Temel Dağılım Grafiği */}
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-            {/* 1. Arıza & Talep Kategori Dağılımı (RequestCategory) */}
+            {/* 1. Arıza & Talep Kategori Dağılımı (by_category) */}
             <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
               <div className="flex items-center justify-between mb-1">
                 <h2 className="text-sm font-bold text-gray-900">Arıza & Talep Kategorisi</h2>
@@ -559,7 +568,7 @@ export default function AnalyticsDashboard() {
                       const pct = totalCategoryCalls > 0
                         ? Math.round((count / totalCategoryCalls) * 100)
                         : 0;
-                      const label = REQUEST_CATEGORY_LABELS[category] ?? category;
+                      const label = labelOf(REQUEST_CATEGORY_LABELS, category);
                       const barColor = CATEGORY_COLORS[category] ?? "bg-sky-500";
 
                       return (
@@ -585,10 +594,10 @@ export default function AnalyticsDashboard() {
               )}
             </div>
 
-            {/* 2. Aciliyet Seviyesi Dağılımı (Urgency) & Marinalar */}
+            {/* 2. Aciliyet Seviyesi Dağılımı (by_urgency) & En Yoğun Marinalar (busiest_marinas) */}
             <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
               <div className="flex items-center justify-between mb-1">
-                <h2 className="text-sm font-bold text-gray-900">Aciliyet Seviyesi & Marinalar</h2>
+                <h2 className="text-sm font-bold text-gray-900">Aciliyet Dağılımı & Marinalar</h2>
                 <span className="text-[11px] font-semibold text-gray-400">
                   {totalUrgencyCalls} analiz
                 </span>
@@ -608,7 +617,7 @@ export default function AnalyticsDashboard() {
                     const pct = totalUrgencyCalls > 0
                       ? Math.round((count / totalUrgencyCalls) * 100)
                       : 0;
-                    const label = URGENCY_LABELS[urgency] ?? urgency;
+                    const label = labelOf(URGENCY_LABELS, urgency);
                     const style = URGENCY_STYLES[urgency] ?? URGENCY_STYLES.normal;
 
                     return (
@@ -633,7 +642,7 @@ export default function AnalyticsDashboard() {
                   })}
               </div>
 
-              {/* En Yoğun Marinalar Özeti */}
+              {/* En Yoğun Marinalar Özeti (busiest_marinas) */}
               <div className="pt-3">
                 <h3 className="text-xs font-bold text-gray-800 mb-2">En Yoğun Marinalar</h3>
                 {marinas.length === 0 ? (
@@ -649,7 +658,7 @@ export default function AnalyticsDashboard() {
                           key={m.name}
                           className="flex items-center justify-between text-xs py-1 border-b border-gray-50 last:border-none"
                         >
-                          <span className="font-medium text-gray-700">⚓ {m.name}</span>
+                          <span className="font-medium text-gray-700">⚓ {m.name || EMPTY_LABEL}</span>
                           <span className="font-bold text-sky-700">
                             {m.count} çağrı <span className="font-normal text-gray-400">(%{mPct})</span>
                           </span>
@@ -661,7 +670,7 @@ export default function AnalyticsDashboard() {
               </div>
             </div>
 
-            {/* 3. Satış Kaçırma Sebepleri (LossReason) */}
+            {/* 3. Satış Kaçırma Sebepleri (lost_by_reason) */}
             <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
               <div className="flex items-center justify-between mb-1">
                 <h2 className="text-sm font-bold text-gray-900">Satış Kaçırma Sebepleri</h2>
@@ -688,7 +697,7 @@ export default function AnalyticsDashboard() {
                       const pct = totalLossCount > 0
                         ? Math.round((count / totalLossCount) * 100)
                         : 0;
-                      const label = LOSS_REASON_LABELS[reason] ?? reason;
+                      const label = labelOf(LOSS_REASON_LABELS, reason);
                       const color = LOSS_COLORS[reason] ?? "bg-gray-400";
 
                       return (
@@ -737,13 +746,13 @@ export default function AnalyticsDashboard() {
 
           {/* En Sık Bildirilen Arızalar (top_problems) & Hızlı Aksiyon */}
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            {/* Sık Karşılaşılan Arızalar */}
+            {/* Sık Karşılaşılan Arızalar (top_problems) */}
             <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
               <h2 className="text-sm font-bold text-gray-900 mb-1">
                 En Sık Bildirilen Tekne Arızaları
               </h2>
               <p className="text-xs text-gray-400 mb-4">
-                Konuşma transkriptlerinden çıkarılan problem ifadeleri
+                Konuşma transkriptlerinden çıkarılan problem ifadeleri (`top_problems`)
               </p>
 
               {(data.top_problems ?? []).length === 0 ? (
@@ -759,7 +768,7 @@ export default function AnalyticsDashboard() {
                         <span className="flex h-5 w-5 items-center justify-center rounded-full bg-sky-100 text-[10px] font-bold text-sky-700">
                           {idx + 1}
                         </span>
-                        <span className="font-semibold text-gray-800">{prob.name}</span>
+                        <span className="font-semibold text-gray-800">{prob.name || EMPTY_LABEL}</span>
                       </div>
                       <span className="font-bold text-sky-700">{prob.count} vaka</span>
                     </div>
