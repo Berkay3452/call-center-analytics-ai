@@ -2,6 +2,8 @@
 
 Çağrı merkezi analitiği sisteminin API'si ve arka plan işçileri. Mimari için repo kökündeki `Sistem_mimarisi_v1.md` dosyasına bakın.
 
+> Tüm sistemi (backend + frontend) sıfırdan ayağa kaldırmak için önce [`docs/calistirma.md`](../docs/calistirma.md) rehberine bak.
+
 ## Gereksinimler
 
 - [uv](https://docs.astral.sh/uv/) (Python sürümünü ve sanal ortamı uv yönetir; sistem Python'u gerekmez)
