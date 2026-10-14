@@ -14,7 +14,8 @@ Kurallar:
   "bulamadım" diyebilsin.
 - Sonuçlar, hesabın dayandığı kayıtları `sources` ile taşır (arayüzde kaynak kartı olur).
 - Parametreli sorgu kullanılır (SQLAlchemy ORM/Core; SQL enjeksiyonuna karşı tam korumalı).
-- Araçlar bağımsız, saf fonksiyonlardır.
+- Üretimde sahte veri yoktur; çevrimdışı birim testleri araçları
+  `tests/assistant_fakes.py` ile değiştirir.
 """
 
 from dataclasses import dataclass, field
@@ -25,7 +26,6 @@ from uuid import UUID
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.assistant.fake_data import _OWNERS, OwnerData, get_owner_data
 from app.core.config import Settings
 from app.db.models.external import Boat, Craftsman, Expense, ServiceOrder, Subscription
 from app.db.session import worker_session
@@ -62,11 +62,11 @@ class LastMaintenance:
     sources: list[SourceRef] = field(default_factory=list)
 
 
-def require_owner(owner_id: str) -> OwnerData:
-    """`owner_id` kontrolü: boşsa `OwnerRequiredError` fırlatır."""
+def require_owner(owner_id: str) -> str:
+    """`owner_id` kontrolü: boşsa `OwnerRequiredError` fırlatır; temizlenmiş değeri döner."""
     if not owner_id or not str(owner_id).strip():
         raise OwnerRequiredError("owner_id zorunludur.")
-    return get_owner_data(str(owner_id).strip())
+    return str(owner_id).strip()
 
 
 def _parse_uuid(val: str | UUID | None) -> UUID | None:
@@ -78,104 +78,6 @@ def _parse_uuid(val: str | UUID | None) -> UUID | None:
         return UUID(str(val).strip())
     except (ValueError, AttributeError):
         return None
-
-
-def _own_boat_ids(data: OwnerData, boat_id: str | None) -> set[str]:
-    """Sahibin tekneleri (sahte veri); `boat_id` verilmişse ve sahibe ait değilse boş küme."""
-    ids = {b.boat_id for b in data.boats}
-    return ids if boat_id is None else ids & {boat_id}
-
-
-# --- Sahte veri yedekleri (çevrimdışı birim testleri ve mock kullanıcılar için) ---
-
-
-def _get_expense_total_fake(
-    owner_id: str,
-    *,
-    start: date | None = None,
-    end: date | None = None,
-    boat_id: str | None = None,
-) -> ExpenseTotal:
-    data = require_owner(owner_id)
-    boats = _own_boat_ids(data, boat_id)
-    items = [
-        e
-        for e in data.expenses
-        if e.boat_id in boats and (start is None or e.on >= start) and (end is None or e.on <= end)
-    ]
-    return ExpenseTotal(
-        total_try=sum((e.amount for e in items), Decimal("0")),
-        item_count=len(items),
-        sources=[
-            SourceRef(
-                kind="expense",
-                record_id=e.record_id,
-                title=e.description,
-                date=e.on,
-                excerpt=f"{e.amount:,.2f} TL",
-            )
-            for e in sorted(items, key=lambda e: e.on)
-        ],
-    )
-
-
-def _get_remaining_package_fake(
-    owner_id: str,
-    *,
-    boat_id: str | None = None,
-) -> RemainingPackage | None:
-    data = require_owner(owner_id)
-    sub = data.subscription
-    if sub is None or not _own_boat_ids(data, boat_id):
-        return None
-    return RemainingPackage(
-        plan=sub.plan,
-        remaining=sub.total - sub.used,
-        total=sub.total,
-        ends_on=sub.ends_on,
-        sources=[
-            SourceRef(
-                kind="subscription",
-                record_id=sub.record_id,
-                title=f"{sub.plan} paket",
-                date=sub.ends_on,
-                excerpt=f"{sub.used}/{sub.total} bakım hakkı kullanıldı",
-            )
-        ],
-    )
-
-
-def _get_last_maintenance_fake(
-    owner_id: str,
-    *,
-    boat_id: str | None = None,
-    category: str | None = None,
-) -> LastMaintenance | None:
-    data = require_owner(owner_id)
-    boats = {b.boat_id: b for b in data.boats if b.boat_id in _own_boat_ids(data, boat_id)}
-    records = [
-        s
-        for s in data.services
-        if s.boat_id in boats and (category is None or s.category == category)
-    ]
-    if not records:
-        return None
-    last = max(records, key=lambda s: s.on)
-    return LastMaintenance(
-        on=last.on,
-        job=last.job,
-        craftsman=last.craftsman,
-        boat_name=boats[last.boat_id].name,
-        sources=[
-            SourceRef(
-                kind="service_record",
-                record_id=last.record_id,
-                title=f"{last.on.strftime('%d.%m.%Y')} servis kaydı",
-                date=last.on,
-                excerpt=last.job,
-            )
-        ],
-    )
 
 
 # --- Gerçek Veritabanı Sorguları (#27) ---
@@ -362,11 +264,7 @@ async def get_expense_total(
     session: AsyncSession | None = None,
 ) -> ExpenseTotal:
     """Tarih aralığındaki (uçlar dahil) gider toplamı. Kayıt yoksa toplam 0 ve 0 kalem."""
-    require_owner(owner_id)
-    clean_owner = owner_id.strip()
-
-    if session is None and clean_owner in _OWNERS:
-        return _get_expense_total_fake(clean_owner, start=start, end=end, boat_id=boat_id)
+    clean_owner = require_owner(owner_id)
 
     owner_uuid = _parse_uuid(clean_owner)
     boat_uuid = _parse_uuid(boat_id)
@@ -391,11 +289,7 @@ async def get_remaining_package(
     session: AsyncSession | None = None,
 ) -> RemainingPackage | None:
     """Abonelik/paketteki kalan bakım hakkı; paket yoksa `None`."""
-    require_owner(owner_id)
-    clean_owner = owner_id.strip()
-
-    if session is None and clean_owner in _OWNERS:
-        return _get_remaining_package_fake(clean_owner, boat_id=boat_id)
+    clean_owner = require_owner(owner_id)
 
     owner_uuid = _parse_uuid(clean_owner)
     boat_uuid = _parse_uuid(boat_id)
@@ -417,11 +311,7 @@ async def get_last_maintenance(
     session: AsyncSession | None = None,
 ) -> LastMaintenance | None:
     """En son servis kaydı (isteğe bağlı kategoriyle); kayıt yoksa `None`."""
-    require_owner(owner_id)
-    clean_owner = owner_id.strip()
-
-    if session is None and clean_owner in _OWNERS:
-        return _get_last_maintenance_fake(clean_owner, boat_id=boat_id, category=category)
+    clean_owner = require_owner(owner_id)
 
     owner_uuid = _parse_uuid(clean_owner)
     boat_uuid = _parse_uuid(boat_id)

@@ -40,7 +40,7 @@ services:
   embeddings:
     image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.7
     profiles: ["rag"]
-    command: ["--model-id", "BAAI/bge-m3", "--max-client-batch-size", "64"]
+    command: ["--model-id", "BAAI/bge-m3", "--max-client-batch-size", "64", "--max-batch-tokens", "2048"]
     ports:
       - "8080:80"
     volumes:
