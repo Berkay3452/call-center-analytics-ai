@@ -81,6 +81,8 @@ class Settings(BaseSettings):
     # Model başına dakikadaki en fazla istek (0 = sınırsız). Gemini ücretsiz katmanı: 5.
     # Sınır süreç içidir; birden fazla Celery işçisi varsa her biri ayrı sayar.
     llm_requests_per_minute: int = Field(default=0, ge=0)
+    # Nemotron gibi akıl yürüten modellerde düşünme çıktısını kapatır (NVIDIA): çok daha hızlı.
+    llm_disable_thinking: bool = False
     llm_timeout_s: float = 60.0
     llm_max_retries: int = 3
 

@@ -68,8 +68,13 @@ def get_chat_model(
 
     from langchain_openai import ChatOpenAI  # tembel import (ai ekstrası)
 
+    extra_body: dict[str, object] | None = None
+    if settings.llm_disable_thinking and settings.llm_provider == "nvidia":
+        extra_body = {"chat_template_kwargs": {"enable_thinking": False}}
+
     return ChatOpenAI(
         model=model,
+        extra_body=extra_body,
         base_url=_resolve_base_url(settings),
         api_key=api_key or "ollama",  # Ollama anahtar istemez ama alan zorunlu
         temperature=temperature,

@@ -67,7 +67,21 @@ def extract_json_object(text: str) -> dict[str, Any]:
         raise OutputParseError(f"JSON okunamadı: {exc.msg} (konum {exc.pos}).") from exc
     if not isinstance(data, dict):
         raise OutputParseError("Cevap bir JSON nesnesi olmalı.")
-    return data
+    return _unwrap_schema_echo(data)
+
+
+def _unwrap_schema_echo(data: dict[str, Any]) -> dict[str, Any]:
+    """Model veriyi JSON Schema kalıbının `properties` alanına koyduysa içindeki veriyi alır.
+
+    Örnek: {"title": ..., "properties": {"summary": "metin"}, "required": [...]}. Gerçek bir şema
+    tanımı (alan değerleri {"type": ...} sözlükleri) buna dahil değildir.
+    """
+    props = data.get("properties")
+    if not isinstance(props, dict) or not props or ("required" not in data and "type" not in data):
+        return data
+    if any(isinstance(v, dict) and "type" in v for v in props.values()):
+        return data
+    return props
 
 
 def format_validation_error(exc: ValidationError) -> str:
