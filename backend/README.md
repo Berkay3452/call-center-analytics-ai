@@ -92,7 +92,7 @@ Servis olmadan denemek için `EMBEDDING_PROVIDER=hash` (modelsiz, yalnızca keli
 
 ## Agent'ları gerçek LLM ile değerlendirme
 
-`.env`'de LLM ayarları doluyken (geçici seçim: Gemini, bkz. #13) agent'lar sentetik çağrılarda (`data/synthetic/`) çalıştırılıp doğru etiketlerle karşılaştırılır:
+`.env`'de LLM ayarları doluyken (NVIDIA Nemotron 3; Gemini yedek, bkz. #13; Nemotron için `LLM_DISABLE_THINKING=true`) agent'lar sentetik çağrılarda (`data/synthetic/`) çalıştırılıp doğru etiketlerle karşılaştırılır:
 
 ```
 python -m scripts.evaluate                                 # çağrıların hepsi
