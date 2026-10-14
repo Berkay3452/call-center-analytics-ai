@@ -401,3 +401,23 @@ async def test_prompt_injection_in_question_does_not_change_flow() -> None:
 
     # Kurallar soruyu sayısal sınıflar; araç yalnızca oturumdaki sahibin verisini okur.
     assert "41.950,00 TL" in answer.answer and "6.400" not in answer.answer
+
+
+def test_grounding_does_not_repeat_identical_claims_from_different_sources() -> None:
+    passages = [
+        Passage(source=SourceRef(kind="boat_note", record_id=rid, title=rid, excerpt="x"), text="x")
+        for rid in ("n1", "n2")
+    ]
+    draft = AnswerDraft(
+        claims=[
+            Claim(text="Yedek filtre bırakılmış.", source_ids=["n1"]),
+            Claim(text="Yedek filtre bırakılmış.", source_ids=["n2"]),
+        ]
+    )
+
+    result = ground_draft(draft, passages)
+
+    assert result is not None
+    answer, sources = result
+    assert answer == "Yedek filtre bırakılmış."
+    assert [s.record_id for s in sources] == ["n1", "n2"]

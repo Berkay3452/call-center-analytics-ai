@@ -18,8 +18,10 @@ from app.rag.search import hybrid_search
 from app.schemas.assistant import SourceRef
 
 # Yalnızca vektörle gelen (tam metinde geçmeyen) parçalar için alt benzerlik sınırı: ilgisiz
-# notların kaynak gösterilmesini önler. bge-m3 ile Türkçe kayıtlarda ölçülerek ayarlanır.
-MIN_SIMILARITY = 0.45
+# notların kaynak gösterilmesini önler. Seed verisinde bge-m3 ile ölçüldü (14 Ekim 2026):
+# ilgisiz sorularda yalnızca-vektör eşleşmeleri en fazla 0,48; ilgili sorularda 0,5 üstü
+# ya da tam metinle de eşleşiyor (tam metin eşleşmesi eşikten etkilenmez).
+MIN_SIMILARITY = 0.5
 
 
 @dataclass(frozen=True)
