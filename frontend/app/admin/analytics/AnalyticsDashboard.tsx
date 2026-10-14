@@ -22,7 +22,7 @@ const DATE_RANGE_OPTIONS = [
   { value: "oct2026", label: "Ekim 2026 (Demo Seed Dönemi)" },
   { value: "7", label: "Son 7 Gün" },
   { value: "90", label: "Son 3 Ay (Sezon)" },
-  { value: "all", label: "Tüm Dönem" },
+  { value: "365", label: "Son 1 Yıl" },
 ];
 
 // Kategori bar renkleri
@@ -63,8 +63,6 @@ function getDateRange(rangeKey: string): { date_from?: string; date_to?: string 
       date_to: "2026-10-31",
     };
   }
-
-  if (rangeKey === "all") return {};
 
   const days = parseInt(rangeKey, 10);
   if (isNaN(days) || days <= 0) return {};
@@ -332,10 +330,10 @@ export default function AnalyticsDashboard() {
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <button
               type="button"
-              onClick={() => handleDateRangeChange("all")}
+              onClick={() => handleDateRangeChange("365")}
               className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
             >
-              Tüm Dönem Verilerini Gör
+              Son 1 Yıllık Verileri Gör
             </button>
             <Link
               href="/admin/calls/upload"
@@ -555,7 +553,7 @@ export default function AnalyticsDashboard() {
                 </span>
               </div>
               <p className="text-xs text-gray-400 mb-4">
-                Backend `RequestCategory` enum dağılımı
+                Talep kategorisine göre dağılım
               </p>
 
               {categoryEntries.length === 0 ? (
@@ -603,7 +601,7 @@ export default function AnalyticsDashboard() {
                 </span>
               </div>
               <p className="text-xs text-gray-400 mb-4">
-                Backend `Urgency` seviyeleri ve lokasyonlar
+                Aciliyet seviyeleri ve en yoğun lokasyonlar
               </p>
 
               {/* Aciliyet Dağılımı Çubukları */}
@@ -679,7 +677,7 @@ export default function AnalyticsDashboard() {
                 </span>
               </div>
               <p className="text-xs text-gray-400 mb-4">
-                Backend `LossReason` analizi
+                Kaybedilen satışların nedenleri
               </p>
 
               {lossEntries.length === 0 ? (
@@ -752,7 +750,7 @@ export default function AnalyticsDashboard() {
                 En Sık Bildirilen Tekne Arızaları
               </h2>
               <p className="text-xs text-gray-400 mb-4">
-                Konuşma transkriptlerinden çıkarılan problem ifadeleri (`top_problems`)
+                Konuşma transkriptlerinden çıkarılan problem ifadeleri
               </p>
 
               {(data.top_problems ?? []).length === 0 ? (
