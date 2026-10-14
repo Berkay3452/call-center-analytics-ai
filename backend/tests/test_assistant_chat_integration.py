@@ -361,3 +361,22 @@ async def test_llm_unavailable_gets_polite_message_without_echoing_question(
     answer = resp.json()["answer"]
     assert answer["content"] == assistant_chat.ASSISTANT_UNAVAILABLE_MESSAGE
     assert "Gizli soru" not in answer["content"] and answer["found"] is False
+
+
+async def test_missing_llm_key_gets_polite_message(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """LLM_API_KEY yokken (kural dışı soruda planlayıcı LLM ister) genel hata değil nazik mesaj."""
+    from app.llm.client import LLMNotConfiguredError
+    from app.services import assistant_chat
+
+    async def no_key(*args: object, **kwargs: object) -> object:
+        raise LLMNotConfiguredError("LLM_API_KEY tanımlı değil (.env).")
+
+    monkeypatch.setattr(assistant_chat, "answer_question", no_key)
+    headers = {"X-Service-Key": TEST_SERVICE_KEY, "X-User-Id": str(AHMET_ID)}
+
+    resp = await client.post("/api/v1/chat/messages", json={"question": "selam"}, headers=headers)
+
+    assert resp.status_code == 200
+    assert resp.json()["answer"]["content"] == assistant_chat.ASSISTANT_UNAVAILABLE_MESSAGE

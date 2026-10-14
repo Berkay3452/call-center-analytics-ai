@@ -11,6 +11,7 @@ Kurallar:
 - HTTP bilmez; hata durumlarında `app.core.errors` sınıflarını fırlatır.
 """
 
+import asyncio
 import json
 from collections.abc import AsyncIterator
 from datetime import UTC, datetime
@@ -26,6 +27,7 @@ from app.assistant.llm import AssistantLLM, AssistantLLMError
 from app.core.errors import AppError, NotFoundError
 from app.db.models.ai import ChatMessage, ChatSession
 from app.db.models.external import Customer
+from app.llm.client import LLMNotConfiguredError
 from app.schemas.api import (
     ChatMessageOut,
     ChatReply,
@@ -37,6 +39,8 @@ from app.schemas.assistant import AssistantAnswer, AssistantRequest, QuestionTyp
 log = structlog.get_logger(__name__)
 
 GENERIC_ERROR_MESSAGE = "Beklenmeyen bir hata oluştu. Lütfen biraz sonra tekrar deneyin."
+# Akış metnini parçalar arasında bekleme: cevap kelime kelime yazılıyormuş gibi görünsün.
+STREAM_CHUNK_DELAY_S = 0.03
 ASSISTANT_UNAVAILABLE_MESSAGE = (
     "Şu anda sorunuzu yanıtlayamıyorum. Lütfen biraz sonra tekrar deneyin."
 )
@@ -206,7 +210,7 @@ async def execute_chat_turn(
     try:
         req = AssistantRequest(question=clean_q, owner_id=str(owner_uuid))
         answer = await answer_question(req, llm=llm, session=db)
-    except AssistantLLMError:
+    except (AssistantLLMError, LLMNotConfiguredError):
         # LLM erişilemezse arayüz kesilmesin: nazik bir mesaj kaydedilir, ayrıntı yalnızca logda.
         log.warning("assistant.llm_unavailable", session_id=str(chat_session.id))
         answer = AssistantAnswer(
@@ -297,6 +301,7 @@ async def stream_assistant_chat(
 
     # 1. token parçaları
     for chunk in _chunk_text(answer.answer):
+        await asyncio.sleep(STREAM_CHUNK_DELAY_S)
         yield ServerSentEvent(
             event="token",
             data=json.dumps({"token": chunk, "text": chunk}),
@@ -377,6 +382,7 @@ async def stream_chat_messages(
 
     # 3. delta parçaları
     for chunk in _chunk_text(answer.answer):
+        await asyncio.sleep(STREAM_CHUNK_DELAY_S)
         yield ServerSentEvent(
             event="delta",
             data=json.dumps({"type": "delta", "text": chunk}),
