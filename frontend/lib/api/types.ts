@@ -72,7 +72,9 @@ export type ChatSessionDetail = Schema["ChatSessionDetail"];
 
 // SSE Olayları
 export type StatusEvent = Schema["StatusEvent"];
+export type StreamStage = StatusEvent["stage"];
 export type DeltaEvent = Schema["DeltaEvent"];
 export type DoneEvent = Schema["DoneEvent"];
 export type ErrorEvent = Schema["ErrorEvent"];
 export type ChatStreamEvent = StatusEvent | DeltaEvent | DoneEvent | ErrorEvent;
+
