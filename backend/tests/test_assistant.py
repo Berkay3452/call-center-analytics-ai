@@ -13,7 +13,7 @@ from app.assistant.assistant import REFUSAL_MESSAGE, answer_question
 from app.assistant.grounding import NOT_FOUND_MESSAGE, AnswerDraft, Claim, ground_draft
 from app.assistant.llm import AssistantLLM, AssistantLLMError
 from app.assistant.planner import Plan, plan_by_rules, plan_question
-from app.assistant.retrieval import Passage, search_boat_notes
+from app.assistant.retrieval import Passage
 from app.schemas.assistant import (
     AssistantAnswer,
     AssistantRequest,
@@ -21,7 +21,16 @@ from app.schemas.assistant import (
     QuestionType,
     SourceRef,
 )
+from tests import assistant_fakes
+from tests.assistant_fakes import search_boat_notes
 from tests.llm_fakes import ScriptedChatModel, scripted
+
+
+@pytest.fixture(autouse=True)
+def offline_backend(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Üretimde veritabanına giden araç ve aramayı bu dosyada sahte sürümlerle değiştirir."""
+    assistant_fakes.install(monkeypatch)
+
 
 OWNER_A = "owner-001"  # Poyraz
 OWNER_B = "owner-002"  # Albatros
@@ -145,68 +154,70 @@ async def test_llm_failure_raises_assistant_error() -> None:
 
 
 @pytest.mark.parametrize("owner", ["", "  "])
-def test_tools_require_owner(owner: str) -> None:
+async def test_tools_require_owner(owner: str) -> None:
     with pytest.raises(tools.OwnerRequiredError):
-        tools.get_expense_total(owner)
+        await tools.get_expense_total(owner)
     with pytest.raises(tools.OwnerRequiredError):
-        tools.get_remaining_package(owner)
+        await tools.get_remaining_package(owner)
     with pytest.raises(tools.OwnerRequiredError):
-        tools.get_last_maintenance(owner)
+        await tools.get_last_maintenance(owner)
     with pytest.raises(tools.OwnerRequiredError):
-        search_boat_notes(owner, "yakıt")
+        await search_boat_notes(owner, "yakıt")
 
 
-def test_expense_total_is_scoped_to_owner() -> None:
-    a = tools.get_expense_total(OWNER_A)
-    b = tools.get_expense_total(OWNER_B)
+async def test_expense_total_is_scoped_to_owner() -> None:
+    a = await tools.get_expense_total(OWNER_A)
+    b = await tools.get_expense_total(OWNER_B)
 
     assert a.total_try == Decimal("41950.00") and a.item_count == 3
     assert b.total_try == Decimal("6400.00") and b.item_count == 1
     assert {s.record_id for s in a.sources}.isdisjoint({s.record_id for s in b.sources})
 
 
-def test_expense_total_filters_by_date_range() -> None:
-    october = tools.get_expense_total(OWNER_A, start=date(2026, 10, 1), end=date(2026, 10, 31))
+async def test_expense_total_filters_by_date_range() -> None:
+    october = await tools.get_expense_total(
+        OWNER_A, start=date(2026, 10, 1), end=date(2026, 10, 31)
+    )
 
     assert october.total_try == Decimal("14250.00")
     assert [s.record_id for s in october.sources] == ["exp-102"]
 
 
-def test_other_owners_boat_id_returns_nothing() -> None:
-    assert tools.get_expense_total(OWNER_A, boat_id="boat-002").item_count == 0
-    assert tools.get_last_maintenance(OWNER_A, boat_id="boat-002") is None
-    assert tools.get_remaining_package(OWNER_B) is None  # B'nin paketi yok, A'nınki dönmez
+async def test_other_owners_boat_id_returns_nothing() -> None:
+    assert (await tools.get_expense_total(OWNER_A, boat_id="boat-002")).item_count == 0
+    assert await tools.get_last_maintenance(OWNER_A, boat_id="boat-002") is None
+    assert await tools.get_remaining_package(OWNER_B) is None  # B'nin paketi yok, A'nınki dönmez
 
 
-def test_unknown_owner_gets_empty_results() -> None:
-    assert tools.get_expense_total("owner-yok").item_count == 0
-    assert tools.get_last_maintenance("owner-yok") is None
-    assert tools.get_remaining_package("owner-yok") is None
-    assert search_boat_notes("owner-yok", "yakıt filtresi") == []
+async def test_unknown_owner_gets_empty_results() -> None:
+    assert (await tools.get_expense_total("owner-yok")).item_count == 0
+    assert await tools.get_last_maintenance("owner-yok") is None
+    assert await tools.get_remaining_package("owner-yok") is None
+    assert await search_boat_notes("owner-yok", "yakıt filtresi") == []
 
 
-def test_last_maintenance_and_package_values() -> None:
-    last = tools.get_last_maintenance(OWNER_A)
-    pkg = tools.get_remaining_package(OWNER_A)
+async def test_last_maintenance_and_package_values() -> None:
+    last = await tools.get_last_maintenance(OWNER_A)
+    pkg = await tools.get_remaining_package(OWNER_A)
 
     assert last is not None and (last.on, last.boat_name) == (date(2026, 8, 15), "Poyraz")
     assert pkg is not None and (pkg.plan, pkg.remaining, pkg.total) == ("Gold", 1, 2)
-    assert tools.get_last_maintenance(OWNER_A, category="elektrik_elektronik") is not None
-    assert tools.get_last_maintenance(OWNER_A, category="iklimlendirme") is None
+    assert await tools.get_last_maintenance(OWNER_A, category="elektrik_elektronik") is not None
+    assert await tools.get_last_maintenance(OWNER_A, category="iklimlendirme") is None
 
 
 # --- Arama (sahte): yetki ---
 
 
-def test_search_returns_only_own_records_even_if_other_owner_matches() -> None:
+async def test_search_returns_only_own_records_even_if_other_owner_matches() -> None:
     # "enjektör" yalnızca owner-002'nin notunda geçer.
-    assert search_boat_notes(OWNER_A, "Enjektör ayarı hakkında ne denmişti?") == []
-    own = search_boat_notes(OWNER_B, "Enjektör ayarı hakkında ne denmişti?")
+    assert await search_boat_notes(OWNER_A, "Enjektör ayarı hakkında ne denmişti?") == []
+    own = await search_boat_notes(OWNER_B, "Enjektör ayarı hakkında ne denmişti?")
     assert [p.source.record_id for p in own] == ["note-201"]
 
 
-def test_search_finds_relevant_note_first() -> None:
-    hits = search_boat_notes(OWNER_A, "Yakıt filtresi ne zaman değişmeli?")
+async def test_search_finds_relevant_note_first() -> None:
+    hits = await search_boat_notes(OWNER_A, "Yakıt filtresi ne zaman değişmeli?")
 
     assert hits and hits[0].source.record_id == "note-101"
     assert all(p.source.kind == "boat_note" for p in hits)
@@ -390,3 +401,23 @@ async def test_prompt_injection_in_question_does_not_change_flow() -> None:
 
     # Kurallar soruyu sayısal sınıflar; araç yalnızca oturumdaki sahibin verisini okur.
     assert "41.950,00 TL" in answer.answer and "6.400" not in answer.answer
+
+
+def test_grounding_does_not_repeat_identical_claims_from_different_sources() -> None:
+    passages = [
+        Passage(source=SourceRef(kind="boat_note", record_id=rid, title=rid, excerpt="x"), text="x")
+        for rid in ("n1", "n2")
+    ]
+    draft = AnswerDraft(
+        claims=[
+            Claim(text="Yedek filtre bırakılmış.", source_ids=["n1"]),
+            Claim(text="Yedek filtre bırakılmış.", source_ids=["n2"]),
+        ]
+    )
+
+    result = ground_draft(draft, passages)
+
+    assert result is not None
+    answer, sources = result
+    assert answer == "Yedek filtre bırakılmış."
+    assert [s.record_id for s in sources] == ["n1", "n2"]

@@ -38,7 +38,9 @@ def ground_draft(draft: AnswerDraft, passages: list[Passage]) -> tuple[str, list
         valid = [i for i in claim.source_ids if i in known]
         if not valid:
             continue  # kaynağı yok veya uydurma kimlik: ifade çıkarılır
-        kept.append(claim.text.strip())
+        text = claim.text.strip()
+        if text not in kept:  # farklı kaynaklardan gelen aynı cümle bir kez yazılır
+            kept.append(text)
         for i in valid:
             used.setdefault(i, known[i])
     if not kept:
