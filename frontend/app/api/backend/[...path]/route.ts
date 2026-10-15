@@ -74,19 +74,6 @@ async function forward(
       cache: "no-store",
     });
   } catch {
-    // Ses isteğinde backend'e ulaşılamadıysa ve geliştirme/mock ortamındaysa ses akışını kırmamak için güvenli fallback
-    if (isAudioRequest) {
-      return new Response(MOCK_WAV, {
-        status: 200,
-        headers: {
-          "content-type": "audio/wav",
-          "content-length": String(MOCK_WAV.length),
-          "accept-ranges": "bytes",
-          "cache-control": "no-cache",
-        },
-      });
-    }
-
     return Response.json(
       {
         error: {
