@@ -79,6 +79,9 @@ def _build_filter_conditions(
     if filters.request_category:
         conditions.append(latest_analysis.c.request_category == filters.request_category.value)
 
+    if filters.marina and filters.marina.strip():
+        conditions.append(Call.marina == filters.marina.strip())
+
     if filters.q and filters.q.strip():
         term = filters.q.strip().replace("\\", "\\\\").replace("%", r"\%").replace("_", r"\_")
         search = f"%{term}%"

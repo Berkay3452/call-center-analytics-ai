@@ -25,6 +25,19 @@ const DATE_RANGE_OPTIONS = [
   { value: "365", label: "Son 1 Yıl" },
 ];
 
+const MARINA_OPTIONS = [
+  "Ataköy Marina",
+  "Bodrum Milta Marina",
+  "Çeşme Marina",
+  "Göcek D-Marin",
+  "İstinye Tekne Park",
+  "Kalamış Marina",
+  "Marmaris Netsel Marina",
+  "Pendik Marinturk Marina",
+  "Tuzla Marina",
+  "Yalıkavak Marina",
+];
+
 // Kategori bar renkleri
 const CATEGORY_COLORS: Record<string, string> = {
   makine: "bg-sky-700",
@@ -96,6 +109,7 @@ export default function AnalyticsDashboard() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<{ message: string; code?: string; requestId?: string | null } | null>(null);
   const [dateRange, setDateRange] = useState<string>("30");
+  const [selectedMarina, setSelectedMarina] = useState<string>("all");
   const [reloadKey, setReloadKey] = useState<number>(0);
 
   const handleRefresh = () => {
@@ -110,9 +124,18 @@ export default function AnalyticsDashboard() {
     setDateRange(newRange);
   };
 
+  const handleMarinaChange = (newMarina: string) => {
+    setIsLoading(true);
+    setError(null);
+    setSelectedMarina(newMarina);
+  };
+
   useEffect(() => {
     let ignore = false;
-    const filter = getDateRange(dateRange);
+    const filter = {
+      ...getDateRange(dateRange),
+      ...(selectedMarina !== "all" ? { marina: selectedMarina } : {}),
+    };
 
     getKpiSummary(filter)
       .then((res) => {
@@ -148,7 +171,7 @@ export default function AnalyticsDashboard() {
     return () => {
       ignore = true;
     };
-  }, [dateRange, reloadKey]);
+  }, [dateRange, selectedMarina, reloadKey]);
 
   // Günlük çağrı grafiği için maksimum değer (0 ise 1 kabul et)
   const dailyCalls = data?.daily_calls ?? [];
@@ -187,15 +210,21 @@ export default function AnalyticsDashboard() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {/* Marina Seçimi (Backend desteği henüz bulunmadığından disabled) */}
+          {/* Marina Seçimi */}
           <div className="relative">
             <select
-              value="all"
-              disabled
-              title="Marina bazlı filtreleme API desteği henüz eklenmedi (Tüm Marinalar gösteriliyor)"
-              className="rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-100 dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-gray-500 dark:text-slate-400 shadow-sm cursor-not-allowed opacity-80 focus:outline-none"
+              value={selectedMarina}
+              onChange={(e) => handleMarinaChange(e.target.value)}
+              disabled={isLoading}
+              title="Marina bazlı filtreleme"
+              className="rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 disabled:opacity-50"
             >
-              <option value="all">⚓ Tüm Marinalar (Filtre Yakında)</option>
+              <option value="all">⚓ Tüm Marinalar</option>
+              {MARINA_OPTIONS.map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
             </select>
           </div>
 

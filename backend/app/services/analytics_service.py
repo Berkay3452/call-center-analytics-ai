@@ -9,8 +9,9 @@ Kurallar:
 """
 
 from collections.abc import Sequence
-from datetime import UTC, date, datetime, time, timedelta
+from datetime import date, datetime, time, timedelta
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -23,6 +24,7 @@ from app.schemas.analysis import CountItem, DailyCount, KpiSummary
 from app.schemas.api import PeriodFilter
 
 MAX_PERIOD_DAYS = 366
+ISTANBUL_TZ = ZoneInfo("Europe/Istanbul")
 
 
 def _resolve_period(filter_params: PeriodFilter) -> tuple[date, date]:
@@ -38,7 +40,7 @@ def _resolve_period(filter_params: PeriodFilter) -> tuple[date, date]:
 
 
 def _raw_period(filter_params: PeriodFilter) -> tuple[date, date]:
-    today = datetime.now(UTC).date()
+    today = datetime.now(ISTANBUL_TZ).date()
 
     if filter_params.date_from and filter_params.date_to:
         return filter_params.date_from, filter_params.date_to
@@ -83,9 +85,11 @@ async def get_kpi_summary(session: AsyncSession, filter_params: PeriodFilter) ->
     """Dönem için KPI metriklerini ve dağılım grafiklerini hesaplar."""
     period_start, period_end = _resolve_period(filter_params)
 
-    start_dt = datetime.combine(period_start, time.min, tzinfo=UTC)
-    end_dt = datetime.combine(period_end, time.max, tzinfo=UTC)
-    period_condition = (Call.started_at >= start_dt) & (Call.started_at <= end_dt)
+    start_dt = datetime.combine(period_start, time.min, tzinfo=ISTANBUL_TZ)
+    end_dt = datetime.combine(period_end, time.max, tzinfo=ISTANBUL_TZ)
+    period_conditions: list[Any] = [(Call.started_at >= start_dt) & (Call.started_at <= end_dt)]
+    if filter_params.marina and filter_params.marina.strip():
+        period_conditions.append(Call.marina == filter_params.marina.strip())
 
     latest_analysis = _latest_analysis_subquery()
 
@@ -115,7 +119,7 @@ async def get_kpi_summary(session: AsyncSession, filter_params: PeriodFilter) ->
         )
         .select_from(Call)
         .outerjoin(latest_analysis, Call.id == latest_analysis.c.call_id)
-        .where(period_condition)
+        .where(*period_conditions)
     )
     summary_row = (await session.execute(summary_stmt)).one()
 
@@ -144,7 +148,7 @@ async def get_kpi_summary(session: AsyncSession, filter_params: PeriodFilter) ->
         .select_from(Call)
         .join(latest_analysis, Call.id == latest_analysis.c.call_id)
         .where(
-            period_condition,
+            *period_conditions,
             latest_analysis.c.sales_outcome == SalesOutcomeType.KAYBEDILDI.value,
             latest_analysis.c.loss_reason.isnot(None),
         )
@@ -165,7 +169,7 @@ async def get_kpi_summary(session: AsyncSession, filter_params: PeriodFilter) ->
         .select_from(Call)
         .join(latest_analysis, Call.id == latest_analysis.c.call_id)
         .where(
-            period_condition,
+            *period_conditions,
             latest_analysis.c.request_category.isnot(None),
         )
         .group_by(latest_analysis.c.request_category)
@@ -185,7 +189,7 @@ async def get_kpi_summary(session: AsyncSession, filter_params: PeriodFilter) ->
         .select_from(Call)
         .join(latest_analysis, Call.id == latest_analysis.c.call_id)
         .where(
-            period_condition,
+            *period_conditions,
             latest_analysis.c.urgency.isnot(None),
         )
         .group_by(latest_analysis.c.urgency)
@@ -203,7 +207,7 @@ async def get_kpi_summary(session: AsyncSession, filter_params: PeriodFilter) ->
         .select_from(Call)
         .join(latest_analysis, Call.id == latest_analysis.c.call_id)
         .where(
-            period_condition,
+            *period_conditions,
             latest_analysis.c.problem.isnot(None),
             func.trim(latest_analysis.c.problem) != "",
         )
@@ -222,7 +226,7 @@ async def get_kpi_summary(session: AsyncSession, filter_params: PeriodFilter) ->
         )
         .select_from(Call)
         .where(
-            period_condition,
+            *period_conditions,
             Call.marina.isnot(None),
             func.trim(Call.marina) != "",
         )
@@ -234,14 +238,14 @@ async def get_kpi_summary(session: AsyncSession, filter_params: PeriodFilter) ->
     busiest_marinas: list[CountItem] = [CountItem(name=r[0], count=r[1]) for r in marina_rows]
 
     # 7. Günlük çağrı dağılımı (dönemdeki her gün için; boş gün 0)
-    day_col = func.date(func.timezone("UTC", Call.started_at))
+    day_col = func.date(func.timezone("Europe/Istanbul", Call.started_at))
     daily_stmt = (
         select(
             day_col.label("day"),
             func.count(Call.id).label("count"),
         )
         .select_from(Call)
-        .where(period_condition)
+        .where(*period_conditions)
         .group_by(day_col)
         .order_by(day_col)
     )

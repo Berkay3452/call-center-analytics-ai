@@ -24,6 +24,7 @@
           { "name": "urgency", "in": "query", "schema": { "$ref": "#/components/schemas/Urgency" }, "required": false },
           { "name": "request_category", "in": "query", "schema": { "$ref": "#/components/schemas/RequestCategory" }, "required": false },
           { "name": "state", "in": "query", "schema": { "$ref": "#/components/schemas/CallState" }, "required": false },
+          { "name": "marina", "in": "query", "schema": { "type": "string" }, "required": false },
           { "name": "q", "in": "query", "schema": { "type": "string" }, "required": false },
           { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 }, "required": false },
           { "name": "page_size", "in": "query", "schema": { "type": "integer", "default": 20 }, "required": false }
@@ -260,6 +261,7 @@
           { "name": "urgency", "in": "query", "schema": { "$ref": "#/components/schemas/Urgency" }, "required": false },
           { "name": "request_category", "in": "query", "schema": { "$ref": "#/components/schemas/RequestCategory" }, "required": false },
           { "name": "state", "in": "query", "schema": { "$ref": "#/components/schemas/CallState" }, "required": false },
+          { "name": "marina", "in": "query", "schema": { "type": "string" }, "required": false },
           { "name": "q", "in": "query", "schema": { "type": "string" }, "required": false },
           { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 }, "required": false },
           { "name": "page_size", "in": "query", "schema": { "type": "integer", "default": 20 }, "required": false }
@@ -282,7 +284,8 @@
         "operationId": "getKpiSummary",
         "parameters": [
           { "name": "date_from", "in": "query", "schema": { "type": "string", "format": "date" }, "required": false },
-          { "name": "date_to", "in": "query", "schema": { "type": "string", "format": "date" }, "required": false }
+          { "name": "date_to", "in": "query", "schema": { "type": "string", "format": "date" }, "required": false },
+          { "name": "marina", "in": "query", "schema": { "type": "string" }, "required": false }
         ],
         "responses": {
           "200": {

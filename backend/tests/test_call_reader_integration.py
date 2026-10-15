@@ -211,3 +211,19 @@ async def test_list_calls_loss_reason_for_lost_calls(
         assert len(non_lost_calls) == 19
         for call in non_lost_calls:
             assert call.loss_reason is None
+
+
+async def test_list_calls_and_crm_marina_filter(
+    factory: async_sessionmaker[AsyncSession],
+) -> None:
+    """marina filtresi hem calls hem de crm için tam eşleşme yapar (#81)."""
+    async with factory() as session:
+        calls = await list_calls(session, CallFilters(marina="Tuzla Marina", page_size=50))
+        assert calls.total == 4
+        assert len(calls.items) == 4
+        assert all(c.marina == "Tuzla Marina" for c in calls.items)
+
+        crm = await list_crm_records(session, CallFilters(marina="Tuzla Marina", page_size=50))
+        assert crm.total == 4
+        assert len(crm.items) == 4
+        assert all(r.location == "Tuzla Marina" for r in crm.items)
