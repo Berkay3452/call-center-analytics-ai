@@ -5,6 +5,7 @@ export {
   createCallWithAudio,
   analyzeCall,
   getCallStatus,
+  getCallAudioUrl,
   getCrmRecords,
   getKpiSummary,
   askAssistant,

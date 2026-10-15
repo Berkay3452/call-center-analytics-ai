@@ -99,6 +99,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/calls/{call_id}/audio": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Çağrı ses kaydı */
+        get: operations["getCallAudio"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/crm": {
         parameters: {
             query?: never;
@@ -748,6 +765,46 @@ export interface operations {
                 };
             };
             /** @description Çağrı bulunamadı */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    getCallAudio: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                call_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Ses dosyası akışı (Range destekli, 200 veya 206) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "audio/*": string;
+                };
+            };
+            /** @description Yetkisiz erişim */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Ses veya çağrı bulunamadı */
             404: {
                 headers: {
                     [name: string]: unknown;

@@ -9,7 +9,14 @@
 
 import type { NextRequest } from "next/server";
 
-const ALLOWED = [/^calls(\/[^/]+(\/(analyze|status))?)?$/, /^calls\/audio$/, /^crm$/, /^analytics\/summary$/, /^chat\/.+$/];
+const ALLOWED = [
+  /^calls(\/[^/]+(\/(analyze|status|audio))?)?$/,
+  /^calls\/audio$/,
+  /^crm$/,
+  /^analytics\/summary$/,
+  /^chat\/.+$/,
+  /^assistant\/.+$/,
+];
 
 async function forward(
   req: NextRequest,
@@ -30,6 +37,8 @@ async function forward(
   if (contentType) headers.set("content-type", contentType);
   const userId = req.headers.get("x-user-id");
   if (userId) headers.set("x-user-id", userId);
+  const range = req.headers.get("range");
+  if (range) headers.set("range", range);
   const key = process.env.SERVICE_KEY;
   if (key) headers.set("x-service-key", key);
 
@@ -56,9 +65,16 @@ async function forward(
     );
   }
 
-  // Akışlı cevap (SSE) dahil gövde olduğu gibi aktarılır.
+  // Akışlı cevap (SSE) ve ses dosyası (Range) dahil gövde olduğu gibi aktarılır.
   const out = new Headers();
-  for (const name of ["content-type", "x-request-id", "cache-control"]) {
+  for (const name of [
+    "content-type",
+    "x-request-id",
+    "cache-control",
+    "accept-ranges",
+    "content-range",
+    "content-length",
+  ]) {
     const v = upstream.headers.get(name);
     if (v) out.set(name, v);
   }

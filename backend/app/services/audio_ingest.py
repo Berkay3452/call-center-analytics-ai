@@ -32,6 +32,15 @@ from app.stt.pipeline import ChannelLayout, transcribe_call
 log = structlog.get_logger(__name__)
 
 ALLOWED_EXTENSIONS = frozenset({".wav", ".mp3", ".m4a", ".ogg", ".flac", ".aac", ".webm"})
+AUDIO_MEDIA_TYPES: dict[str, str] = {
+    ".wav": "audio/wav",
+    ".mp3": "audio/mpeg",
+    ".m4a": "audio/mp4",
+    ".ogg": "audio/ogg",
+    ".flac": "audio/flac",
+    ".aac": "audio/aac",
+    ".webm": "audio/webm",
+}
 _CHUNK = 1024 * 1024
 _BACKEND_DIR = Path(__file__).resolve().parents[2]
 
@@ -122,6 +131,38 @@ async def create_audio_call(session: AsyncSession, meta: AudioCallMeta, audio: S
     session.add(call)
     await session.flush()
     return call.id
+
+
+async def get_call_audio_file(
+    session: AsyncSession, call_id: UUID, settings: Settings
+) -> tuple[Path, str]:
+    """Çağrının ses dosyasını ve MIME türünü döndürür (#80).
+
+    Çağrı yoksa, ses kaydı yoksa, dosya diskte bulunamazsa veya yol depolama
+    klasörünün dışına çıkıyorsa (path traversal) NotFoundError (404) fırlatır.
+    """
+    call = await session.get(Call, call_id)
+    if call is None:
+        raise NotFoundError("Çağrı bulunamadı.")
+    if not call.audio_path:
+        raise NotFoundError("Çağrıya ait ses dosyası bulunamadı.")
+
+    raw_path = Path(call.audio_path)
+    if raw_path.is_absolute() or call.audio_path.startswith(("/", "\\")):
+        raise NotFoundError("Geçersiz ses dosyası yolu.")
+
+    base_dir = storage_dir(settings).resolve()
+    file_path = (base_dir / raw_path).resolve()
+    try:
+        file_path.relative_to(base_dir)
+    except ValueError as err:
+        raise NotFoundError("Geçersiz ses dosyası yolu.") from err
+
+    if not file_path.is_file():
+        raise NotFoundError("Ses dosyası bulunamadı.")
+
+    media_type = AUDIO_MEDIA_TYPES.get(file_path.suffix.lower(), "application/octet-stream")
+    return file_path, media_type
 
 
 async def run_transcription(
