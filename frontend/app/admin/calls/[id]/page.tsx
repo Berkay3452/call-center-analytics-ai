@@ -143,31 +143,37 @@ async function CallDetailContent({ params }: Props) {
 
   // Kısmi analiz veya analiz hataları ayrıştırma
   const rawErrors = call.analysis?.errors;
-  const errorEntries: Array<{ section: string; message: string }> = [];
+  const errorEntries: Array<{ section: string; message: string; detail?: string }> = [];
 
   if (rawErrors) {
     if (Array.isArray(rawErrors)) {
       rawErrors.forEach((err, idx) => {
         if (typeof err === "string") {
-          errorEntries.push({ section: `Bölüm ${idx + 1}`, message: err });
+          errorEntries.push({ section: `Bölüm ${idx + 1}`, message: "Bu bölüm üretilemedi.", detail: err });
         } else if (typeof err === "object" && err !== null) {
           const anyErr = err as Record<string, unknown>;
           errorEntries.push({
             section: String(anyErr.section || anyErr.field || `Hata ${idx + 1}`),
-            message: String(anyErr.message || anyErr.error || JSON.stringify(err)),
+            message: "Bu bölüm üretilemedi.",
+            detail: String(anyErr.message || anyErr.error || JSON.stringify(err)),
           });
         }
       });
     } else if (typeof rawErrors === "object") {
       Object.entries(rawErrors).forEach(([key, val]) => {
+        // Backend `analysis.errors` anahtarları ajan adlarıdır.
         const sectionMap: Record<string, string> = {
-          sales: "Satış Analizi",
-          crm: "CRM Çıkarımı",
+          call_classifier: "Çağrı Sınıflandırma",
+          crm_extraction: "CRM Çıkarımı",
+          sales_analyzer: "Satış Analizi",
+          summarizer: "Görüşme Özeti",
           classification: "Çağrı Sınıflandırma",
+          crm: "CRM Çıkarımı",
+          sales: "Satış Analizi",
           summary: "Görüşme Özeti",
         };
         const sectionName = sectionMap[key] || key;
-        errorEntries.push({ section: sectionName, message: String(val) });
+        errorEntries.push({ section: sectionName, message: "Bu bölüm üretilemedi.", detail: String(val) });
       });
     }
   }
@@ -258,12 +264,12 @@ async function CallDetailContent({ params }: Props) {
                 Kısmi Analiz — Bazı Alanlar Üretilemedi
               </h3>
               <p className="mt-0.5 text-xs text-amber-800 dark:text-amber-300">
-                Bu görüşmenin yapay zekâ analizi sırasında bazı bölümler eksik ses veya yetersiz veri nedeniyle çıkarılamamıştır.
+                Bu görüşmenin analizinde bazı bölümler üretilemedi; diğer bölümlerin sonuçları geçerlidir.
               </p>
               {errorEntries.length > 0 ? (
                 <ul className="mt-2.5 space-y-1 rounded-lg bg-amber-100/70 dark:bg-amber-900/30 p-2.5 text-xs text-amber-950 dark:text-amber-200 border border-amber-200 dark:border-amber-800">
                   {errorEntries.map((e, idx) => (
-                    <li key={idx} className="flex items-baseline gap-1.5">
+                    <li key={idx} className="flex items-baseline gap-1.5" title={e.detail}>
                       <span className="font-bold">• {e.section}:</span>
                       <span>{e.message}</span>
                     </li>
@@ -394,7 +400,7 @@ async function CallDetailContent({ params }: Props) {
           {/* AI Görüşme Özeti */}
           <PlaceholderCard title="AI Görüşme Özeti & Önemli Noktalar">
             <p className="text-sm text-gray-800 dark:text-slate-200 leading-relaxed">
-              {summary?.summary ?? "Özet hazırlanıyor..."}
+              {summary?.summary ?? (inProgress ? "Özet hazırlanıyor..." : "Bu görüşme için özet üretilemedi.")}
             </p>
             {summary?.key_points && summary.key_points.length > 0 && (
               <ul className="mt-3 list-inside list-disc space-y-1 text-xs text-gray-600 dark:text-slate-400">

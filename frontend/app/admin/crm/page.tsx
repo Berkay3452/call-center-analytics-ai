@@ -61,7 +61,7 @@ async function CrmContent() {
           ⚠️ CRM kayıtları alınamadı: {errorMsg}
         </p>
         <p className="mt-1 text-xs text-amber-700 dark:text-amber-300">
-          Backend API servisinin çalıştığından emin olun veya mock modunu (NEXT_PUBLIC_USE_MOCKS=true) etkinleştirin.
+          Servise ulaşılamıyor. Lütfen biraz sonra tekrar deneyin; sorun sürerse sistem yöneticinize başvurun.
         </p>
       </div>
     );
