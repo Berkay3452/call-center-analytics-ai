@@ -15,6 +15,7 @@ import type {
 } from "@/lib/api/types";
 import { PlaceholderCard } from "@/components/PlaceholderCard";
 import { CallDetailSkeleton } from "@/components/skeletons";
+import { AudioPlayer } from "@/components/AudioPlayer";
 import {
   CALL_TYPE_LABELS,
   EMPTY_LABEL,
@@ -313,38 +314,13 @@ async function CallDetailContent({ params }: Props) {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* SOL: Ses Oynatıcı, Transkript, Özet & Satış Analizi (7 Kolon) */}
         <div className="space-y-6 lg:col-span-7">
-          {/* Ses Oynatıcı Dalga Formu */}
-          <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-600 dark:text-slate-400">
-                Ses Kaydı &amp; Dalga Formu
-              </h2>
-              <span className="text-xs font-mono text-gray-500 dark:text-slate-400">
-                {Math.floor(durationSec / 60)}:
-                {String(durationSec % 60).padStart(2, "0")}
-              </span>
-            </div>
-
-            {/* Simüle Edilmiş Waveform */}
-            <div className="flex h-14 items-center justify-between gap-1 rounded-lg bg-slate-900 px-4 py-2 border border-slate-800">
-              <div className="text-slate-200">▶</div>
-              <div className="flex flex-1 items-center justify-center gap-1 px-3">
-                {[
-                  30, 60, 45, 80, 20, 95, 65, 40, 75, 90, 35, 60, 85, 45, 70, 30,
-                  90, 50, 40, 80, 60, 35, 70, 95, 40, 20, 50, 65, 85, 30,
-                ].map((height, i) => (
-                  <span
-                    key={i}
-                    style={{ height: `${height}%` }}
-                    className={`w-1 rounded-full transition-all ${
-                      i < 12 ? "bg-sky-400" : "bg-slate-600"
-                    }`}
-                  />
-                ))}
-              </div>
-              <span className="text-xs font-mono text-sky-400">01:14</span>
-            </div>
-          </div>
+          {/* Gerçek HTML5 Ses Oynatıcı (#89) */}
+          <AudioPlayer
+            key={call.id}
+            callId={call.id}
+            hasAudio={Boolean(call.has_audio)}
+            durationSec={durationSec}
+          />
 
           {/* Transkript Konuşma Balonları */}
           <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
