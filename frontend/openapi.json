@@ -216,6 +216,39 @@
         }
       }
     },
+    "/calls/{call_id}/audio": {
+      "get": {
+        "summary": "Çağrı ses kaydı",
+        "operationId": "getCallAudio",
+        "parameters": [
+          { "name": "call_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ses dosyası akışı (Range destekli, 200 veya 206)",
+            "content": {
+              "audio/*": { "schema": { "type": "string", "format": "binary" } }
+            }
+          },
+          "401": {
+            "description": "Yetkisiz erişim",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Ses veya çağrı bulunamadı",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/crm": {
       "get": {
         "summary": "CRM öneri ve kayıtları",

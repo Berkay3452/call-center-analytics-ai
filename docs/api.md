@@ -39,6 +39,7 @@ Admin/tekne sahibi rol ayrımını .NET uygulaması yapar. Tekne sahibi uçları
 | `POST /calls/audio` | Admin | multipart: `file` (wav/mp3/m4a/ogg/flac/aac/webm, en fazla 25 MB) + `AudioCallMeta` alanları | 202 `CallAccepted`; aynı ses daha önce yüklendiyse 409 (`details.call_id`) | #49 |
 | `POST /calls/{call_id}/analyze` | Admin | — | 202 `CallAccepted` (yeni analiz sürümü) | #48 |
 | `GET /calls/{call_id}/status` | Admin | — | `CallStatus` | #48 |
+| `GET /calls/{call_id}/audio` | Admin | — | Ses dosyası akışı (Range destekli 200/206) | #80 |
 | `POST /chat/messages` | Tekne sahibi | `ChatQuestion` | `ChatReply` | #28 |
 | `POST /chat/messages/stream` | Tekne sahibi | `ChatQuestion` | SSE akışı (`ChatStreamEvent`, bkz. §4) | #28 |
 | `POST /assistant/chat` | Tekne sahibi | `ChatQuestion` | SSE akışı (`token` -> `sources` -> `done`) | #28 |

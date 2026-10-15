@@ -20,7 +20,9 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from app.api.deps import get_db_session
 from app.core.config import Settings
+from app.main import create_app
 from app.schemas.api import AudioCallMeta
 from app.services.audio_ingest import (
     DuplicateAudioError,
@@ -30,6 +32,7 @@ from app.services.audio_ingest import (
 )
 from app.services.call_ingest import get_status, request_analysis, run_call_analysis
 from app.stt.providers import StubTranscriber
+from tests.conftest import TEST_SERVICE_KEY, _client_for, make_settings
 from tests.test_call_ingest_integration import FakeRunner
 
 pytestmark = pytest.mark.skipif(
@@ -147,3 +150,39 @@ async def test_missing_audio_file_fails_cleanly(
     state = await run_transcription(call_id, factory, StubTranscriber(), storage_dir=tmp_path)
 
     assert state == "basarisiz"
+
+
+async def test_get_call_audio_endpoint_integration(
+    factory: async_sessionmaker[AsyncSession], tmp_path: Path
+) -> None:
+    """Gerçek veritabanında ses dosyası 200 ve Range 206 ile döner (#80)."""
+    audio_data = b"RIFF" + b"\x00" * 100
+    call_id = await upload(factory, tmp_path, audio_data, SIDECAR)
+
+    settings = make_settings(audio_storage_dir=str(tmp_path))
+    app = create_app(settings)
+
+    async def get_test_session() -> AsyncIterator[AsyncSession]:
+        async with factory() as session:
+            yield session
+
+    app.dependency_overrides[get_db_session] = get_test_session
+
+    async for client in _client_for(app):
+        # 1. 200 OK
+        resp = await client.get(
+            f"/api/v1/calls/{call_id}/audio", headers={"X-Service-Key": TEST_SERVICE_KEY}
+        )
+        assert resp.status_code == 200
+        assert resp.headers["content-type"] == "audio/wav"
+        assert resp.headers["accept-ranges"] == "bytes"
+        assert resp.content == audio_data
+
+        # 2. 206 Partial Content (Range: bytes=0-9)
+        resp_range = await client.get(
+            f"/api/v1/calls/{call_id}/audio",
+            headers={"X-Service-Key": TEST_SERVICE_KEY, "Range": "bytes=0-9"},
+        )
+        assert resp_range.status_code == 206
+        assert resp_range.headers["content-range"] == f"bytes 0-9/{len(audio_data)}"
+        assert resp_range.content == audio_data[:10]

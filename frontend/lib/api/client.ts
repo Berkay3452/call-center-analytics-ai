@@ -363,6 +363,13 @@ export async function getCallStatus(callId: string): Promise<CallStatus> {
 }
 
 /**
+ * GET /calls/{call_id}/audio - Çağrı ses kaydı URL'si (#80)
+ */
+export function getCallAudioUrl(callId: string): string {
+  return `/api/backend/calls/${callId}/audio`;
+}
+
+/**
  * GET /crm - CRM kayıt ve öneri listesi
  */
 export async function getCrmRecords(

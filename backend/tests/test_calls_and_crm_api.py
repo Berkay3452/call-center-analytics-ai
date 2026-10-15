@@ -255,6 +255,10 @@ def test_openapi_schema_includes_read_endpoints() -> None:
     assert "get" in paths["/api/v1/calls/{call_id}"]
     assert paths["/api/v1/calls/{call_id}"]["get"]["operationId"] == "getCallById"
 
+    assert "/api/v1/calls/{call_id}/audio" in paths
+    assert "get" in paths["/api/v1/calls/{call_id}/audio"]
+    assert paths["/api/v1/calls/{call_id}/audio"]["get"]["operationId"] == "getCallAudio"
+
     assert "/api/v1/crm" in paths
     assert "get" in paths["/api/v1/crm"]
     assert paths["/api/v1/crm"]["get"]["operationId"] == "listCrmRecords"
