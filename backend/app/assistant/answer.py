@@ -7,31 +7,16 @@
 
 import calendar
 from datetime import date
-from decimal import Decimal
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.assistant import tools
+from app.assistant.formatting import MONTHS, format_date, format_try
 from app.assistant.grounding import NOT_FOUND_MESSAGE, AnswerDraft, ground_draft
 from app.assistant.llm import AssistantLLM, load_prompt
 from app.assistant.planner import Plan
 from app.assistant.retrieval import Passage
 from app.schemas.assistant import AssistantAnswer, AssistantTool, QuestionType
-
-_MONTHS = [
-    "Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
-    "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık",
-]  # fmt: skip
-
-
-def format_date(d: date) -> str:
-    return f"{d.day} {_MONTHS[d.month - 1]} {d.year}"
-
-
-def format_try(amount: Decimal) -> str:
-    """14250.00 → '14.250,00 TL' (Türkçe sayı biçimi)."""
-    text = f"{amount:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
-    return f"{text} TL"
 
 
 def not_found(question_type: QuestionType, message: str = NOT_FOUND_MESSAGE) -> AssistantAnswer:
@@ -53,7 +38,7 @@ async def numeric_answer(
         if plan.period == "bu_ay":
             start = today.replace(day=1)
             end = today.replace(day=calendar.monthrange(today.year, today.month)[1])
-            label = f"{_MONTHS[today.month - 1]} {today.year} döneminde"
+            label = f"{MONTHS[today.month - 1]} {today.year} döneminde"
         else:
             start = end = None
             label = "Kayıtlı tüm dönemde"
