@@ -20,7 +20,7 @@ export function PlaceholderCard({
       </h2>
       {children ?? (
         <div className="h-24 rounded-lg bg-gray-50 dark:bg-slate-800/60 flex items-center justify-center">
-          <span className="text-xs text-gray-400 dark:text-slate-500">Veri yükleniyor…</span>
+          <span className="text-xs text-gray-500 dark:text-slate-400">Veri yükleniyor…</span>
         </div>
       )}
     </div>

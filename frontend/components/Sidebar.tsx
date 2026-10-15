@@ -36,7 +36,7 @@ export function Sidebar() {
     <aside className="flex h-full w-56 flex-col border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-colors">
       {/* Logo */}
       <div className="flex h-16 items-center px-4 border-b border-gray-200 dark:border-slate-800">
-        <span className="text-lg font-bold text-sky-600 dark:text-sky-400">⚓ Miço Usta</span>
+        <span className="text-lg font-bold text-sky-700 dark:text-sky-400">⚓ Miço Usta</span>
       </div>
 
       {/* Navigasyon */}
@@ -64,7 +64,7 @@ export function Sidebar() {
       </nav>
 
       {/* Sürüm */}
-      <div className="p-4 text-xs text-gray-400 dark:text-slate-500 border-t border-gray-100 dark:border-slate-800">
+      <div className="p-4 text-xs text-gray-500 dark:text-slate-400 border-t border-gray-100 dark:border-slate-800">
         v0.1.0 — Miço Usta
       </div>
     </aside>
@@ -75,7 +75,7 @@ export function SidebarFallback() {
   return (
     <aside className="flex h-full w-56 flex-col border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900">
       <div className="flex h-16 items-center px-4 border-b border-gray-200 dark:border-slate-800">
-        <span className="text-lg font-bold text-sky-600 dark:text-sky-400">⚓ Miço Usta</span>
+        <span className="text-lg font-bold text-sky-700 dark:text-sky-400">⚓ Miço Usta</span>
       </div>
       <nav className="flex-1 p-3 space-y-1">
         {[1, 2, 3].map((i) => (

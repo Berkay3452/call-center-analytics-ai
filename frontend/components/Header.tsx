@@ -26,7 +26,7 @@ export function Header() {
 
         {/* Rol seçici */}
         <div className="flex items-center gap-2 border-l border-gray-200 dark:border-slate-700 pl-4">
-          <span className="text-xs text-gray-400 dark:text-slate-500">Rol:</span>
+          <span className="text-xs text-gray-500 dark:text-slate-400">Rol:</span>
           <select
             value={role}
             onChange={(e) => setRole(e.target.value as Role)}

@@ -15,7 +15,7 @@ export function CitationList({ citations }: CitationListProps) {
     <div className="mt-3 space-y-2" role="group" aria-label="Kaynak Referansları">
       <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
         <svg
-          className="w-3.5 h-3.5 text-sky-600 dark:text-sky-400"
+          className="w-3.5 h-3.5 text-sky-700 dark:text-sky-400"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"

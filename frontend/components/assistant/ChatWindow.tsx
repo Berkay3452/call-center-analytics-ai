@@ -83,7 +83,7 @@ export function ChatWindow({
                     )}
                   </span>
                   {msg.timestamp && (
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500">
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400">
                       {new Date(msg.timestamp).toLocaleTimeString("tr-TR", {
                         hour: "2-digit",
                         minute: "2-digit",
@@ -98,7 +98,7 @@ export function ChatWindow({
                 {msg.content}
                 {msg.isStreaming && (
                   <span
-                    className="inline-block w-1.5 h-4 ml-1 bg-sky-600 animate-pulse align-middle"
+                    className="inline-block w-1.5 h-4 ml-1 bg-sky-700 animate-pulse align-middle"
                     aria-hidden="true"
                   />
                 )}

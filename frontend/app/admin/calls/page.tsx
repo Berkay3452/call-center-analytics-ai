@@ -25,7 +25,7 @@ const URGENCY_BADGE: Record<Urgency, string> = {
 };
 
 const CALL_TYPE_BADGE: Record<CallType, string> = {
-  acil: "bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-300",
+  acil: "bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300",
   servis: "bg-sky-50 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300",
   teklif: "bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300",
   yeni_musteri: "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300",
@@ -64,7 +64,7 @@ export default function CallsPage() {
         <div>
           <Link
             href="/admin/calls/upload"
-            className="inline-flex items-center gap-2 rounded-xl bg-sky-600 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-sky-700 active:scale-[0.98] transition-all"
+            className="inline-flex items-center gap-2 rounded-xl bg-sky-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-sky-800 active:scale-[0.98] transition-all"
           >
             <span>🎙️</span>
             <span>+ Yeni Çağrı Yükle</span>
@@ -182,7 +182,7 @@ async function CallsListContent() {
               <td className="px-4 py-3 text-right text-sm">
                 <Link
                   href={`/admin/calls/${call.id}`}
-                  className="font-medium text-sky-600 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 hover:underline"
+                  className="font-medium text-sky-700 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 hover:underline"
                 >
                   Detay &amp; CRM →
                 </Link>

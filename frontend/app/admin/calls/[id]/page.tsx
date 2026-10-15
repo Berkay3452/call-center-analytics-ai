@@ -110,7 +110,7 @@ async function CallDetailContent({ params }: Props) {
         </p>
         <Link
           href="/admin/calls"
-          className="mt-4 inline-block text-xs font-semibold text-sky-600 dark:text-sky-400 hover:underline"
+          className="mt-4 inline-block text-xs font-semibold text-sky-700 dark:text-sky-400 hover:underline"
         >
           ← Çağrı listesine dön
         </Link>
@@ -215,7 +215,7 @@ async function CallDetailContent({ params }: Props) {
       <div className="flex items-center justify-between">
         <Link
           href="/admin/calls"
-          className="text-sm font-medium text-sky-600 dark:text-sky-400 hover:underline"
+          className="text-sm font-medium text-sky-700 dark:text-sky-400 hover:underline"
         >
           ← Çağrı listesine dön
         </Link>
@@ -352,7 +352,7 @@ async function CallDetailContent({ params }: Props) {
               <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-600 dark:text-slate-400">
                 Konuşma Transkripti (Ayrıştırılmış)
               </h2>
-              <span className="text-xs text-gray-400 dark:text-slate-500">
+              <span className="text-xs text-gray-500 dark:text-slate-400">
                 {segments.length} segment
               </span>
             </div>
@@ -368,19 +368,19 @@ async function CallDetailContent({ params }: Props) {
                       className={`max-w-[85%] rounded-2xl p-3 text-sm shadow-sm ${
                         seg.isCustomer
                           ? "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-tl-sm border border-slate-200 dark:border-slate-700"
-                          : "bg-sky-600 dark:bg-sky-700 text-white rounded-tr-sm"
+                          : "bg-sky-700 dark:bg-sky-700 text-white rounded-tr-sm"
                       }`}
                     >
                       <div
                         className={`mb-1 flex items-center justify-between gap-3 text-[11px] font-bold ${
-                          seg.isCustomer ? "text-slate-600 dark:text-slate-400" : "text-sky-200"
+                          seg.isCustomer ? "text-slate-600 dark:text-slate-300" : "text-sky-100"
                         }`}
                       >
                         <span>
                           {seg.isCustomer ? "⚓ Müşteri" : "🛠 Temsilci (Miço Usta)"}
                         </span>
                         {seg.time && (
-                          <span className="font-mono text-[10px] font-normal opacity-75">
+                          <span className="font-mono text-[10px] font-normal">
                             {seg.time}
                           </span>
                         )}
@@ -391,7 +391,7 @@ async function CallDetailContent({ params }: Props) {
                 ))}
               </div>
             ) : (
-              <div className="rounded-lg bg-gray-50 dark:bg-slate-800/60 p-6 text-center text-sm text-gray-400 dark:text-slate-500">
+              <div className="rounded-lg bg-gray-50 dark:bg-slate-800/60 p-6 text-center text-sm text-gray-500 dark:text-slate-400">
                 Ses kaydı transkripti henüz oluşturulmadı (cevapsız çağrı veya işleniyor).
               </div>
             )}
@@ -482,7 +482,7 @@ async function CallDetailContent({ params }: Props) {
                 )}
               </div>
             ) : (
-              <div className="rounded-lg bg-gray-50 dark:bg-slate-800/60 p-4 text-center text-xs text-gray-400 dark:text-slate-500">
+              <div className="rounded-lg bg-gray-50 dark:bg-slate-800/60 p-4 text-center text-xs text-gray-500 dark:text-slate-400">
                 Bu çağrı için henüz satış analizi oluşturulmadı.
               </div>
             )}
@@ -599,7 +599,7 @@ async function CallDetailContent({ params }: Props) {
             <div className="mt-6 space-y-2 border-t border-gray-100 dark:border-slate-800 pt-4">
               <button
                 type="button"
-                className="w-full rounded-xl bg-sky-600 px-4 py-3 text-sm font-bold text-white shadow-sm hover:bg-sky-700 active:scale-[0.98] transition-colors"
+                className="w-full rounded-xl bg-sky-700 px-4 py-3 text-sm font-bold text-white shadow-sm hover:bg-sky-800 active:scale-[0.98] transition-colors"
               >
                 ✓ Onayla ve Servis Emri Oluştur
               </button>

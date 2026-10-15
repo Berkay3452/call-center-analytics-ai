@@ -42,7 +42,7 @@ export function ThemeToggle() {
             aria-pressed={isActive}
             className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold transition-all ${
               isActive
-                ? "bg-white dark:bg-slate-900 text-sky-600 dark:text-sky-400 shadow-sm"
+                ? "bg-white dark:bg-slate-900 text-sky-700 dark:text-sky-400 shadow-sm"
                 : "text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200"
             }`}
           >

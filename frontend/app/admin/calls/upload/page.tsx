@@ -228,7 +228,7 @@ export default function CallUploadPage() {
         <div>
           <Link
             href="/admin/calls"
-            className="inline-flex items-center text-sm font-medium text-sky-600 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 hover:underline mb-1"
+            className="inline-flex items-center text-sm font-medium text-sky-700 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 hover:underline mb-1"
           >
             ← Çağrı listesine dön
           </Link>
@@ -266,7 +266,7 @@ export default function CallUploadPage() {
                 </div>
               )}
               {analysisState === "basarisiz" && (
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-red-100 dark:bg-red-950/60 text-red-600 dark:text-red-400 font-bold text-sm">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-400 font-bold text-sm">
                   ✕
                 </div>
               )}
@@ -308,7 +308,7 @@ export default function CallUploadPage() {
                   ? "bg-emerald-500"
                   : analysisState === "basarisiz"
                   ? "bg-red-500"
-                  : "bg-sky-600"
+                  : "bg-sky-700"
               }`}
               style={{ width: `${progressPercent}%` }}
             />
@@ -332,10 +332,10 @@ export default function CallUploadPage() {
           {/* Başarılı yönlendirme butonu */}
           {(analysisState === "tamam" || analysisState === "kismi") && createdCallId && (
             <div className="mt-4 flex items-center justify-between border-t border-gray-100 dark:border-slate-800 pt-3">
-              <span className="text-xs text-gray-400 dark:text-slate-500">Otomatik aktarılmazsa:</span>
+              <span className="text-xs text-gray-500 dark:text-slate-400">Otomatik aktarılmazsa:</span>
               <Link
                 href={`/admin/calls/${createdCallId}`}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-600 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 hover:underline"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-sky-700 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 hover:underline"
               >
                 Analiz Detayına Git →
               </Link>
@@ -423,9 +423,9 @@ export default function CallUploadPage() {
               ) : (
                 <div>
                   <p className="text-sm font-medium text-gray-700 dark:text-slate-200">
-                    Ses dosyasını buraya sürükleyin veya <span className="text-sky-600 dark:text-sky-400 font-bold underline">dosya seçin</span>
+                    Ses dosyasını buraya sürükleyin veya <span className="text-sky-700 dark:text-sky-400 font-bold underline">dosya seçin</span>
                   </p>
-                  <p className="text-xs text-gray-400 dark:text-slate-500 mt-1">
+                  <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
                     Desteklenenler: MP3, WAV, M4A, AAC (En fazla 25 MB)
                   </p>
                 </div>
@@ -452,7 +452,7 @@ export default function CallUploadPage() {
               <button
                 type="button"
                 onClick={fillSampleData}
-                className="text-xs font-semibold text-sky-600 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 hover:underline"
+                className="text-xs font-semibold text-sky-700 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 hover:underline"
               >
                 + Örnek Tuzla Marina Transkripti Doldur
               </button>
@@ -469,7 +469,7 @@ export default function CallUploadPage() {
               className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 p-3 text-sm font-mono text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:border-sky-500 dark:focus:border-sky-400 focus:outline-none focus:ring-1 focus:ring-sky-500"
             />
 
-            <div className="mt-2 flex justify-between text-xs text-gray-400 dark:text-slate-500">
+            <div className="mt-2 flex justify-between text-xs text-gray-500 dark:text-slate-400">
               <span>{transcript.split("\n").filter(Boolean).length} satır</span>
               <span>{transcript.length} karakter</span>
             </div>
@@ -569,7 +569,7 @@ export default function CallUploadPage() {
             className={`rounded-xl px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-all ${
               isSubmitting
                 ? "bg-sky-400 cursor-not-allowed opacity-75"
-                : "bg-sky-600 hover:bg-sky-700 active:scale-[0.98]"
+                : "bg-sky-700 hover:bg-sky-800 active:scale-[0.98]"
             }`}
           >
             {isSubmitting ? "Analiz Ediliyor..." : "⚡ Analizi Başlat"}
