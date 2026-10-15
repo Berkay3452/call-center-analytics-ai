@@ -14,6 +14,7 @@
       "request_category": "makine",
       "urgency": "yuksek",
       "sales_outcome": "beklemede",
+      "loss_reason": null,
       "summary": "Müşteri, Tuzla Marina'daki teknesinde gaz verildiğinde devrin yükselmediğini bildirdi. Ertesi gün için yerinde servis talep etti."
     },
     {
@@ -30,10 +31,45 @@
       "request_category": null,
       "urgency": null,
       "sales_outcome": null,
+      "loss_reason": null,
       "summary": null
+    },
+    {
+      "id": "33333333-3333-4333-8333-333333333333",
+      "started_at": "2026-10-12T14:20:00Z",
+      "duration_s": 210,
+      "answer_delay_s": 8,
+      "switchboard_outcome": "baglandi",
+      "customer_name": "Ahmet Yılmaz",
+      "boat_name": "Poyraz",
+      "marina": "Kalamış Marina",
+      "state": "tamam",
+      "call_type": "teklif",
+      "request_category": "elektrik_elektronik",
+      "urgency": "normal",
+      "sales_outcome": "kaybedildi",
+      "loss_reason": "fiyat",
+      "summary": "Müşteri verilen baş pervane montaj teklifini bütçesinin üzerinde bulduğu için işlemi iptal etti."
+    },
+    {
+      "id": "44444444-4444-4444-8444-444444444444",
+      "started_at": "2026-10-12T16:45:00Z",
+      "duration_s": 290,
+      "answer_delay_s": 5,
+      "switchboard_outcome": "baglandi",
+      "customer_name": "Deniz Saygın",
+      "boat_name": "Martı",
+      "marina": "Yalıkavak Marina",
+      "state": "tamam",
+      "call_type": "yeni_musteri",
+      "request_category": "makine",
+      "urgency": "normal",
+      "sales_outcome": "satisa_donustu",
+      "loss_reason": null,
+      "summary": "Yeni müşteri Yalıkavak Marina'da periyodik bakım için randevuyu onayladı."
     }
   ],
-  "total": 2,
+  "total": 4,
   "page": 1,
   "page_size": 20
 }

@@ -11,6 +11,7 @@ import {
   type AnalysisStatus,
   type Call,
   type CallType,
+  type LossReason,
   type Urgency,
 } from "@/lib/types";
 import { CallsTableSkeleton } from "@/components/skeletons";
@@ -163,21 +164,69 @@ async function CallsListContent() {
                 )}
               </td>
               <td className="px-4 py-3 text-sm">
-                {call.sales.outcome === "satisa_donustu" && (
-                  <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full">
-                    ✓ Satışa Dönüştü
-                  </span>
-                )}
-                {call.sales.outcome === "kaybedildi" && (
-                  <span className="text-xs font-semibold text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/60 px-2 py-0.5 rounded-full">
-                    ✕ Kaybedildi ({call.sales.lossReason ? labelOf(LOSS_REASON_LABELS, call.sales.lossReason) : EMPTY_LABEL})
-                  </span>
-                )}
-                {call.sales.outcome === "beklemede" && (
-                  <span className="text-xs font-medium text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded-full">
-                    ⏳ Beklemede
-                  </span>
-                )}
+                {(() => {
+                  const outcome = call.sales?.outcome;
+                  const isLost = outcome === "kaybedildi" || (outcome as string) === "lost";
+                  const isWon =
+                    outcome === "satisa_donustu" ||
+                    (outcome as string) === "won" ||
+                    (outcome as string) === "kazanildi";
+                  const isPending =
+                    outcome === "beklemede" || (outcome as string) === "pending";
+
+                  if (isWon) {
+                    return (
+                      <span className="inline-flex items-center text-xs font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                        ✓ Satışa Dönüştü
+                      </span>
+                    );
+                  }
+
+                  if (isLost) {
+                    const rawLossReason =
+                      call.sales?.lossReason ??
+                      call.sales?.loss_reason ??
+                      call.loss_reason ??
+                      null;
+
+                    const reasonLabel = rawLossReason
+                      ? labelOf(LOSS_REASON_LABELS, rawLossReason as LossReason)
+                      : null;
+
+                    const displayText =
+                      reasonLabel && reasonLabel !== EMPTY_LABEL
+                        ? `✕ Kaybedildi (${reasonLabel})`
+                        : "✕ Kaybedildi";
+
+                    return (
+                      <span className="inline-flex items-center text-xs font-semibold text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/60 px-2.5 py-0.5 rounded-full border border-red-200 dark:border-red-800">
+                        {displayText}
+                      </span>
+                    );
+                  }
+
+                  if (isPending) {
+                    return (
+                      <span className="inline-flex items-center text-xs font-medium text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 px-2.5 py-0.5 rounded-full border border-amber-200 dark:border-amber-800">
+                        ⏳ Beklemede
+                      </span>
+                    );
+                  }
+
+                  if (outcome) {
+                    return (
+                      <span className="inline-flex items-center text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2.5 py-0.5 rounded-full border border-slate-200 dark:border-slate-700">
+                        {outcome}
+                      </span>
+                    );
+                  }
+
+                  return (
+                    <span className="text-xs text-slate-400 dark:text-slate-500">
+                      {EMPTY_LABEL}
+                    </span>
+                  );
+                })()}
               </td>
               <td className="px-4 py-3 text-right text-sm">
                 <Link
