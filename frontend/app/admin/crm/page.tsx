@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import Link from "next/link";
 import { fetchCrmSuggestions } from "@/lib/api";
 import {
   EMPTY_LABEL,
@@ -6,9 +8,11 @@ import {
   REQUEST_CATEGORY_LABELS,
   SERVICE_MODE_LABELS,
   URGENCY_LABELS,
+  type CrmSuggestion,
   type Urgency,
 } from "@/lib/types";
-import Link from "next/link";
+import { CrmSuggestionsSkeleton } from "@/components/skeletons";
+
 
 export const metadata = { title: "CRM Kayıt Önerileri | Miço Usta" };
 
@@ -19,9 +23,7 @@ const URGENCY_BADGE: Record<Urgency, string> = {
   dusuk: "bg-gray-100 text-gray-600 border-gray-200",
 };
 
-export default async function CrmPage() {
-  const suggestions = await fetchCrmSuggestions();
-
+export default function CrmPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
@@ -33,6 +35,41 @@ export default async function CrmPage() {
             Çağrılardan yapay zekâ tarafından otomatik çıkarılan 7 alanlı servis kayıtları
           </p>
         </div>
+      </div>
+
+      <Suspense fallback={<CrmSuggestionsSkeleton />}>
+        <CrmContent />
+      </Suspense>
+    </div>
+  );
+}
+
+async function CrmContent() {
+  let suggestions: CrmSuggestion[] = [];
+  let errorMsg: string | null = null;
+
+  try {
+    suggestions = await fetchCrmSuggestions();
+  } catch (err) {
+    errorMsg = err instanceof Error ? err.message : "CRM önerileri yüklenemedi";
+  }
+
+  if (errorMsg) {
+    return (
+      <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-center shadow-sm">
+        <p className="text-sm font-semibold text-amber-800">
+          ⚠️ CRM kayıtları alınamadı: {errorMsg}
+        </p>
+        <p className="mt-1 text-xs text-amber-700">
+          Backend API servisinin çalıştığından emin olun veya mock modunu (NEXT_PUBLIC_USE_MOCKS=true) etkinleştirin.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="flex justify-end">
         <span className="rounded-lg bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-800 border border-sky-200">
           {suggestions.length} Bekleyen Öneri
         </span>
@@ -137,6 +174,6 @@ export default async function CrmPage() {
           </div>
         ))}
       </div>
-    </div>
+    </>
   );
 }

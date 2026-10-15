@@ -68,6 +68,10 @@ export function getApiBaseUrl(): string {
 export interface RequestOptions extends RequestInit {
   userId?: string;
   params?: Record<string, string | number | boolean | null | undefined>;
+  next?: {
+    revalidate?: number | false;
+    tags?: string[];
+  };
 }
 
 /**
@@ -123,6 +127,7 @@ export async function apiFetch<T>(
   let res: Response;
   try {
     res = await fetch(url, {
+      cache: options.cache ?? "no-store",
       ...options,
       headers,
     });

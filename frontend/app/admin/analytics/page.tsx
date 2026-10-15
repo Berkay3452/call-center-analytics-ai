@@ -1,7 +1,14 @@
+import { Suspense } from "react";
 import AnalyticsDashboard from "./AnalyticsDashboard";
+import { AnalyticsDashboardSkeleton } from "@/components/skeletons";
+
 
 export const metadata = { title: "Çağrı Analitiği Dashboard | Miço Usta" };
 
 export default function AnalyticsPage() {
-  return <AnalyticsDashboard />;
+  return (
+    <Suspense fallback={<AnalyticsDashboardSkeleton />}>
+      <AnalyticsDashboard />
+    </Suspense>
+  );
 }
