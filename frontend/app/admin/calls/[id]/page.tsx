@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getCallById, getCalls } from "@/lib/api/client";
@@ -11,6 +12,7 @@ import type {
   NextAction,
 } from "@/lib/api/types";
 import { PlaceholderCard } from "@/components/PlaceholderCard";
+import { CallDetailSkeleton } from "@/components/skeletons";
 import {
   CALL_TYPE_LABELS,
   EMPTY_LABEL,
@@ -21,6 +23,9 @@ import {
   URGENCY_LABELS,
 } from "@/lib/types";
 
+
+import mockCallsList from "@/mocks/cagri_listesi.json";
+
 interface Props {
   params: Promise<{ id: string }>;
 }
@@ -28,15 +33,22 @@ interface Props {
 export async function generateStaticParams() {
   try {
     const res = await getCalls();
-    return res.items.map((c) => ({ id: c.id }));
+    if (res?.items && res.items.length > 0) {
+      return res.items.map((c) => ({ id: c.id }));
+    }
   } catch {
-    return [{ id: "11111111-1111-4111-8111-111111111111" }];
+    // Derleme anında backend kapalıysa güvenli mock fallback
   }
+  return mockCallsList.items.map((c) => ({ id: c.id }));
 }
 
 export async function generateMetadata({ params }: Props) {
-  const { id } = await params;
-  return { title: `Çağrı Analizi ${id} | Miço Usta` };
+  try {
+    const { id } = await params;
+    return { title: `Çağrı Analizi ${id} | Miço Usta` };
+  } catch {
+    return { title: "Çağrı Analizi | Miço Usta" };
+  }
 }
 
 const URGENCY_COLOR: Record<Urgency, { bg: string; text: string; border: string }> = {
@@ -46,16 +58,37 @@ const URGENCY_COLOR: Record<Urgency, { bg: string; text: string; border: string 
   dusuk: { bg: "bg-gray-50", text: "text-gray-700", border: "border-gray-300" },
 };
 
-export default async function CallDetailPage({ params }: Props) {
+export default function CallDetailPage({ params }: Props) {
+  return (
+    <Suspense fallback={<CallDetailSkeleton />}>
+      <CallDetailContent params={params} />
+    </Suspense>
+  );
+}
+
+async function CallDetailContent({ params }: Props) {
   const { id } = await params;
   let call: CallDetail | null = null;
 
   try {
     call = await getCallById(id);
   } catch (err) {
-    // Yalnızca "kayıt yok" 404'tür; sunucu/ağ hatası gizlenmez (hata sayfasına düşer).
+    // Yalnızca "kayıt yok" 404'tür
     if (isApiError(err) && err.status === 404) notFound();
-    throw err;
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 p-6 shadow-sm">
+        <h2 className="text-base font-bold text-red-900">Çağrı Detayı Yüklenemedi</h2>
+        <p className="mt-1 text-sm text-red-700">
+          {err instanceof Error ? err.message : "Sunucuya bağlanılamadı. Ağ bağlantınızı veya backend durumunu kontrol edin."}
+        </p>
+        <Link
+          href="/admin/calls"
+          className="mt-4 inline-block text-xs font-semibold text-blue-600 hover:underline"
+        >
+          ← Çağrı listesine dön
+        </Link>
+      </div>
+    );
   }
 
   if (!call) notFound();

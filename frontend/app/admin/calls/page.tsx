@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { fetchCalls } from "@/lib/api";
 import {
@@ -8,9 +9,12 @@ import {
   LOSS_REASON_LABELS,
   URGENCY_LABELS,
   type AnalysisStatus,
+  type Call,
   type CallType,
   type Urgency,
 } from "@/lib/types";
+import { CallsTableSkeleton } from "@/components/skeletons";
+
 
 export const metadata = { title: "Çağrılar | Miço Usta" };
 
@@ -48,9 +52,7 @@ function formatDuration(sec: number): string {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
-export default async function CallsPage() {
-  const calls = await fetchCalls();
-
+export default function CallsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -71,95 +73,125 @@ export default async function CallsPage() {
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              {["Arayan & Tekne", "Marina", "Çağrı Tipi", "Süre", "Aciliyet", "Analiz Durumu", "Satış Durumu", ""].map((h) => (
-                <th
-                  key={h}
-                  className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500"
-                >
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {calls.map((call) => (
-              <tr key={call.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-4 py-3">
-                  <div className="text-sm font-semibold text-gray-900">{call.caller}</div>
-                  <div className="text-xs text-gray-500">
-                    {call.boatName || "Tekne belirtilmedi"}
-                  </div>
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-600">
-                  {call.location ?? EMPTY_LABEL}
-                </td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${call.callType ? CALL_TYPE_BADGE[call.callType] : "bg-gray-50 text-gray-600"}`}
-                  >
-                    {labelOf(CALL_TYPE_LABELS, call.callType)}
-                  </span>
-                </td>
-                <td className="px-4 py-3 text-sm text-gray-500">
-                  {formatDuration(call.durationSec)}
-                </td>
-                <td className="px-4 py-3">
-                  <span
-                    className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${call.urgency ? URGENCY_BADGE[call.urgency] : "bg-gray-100 text-gray-600 border-gray-200"}`}
-                  >
-                    {call.urgency === "acil" && <span className="mr-1">🚨</span>}
-                    {labelOf(URGENCY_LABELS, call.urgency)}
-                  </span>
-                </td>
-                {/* Analiz Durumu Sütunu */}
-                <td className="px-4 py-3">
-                  {call.pendingState ? (
-                    <span className="inline-flex items-center gap-1 rounded-full border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-xs font-semibold text-sky-700">
-                      ⏳ {call.pendingState === "beklemede" ? "Sırada" : "İşleniyor"}
-                    </span>
-                  ) : (
-                    <span
-                      className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${ANALYSIS_STATUS_BADGE[call.analysisStatus]}`}
-                    >
-                      {ANALYSIS_STATUS_ICON[call.analysisStatus]}{" "}
-                      {labelOf(ANALYSIS_STATUS_LABELS, call.analysisStatus)}
-                    </span>
-                  )}
-                </td>
-                <td className="px-4 py-3 text-sm">
-                  {call.sales.outcome === "satisa_donustu" && (
-                    <span className="text-xs font-semibold text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
-                      ✓ Satışa Dönüştü
-                    </span>
-                  )}
-                  {call.sales.outcome === "kaybedildi" && (
-                    <span className="text-xs font-semibold text-red-700 bg-red-50 px-2 py-0.5 rounded-full">
-                      ✕ Kaybedildi ({call.sales.lossReason ? labelOf(LOSS_REASON_LABELS, call.sales.lossReason) : EMPTY_LABEL})
-                    </span>
-                  )}
-                  {call.sales.outcome === "beklemede" && (
-                    <span className="text-xs font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">
-                      ⏳ Beklemede
-                    </span>
-                  )}
-                </td>
-                <td className="px-4 py-3 text-right text-sm">
-                  <Link
-                    href={`/admin/calls/${call.id}`}
-                    className="font-medium text-blue-600 hover:text-blue-800 hover:underline"
-                  >
-                    Detay & CRM →
-                  </Link>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <Suspense fallback={<CallsTableSkeleton />}>
+        <CallsListContent />
+      </Suspense>
+    </div>
+  );
+}
+
+async function CallsListContent() {
+  let calls: Call[] = [];
+  let errorMsg: string | null = null;
+
+  try {
+    calls = await fetchCalls();
+  } catch (err) {
+    errorMsg = err instanceof Error ? err.message : "Çağrılar yüklenemedi";
+  }
+
+  if (errorMsg) {
+    return (
+      <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-center shadow-sm">
+        <p className="text-sm font-semibold text-amber-800">
+          ⚠️ Veriler alınırken bir sorun oluştu: {errorMsg}
+        </p>
+        <p className="mt-1 text-xs text-amber-700">
+          Servise ulaşılamıyor. Lütfen biraz sonra tekrar deneyin; sorun sürerse sistem yöneticinize başvurun.
+        </p>
       </div>
+    );
+  }
+
+  return (
+    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50">
+          <tr>
+            {["Arayan & Tekne", "Marina", "Çağrı Tipi", "Süre", "Aciliyet", "Analiz Durumu", "Satış Durumu", ""].map((h) => (
+              <th
+                key={h}
+                className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500"
+              >
+                {h}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-100">
+          {calls.map((call) => (
+            <tr key={call.id} className="hover:bg-gray-50 transition-colors">
+              <td className="px-4 py-3">
+                <div className="text-sm font-semibold text-gray-900">{call.caller}</div>
+                <div className="text-xs text-gray-500">
+                  {call.boatName || "Tekne belirtilmedi"}
+                </div>
+              </td>
+              <td className="px-4 py-3 text-sm text-gray-600">
+                {call.location ?? EMPTY_LABEL}
+              </td>
+              <td className="px-4 py-3">
+                <span
+                  className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${call.callType ? CALL_TYPE_BADGE[call.callType] : "bg-gray-50 text-gray-600"}`}
+                >
+                  {labelOf(CALL_TYPE_LABELS, call.callType)}
+                </span>
+              </td>
+              <td className="px-4 py-3 text-sm text-gray-500">
+                {formatDuration(call.durationSec)}
+              </td>
+              <td className="px-4 py-3">
+                <span
+                  className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${call.urgency ? URGENCY_BADGE[call.urgency] : "bg-gray-100 text-gray-600 border-gray-200"}`}
+                >
+                  {call.urgency === "acil" && <span className="mr-1">🚨</span>}
+                  {labelOf(URGENCY_LABELS, call.urgency)}
+                </span>
+              </td>
+              {/* Analiz Durumu Sütunu */}
+              <td className="px-4 py-3">
+                {call.pendingState ? (
+                  <span className="inline-flex items-center gap-1 rounded-full border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-xs font-semibold text-sky-700">
+                    ⏳ {call.pendingState === "beklemede" ? "Sırada" : "İşleniyor"}
+                  </span>
+                ) : (
+                  <span
+                    className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${ANALYSIS_STATUS_BADGE[call.analysisStatus]}`}
+                  >
+                    {ANALYSIS_STATUS_ICON[call.analysisStatus]}{" "}
+                    {labelOf(ANALYSIS_STATUS_LABELS, call.analysisStatus)}
+                  </span>
+                )}
+              </td>
+              <td className="px-4 py-3 text-sm">
+                {call.sales.outcome === "satisa_donustu" && (
+                  <span className="text-xs font-semibold text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
+                    ✓ Satışa Dönüştü
+                  </span>
+                )}
+                {call.sales.outcome === "kaybedildi" && (
+                  <span className="text-xs font-semibold text-red-700 bg-red-50 px-2 py-0.5 rounded-full">
+                    ✕ Kaybedildi ({call.sales.lossReason ? labelOf(LOSS_REASON_LABELS, call.sales.lossReason) : EMPTY_LABEL})
+                  </span>
+                )}
+                {call.sales.outcome === "beklemede" && (
+                  <span className="text-xs font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full">
+                    ⏳ Beklemede
+                  </span>
+                )}
+              </td>
+              <td className="px-4 py-3 text-right text-sm">
+                <Link
+                  href={`/admin/calls/${call.id}`}
+                  className="font-medium text-blue-600 hover:text-blue-800 hover:underline"
+                >
+                  Detay & CRM →
+                </Link>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

@@ -68,6 +68,10 @@ export function getApiBaseUrl(): string {
 export interface RequestOptions extends RequestInit {
   userId?: string;
   params?: Record<string, string | number | boolean | null | undefined>;
+  next?: {
+    revalidate?: number | false;
+    tags?: string[];
+  };
 }
 
 /**
@@ -123,16 +127,15 @@ export async function apiFetch<T>(
   let res: Response;
   try {
     res = await fetch(url, {
+      cache: options.cache ?? "no-store",
       ...options,
       headers,
     });
-  } catch (netErr: unknown) {
+  } catch {
     throw new ApiError({
       code: "NETWORK_ERROR",
-      message:
-        netErr instanceof Error
-          ? netErr.message
-          : "Sunucuya bağlanılamadı. Ağ bağlantınızı kontrol edin.",
+      // Ham ağ hatası ("fetch failed" vb.) kullanıcıya gösterilmez.
+      message: "Servise bağlanılamadı. Bağlantınızı kontrol edip tekrar deneyin.",
       requestId: null,
       status: 0,
     });
