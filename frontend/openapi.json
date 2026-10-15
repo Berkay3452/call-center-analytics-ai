@@ -618,6 +618,7 @@
           "request_category",
           "urgency",
           "sales_outcome",
+          "loss_reason",
           "summary"
         ],
         "properties": {
@@ -634,6 +635,7 @@
           "request_category": { "$ref": "#/components/schemas/RequestCategory", "nullable": true },
           "urgency": { "$ref": "#/components/schemas/Urgency", "nullable": true },
           "sales_outcome": { "$ref": "#/components/schemas/SalesOutcomeType", "nullable": true },
+          "loss_reason": { "$ref": "#/components/schemas/LossReason", "nullable": true },
           "summary": { "type": "string", "nullable": true }
         }
       },

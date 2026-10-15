@@ -323,6 +323,7 @@ export interface components {
             request_category: components["schemas"]["RequestCategory"];
             urgency: components["schemas"]["Urgency"];
             sales_outcome: components["schemas"]["SalesOutcomeType"];
+            loss_reason: components["schemas"]["LossReason"];
             summary: string | null;
         };
         TranscriptSegmentOut: {

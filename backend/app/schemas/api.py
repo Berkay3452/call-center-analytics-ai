@@ -19,6 +19,7 @@ from pydantic import BaseModel, Field, TypeAdapter, model_validator
 
 from app.domain.enums import (
     CallType,
+    LossReason,
     NextAction,
     RequestCategory,
     SalesOutcomeType,
@@ -99,6 +100,9 @@ class CallListItem(BaseModel):
     request_category: RequestCategory | None = None
     urgency: Urgency | None = None
     sales_outcome: SalesOutcomeType | None = None
+    loss_reason: LossReason | None = Field(
+        default=None, description="Kaybedilme nedeni (yalnızca kaybedildi iken)."
+    )
     summary: str | None = Field(default=None, description="En son analizin özeti.")
 
 

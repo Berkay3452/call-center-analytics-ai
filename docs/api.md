@@ -52,7 +52,7 @@ Başka kullanıcının sohbet oturumu istenirse 404 döner (varlığı da sızd�
 ## 4. Şemalar
 
 ### Çağrılar
-- `CallListItem`: liste satırı. Santral bilgisi + en son analizden `call_type`, `request_category`, `urgency`, `sales_outcome`, `summary`. Analiz yoksa bu alanlar `null`.
+- `CallListItem`: liste satırı. Santral bilgisi + en son analizden `call_type`, `request_category`, `urgency`, `sales_outcome`, `loss_reason`, `summary`. Analiz yoksa bu alanlar `null`.
 - `CallDetail`: çağrı, `TranscriptOut` (metin + `TranscriptSegmentOut` listesi; kişisel veriler maskeli) ve en son analiz `AnalysisOut`.
 - `AnalysisOut`: bir analiz sürümü. Agent çıktıları `CallClassification`, `CrmExtraction`, `SalesAnalysis`, `CallSummary`; agent kayıtları `AgentRun`. Başarısız agent'ın alanı `null`, nedeni `errors`'ta.
 - `CallFilters`: `date_from`, `date_to`, `call_type`, `urgency`, `request_category`, `state`, `q` (müşteri/tekne/marina adında arama), `page`, `page_size`.
