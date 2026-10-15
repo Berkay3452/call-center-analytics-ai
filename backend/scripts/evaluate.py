@@ -64,6 +64,7 @@ def load_context(call_id: str) -> AnalysisContext:
             answer_delay_s=meta["answer_delay_s"],
             duration_s=meta["duration_s"],
             outcome=meta["switchboard_outcome"],
+            marina=meta["customer_ref"]["marina"],
         ),
     )
 

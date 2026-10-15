@@ -15,7 +15,7 @@ Alanlar:
   - Duman, yanık kablo/plastik kokusu, kısa devre → elektrik_elektronik; motordan gelen ses, devir veya çalışmama sorunu → makine.
   - Birden fazla sistemi kapsayan paket taleplerinde (ör. kış bakımı, yıllık bakım paketi) en ağır kalemin kategorisini seç; motor kışlaması ya da motor yağ bakımı varsa makine.
   - Görüşmede iş/hizmet konuşulmuyorsa (yalnızca genel bilgi sorusu) null bırak.
-- location: Teknenin bulunduğu marina veya yer, görüşmede geçtiği gibi (ör. "Tuzla Marina").
+- location: Teknenin bulunduğu marina veya yer (ör. "Tuzla Marina"). "Çağrı bilgisi"nde marina adı varsa ve görüşmede aynı yer geçiyorsa (ör. "Kalamış"), o marina adını yaz; görüşmede başka bir yer açıkça söyleniyorsa o yeri yaz.
 - problem: Sorunun kısa tarifi, müşterinin anlattığı belirtiyle (ör. "Motor gaz verince devir almıyor").
 - service_mode: Hizmetin nasıl verileceği.
   - yerinde_servis: usta teknenin bulunduğu yere gidecek

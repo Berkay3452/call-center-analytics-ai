@@ -13,6 +13,7 @@ from app.agents.base import AnalysisContext, ModelTier
 from app.agents.grounding import is_grounded, transcript_text
 from app.agents.llm_agent import LLMAgent
 from app.agents.names import CRM_EXTRACTION
+from app.agents.terms import same_place
 from app.schemas.analysis import CrmExtraction
 
 log = structlog.get_logger(__name__)
@@ -21,7 +22,7 @@ log = structlog.get_logger(__name__)
 class CrmExtractionAgent(LLMAgent[CrmExtraction]):
     name: ClassVar[str] = CRM_EXTRACTION
     prompt_file: ClassVar[str] = "crm_extraction"
-    prompt_version: ClassVar[str] = "crm_extraction.v1"
+    prompt_version: ClassVar[str] = "crm_extraction.v2"
     output_schema: ClassVar[type[BaseModel]] = CrmExtraction
     # En çok alanı çıkaran ve yanlışın en pahalı olduğu agent; güçlü model kullanılır.
     model_tier: ClassVar[ModelTier] = "smart"
@@ -31,6 +32,7 @@ class CrmExtractionAgent(LLMAgent[CrmExtraction]):
 
         Alanın kendisine dokunulmaz; yalnızca kanıt olarak gösterilecek alıntı temizlenir.
         """
+        output = self._normalize_location(output, ctx)
         transcript = transcript_text(ctx.segments)
         kept: dict[str, str] = {}
         for field, quote in output.evidence.items():
@@ -43,3 +45,20 @@ class CrmExtractionAgent(LLMAgent[CrmExtraction]):
                 continue
             log.info("crm_extraction.evidence_dropped", field=field, reason=reason)
         return output.model_copy(update={"evidence": kept})
+
+    @staticmethod
+    def _normalize_location(output: CrmExtraction, ctx: AnalysisContext) -> CrmExtraction:
+        """Konumu santraldeki marina adıyla tutarlı yazar.
+
+        - Çıkarılan konum aynı yeri anlatıyorsa ("Kalamış" / "Kalamış Marina") marina adı yazılır.
+        - Görüşmede konum geçmiyorsa (alan boşsa) çağrı bilgisindeki marina kullanılır.
+        - Görüşmede başka bir yer açıkça söyleniyorsa dokunulmaz.
+        """
+        marina = ctx.call_info.marina if ctx.call_info else None
+        if not marina:
+            return output
+        if not output.location:
+            return output.model_copy(update={"location": marina})
+        if output.location != marina and same_place(output.location, marina):
+            return output.model_copy(update={"location": marina})
+        return output

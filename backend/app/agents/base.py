@@ -41,6 +41,7 @@ class CallInfo(BaseModel):
     answer_delay_s: float | None = Field(default=None, ge=0, description="Çalma → açılma süresi")
     duration_s: float | None = Field(default=None, ge=0)
     outcome: str | None = Field(default=None, description="Santral/CRM'deki sonuç (ör. geri_ara)")
+    marina: str | None = Field(default=None, description="Santral/CRM'deki marina adı")
 
 
 class AnalysisContext(BaseModel):
