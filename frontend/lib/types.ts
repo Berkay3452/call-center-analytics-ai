@@ -126,6 +126,12 @@ export const LOSS_REASON_LABELS: Record<LossReason, string> = {
   diger: "Diğer",
 };
 
+export const SALES_OUTCOME_LABELS: Record<SalesOutcomeType, string> = {
+  satisa_donustu: "Satışa Dönüştü (Kazanıldı)",
+  kaybedildi: "Kaybedildi",
+  beklemede: "Beklemede / Takipte",
+};
+
 // ---------------------------------------------------------------------------
 // CRM Kaydı — 7 Temel Alan (Hocanın Şartı / CrmExtraction)
 // ---------------------------------------------------------------------------

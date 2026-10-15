@@ -10,6 +10,8 @@ import type {
   RequestCategory,
   ServiceMode,
   NextAction,
+  SalesOutcomeType,
+  LossReason,
 } from "@/lib/api/types";
 import { PlaceholderCard } from "@/components/PlaceholderCard";
 import { CallDetailSkeleton } from "@/components/skeletons";
@@ -17,13 +19,13 @@ import {
   CALL_TYPE_LABELS,
   EMPTY_LABEL,
   labelOf,
+  LOSS_REASON_LABELS,
   NEXT_ACTION_LABELS,
   REQUEST_CATEGORY_LABELS,
+  SALES_OUTCOME_LABELS,
   SERVICE_MODE_LABELS,
   URGENCY_LABELS,
 } from "@/lib/types";
-
-
 import mockCallsList from "@/mocks/cagri_listesi.json";
 
 interface Props {
@@ -58,6 +60,30 @@ const URGENCY_COLOR: Record<Urgency, { bg: string; text: string; border: string 
   dusuk: { bg: "bg-gray-50", text: "text-gray-700", border: "border-gray-300" },
 };
 
+const SALES_OUTCOME_BADGE: Record<SalesOutcomeType, string> = {
+  satisa_donustu: "bg-emerald-50 text-emerald-700 border-emerald-300",
+  kaybedildi: "bg-red-50 text-red-700 border-red-300",
+  beklemede: "bg-amber-50 text-amber-700 border-amber-300",
+};
+
+/**
+ * Konuşma metnindeki "rep: ...", "customer: ...", "Temsilci: ..." vb. önekleri temizler.
+ */
+function cleanSpeakerPrefix(text: string): string {
+  return text.replace(/^(rep|customer|temsilci|müşteri|musteri)\s*:\s*/i, "").trim();
+}
+
+/**
+ * Milisaniyeyi "dk:sn" biçimine çevirir.
+ */
+function formatMs(ms: number | null | undefined): string | null {
+  if (ms == null) return null;
+  const totalSec = Math.floor(ms / 1000);
+  const m = Math.floor(totalSec / 60);
+  const s = totalSec % 60;
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
 export default function CallDetailPage({ params }: Props) {
   return (
     <Suspense fallback={<CallDetailSkeleton />}>
@@ -73,13 +99,14 @@ async function CallDetailContent({ params }: Props) {
   try {
     call = await getCallById(id);
   } catch (err) {
-    // Yalnızca "kayıt yok" 404'tür
     if (isApiError(err) && err.status === 404) notFound();
     return (
       <div className="rounded-xl border border-red-200 bg-red-50 p-6 shadow-sm">
         <h2 className="text-base font-bold text-red-900">Çağrı Detayı Yüklenemedi</h2>
         <p className="mt-1 text-sm text-red-700">
-          {err instanceof Error ? err.message : "Sunucuya bağlanılamadı. Ağ bağlantınızı veya backend durumunu kontrol edin."}
+          {err instanceof Error
+            ? err.message
+            : "Sunucuya bağlanılamadı. Ağ bağlantınızı veya backend durumunu kontrol edin."}
         </p>
         <Link
           href="/admin/calls"
@@ -99,13 +126,88 @@ async function CallDetailContent({ params }: Props) {
   const classification = call.analysis?.classification;
   const durationSec = call.duration_s ?? 0;
 
-  // Aciliyet çıkarılamadıysa (null) nötr renk kullanılır.
+  // Aciliyet çıkarılamadıysa nötr renk kullanılır.
   const urgency = crm?.urgency;
   const urgencyStyle = urgency ? URGENCY_COLOR[urgency] : URGENCY_COLOR.dusuk;
   const callType = classification?.call_type;
   const inProgress =
     call.state === "beklemede" || call.state === "yaziya_cevriliyor" || call.state === "isleniyor";
   const analysisStatus = call.analysis?.status ?? (call.state === "basarisiz" ? "basarisiz" : "kismi");
+
+  // Gerçek Analiz Güveni: yalnızca classification.confidence varsa gösterilir
+  const rawConfidence = classification?.confidence;
+  const confidencePercent =
+    rawConfidence != null
+      ? Math.round(rawConfidence <= 1 ? rawConfidence * 100 : rawConfidence)
+      : null;
+
+  // Kısmi analiz veya analiz hataları ayrıştırma
+  const rawErrors = call.analysis?.errors;
+  const errorEntries: Array<{ section: string; message: string; detail?: string }> = [];
+
+  if (rawErrors) {
+    if (Array.isArray(rawErrors)) {
+      rawErrors.forEach((err, idx) => {
+        if (typeof err === "string") {
+          errorEntries.push({ section: `Bölüm ${idx + 1}`, message: "Bu bölüm üretilemedi.", detail: err });
+        } else if (typeof err === "object" && err !== null) {
+          const anyErr = err as Record<string, unknown>;
+          errorEntries.push({
+            section: String(anyErr.section || anyErr.field || `Hata ${idx + 1}`),
+            message: "Bu bölüm üretilemedi.",
+            detail: String(anyErr.message || anyErr.error || JSON.stringify(err)),
+          });
+        }
+      });
+    } else if (typeof rawErrors === "object") {
+      Object.entries(rawErrors).forEach(([key, val]) => {
+        // Backend `analysis.errors` anahtarları ajan adlarıdır.
+        const sectionMap: Record<string, string> = {
+          call_classifier: "Çağrı Sınıflandırma",
+          crm_extraction: "CRM Çıkarımı",
+          sales_analyzer: "Satış Analizi",
+          summarizer: "Görüşme Özeti",
+          classification: "Çağrı Sınıflandırma",
+          crm: "CRM Çıkarımı",
+          sales: "Satış Analizi",
+          summary: "Görüşme Özeti",
+        };
+        const sectionName = sectionMap[key] || key;
+        errorEntries.push({ section: sectionName, message: "Bu bölüm üretilemedi.", detail: String(val) });
+      });
+    }
+  }
+
+  const isPartial = analysisStatus === "kismi" || errorEntries.length > 0;
+
+  // Transkript segmentleri (Öncelikle segments dizisi, yoksa raw text)
+  const segments = (call.transcript?.segments && call.transcript.segments.length > 0)
+    ? call.transcript.segments.map((seg, idx) => {
+        const isCustomer = seg.speaker === "customer";
+        const cleanText = cleanSpeakerPrefix(seg.text);
+        const timeFormatted = formatMs(seg.start_ms);
+        return {
+          id: idx,
+          isCustomer,
+          text: cleanText,
+          time: timeFormatted,
+        };
+      })
+    : (call.transcript?.text
+        ? call.transcript.text
+            .split("\n")
+            .filter((l) => l.trim().length > 0)
+            .map((line, idx) => {
+              const isCustomer = /^(müşteri|musteri|customer)\s*:/i.test(line);
+              const cleanText = cleanSpeakerPrefix(line);
+              return {
+                id: idx,
+                isCustomer,
+                text: cleanText,
+                time: null,
+              };
+            })
+        : []);
 
   return (
     <div className="space-y-6">
@@ -126,12 +228,12 @@ async function CallDetailContent({ params }: Props) {
           )}
           {!inProgress && analysisStatus === "kismi" && (
             <span className="inline-flex items-center rounded-md bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-800 border border-amber-200">
-              ⚠️ Kısmi Analiz — Eksik Bilgi Mevcut
+              ⚠️ Kısmi Analiz
             </span>
           )}
           {!inProgress && analysisStatus === "basarisiz" && (
             <span className="inline-flex items-center rounded-md bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-800 border border-red-200">
-              ✕ Analiz Başarısız — Transkript Eksik
+              ✕ Analiz Başarısız
             </span>
           )}
           {!inProgress && analysisStatus === "tamam" && (
@@ -152,6 +254,37 @@ async function CallDetailContent({ params }: Props) {
         </div>
       </div>
 
+      {/* Kısmi Analiz & Hata Durumu Uyarısı */}
+      {isPartial && !inProgress && (
+        <div className="rounded-xl border border-amber-300 bg-amber-50/90 p-4 shadow-sm">
+          <div className="flex items-start gap-3">
+            <span className="text-xl">⚠️</span>
+            <div className="flex-1">
+              <h3 className="text-sm font-bold text-amber-900">
+                Kısmi Analiz — Bazı Alanlar Üretilemedi
+              </h3>
+              <p className="mt-0.5 text-xs text-amber-800">
+                Bu görüşmenin analizinde bazı bölümler üretilemedi; diğer bölümlerin sonuçları geçerlidir.
+              </p>
+              {errorEntries.length > 0 ? (
+                <ul className="mt-2.5 space-y-1 rounded-lg bg-amber-100/70 p-2.5 text-xs text-amber-950 border border-amber-200">
+                  {errorEntries.map((e, idx) => (
+                    <li key={idx} className="flex items-baseline gap-1.5" title={e.detail}>
+                      <span className="font-bold">• {e.section}:</span>
+                      <span>{e.message}</span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-1 text-xs text-amber-700 italic">
+                  Eksik alan uyarısı: Bazı analiz parametreleri tespit edilemediğinden kısmi kayıt oluşturuldu.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Başlık ve Temel Bilgiler */}
       <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -164,24 +297,27 @@ async function CallDetailContent({ params }: Props) {
               {new Date(call.started_at).toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" })}
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-500">Analiz Güveni:</span>
-            <span className="text-sm font-bold text-emerald-600">
-              %{Math.round((sales?.confidence ?? 0) * 100)}
-            </span>
-          </div>
+          {/* Gerçek Analiz Güveni (Yoksa bileşen gizlenir) */}
+          {confidencePercent !== null && (
+            <div className="flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-1.5 border border-emerald-200">
+              <span className="text-xs text-emerald-800 font-medium">Analiz Güveni:</span>
+              <span className="text-sm font-bold text-emerald-700">
+                %{confidencePercent}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* 2 Kolonlu Düzen: Sol = Ses & Transkript / Sağ = 7 Alanlı CRM & Servis Emri */}
+      {/* 2 Kolonlu Düzen: Sol = Ses, Transkript & Satış / Sağ = 7 Alanlı CRM & Servis Emri */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-        {/* SOL: Ses Oynatıcı & Transkript (7 Kolon) */}
+        {/* SOL: Ses Oynatıcı, Transkript, Özet & Satış Analizi (7 Kolon) */}
         <div className="space-y-6 lg:col-span-7">
           {/* Ses Oynatıcı Dalga Formu */}
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-600">
-                Ses Kaydı & Dalga Formu
+                Ses Kaydı &amp; Dalga Formu
               </h2>
               <span className="text-xs font-mono text-gray-500">
                 {Math.floor(durationSec / 60)}:
@@ -210,46 +346,53 @@ async function CallDetailContent({ params }: Props) {
             </div>
           </div>
 
-          {/* Transkript Konuşma Balonları */}
+          {/* Transkript Konuşma Balonları (Konuşmacı Etiketleri & Önek Temizliği) */}
           <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-600">
-              Konuşma Transkripti (Ayrıştırılmış)
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-600">
+                Konuşma Transkripti (Ayrıştırılmış)
+              </h2>
+              <span className="text-xs text-gray-400">
+                {segments.length} segment
+              </span>
+            </div>
 
-            {call.transcript?.text ? (
+            {segments.length > 0 ? (
               <div className="space-y-3">
-                {call.transcript.text.split("\n").map((line, idx) => {
-                  const isCustomer = line.startsWith("Müşteri:");
-                  const text = line.replace(/^(Müşteri:|Temsilci:)\s*/, "");
-
-                  return (
+                {segments.map((seg) => (
+                  <div
+                    key={seg.id}
+                    className={`flex ${seg.isCustomer ? "justify-start" : "justify-end"}`}
+                  >
                     <div
-                      key={idx}
-                      className={`flex ${isCustomer ? "justify-start" : "justify-end"}`}
+                      className={`max-w-[85%] rounded-2xl p-3 text-sm shadow-sm ${
+                        seg.isCustomer
+                          ? "bg-slate-100 text-slate-800 rounded-tl-sm border border-slate-200"
+                          : "bg-sky-600 text-white rounded-tr-sm"
+                      }`}
                     >
                       <div
-                        className={`max-w-[85%] rounded-2xl p-3 text-sm shadow-sm ${
-                          isCustomer
-                            ? "bg-slate-100 text-slate-800 rounded-tl-sm border border-slate-200"
-                            : "bg-sky-600 text-white rounded-tr-sm"
+                        className={`mb-1 flex items-center justify-between gap-3 text-[11px] font-bold ${
+                          seg.isCustomer ? "text-slate-600" : "text-sky-200"
                         }`}
                       >
-                        <div
-                          className={`mb-1 text-[11px] font-bold ${
-                            isCustomer ? "text-slate-600" : "text-sky-200"
-                          }`}
-                        >
-                          {isCustomer ? "⚓ Müşteri (Tekne Sahibi)" : "🛠 Miço Usta Temsilcisi"}
-                        </div>
-                        <p>{text}</p>
+                        <span>
+                          {seg.isCustomer ? "⚓ Müşteri" : "🛠 Temsilci (Miço Usta)"}
+                        </span>
+                        {seg.time && (
+                          <span className="font-mono text-[10px] font-normal opacity-75">
+                            {seg.time}
+                          </span>
+                        )}
                       </div>
+                      <p className="leading-relaxed whitespace-pre-wrap">{seg.text}</p>
                     </div>
-                  );
-                })}
+                  </div>
+                ))}
               </div>
             ) : (
               <div className="rounded-lg bg-gray-50 p-6 text-center text-sm text-gray-400">
-                Ses kaydı transkripti henüz oluşturulmadı (cevapsız çağrı).
+                Ses kaydı transkripti henüz oluşturulmadı (cevapsız çağrı veya işleniyor).
               </div>
             )}
           </div>
@@ -257,7 +400,7 @@ async function CallDetailContent({ params }: Props) {
           {/* AI Görüşme Özeti */}
           <PlaceholderCard title="AI Görüşme Özeti & Önemli Noktalar">
             <p className="text-sm text-gray-800 leading-relaxed">
-              {summary?.summary ?? "Özet hazırlanıyor..."}
+              {summary?.summary ?? (inProgress ? "Özet hazırlanıyor..." : "Bu görüşme için özet üretilemedi.")}
             </p>
             {summary?.key_points && summary.key_points.length > 0 && (
               <ul className="mt-3 list-inside list-disc space-y-1 text-xs text-gray-600">
@@ -267,6 +410,83 @@ async function CallDetailContent({ params }: Props) {
               </ul>
             )}
           </PlaceholderCard>
+
+          {/* Satış Analizi Kartı (analysis.sales) */}
+          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-3 mb-4">
+              <div>
+                <h2 className="text-base font-bold text-gray-900">
+                  Satış Analizi
+                </h2>
+                <p className="text-xs text-gray-500">
+                  Yapay zekâ destekli satış dönüşüm ve kayıp analizi
+                </p>
+              </div>
+
+              {sales?.outcome && (
+                <span
+                  className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold ${SALES_OUTCOME_BADGE[sales.outcome] || "bg-gray-100 text-gray-700"}`}
+                >
+                  {sales.outcome === "satisa_donustu" && "✓ "}
+                  {sales.outcome === "kaybedildi" && "✕ "}
+                  {sales.outcome === "beklemede" && "⏳ "}
+                  {labelOf(SALES_OUTCOME_LABELS, sales.outcome)}
+                </span>
+              )}
+            </div>
+
+            {sales ? (
+              <div className="space-y-3.5">
+                {/* Sonuç Özeti */}
+                <div className="rounded-lg bg-slate-50 border border-slate-100 p-3">
+                  <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    Satış Durumu
+                  </span>
+                  <p className="mt-0.5 text-sm font-semibold text-slate-900">
+                    {labelOf(SALES_OUTCOME_LABELS, sales.outcome)}
+                  </p>
+                </div>
+
+                {/* Kayıp Nedeni (Eğer sonuç kayıpsa veya loss_reason varsa) */}
+                {(sales.outcome === "kaybedildi" || sales.loss_reason) && (
+                  <div className="rounded-lg bg-red-50 border border-red-200 p-3">
+                    <span className="block text-[11px] font-bold uppercase tracking-wider text-red-700">
+                      Kayıp Nedeni
+                    </span>
+                    <p className="mt-0.5 text-sm font-bold text-red-900">
+                      {labelOf(LOSS_REASON_LABELS, sales.loss_reason as LossReason | null | undefined)}
+                    </p>
+                  </div>
+                )}
+
+                {/* Dayanak / Alıntılar (Evidence) */}
+                {sales.evidence && (
+                  <div className="rounded-lg bg-amber-50/70 border border-amber-200/80 p-3">
+                    <span className="block text-[11px] font-bold uppercase tracking-wider text-amber-800 mb-1">
+                      📌 Satış Analizi Dayanağı &amp; Alıntılar
+                    </span>
+                    <p className="text-xs text-amber-950 leading-relaxed italic">
+                      &ldquo;{sales.evidence}&rdquo;
+                    </p>
+                  </div>
+                )}
+
+                {/* Satış Analiz Güveni */}
+                {sales.confidence != null && (
+                  <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-gray-100">
+                    <span>Satış Analizi Güveni:</span>
+                    <span className="font-semibold text-emerald-700">
+                      %{Math.round(sales.confidence <= 1 ? sales.confidence * 100 : sales.confidence)}
+                    </span>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="rounded-lg bg-gray-50 p-4 text-center text-xs text-gray-400">
+                Bu çağrı için henüz satış analizi oluşturulmadı.
+              </div>
+            )}
+          </div>
         </div>
 
         {/* SAĞ: 7 CRM Alanı & Servis Emri Önerisi (5 Kolon) */}
