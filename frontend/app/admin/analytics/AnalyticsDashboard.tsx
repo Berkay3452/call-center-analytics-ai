@@ -10,6 +10,7 @@ import {
   labelOf,
   LOSS_REASON_LABELS,
   LossReason,
+  MARINA_OPTIONS,
   REQUEST_CATEGORY_LABELS,
   RequestCategory,
   URGENCY_LABELS,
@@ -23,19 +24,6 @@ const DATE_RANGE_OPTIONS = [
   { value: "7", label: "Son 7 Gün" },
   { value: "90", label: "Son 3 Ay (Sezon)" },
   { value: "365", label: "Son 1 Yıl" },
-];
-
-const MARINA_OPTIONS = [
-  "Ataköy Marina",
-  "Bodrum Milta Marina",
-  "Çeşme Marina",
-  "Göcek D-Marin",
-  "İstinye Tekne Park",
-  "Kalamış Marina",
-  "Marmaris Netsel Marina",
-  "Pendik Marinturk Marina",
-  "Tuzla Marina",
-  "Yalıkavak Marina",
 ];
 
 // Kategori bar renkleri
@@ -193,10 +181,12 @@ export default function AnalyticsDashboard() {
   const marinas = data?.busiest_marinas ?? [];
   const totalMarinaCalls = marinas.reduce((acc, m) => acc + m.count, 0);
 
-  // En sık rastlanan kayıp nedeni ve aksiyon önerisi
-  const topLossReason = lossEntries.length > 0
-    ? [...lossEntries].sort((a, b) => b[1] - a[1])[0][0]
+  // En sık rastlanan kayıp nedeni ve aksiyon önerisi (yalnızca sayısı 0'dan büyük olanlar)
+  const nonZeroLossEntries = lossEntries.filter(([, count]) => count > 0);
+  const topLossEntry = nonZeroLossEntries.length > 0
+    ? [...nonZeroLossEntries].sort((a, b) => b[1] - a[1])[0]
     : null;
+  const topLossReason = topLossEntry ? topLossEntry[0] : null;
 
   return (
     <div className="space-y-6">
@@ -750,22 +740,25 @@ export default function AnalyticsDashboard() {
               )}
 
               {/* Aksiyon İpucu Kutusu */}
-              {topLossReason && (
+              {topLossReason && totalLossCount > 0 && (
                 <div className="mt-4 rounded-lg bg-amber-50 dark:bg-amber-950/40 p-2.5 border border-amber-200 dark:border-amber-900/60 text-[11px] text-amber-900 dark:text-amber-200">
                   💡 <strong>Aksiyon Önerisi:</strong>{" "}
                   {topLossReason === "fiyat" &&
-                    "Fiyat itirazı olan tekliflerde standart kış bakım paketleri ve esnek ödeme koşulları sunulmalıdır."}
-                  {topLossReason === "gec_donus" &&
-                    "Çağrılara ilk 15 dakika içinde geri dönüş sağlanması satışa dönüşü doğrudan artıracaktır."}
-                  {topLossReason === "rakip" &&
-                    "Yetkili servis garantisi ve orijinal yedek parça avantajları müşteriye vurgulanmalıdır."}
+                    "Fiyat itirazı olan tekliflerde standart kış bakım paketleri ve alternatif ödeme planları önerin."}
                   {topLossReason === "takvim" &&
-                    "Yoğun sezon öncesi ön rezervasyon randevu slotları oluşturulmalıdır."}
+                    "Kapasite yetersizliği nedeniyle kaybedilen talepler için anlaşmalı servis ortaklıkları değerlendirilebilir."}
+                  {topLossReason === "gec_donus" &&
+                    "Cevap süresini kısaltmak için acil çağrı bildirimlerini devreye alın."}
+                  {topLossReason === "rakip" &&
+                    "Rakip tekliflerle kaybedilen işler için garanti ve orijinal parça avantajlarını vurgulayın."}
+                  {topLossReason === "guven" &&
+                    "Müşteri referansları ve yetkili servis sertifikalarını tekliflere ekleyin."}
                   {topLossReason !== "fiyat" &&
+                    topLossReason !== "takvim" &&
                     topLossReason !== "gec_donus" &&
                     topLossReason !== "rakip" &&
-                    topLossReason !== "takvim" &&
-                    "Müşteri geri bildirimleri doğrultusunda teklif süreçleri revize edilmelidir."}
+                    topLossReason !== "guven" &&
+                    "Kaybedilen taleplerin nedenlerini analiz ederek servis süreçlerini gözden geçirin."}
                 </div>
               )}
             </div>

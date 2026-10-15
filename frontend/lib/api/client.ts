@@ -200,6 +200,17 @@ async function handleMockRequest<T>(
 
   // 1. GET /calls
   if (method === "GET" && path === "/calls") {
+    if (options.params?.marina) {
+      const marinaFilter = String(options.params.marina).toLowerCase();
+      const filtered = mockCallsList.items.filter(
+        (item) => item.marina?.toLowerCase() === marinaFilter
+      );
+      return {
+        ...mockCallsList,
+        items: filtered,
+        total: filtered.length,
+      } as unknown as T;
+    }
     return mockCallsList as unknown as T;
   }
 
@@ -251,6 +262,17 @@ async function handleMockRequest<T>(
 
   // 7. GET /crm
   if (method === "GET" && path === "/crm") {
+    if (options.params?.marina) {
+      const marinaFilter = String(options.params.marina).toLowerCase();
+      const filtered = mockCrmList.items.filter(
+        (item) => item.location?.toLowerCase() === marinaFilter
+      );
+      return {
+        ...mockCrmList,
+        items: filtered,
+        total: filtered.length,
+      } as unknown as T;
+    }
     return mockCrmList as unknown as T;
   }
 

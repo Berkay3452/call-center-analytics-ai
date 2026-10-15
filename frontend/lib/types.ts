@@ -306,3 +306,19 @@ export const ANALYSIS_STATUS_LABELS: Record<AnalysisStatus, string> = {
   kismi: "Kısmi",
   basarisiz: "Başarısız",
 };
+
+// ---------------------------------------------------------------------------
+// Standart Marina Listesi
+// ---------------------------------------------------------------------------
+export const MARINA_OPTIONS = [
+  "Ataköy Marina",
+  "Bodrum Milta Marina",
+  "Çeşme Marina",
+  "Göcek D-Marin",
+  "İstinye Tekne Park",
+  "Kalamış Marina",
+  "Marmaris Netsel Marina",
+  "Pendik Marinturk Marina",
+  "Tuzla Marina",
+  "Yalıkavak Marina",
+];

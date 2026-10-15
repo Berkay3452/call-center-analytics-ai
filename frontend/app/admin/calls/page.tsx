@@ -15,6 +15,7 @@ import {
   type Urgency,
 } from "@/lib/types";
 import { CallsTableSkeleton } from "@/components/skeletons";
+import { MarinaFilter } from "@/components/MarinaFilter";
 
 export const metadata = { title: "Çağrılar | Miço Usta" };
 
@@ -88,7 +89,14 @@ function formatDuration(sec: number): string {
   return `${m}:${String(s).padStart(2, "0")}`;
 }
 
-export default function CallsPage() {
+interface CallsPageProps {
+  searchParams?: Promise<{ marina?: string }>;
+}
+
+export default async function CallsPage({ searchParams }: CallsPageProps) {
+  const params = searchParams ? await searchParams : {};
+  const marina = params?.marina;
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -98,7 +106,8 @@ export default function CallsPage() {
             Tüm marinalardan gelen sesli görüşmeler ve yapay zekâ analiz sonuçları
           </p>
         </div>
-        <div>
+        <div className="flex flex-wrap items-center gap-3">
+          <MarinaFilter selectedMarina={marina} />
           <Link
             href="/admin/calls/upload"
             className="inline-flex items-center gap-2 rounded-xl bg-sky-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-sky-800 active:scale-[0.98] transition-all"
@@ -109,19 +118,19 @@ export default function CallsPage() {
         </div>
       </div>
 
-      <Suspense fallback={<CallsTableSkeleton />}>
-        <CallsListContent />
+      <Suspense key={marina || "all"} fallback={<CallsTableSkeleton />}>
+        <CallsListContent marina={marina} />
       </Suspense>
     </div>
   );
 }
 
-async function CallsListContent() {
+async function CallsListContent({ marina }: { marina?: string }) {
   let calls: Call[] = [];
   let errorMsg: string | null = null;
 
   try {
-    calls = await fetchCalls();
+    calls = await fetchCalls(marina ? { marina } : undefined);
   } catch (err) {
     errorMsg = err instanceof Error ? err.message : "Çağrılar yüklenemedi";
   }
@@ -134,6 +143,22 @@ async function CallsListContent() {
         </p>
         <p className="mt-1 text-xs text-amber-700 dark:text-amber-300">
           Servise ulaşılamıyor. Lütfen biraz sonra tekrar deneyin; sorun sürerse sistem yöneticinize başvurun.
+        </p>
+      </div>
+    );
+  }
+
+  if (calls.length === 0) {
+    return (
+      <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-12 text-center shadow-sm">
+        <span className="text-3xl">⚓</span>
+        <h3 className="mt-3 text-sm font-bold text-gray-900 dark:text-slate-100">
+          Çağrı Bulunamadı
+        </h3>
+        <p className="mt-1 text-xs text-gray-500 dark:text-slate-400">
+          {marina
+            ? `"${marina}" marinası için kayıtlı çağrı bulunmuyor.`
+            : "Henüz sisteme kaydedilmiş bir çağrı bulunmuyor."}
         </p>
       </div>
     );
