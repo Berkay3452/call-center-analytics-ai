@@ -68,7 +68,7 @@ export function StatusIndicator({ stage, className = "" }: StatusIndicatorProps)
     <div
       role="status"
       aria-live="polite"
-      className={`inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50/80 px-3 py-1 text-xs font-medium text-sky-900 shadow-2xs backdrop-blur-xs transition-all ${className}`}
+      className={`inline-flex items-center gap-2 rounded-full border border-sky-200 dark:border-sky-800 bg-sky-50/80 dark:bg-sky-950/60 px-3 py-1 text-xs font-medium text-sky-900 dark:text-sky-300 shadow-2xs backdrop-blur-xs transition-all ${className}`}
     >
       {icon}
       <span className="tracking-tight">{text}</span>
