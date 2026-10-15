@@ -11,12 +11,19 @@ import type { NextRequest } from "next/server";
 
 const ALLOWED = [
   /^calls(\/[^/]+(\/(analyze|status|audio))?)?$/,
+  /^calls\/[^/]+\/audio$/,
   /^calls\/audio$/,
   /^crm$/,
   /^analytics\/summary$/,
   /^chat\/.+$/,
   /^assistant\/.+$/,
 ];
+
+// Mock modunda veya servis kapalıyken dönecek geçerli minimal WAV ses verisi
+const MOCK_WAV = Buffer.from(
+  "UklGRjIAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YRAAAACAgICAgICAgICAgICAgICA",
+  "base64",
+);
 
 async function forward(
   req: NextRequest,
@@ -29,6 +36,21 @@ async function forward(
       { error: { code: "not_found", message: "Bilinmeyen uç nokta.", details: {}, request_id: null } },
       { status: 404 },
     );
+  }
+
+  const isAudioRequest = joined.startsWith("calls/") && joined.endsWith("/audio");
+
+  // Mock modu açıksa ve ses isteniyorsa doğrudan örnek ses verisi dön
+  if (isAudioRequest && process.env.NEXT_PUBLIC_USE_MOCKS === "true") {
+    return new Response(MOCK_WAV, {
+      status: 200,
+      headers: {
+        "content-type": "audio/wav",
+        "content-length": String(MOCK_WAV.length),
+        "accept-ranges": "bytes",
+        "cache-control": "no-cache",
+      },
+    });
   }
 
   const base = (process.env.API_URL ?? "http://localhost:8000/api/v1").replace(/\/+$/, "");
@@ -81,4 +103,4 @@ async function forward(
   return new Response(upstream.body, { status: upstream.status, headers: out });
 }
 
-export { forward as GET, forward as POST, forward as PUT, forward as DELETE };
+export { forward as GET, forward as POST, forward as PUT, forward as DELETE, forward as HEAD };
