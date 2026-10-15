@@ -13,6 +13,7 @@ Kurallar:
 
 import asyncio
 import json
+import re
 from collections.abc import AsyncIterator
 from datetime import UTC, datetime
 from uuid import UUID, uuid4
@@ -39,31 +40,25 @@ from app.schemas.assistant import AssistantAnswer, AssistantRequest, QuestionTyp
 log = structlog.get_logger(__name__)
 
 GENERIC_ERROR_MESSAGE = "Beklenmeyen bir hata oluştu. Lütfen biraz sonra tekrar deneyin."
-# Akış metnini parçalar arasında bekleme: cevap kelime kelime yazılıyormuş gibi görünsün.
-STREAM_CHUNK_DELAY_S = 0.03
+# Cevap kelime kelime yazılıyormuş gibi görünsün: kelime başına bekleme (sn) ve uzun cevaplarda
+# toplam akış süresi sınırı (sn).
+STREAM_WORD_DELAY_S = 0.06
+STREAM_MAX_TOTAL_S = 5.0
 ASSISTANT_UNAVAILABLE_MESSAGE = (
     "Şu anda sorunuzu yanıtlayamıyorum. Lütfen biraz sonra tekrar deneyin."
 )
 
 
-def _chunk_text(text: str, chunk_size: int = 24) -> list[str]:
-    """Cevap metnini akış için doğal boyutlarda kelime öbeklerine böler."""
-    if not text:
-        return []
-    words = text.split(" ")
-    chunks: list[str] = []
-    current = ""
-    for w in words:
-        if not current:
-            current = w
-        elif len(current) + len(w) + 1 <= chunk_size:
-            current += " " + w
-        else:
-            chunks.append(current + " ")
-            current = w
-    if current:
-        chunks.append(current)
-    return chunks
+def _chunk_text(text: str) -> list[str]:
+    """Cevap metnini kelime kelime böler (kelime + ardındaki boşluk); birleşince metin aynıdır."""
+    return re.findall(r"\S+\s*", text)
+
+
+def _chunk_delay(chunk_count: int) -> float:
+    """Parçalar arası bekleme (sn): kelime başına sabit; toplam `STREAM_MAX_TOTAL_S`'yi aşmaz."""
+    if chunk_count <= 0:
+        return 0.0
+    return min(STREAM_WORD_DELAY_S, STREAM_MAX_TOTAL_S / chunk_count)
 
 
 def _to_message_out(msg: ChatMessage) -> ChatMessageOut:
@@ -300,8 +295,9 @@ async def stream_assistant_chat(
         return
 
     # 1. token parçaları
-    for chunk in _chunk_text(answer.answer):
-        await asyncio.sleep(STREAM_CHUNK_DELAY_S)
+    chunks = _chunk_text(answer.answer)
+    for chunk in chunks:
+        await asyncio.sleep(_chunk_delay(len(chunks)))
         yield ServerSentEvent(
             event="token",
             data=json.dumps({"token": chunk, "text": chunk}),
@@ -381,8 +377,9 @@ async def stream_chat_messages(
     )
 
     # 3. delta parçaları
-    for chunk in _chunk_text(answer.answer):
-        await asyncio.sleep(STREAM_CHUNK_DELAY_S)
+    chunks = _chunk_text(answer.answer)
+    for chunk in chunks:
+        await asyncio.sleep(_chunk_delay(len(chunks)))
         yield ServerSentEvent(
             event="delta",
             data=json.dumps({"type": "delta", "text": chunk}),

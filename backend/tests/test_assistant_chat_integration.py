@@ -380,3 +380,69 @@ async def test_missing_llm_key_gets_polite_message(
 
     assert resp.status_code == 200
     assert resp.json()["answer"]["content"] == assistant_chat.ASSISTANT_UNAVAILABLE_MESSAGE
+
+
+# --- 6. Akış hızı ve Türkçe sayı biçimi (#83) ---
+
+
+def test_chunk_text_is_word_by_word_and_lossless() -> None:
+    from app.services.assistant_chat import _chunk_text
+
+    text = "Ekim 2026 döneminde  toplam giderleriniz 14.250,00 TL (1 kalem).\nSon satır."
+    chunks = _chunk_text(text)
+
+    assert "".join(chunks) == text  # boşluk ve satır sonları dahil birebir
+    assert len(chunks) == len(text.split())
+    assert chunks[0] == "Ekim " and _chunk_text("") == []
+
+
+def test_chunk_delay_is_per_word_but_total_time_is_capped() -> None:
+    from app.services import assistant_chat as ac
+
+    assert ac._chunk_delay(0) == 0.0
+    assert ac._chunk_delay(10) == ac.STREAM_WORD_DELAY_S  # kısa cevap: kelime başına sabit
+    long_words = 500
+    assert ac._chunk_delay(long_words) * long_words <= ac.STREAM_MAX_TOTAL_S + 1e-9
+
+
+async def test_stream_waits_between_words(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Hazır soru cevabı da kelime kelime, bekleyerek akar (tek seferde basılmaz)."""
+    from app.services import assistant_chat
+
+    waits: list[float] = []
+    real_sleep = assistant_chat.asyncio.sleep
+
+    async def record(delay: float) -> None:
+        waits.append(delay)
+        await real_sleep(0)
+
+    monkeypatch.setattr(assistant_chat.asyncio, "sleep", record)
+    headers = {"X-Service-Key": TEST_SERVICE_KEY, "X-User-Id": str(AHMET_ID)}
+
+    resp = await client.post(
+        "/api/v1/chat/messages/stream",
+        json={"question": "Kaç bakım hakkım kaldı?"},
+        headers=headers,
+    )
+
+    events = _parse_sse(resp.text)
+    deltas = [json.loads(d)["text"] for e, d in events if e == "delta"]
+    assert len(deltas) >= 5  # kelime kelime (eskiden ~5 büyük parça)
+    assert len(waits) == len(deltas) and all(w > 0 for w in waits)
+
+
+async def test_expense_source_excerpt_uses_turkish_number_format(client: AsyncClient) -> None:
+    """Kaynak kartı alıntısı da cevap metni gibi `14.250,00 TL` biçiminde olmalı."""
+    headers = {"X-Service-Key": TEST_SERVICE_KEY, "X-User-Id": str(AHMET_ID)}
+
+    resp = await client.post(
+        "/api/v1/chat/messages", json={"question": "Bu ay ne kadar harcadım?"}, headers=headers
+    )
+
+    answer = resp.json()["answer"]
+    assert "14.250,00 TL" in answer["content"]
+    excerpts = [s["excerpt"] for s in answer["sources"]]
+    assert excerpts and all("14.250,00 TL" in e for e in excerpts)
+    assert not any("14,250.00" in e for e in excerpts)

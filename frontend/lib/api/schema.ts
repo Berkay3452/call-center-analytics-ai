@@ -280,7 +280,6 @@ export interface components {
         CallSummary: {
             summary: string;
             key_points: string[];
-            loss_reason?: components["schemas"]["LossReason"] | string | null;
         };
         AgentRun: {
             agent: string;
@@ -324,7 +323,7 @@ export interface components {
             request_category: components["schemas"]["RequestCategory"];
             urgency: components["schemas"]["Urgency"];
             sales_outcome: components["schemas"]["SalesOutcomeType"];
-            loss_reason?: components["schemas"]["LossReason"] | string | null;
+            loss_reason: components["schemas"]["LossReason"];
             summary: string | null;
         };
         TranscriptSegmentOut: {

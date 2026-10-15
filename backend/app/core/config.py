@@ -7,7 +7,7 @@ Koda hiçbir anahtar veya model adı gömülmez; örnek değerler .env.example'd
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import Field, SecretStr, model_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 AppEnv = Literal["local", "test", "staging", "prod"]
@@ -100,6 +100,13 @@ class Settings(BaseSettings):
     whisper_beam_size: int = Field(default=5, ge=1)
     # Modelin indirileceği klasör; boşsa Hugging Face varsayılanı (~/.cache/huggingface).
     whisper_download_root: str | None = None
+
+    @field_validator("whisper_download_root", mode="before")
+    @classmethod
+    def _empty_download_root_is_none(cls, value: object) -> object:
+        """`.env`'de boş bırakılan satır ("WHISPER_DOWNLOAD_ROOT=") klasör verilmiş sayılmaz."""
+        return None if isinstance(value, str) and not value.strip() else value
+
     stt_api_base_url: str = "https://api.groq.com/openai/v1"
     stt_api_key: SecretStr | None = None
     stt_api_model: str = "whisper-large-v3"

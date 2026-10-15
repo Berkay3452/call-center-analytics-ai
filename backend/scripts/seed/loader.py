@@ -17,6 +17,9 @@ from uuid import NAMESPACE_URL, UUID, uuid5
 
 import asyncpg
 
+from app.core.config import get_settings
+from app.services.audio_ingest import storage_dir
+from scripts.seed.audio import load_seed_audio
 from scripts.seed.generator import (
     DATA_DIR,
     SEED,
@@ -69,8 +72,15 @@ async def seed_database(
     data_dir: Path = DATA_DIR,
     seed: int = SEED,
     reset: bool = False,
+    audio_dir: Path | None = None,
 ) -> dict[str, int]:
-    """Sentetik veriyi veritabanına yazar ve tablo başına kayıt sayılarını döner."""
+    """Sentetik veriyi veritabanına yazar ve tablo başına kayıt sayılarını döner.
+
+    `audio_dir`: `scripts/generate_audio.py`'nin sesleri yazdığı klasör (boşsa `AUDIO_STORAGE_DIR`).
+    İçinde `seed/<call_id>.wav` olan çağrılara ses bağlanır; olmayanlar sessiz kalır.
+    """
+    if audio_dir is None:
+        audio_dir = storage_dir(get_settings())
     dataset = generate_dataset(seed=seed)
     calls_bundle = load_calls_bundle(data_dir=data_dir)
 
@@ -324,10 +334,13 @@ async def seed_database(
 
                 cust = customer_by_name.get(cref["customer"])
                 boat = boat_by_pair.get((cref["customer"], cref["boat"]))
-                # Ses dosyaları henüz yok (TTS/STT sonraki adım). Var olmayan bir dosyaya
-                # işaret etmek arayüzde "oynat" düğmesini kırar; ses eklenince doldurulur.
-                audio_rel = None
-                audio_hash = None
+                # Ses yalnızca `scripts/generate_audio.py` ile üretilmişse bağlanır. Var olmayan
+                # bir dosyaya işaret etmek arayüzde "oynat" düğmesini kırar; yoksa boş kalır.
+                audio = load_seed_audio(audio_dir, cid)
+                audio_rel = audio.relative_path if audio else None
+                audio_hash = audio.sha256 if audio else None
+                # Ses varsa süre ve segment zamanları sesin gerçek değerleridir.
+                duration_s = audio.duration_s if audio else meta["duration_s"]
 
                 await conn.execute(
                     """
@@ -356,7 +369,7 @@ async def seed_database(
                     call_uuid,
                     _dt(meta["started_at"]),
                     meta["answer_delay_s"],
-                    meta["duration_s"],
+                    duration_s,
                     meta["switchboard_outcome"],
                     audio_rel,
                     audio_hash,
@@ -387,9 +400,16 @@ async def seed_database(
                     full_text,
                 )
 
+                real_timing = audio.timing if audio and audio.timing else None
+                if real_timing is not None and len(real_timing) != len(turns):
+                    real_timing = None  # ses ve metin uyuşmuyorsa tahmini süreler kullanılır
                 t_ms = 0
                 for seg_idx, turn in enumerate(turns):
                     dur_ms = max(1000, len(turn["text"]) * 65)
+                    if real_timing is not None:
+                        seg_start, seg_end = real_timing[seg_idx]
+                    else:
+                        seg_start, seg_end = t_ms, t_ms + dur_ms
                     seg_uuid = uuid5(NAMESPACE_URL, f"synthetic/segment/{cid}/{seg_idx}")
                     await conn.execute(
                         """
@@ -409,8 +429,8 @@ async def seed_database(
                         transcript_uuid,
                         seg_idx,
                         turn["speaker"],
-                        t_ms,
-                        t_ms + dur_ms,
+                        seg_start,
+                        seg_end,
                         turn["text"],
                         turn["text"],
                     )
@@ -497,6 +517,9 @@ async def seed_database(
         ):
             val = await conn.fetchval(f"SELECT count(*) FROM {tbl};")
             counts[tbl] = int(val or 0)
+        counts["calls_with_audio"] = int(
+            await conn.fetchval("SELECT count(*) FROM calls WHERE audio_path IS NOT NULL;") or 0
+        )
         return counts
     finally:
         await conn.close()

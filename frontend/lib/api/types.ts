@@ -42,16 +42,12 @@ export type PageCrmRecordItem = Schema["PageCrmRecordItem"];
 export type CallClassification = Schema["CallClassification"];
 export type CrmExtraction = Schema["CrmExtraction"];
 export type SalesAnalysis = Schema["SalesAnalysis"];
-export type CallSummary = Schema["CallSummary"] & {
-  loss_reason?: LossReason | string | null;
-};
+export type CallSummary = Schema["CallSummary"];
 export type AgentRun = Schema["AgentRun"];
 export type AnalysisOut = Schema["AnalysisOut"];
 
 // Çağrı Modelleri
-export type CallListItem = Schema["CallListItem"] & {
-  loss_reason?: LossReason | string | null;
-};
+export type CallListItem = Schema["CallListItem"];
 export type TranscriptSegmentOut = Schema["TranscriptSegmentOut"];
 export type TranscriptOut = Schema["TranscriptOut"];
 export type CallDetail = Schema["CallDetail"];

@@ -61,7 +61,7 @@ async function CrmContent() {
           ⚠️ CRM kayıtları alınamadı: {errorMsg}
         </p>
         <p className="mt-1 text-xs text-amber-700 dark:text-amber-300">
-          Backend API servisinin çalıştığından emin olun veya mock modunu (NEXT_PUBLIC_USE_MOCKS=true) etkinleştirin.
+          Servise ulaşılamıyor. Lütfen biraz sonra tekrar deneyin; sorun sürerse sistem yöneticinize başvurun.
         </p>
       </div>
     );
@@ -108,7 +108,7 @@ async function CrmContent() {
                 </span>
                 <Link
                   href={`/admin/calls/${s.callId}`}
-                  className="rounded-lg bg-sky-600 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-sky-700 transition-colors shadow-xs"
+                  className="rounded-lg bg-sky-700 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-sky-800 transition-colors shadow-xs"
                 >
                   İncele &amp; Onayla →
                 </Link>
@@ -118,7 +118,7 @@ async function CrmContent() {
             {/* 7 CRM Alanı Izgara Görünümü */}
             <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <div className="rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-transparent dark:border-slate-800/50 p-3">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   1. Müşteri Talebi (Kategori)
                 </span>
                 <p className="mt-0.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
@@ -127,7 +127,7 @@ async function CrmContent() {
               </div>
 
               <div className="rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-transparent dark:border-slate-800/50 p-3">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   2. Lokasyon / Marina
                 </span>
                 <p className="mt-0.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
@@ -136,7 +136,7 @@ async function CrmContent() {
               </div>
 
               <div className="rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-transparent dark:border-slate-800/50 p-3">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   3. Problem Tanımı
                 </span>
                 <p className="mt-0.5 text-xs font-semibold text-slate-800 dark:text-slate-200 line-clamp-2">
@@ -145,7 +145,7 @@ async function CrmContent() {
               </div>
 
               <div className="rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-transparent dark:border-slate-800/50 p-3">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   4. Hizmet Biçimi
                 </span>
                 <p className="mt-0.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
@@ -154,7 +154,7 @@ async function CrmContent() {
               </div>
 
               <div className="rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-transparent dark:border-slate-800/50 p-3">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-400">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   6. Potansiyel İş
                 </span>
                 <p className="mt-0.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
@@ -163,7 +163,7 @@ async function CrmContent() {
               </div>
 
               <div className="rounded-lg bg-sky-50 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-900/60 p-3">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-sky-600 dark:text-sky-400">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400">
                   7. Sonraki Aksiyon / Servis Emri
                 </span>
                 <p className="mt-0.5 text-xs font-bold text-sky-900 dark:text-sky-200">

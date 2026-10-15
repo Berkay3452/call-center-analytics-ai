@@ -53,46 +53,37 @@ function finalStatus(state: CallState): AnalysisStatus {
 // ---------------------------------------------------------------------------
 export async function fetchCalls(): Promise<Call[]> {
   const page = await getApiCalls({ page_size: 100 });
-  return page.items.map((item) => {
-    const rawLossReason =
-      (item as { loss_reason?: LossReason | string | null; lossReason?: LossReason | string | null }).loss_reason ??
-      (item as { loss_reason?: LossReason | string | null; lossReason?: LossReason | string | null }).lossReason ??
-      null;
-
-    return {
-      id: item.id,
-      caller: item.customer_name ?? "İsimsiz Arayan",
-      boatName: item.boat_name ?? undefined,
-      startedAt: item.started_at,
-      durationSec: item.duration_s ?? 0,
-      status: "completed",
-      callType: item.call_type ?? null,
-      urgency: item.urgency ?? null,
+  return page.items.map((item) => ({
+    id: item.id,
+    caller: item.customer_name ?? "İsimsiz Arayan",
+    boatName: item.boat_name ?? undefined,
+    startedAt: item.started_at,
+    durationSec: item.duration_s ?? 0,
+    status: "completed",
+    callType: item.call_type ?? null,
+    urgency: item.urgency ?? null,
+    location: item.marina ?? null,
+    analysisStatus: finalStatus(item.state),
+    pendingState: isFinal(item.state) ? undefined : item.state,
+    transcript: "",
+    summary: item.summary ?? "",
+    tags: item.call_type ? [item.call_type] : [],
+    crm: {
+      requestCategory: item.request_category ?? null,
       location: item.marina ?? null,
-      analysisStatus: finalStatus(item.state),
-      pendingState: isFinal(item.state) ? undefined : item.state,
-      transcript: "",
-      summary: item.summary ?? "",
-      tags: item.call_type ? [item.call_type] : [],
-      crm: {
-        requestCategory: item.request_category ?? null,
-        location: item.marina ?? null,
-        problem: null,
-        serviceMode: null,
-        urgency: item.urgency ?? null,
-        potentialJob: null,
-        nextAction: null,
-      },
-      sales: {
-        outcome: item.sales_outcome ?? "beklemede",
-        lossReason: rawLossReason as LossReason | null,
-        loss_reason: rawLossReason as LossReason | null,
-        evidence: null,
-        confidence: 0,
-      },
-      loss_reason: rawLossReason as LossReason | null,
-    };
-  });
+      problem: null,
+      serviceMode: null,
+      urgency: item.urgency ?? null,
+      potentialJob: null,
+      nextAction: null,
+    },
+    sales: {
+      outcome: item.sales_outcome ?? "beklemede",
+      lossReason: item.loss_reason ?? null,
+      evidence: null,
+      confidence: 0,
+    },
+  }));
 }
 
 // ---------------------------------------------------------------------------

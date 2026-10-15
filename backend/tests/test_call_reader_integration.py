@@ -22,7 +22,7 @@ from sqlalchemy.ext.asyncio import (
 from app.core.config import Settings
 from app.core.errors import NotFoundError
 from app.db.models.ai import Call
-from app.domain.enums import RequestCategory, Urgency
+from app.domain.enums import LossReason, RequestCategory, SalesOutcomeType, Urgency
 from app.schemas.api import CallFilters
 from app.services.call_reader import get_call_detail, list_calls, list_crm_records
 
@@ -189,3 +189,25 @@ async def test_free_text_wildcards_are_literal(factory: async_sessionmaker[Async
         assert page.total == 0
         page = await list_calls(session, CallFilters(q="_"))
         assert page.total == 0
+
+
+async def test_list_calls_loss_reason_for_lost_calls(
+    factory: async_sessionmaker[AsyncSession],
+) -> None:
+    """Kaybedilen çağrılarda loss_reason dolu, diğerlerinde null gelir (#79)."""
+    async with factory() as session:
+        calls_page = await list_calls(session, CallFilters(page=1, page_size=100))
+        assert calls_page.total >= 30
+
+        lost_calls = [c for c in calls_page.items if c.sales_outcome == SalesOutcomeType.KAYBEDILDI]
+        assert len(lost_calls) == 11
+        for call in lost_calls:
+            assert call.loss_reason is not None
+            assert isinstance(call.loss_reason, LossReason)
+
+        non_lost_calls = [
+            c for c in calls_page.items if c.sales_outcome != SalesOutcomeType.KAYBEDILDI
+        ]
+        assert len(non_lost_calls) == 19
+        for call in non_lost_calls:
+            assert call.loss_reason is None

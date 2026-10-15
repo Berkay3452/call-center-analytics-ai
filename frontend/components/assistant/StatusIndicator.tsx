@@ -21,7 +21,7 @@ export function StatusIndicator({ stage, className = "" }: StatusIndicatorProps)
     text = "Tekne ve servis kayıtları aranıyor…";
     icon = (
       <svg
-        className="w-3.5 h-3.5 animate-spin text-sky-600"
+        className="w-3.5 h-3.5 animate-spin text-sky-700"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -57,9 +57,9 @@ export function StatusIndicator({ stage, className = "" }: StatusIndicatorProps)
     text = "Miço Usta yanıtı yazıyor…";
     icon = (
       <div className="flex items-center gap-1 py-1" aria-hidden="true">
-        <span className="h-1.5 w-1.5 rounded-full bg-sky-600 animate-bounce [animation-delay:-0.3s]"></span>
-        <span className="h-1.5 w-1.5 rounded-full bg-sky-600 animate-bounce [animation-delay:-0.15s]"></span>
-        <span className="h-1.5 w-1.5 rounded-full bg-sky-600 animate-bounce"></span>
+        <span className="h-1.5 w-1.5 rounded-full bg-sky-700 animate-bounce [animation-delay:-0.3s]"></span>
+        <span className="h-1.5 w-1.5 rounded-full bg-sky-700 animate-bounce [animation-delay:-0.15s]"></span>
+        <span className="h-1.5 w-1.5 rounded-full bg-sky-700 animate-bounce"></span>
       </div>
     );
   }

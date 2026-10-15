@@ -96,7 +96,6 @@ export interface SalesAnalysis {
 export interface CallSummary {
   summary: string;
   key_points: string[];
-  loss_reason?: LossReason | string | null;
 }
 
 export interface AgentRun {
@@ -141,7 +140,7 @@ export interface CallListItem {
   request_category: RequestCategory | null;
   urgency: Urgency | null;
   sales_outcome: SalesOutcomeType | null;
-  loss_reason?: LossReason | string | null;
+  loss_reason: LossReason | null;
   summary: string | null;
 }
 

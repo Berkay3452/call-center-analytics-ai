@@ -170,8 +170,7 @@ export interface CrmSuggestion extends CrmRecord {
 // ---------------------------------------------------------------------------
 export interface SalesAnalysisData {
   outcome: SalesOutcomeType;
-  lossReason?: LossReason | string | null;
-  loss_reason?: LossReason | string | null;
+  lossReason?: LossReason | null;
   evidence?: string | null;
   confidence: number;
 }
@@ -201,21 +200,8 @@ export interface Call {
   keyPoints?: string[];
   crm: CrmRecord;
   sales: SalesAnalysisData;
-  loss_reason?: LossReason | string | null;
   tags: string[];
 }
-
-export type CallListItem = Call & {
-  loss_reason?: LossReason | string | null;
-};
-
-export type CallSummary = {
-  id?: string;
-  summary?: string | null;
-  loss_reason?: LossReason | string | null;
-  keyPoints?: string[];
-  [key: string]: unknown;
-};
 
 // ---------------------------------------------------------------------------
 // KPI Kartları ve Grafikler
