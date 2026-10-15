@@ -77,6 +77,8 @@ uv run python -m scripts.seed --reset          # Tabloları TRUNCATE ile temizle
 
 Script sabit tohum (`SEED = 42`, `Faker('tr_TR')`) kullanır; her çalıştırmada aynı veriyi üretir ve ikinci çalıştırmada `ON CONFLICT DO UPDATE` ile mevcut kayıtları bozmadan günceller.
 
+`uv run --with piper-tts python -m scripts.generate_audio` seed çağrıları için sentetik ses üretir (Türkçe Piper, çevrimdışı); sonra `scripts.seed` sesleri `calls.audio_path`'e bağlar. Ayrıntı: `docs/calistirma.md` bölüm 5.
+
 ## Miço AI araması (RAG, #26)
 
 Tekne karnesi (usta notları ve servis kayıtları) hibrit aranır: **vektör** (bge-m3) + **Türkçe tam metin**, sonuçlar RRF ile birleştirilir; her arama `owner_id` ile sınırlıdır. Embedding modeli Docker'da TEI servisiyle CPU'da çalışır (Python'a torch kurulmaz):

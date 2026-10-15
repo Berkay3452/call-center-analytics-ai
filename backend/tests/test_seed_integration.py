@@ -5,12 +5,18 @@ bu yüzden yalnızca CI'daki tek kullanımlık veritabanında veya yerelde `--re
 çalıştırılmalıdır.
 """
 
+import hashlib
+import json
 import os
+from array import array
+from pathlib import Path
 
 import asyncpg
 import pytest
 
 from app.core.config import Settings
+from scripts.seed.audio import build_wav, write_seed_audio
+from scripts.seed.generator import DATA_DIR
 from scripts.seed.loader import _asyncpg_dsn, seed_database
 
 pytestmark = pytest.mark.skipif(
@@ -92,3 +98,46 @@ async def test_seeded_data_is_consistent() -> None:
         assert open_with_expense == 0
     finally:
         await conn.close()
+
+
+async def test_seed_attaches_generated_audio_with_real_timing(tmp_path: Path) -> None:
+    """Ses klasöründe `seed/call_001.wav` varsa yalnızca o çağrıya bağlanır (#85).
+
+    Süre ve segment zamanları sesin gerçek değerleridir; ses olmayan çağrılar sessiz kalır.
+    Test sonunda seed varsayılan ses klasörüyle yeniden yüklenir (yerel sesler geri bağlanır).
+    """
+    url = Settings().database_url
+    call_json = json.loads((DATA_DIR / "calls" / "call_001.json").read_text(encoding="utf-8"))
+    turns = call_json["turns"]
+    wav, timing = build_wav(
+        turns, lambda text: (array("h", [500] * (100 * len(text))).tobytes(), 1000)
+    )
+    write_seed_audio(tmp_path, "call_001", wav, timing)
+
+    try:
+        counts = await seed_database(url, audio_dir=tmp_path)
+        assert counts["calls_with_audio"] == 1
+
+        conn = await asyncpg.connect(_asyncpg_dsn(url), statement_cache_size=0)
+        try:
+            call = await conn.fetchrow(
+                "SELECT id, audio_path, audio_sha256, duration_s FROM calls"
+                " WHERE audio_path IS NOT NULL"
+            )
+            assert call["audio_path"] == "seed/call_001.wav"
+            assert call["audio_sha256"] == hashlib.sha256(wav).hexdigest()
+            assert call["duration_s"] == round(
+                sum(e - s for s, e in timing) / 1000 + 0.5 * len(turns)
+            )
+            segs = await conn.fetch(
+                "SELECT ts.start_ms, ts.end_ms FROM transcript_segments ts"
+                " JOIN transcripts t ON t.id = ts.transcript_id WHERE t.call_id = $1"
+                " ORDER BY ts.segment_index",
+                call["id"],
+            )
+            assert [(r["start_ms"], r["end_ms"]) for r in segs] == timing
+        finally:
+            await conn.close()
+
+    finally:
+        await seed_database(url)  # varsayılan ses klasörüyle eski durumu geri yükle

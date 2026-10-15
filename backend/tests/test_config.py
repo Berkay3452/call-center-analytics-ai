@@ -34,3 +34,12 @@ def test_prod_rejects_weak_service_key(settings_factory: Callable[..., Settings]
             settings_factory(app_env="prod", service_api_key=weak)
     ok = settings_factory(app_env="prod", service_api_key="x" * 40)
     assert ok.is_production
+
+
+def test_empty_whisper_download_root_means_default_cache(
+    settings_factory: Callable[..., Settings],
+) -> None:
+    """Boş `WHISPER_DOWNLOAD_ROOT=` satırı modeli çalışma klasörüne indirmemeli."""
+    assert settings_factory(whisper_download_root="").whisper_download_root is None
+    assert settings_factory(whisper_download_root="  ").whisper_download_root is None
+    assert settings_factory(whisper_download_root="D:/m").whisper_download_root == "D:/m"
