@@ -52,8 +52,11 @@ function finalStatus(state: CallState): AnalysisStatus {
 // ---------------------------------------------------------------------------
 // Çağrı listesi
 // ---------------------------------------------------------------------------
-export async function fetchCalls(): Promise<Call[]> {
-  const page = await getApiCalls({ page_size: 100 });
+export async function fetchCalls(filters?: { marina?: string }): Promise<Call[]> {
+  const page = await getApiCalls({
+    page_size: 100,
+    ...(filters?.marina ? { marina: filters.marina } : {}),
+  });
   return page.items.map((item) => ({
     id: item.id,
     caller: item.customer_name ?? "İsimsiz Arayan",
@@ -169,8 +172,11 @@ export async function fetchKpis(): Promise<KpiCard[]> {
 // ---------------------------------------------------------------------------
 // CRM önerileri (7 alanlı CRM çıkarımları)
 // ---------------------------------------------------------------------------
-export async function fetchCrmSuggestions(): Promise<CrmSuggestion[]> {
-  const res = await getApiCrmRecords({ page_size: 100 });
+export async function fetchCrmSuggestions(filters?: { marina?: string }): Promise<CrmSuggestion[]> {
+  const res = await getApiCrmRecords({
+    page_size: 100,
+    ...(filters?.marina ? { marina: filters.marina } : {}),
+  });
   return res.items.map((item) => ({
     callId: item.call_id,
     caller: item.customer_name ?? "İsimsiz",

@@ -30,7 +30,12 @@ const NAV_MAP: Record<Role, NavItem[]> = {
 export function Sidebar() {
   const pathname = usePathname();
   const { role } = useRole();
-  const navItems = NAV_MAP[role];
+  const effectiveRole: Role = pathname.startsWith("/owner")
+    ? "owner"
+    : pathname.startsWith("/admin")
+      ? "admin"
+      : role;
+  const navItems = NAV_MAP[effectiveRole];
 
   return (
     <aside className="flex h-full w-56 flex-col border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-colors">

@@ -12,7 +12,7 @@ import {
   type Urgency,
 } from "@/lib/types";
 import { CrmSuggestionsSkeleton } from "@/components/skeletons";
-
+import { MarinaFilter } from "@/components/MarinaFilter";
 
 export const metadata = { title: "CRM Kayıt Önerileri | Miço Usta" };
 
@@ -23,10 +23,17 @@ const URGENCY_BADGE: Record<Urgency, string> = {
   dusuk: "bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700",
 };
 
-export default function CrmPage() {
+interface CrmPageProps {
+  searchParams?: Promise<{ marina?: string }>;
+}
+
+export default async function CrmPage({ searchParams }: CrmPageProps) {
+  const params = searchParams ? await searchParams : {};
+  const marina = params?.marina;
+
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
             CRM Kayıt ve Servis Emri Önerileri
@@ -35,21 +42,24 @@ export default function CrmPage() {
             Çağrılardan yapay zekâ tarafından otomatik çıkarılan 7 alanlı servis kayıtları
           </p>
         </div>
+        <div className="flex items-center gap-3">
+          <MarinaFilter selectedMarina={marina} />
+        </div>
       </div>
 
-      <Suspense fallback={<CrmSuggestionsSkeleton />}>
-        <CrmContent />
+      <Suspense key={marina || "all"} fallback={<CrmSuggestionsSkeleton />}>
+        <CrmContent marina={marina} />
       </Suspense>
     </div>
   );
 }
 
-async function CrmContent() {
+async function CrmContent({ marina }: { marina?: string }) {
   let suggestions: CrmSuggestion[] = [];
   let errorMsg: string | null = null;
 
   try {
-    suggestions = await fetchCrmSuggestions();
+    suggestions = await fetchCrmSuggestions(marina ? { marina } : undefined);
   } catch (err) {
     errorMsg = err instanceof Error ? err.message : "CRM önerileri yüklenemedi";
   }
@@ -62,6 +72,22 @@ async function CrmContent() {
         </p>
         <p className="mt-1 text-xs text-amber-700 dark:text-amber-300">
           Servise ulaşılamıyor. Lütfen biraz sonra tekrar deneyin; sorun sürerse sistem yöneticinize başvurun.
+        </p>
+      </div>
+    );
+  }
+
+  if (suggestions.length === 0) {
+    return (
+      <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-12 text-center shadow-sm">
+        <span className="text-3xl">⚓</span>
+        <h3 className="mt-3 text-sm font-bold text-slate-900 dark:text-slate-100">
+          CRM Önerisi Bulunamadı
+        </h3>
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          {marina
+            ? `"${marina}" marinası için bekleyen CRM önerisi bulunmuyor.`
+            : "Henüz bekleyen bir CRM önerisi bulunmuyor."}
         </p>
       </div>
     );
