@@ -11,6 +11,7 @@ import {
   type AnalysisStatus,
   type Call,
   type CallType,
+  type SalesOutcomeType,
   type Urgency,
 } from "@/lib/types";
 import { CallsTableSkeleton } from "@/components/skeletons";
@@ -43,6 +44,42 @@ const ANALYSIS_STATUS_ICON: Record<AnalysisStatus, string> = {
   kismi: "⚠",
   basarisiz: "✕",
 };
+
+const SALES_BADGE: Record<SalesOutcomeType, { icon: string; text: string; cls: string }> = {
+  satisa_donustu: {
+    icon: "✓",
+    text: "Satışa Dönüştü",
+    cls: "font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60",
+  },
+  kaybedildi: {
+    icon: "✕",
+    text: "Kaybedildi",
+    cls: "font-semibold text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/60",
+  },
+  beklemede: {
+    icon: "⏳",
+    text: "Beklemede",
+    cls: "font-medium text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60",
+  },
+};
+
+/** Satış durumu rozeti; kaybedilen çağrılarda kayıp nedeni de gösterilir ("Kaybedildi (Fiyat...)"). */
+function SalesBadge({ sales }: { sales: Call["sales"] }) {
+  const style = sales ? SALES_BADGE[sales.outcome] : undefined;
+  if (!sales || !style) {
+    return <span className="text-xs text-slate-500 dark:text-slate-400">{EMPTY_LABEL}</span>;
+  }
+  const reason =
+    sales.outcome === "kaybedildi" && sales.lossReason
+      ? ` (${labelOf(LOSS_REASON_LABELS, sales.lossReason)})`
+      : "";
+  return (
+    <span className={`text-xs px-2 py-0.5 rounded-full ${style.cls}`}>
+      {style.icon} {style.text}
+      {reason}
+    </span>
+  );
+}
 
 function formatDuration(sec: number): string {
   if (sec === 0) return "—";
@@ -163,21 +200,7 @@ async function CallsListContent() {
                 )}
               </td>
               <td className="px-4 py-3 text-sm">
-                {call.sales.outcome === "satisa_donustu" && (
-                  <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full">
-                    ✓ Satışa Dönüştü
-                  </span>
-                )}
-                {call.sales.outcome === "kaybedildi" && (
-                  <span className="text-xs font-semibold text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/60 px-2 py-0.5 rounded-full">
-                    ✕ Kaybedildi ({call.sales.lossReason ? labelOf(LOSS_REASON_LABELS, call.sales.lossReason) : EMPTY_LABEL})
-                  </span>
-                )}
-                {call.sales.outcome === "beklemede" && (
-                  <span className="text-xs font-medium text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 px-2 py-0.5 rounded-full">
-                    ⏳ Beklemede
-                  </span>
-                )}
+                <SalesBadge sales={call.sales} />
               </td>
               <td className="px-4 py-3 text-right text-sm">
                 <Link
