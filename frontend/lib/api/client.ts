@@ -131,13 +131,11 @@ export async function apiFetch<T>(
       ...options,
       headers,
     });
-  } catch (netErr: unknown) {
+  } catch {
     throw new ApiError({
       code: "NETWORK_ERROR",
-      message:
-        netErr instanceof Error
-          ? netErr.message
-          : "Sunucuya bağlanılamadı. Ağ bağlantınızı kontrol edin.",
+      // Ham ağ hatası ("fetch failed" vb.) kullanıcıya gösterilmez.
+      message: "Servise bağlanılamadı. Bağlantınızı kontrol edip tekrar deneyin.",
       requestId: null,
       status: 0,
     });

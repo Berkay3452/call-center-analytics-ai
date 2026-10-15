@@ -97,7 +97,7 @@ async function CallsListContent() {
           ⚠️ Veriler alınırken bir sorun oluştu: {errorMsg}
         </p>
         <p className="mt-1 text-xs text-amber-700">
-          Backend API servisinin çalıştığından emin olun veya mock modunu (NEXT_PUBLIC_USE_MOCKS=true) etkinleştirin.
+          Servise ulaşılamıyor. Lütfen biraz sonra tekrar deneyin; sorun sürerse sistem yöneticinize başvurun.
         </p>
       </div>
     );
