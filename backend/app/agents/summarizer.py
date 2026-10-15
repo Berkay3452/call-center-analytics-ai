@@ -12,6 +12,7 @@ from pydantic import BaseModel
 from app.agents.base import AnalysisContext, ModelTier
 from app.agents.llm_agent import LLMAgent
 from app.agents.names import SUMMARIZER
+from app.agents.terms import fix_terms
 from app.schemas.analysis import CallSummary
 
 # Maskelenmemiş kişisel veri izleri. Transkript zaten maskeli gelir; bu, LLM'in özete veri
@@ -38,7 +39,7 @@ def find_personal_data(text: str) -> list[str]:
 class SummarizerAgent(LLMAgent[CallSummary]):
     name: ClassVar[str] = SUMMARIZER
     prompt_file: ClassVar[str] = "summarizer"
-    prompt_version: ClassVar[str] = "summarizer.v1"
+    prompt_version: ClassVar[str] = "summarizer.v2"
     output_schema: ClassVar[type[BaseModel]] = CallSummary
     # Kısa özet hafif bir iş; hızlı model yeterli.
     model_tier: ClassVar[ModelTier] = "fast"
@@ -49,4 +50,9 @@ class SummarizerAgent(LLMAgent[CallSummary]):
             raise ValueError(
                 f"Özette kişisel veri var ({', '.join(found)}). Bu bilgileri çıkarıp yeniden yaz."
             )
-        return output
+        return output.model_copy(
+            update={
+                "summary": fix_terms(output.summary),
+                "key_points": [fix_terms(p) for p in output.key_points],
+            }
+        )

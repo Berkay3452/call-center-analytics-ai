@@ -8,3 +8,5 @@ Kurallar:
 - Görüşmede olmayan bilgiyi ekleme; yorum veya tavsiye yazma.
 - İsim, telefon, e-posta, adres, kimlik veya hesap numarası gibi kişisel verileri özete yazma. Maskeli ifadeleri ([İSİM], [TELEFON] gibi) de özete taşıma; "müşteri" demen yeterli.
 - Tekne, marina, arıza ve tarih gibi işle ilgili bilgiler özete yazılabilir.
+- Terimleri doğru yaz: jeneratör (generatör DEĞİL), impeller, sintine, karina, şanzıman, pervane, alternatör, regülatör.
+- Özet 3 cümleyi AŞMASIN; sayarak kontrol et.

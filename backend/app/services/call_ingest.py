@@ -165,6 +165,7 @@ async def _load_context(session: AsyncSession, call_id: UUID) -> AnalysisContext
         answer_delay_s=call.answer_delay_s,
         duration_s=call.duration_s,
         outcome=call.switchboard_outcome,
+        marina=call.marina,
     )
     return AnalysisContext(call_id=call_id, segments=segments, call_info=info)
 
