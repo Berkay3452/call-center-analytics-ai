@@ -79,7 +79,7 @@ export async function fetchCalls(): Promise<Call[]> {
     },
     sales: {
       outcome: item.sales_outcome ?? "beklemede",
-      lossReason: null,
+      lossReason: item.loss_reason ?? null,
       evidence: null,
       confidence: 0,
     },

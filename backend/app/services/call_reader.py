@@ -123,6 +123,7 @@ async def list_calls(session: AsyncSession, filters: CallFilters) -> Page[CallLi
             latest_analysis.c.request_category,
             latest_analysis.c.urgency,
             latest_analysis.c.sales_outcome,
+            latest_analysis.c.loss_reason,
             latest_analysis.c.summary,
         )
         .select_from(Call)
@@ -154,7 +155,8 @@ async def list_calls(session: AsyncSession, filters: CallFilters) -> Page[CallLi
             request_category=r[10],
             urgency=r[11],
             sales_outcome=r[12],
-            summary=r[13],
+            loss_reason=r[13],
+            summary=r[14],
         )
         for r in rows
     ]

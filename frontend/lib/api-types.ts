@@ -140,6 +140,7 @@ export interface CallListItem {
   request_category: RequestCategory | null;
   urgency: Urgency | null;
   sales_outcome: SalesOutcomeType | null;
+  loss_reason: LossReason | null;
   summary: string | null;
 }
 

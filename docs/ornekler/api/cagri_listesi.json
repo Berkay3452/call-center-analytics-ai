@@ -14,6 +14,7 @@
       "request_category": "makine",
       "urgency": "yuksek",
       "sales_outcome": "beklemede",
+      "loss_reason": null,
       "summary": "Müşteri, Tuzla Marina'daki teknesinde gaz verildiğinde devrin yükselmediğini bildirdi. Ertesi gün için yerinde servis talep etti."
     },
     {
@@ -30,6 +31,7 @@
       "request_category": null,
       "urgency": null,
       "sales_outcome": null,
+      "loss_reason": null,
       "summary": null
     }
   ],
