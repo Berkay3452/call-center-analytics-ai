@@ -44,7 +44,7 @@ export function ChatInput({
   };
 
   return (
-    <div className="relative flex items-end gap-2 rounded-2xl border border-slate-300 bg-white p-2 shadow-sm transition-all focus-within:border-sky-500 focus-within:ring-2 focus-within:ring-sky-500/20">
+    <div className="relative flex items-end gap-2 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-2 shadow-sm transition-all focus-within:border-sky-500 focus-within:ring-2 focus-within:ring-sky-500/20">
       <label htmlFor="assistant-chat-input" className="sr-only">
         Soru giriş kutusu
       </label>
@@ -58,7 +58,7 @@ export function ChatInput({
         placeholder={placeholder}
         disabled={disabled || isStreaming}
         aria-label="Tekneniz hakkında soru sorun"
-        className="max-h-[140px] min-h-[38px] flex-1 resize-none bg-transparent px-2.5 py-1.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none disabled:opacity-50"
+        className="max-h-[140px] min-h-[38px] flex-1 resize-none bg-transparent px-2.5 py-1.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none disabled:opacity-50"
       />
 
       <div className="flex items-center gap-1.5 shrink-0 self-end">

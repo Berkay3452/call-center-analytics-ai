@@ -33,7 +33,7 @@ export function ChatWindow({
       role="log"
       aria-live="polite"
       aria-label="Asistan Sohbet Geçmişi"
-      className={`flex-1 overflow-y-auto rounded-2xl border border-slate-200 bg-linear-to-b from-slate-50/50 to-white p-4 sm:p-6 space-y-5 shadow-inner ${className}`}
+      className={`flex-1 overflow-y-auto rounded-2xl border border-slate-200 dark:border-slate-800 bg-linear-to-b from-slate-50/50 to-white dark:from-slate-900/60 dark:to-slate-950 p-4 sm:p-6 space-y-5 shadow-inner ${className}`}
     >
       {messages.map((msg) => {
         const isUser = msg.role === "user";
@@ -67,23 +67,23 @@ export function ChatWindow({
                 isUser
                   ? "bg-sky-700 text-white rounded-tr-xs"
                   : hasError
-                  ? "bg-rose-50/90 text-rose-950 border border-rose-200 rounded-tl-xs"
+                  ? "bg-rose-50/90 dark:bg-rose-950/40 text-rose-950 dark:text-rose-200 border border-rose-200 dark:border-rose-900 rounded-tl-xs"
                   : isNotFound
-                  ? "bg-amber-50/80 text-slate-800 border border-amber-200/80 rounded-tl-xs"
-                  : "bg-white text-slate-900 border border-slate-200/90 rounded-tl-xs"
+                  ? "bg-amber-50/80 dark:bg-amber-950/40 text-slate-800 dark:text-slate-200 border border-amber-200/80 dark:border-amber-900 rounded-tl-xs"
+                  : "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 border border-slate-200/90 dark:border-slate-800 rounded-tl-xs"
               }`}
             >
               {/* Asistan Başlığı */}
               {!isUser && (
-                <div className="mb-1 flex items-center justify-between gap-2 border-b border-slate-100 pb-1">
-                  <span className="text-xs font-bold text-sky-950 flex items-center gap-1.5">
+                <div className="mb-1 flex items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-1">
+                  <span className="text-xs font-bold text-sky-950 dark:text-sky-300 flex items-center gap-1.5">
                     Miço Usta AI
                     {msg.isStreaming && (
                       <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                     )}
                   </span>
                   {msg.timestamp && (
-                    <span className="text-[10px] text-slate-400">
+                    <span className="text-[10px] text-slate-500 dark:text-slate-400">
                       {new Date(msg.timestamp).toLocaleTimeString("tr-TR", {
                         hour: "2-digit",
                         minute: "2-digit",
@@ -98,7 +98,7 @@ export function ChatWindow({
                 {msg.content}
                 {msg.isStreaming && (
                   <span
-                    className="inline-block w-1.5 h-4 ml-1 bg-sky-600 animate-pulse align-middle"
+                    className="inline-block w-1.5 h-4 ml-1 bg-sky-700 animate-pulse align-middle"
                     aria-hidden="true"
                   />
                 )}
@@ -106,7 +106,7 @@ export function ChatWindow({
 
               {/* "Bulamadım" Özel Durumu */}
               {isNotFound && !msg.isStreaming && (
-                <div className="mt-2.5 flex items-center gap-2 rounded-lg bg-amber-100/70 p-2 text-xs text-amber-900">
+                <div className="mt-2.5 flex items-center gap-2 rounded-lg bg-amber-100/70 dark:bg-amber-950/60 p-2 text-xs text-amber-900 dark:text-amber-200">
                   <span className="text-sm">🔍</span>
                   <span className="text-[11px] leading-snug">
                     Veritabanı ve servis kayıtlarında eşleşen belge bulunamadı. Kaynak kartları gizlendi.
@@ -119,18 +119,18 @@ export function ChatWindow({
 
               {/* Hata Durumu & API Key Koruması */}
               {hasError && msg.error && (
-                <div className="mt-3 rounded-xl border border-rose-300 bg-rose-100/80 p-3 text-xs text-rose-950">
+                <div className="mt-3 rounded-xl border border-rose-300 dark:border-rose-800 bg-rose-100/80 dark:bg-rose-950/50 p-3 text-xs text-rose-950 dark:text-rose-200">
                   <div className="flex items-start gap-2">
-                    <span className="text-base text-rose-600">⚠️</span>
+                    <span className="text-base text-rose-600 dark:text-rose-400">⚠️</span>
                     <div className="flex-1 space-y-1">
-                      <p className="font-semibold text-rose-900">
+                      <p className="font-semibold text-rose-900 dark:text-rose-200">
                         {msg.error.isApiKeyError ||
                         msg.error.code === "LLM_NOT_CONFIGURED" ||
                         msg.error.message.includes("LLM_API_KEY")
                           ? "AI Servisi Yapılandırma Uyarısı"
                           : "Yanıt Alınırken Hata Oluştu"}
                       </p>
-                      <p className="text-[11px] text-rose-800 leading-snug">
+                      <p className="text-[11px] text-rose-800 dark:text-rose-300 leading-snug">
                         {msg.error.isApiKeyError ||
                         msg.error.code === "LLM_NOT_CONFIGURED" ||
                         msg.error.message.includes("LLM_API_KEY")
@@ -138,7 +138,7 @@ export function ChatWindow({
                           : msg.error.message}
                       </p>
                       {msg.error.requestId && (
-                        <p className="text-[10px] text-rose-600 font-mono">
+                        <p className="text-[10px] text-rose-600 dark:text-rose-400 font-mono">
                           İstek ID: {msg.error.requestId}
                         </p>
                       )}
@@ -186,7 +186,7 @@ export function ChatWindow({
             {/* Kullanıcı Avatarı */}
             {isUser && (
               <div
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-700 text-white shadow-xs"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-700 dark:bg-slate-800 text-white shadow-xs"
                 aria-hidden="true"
               >
                 <span className="text-xs font-bold">K</span>
