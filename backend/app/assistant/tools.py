@@ -26,6 +26,7 @@ from uuid import UUID
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.assistant.formatting import format_try
 from app.core.config import Settings
 from app.db.models.external import Boat, Craftsman, Expense, ServiceOrder, Subscription
 from app.db.session import worker_session
@@ -114,7 +115,7 @@ async def _get_expense_total_db(
             record_id=str(e.id),
             title=e.description or "Gider kaydı",
             date=e.expense_date,
-            excerpt=f"{e.amount:,.2f} TL",
+            excerpt=format_try(Decimal(str(e.amount))),
         )
         for e in expenses
     ]

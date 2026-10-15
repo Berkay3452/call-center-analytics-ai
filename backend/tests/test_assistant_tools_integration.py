@@ -90,7 +90,7 @@ async def test_get_expense_total_real_db(session_factory: async_sessionmaker[Asy
         src = october.sources[0]
         assert src.kind == "expense"
         assert src.date == date(2026, 10, 1)
-        assert src.excerpt is not None and "14,250.00 TL" in src.excerpt
+        assert src.excerpt is not None and "14.250,00 TL" in src.excerpt
 
         # Kendi teknesiyle sorgulama (Ahmet'in 2 teknesi var; Poyraz'a ait 5 gider filtrelenir)
         poyraz_total = await tools.get_expense_total(
