@@ -55,6 +55,7 @@ class CallFilters(BaseModel):
     urgency: Urgency | None = None
     request_category: RequestCategory | None = None
     state: CallState | None = None
+    marina: str | None = Field(default=None, description="Marina adına göre tam eşleşme filtresi.")
     q: str | None = Field(
         default=None, max_length=100, description="Müşteri, tekne veya marina adında arama."
     )
@@ -73,6 +74,7 @@ class PeriodFilter(BaseModel):
 
     date_from: date | None = None
     date_to: date | None = None
+    marina: str | None = Field(default=None, description="Marina adına göre tam eşleşme filtresi.")
 
     @model_validator(mode="after")
     def _dates_ordered(self) -> "PeriodFilter":

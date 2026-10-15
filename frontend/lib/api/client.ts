@@ -293,6 +293,7 @@ export interface CallQueryFilters {
   urgency?: string;
   request_category?: string;
   state?: string;
+  marina?: string;
   q?: string;
   page?: number;
   page_size?: number;
@@ -301,6 +302,7 @@ export interface CallQueryFilters {
 export interface PeriodQueryFilter {
   date_from?: string;
   date_to?: string;
+  marina?: string;
 }
 
 /**

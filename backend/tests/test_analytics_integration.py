@@ -191,3 +191,50 @@ async def test_period_longer_than_a_year_is_rejected(
     async with factory() as session:
         with pytest.raises(AppError):
             await get_kpi_summary(session, PeriodFilter(date_from=date(1900, 1, 1)))
+
+
+async def test_kpi_summary_marina_filter(
+    factory: async_sessionmaker[AsyncSession],
+) -> None:
+    """marina filtresi KPI ve analitik özetine uygulanır (#81)."""
+    async with factory() as session:
+        summary = await get_kpi_summary(
+            session,
+            PeriodFilter(
+                date_from=date(2026, 10, 5),
+                date_to=date(2026, 10, 13),
+                marina="Tuzla Marina",
+            ),
+        )
+        assert summary.total_calls == 4
+        assert summary.analyzed_calls == 4
+        assert len(summary.busiest_marinas) == 1
+        assert summary.busiest_marinas[0].name == "Tuzla Marina"
+        assert summary.busiest_marinas[0].count == 4
+        assert sum(d.count for d in summary.daily_calls) == 4
+
+
+async def test_kpi_daily_calls_istanbul_timezone(
+    conn: AsyncConnection, factory: async_sessionmaker[AsyncSession]
+) -> None:
+    """Türkiye saatiyle 00:30 olan bir çağrı (UTC 21:30 önceki gün) doğru günde sayılır (#81)."""
+    # 2025-05-10 21:30 UTC == 2025-05-11 00:30 Europe/Istanbul
+    call_dt_utc = datetime(2025, 5, 10, 21, 30, tzinfo=UTC)
+
+    await conn.execute(
+        text(
+            "INSERT INTO calls (started_at, duration_s, answer_delay_s, state, marina) "
+            "VALUES (:t, 120, 10, 'tamam', 'Tuzla Marina')"
+        ),
+        {"t": call_dt_utc},
+    )
+
+    async with factory() as session:
+        summary = await get_kpi_summary(
+            session,
+            PeriodFilter(date_from=date(2025, 5, 10), date_to=date(2025, 5, 11)),
+        )
+        assert summary.total_calls == 1
+        day_counts = {d.day: d.count for d in summary.daily_calls}
+        assert day_counts[date(2025, 5, 10)] == 0
+        assert day_counts[date(2025, 5, 11)] == 1

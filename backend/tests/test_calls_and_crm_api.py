@@ -262,3 +262,17 @@ def test_openapi_schema_includes_read_endpoints() -> None:
     assert "/api/v1/crm" in paths
     assert "get" in paths["/api/v1/crm"]
     assert paths["/api/v1/crm"]["get"]["operationId"] == "listCrmRecords"
+
+
+async def test_list_calls_and_crm_forward_marina_parameter(
+    authed_client: httpx.AsyncClient, spy: CallReaderSpy
+) -> None:
+    resp_calls = await authed_client.get("/api/v1/calls?marina=Tuzla+Marina", headers=HEADERS)
+    assert resp_calls.status_code == 200
+    assert spy.last_call_filters is not None
+    assert spy.last_call_filters.marina == "Tuzla Marina"
+
+    resp_crm = await authed_client.get("/api/v1/crm?marina=Tuzla+Marina", headers=HEADERS)
+    assert resp_crm.status_code == 200
+    assert spy.last_crm_filters is not None
+    assert spy.last_crm_filters.marina == "Tuzla Marina"
