@@ -120,6 +120,18 @@ async def test_summary_forwards_filter_dates(
     assert spy.last_filter.date_to == date(2026, 10, 10)
 
 
+async def test_summary_forwards_marina_filter(
+    authed_client: httpx.AsyncClient, spy: AnalyticsSpy
+) -> None:
+    resp = await authed_client.get(
+        "/api/v1/analytics/summary?marina=Tuzla+Marina",
+        headers=HEADERS,
+    )
+    assert resp.status_code == 200
+    assert spy.last_filter is not None
+    assert spy.last_filter.marina == "Tuzla Marina"
+
+
 async def test_summary_rejects_invalid_date_order(authed_client: httpx.AsyncClient) -> None:
     resp = await authed_client.get(
         "/api/v1/analytics/summary?date_from=2026-10-15&date_to=2026-10-10",

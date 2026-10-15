@@ -56,7 +56,7 @@ Başka kullanıcının sohbet oturumu istenirse 404 döner (varlığı da sızd�
 - `CallListItem`: liste satırı. Santral bilgisi + en son analizden `call_type`, `request_category`, `urgency`, `sales_outcome`, `loss_reason`, `summary`. Analiz yoksa bu alanlar `null`.
 - `CallDetail`: çağrı, `TranscriptOut` (metin + `TranscriptSegmentOut` listesi; kişisel veriler maskeli) ve en son analiz `AnalysisOut`.
 - `AnalysisOut`: bir analiz sürümü. Agent çıktıları `CallClassification`, `CrmExtraction`, `SalesAnalysis`, `CallSummary`; agent kayıtları `AgentRun`. Başarısız agent'ın alanı `null`, nedeni `errors`'ta.
-- `CallFilters`: `date_from`, `date_to`, `call_type`, `urgency`, `request_category`, `state`, `q` (müşteri/tekne/marina adında arama), `page`, `page_size`.
+- `CallFilters`: `date_from`, `date_to`, `call_type`, `urgency`, `request_category`, `state`, `marina` (tam eşleşme), `q` (müşteri/tekne/marina adında arama), `page`, `page_size`.
 
 ### Çağrı durumu (`CallState`)
 | Değer | Anlamı |
@@ -81,7 +81,7 @@ Arayüz `GET /calls/{id}/status` ile durumu 2–3 saniyede bir sorar; `tamam`, `
 
 ### KPI
 - `KpiSummary`: dönem, toplam/analiz edilen çağrı, çağrı tiplerine göre sayılar, `converted_sales` ve `conversion_rate`, `lost_by_reason`, `top_problems` ve `busiest_marinas` (`CountItem`), `by_category`, `by_urgency`, `daily_calls` (`DailyCount`; boş gün 0), `avg_answer_delay_s`.
-- `PeriodFilter`: `date_from`, `date_to`; boşsa son 30 gün. Sayılar her çağrının **en son** analiz sürümünden hesaplanır; LLM kullanılmaz.
+- `PeriodFilter`: `date_from`, `date_to`, `marina` (tam eşleşme); boşsa son 30 gün. Sayılar her çağrının **en son** analiz sürümünden hesaplanır; LLM kullanılmaz.
 
 ### Miço AI sohbeti
 - `ChatQuestion`: `question` ve isteğe bağlı `session_id` (boşsa yeni oturum, başlık ilk sorudan).
