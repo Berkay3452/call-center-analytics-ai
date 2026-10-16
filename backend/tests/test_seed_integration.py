@@ -28,6 +28,9 @@ EXPECTED_AT_LEAST = {
     "boats": 20,
     "craftsmen": 5,
     "boat_notes": 60,
+    "service_orders": 50,
+    "expenses": 50,
+    "subscriptions": 10,
     "calls": 30,
     "transcripts": 30,
     "analysis_results": 30,
@@ -141,3 +144,35 @@ async def test_seed_attaches_generated_audio_with_real_timing(tmp_path: Path) ->
 
     finally:
         await seed_database(url)  # varsayılan ses klasörüyle eski durumu geri yükle
+
+
+async def test_seeded_table_counts_match_readme_and_synthetic_files() -> None:
+    """Yüklenen kayıt sayıları, README.md ve JSON dosyalarıyla birebir eşleşmeli (#82)."""
+    conn = await asyncpg.connect(_asyncpg_dsn(Settings().database_url), statement_cache_size=0)
+    try:
+        counts = {
+            "customers": await conn.fetchval("SELECT count(*) FROM customers"),
+            "boats": await conn.fetchval("SELECT count(*) FROM boats"),
+            "craftsmen": await conn.fetchval("SELECT count(*) FROM craftsmen"),
+            "service_orders": await conn.fetchval("SELECT count(*) FROM service_orders"),
+            "boat_notes": await conn.fetchval("SELECT count(*) FROM boat_notes"),
+            "expenses": await conn.fetchval("SELECT count(*) FROM expenses"),
+            "subscriptions": await conn.fetchval("SELECT count(*) FROM subscriptions"),
+            "calls": await conn.fetchval("SELECT count(*) FROM calls"),
+            "transcripts": await conn.fetchval("SELECT count(*) FROM transcripts"),
+            "transcript_segments": await conn.fetchval("SELECT count(*) FROM transcript_segments"),
+            "analysis_results": await conn.fetchval("SELECT count(*) FROM analysis_results"),
+        }
+        assert counts["customers"] == 18
+        assert counts["boats"] == 23
+        assert counts["craftsmen"] == 6
+        assert counts["service_orders"] == 61
+        assert counts["boat_notes"] == 85
+        assert counts["expenses"] == 56
+        assert counts["subscriptions"] == 15
+        assert counts["calls"] == 30
+        assert counts["transcripts"] == 30
+        assert counts["transcript_segments"] == 500
+        assert counts["analysis_results"] == 30
+    finally:
+        await conn.close()
