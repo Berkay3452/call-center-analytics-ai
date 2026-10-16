@@ -130,3 +130,48 @@ def test_write_synthetic_files_and_calls_bundle(tmp_path: Path) -> None:
     bundle = load_calls_bundle(data_dir=DATA_DIR)
     assert len(bundle) == 30
     assert bundle[0]["call_id"] == "call_001"
+
+
+def test_readme_counts_match_generated_and_saved_files() -> None:
+    """`data/synthetic/README.md` kayıt sayıları ile generator ve JSON'lar aynı olmalı (#82)."""
+    import re
+
+    readme_text = (DATA_DIR / "README.md").read_text(encoding="utf-8")
+    ds = generate_dataset()
+    bundle = load_calls_bundle(data_dir=DATA_DIR)
+
+    expected_file_counts = {
+        "marinas.json": len(ds["marinas"]),
+        "customers.json": len(ds["customers"]),
+        "boats.json": len(ds["boats"]),
+        "craftsmen.json": len(ds["craftsmen"]),
+        "service_orders.json": len(ds["service_orders"]),
+        "boat_notes.json": len(ds["boat_notes"]),
+        "expenses.json": len(ds["expenses"]),
+        "subscriptions.json": len(ds["subscriptions"]),
+    }
+
+    for filename, expected_count in expected_file_counts.items():
+        # Diskteki JSON dosyasındaki gerçek kayıt sayısı
+        disk_file = DATA_DIR / filename
+        assert disk_file.exists(), f"{filename} bulunamadı"
+        disk_data = json.loads(disk_file.read_text(encoding="utf-8"))
+        assert len(disk_data) == expected_count, (
+            f"{filename} diskteki kayıt sayısı ({len(disk_data)}) "
+            f"generator çıktısıyla ({expected_count}) eşleşmiyor"
+        )
+
+        # README.md tablosundaki parantez içindeki sayı: ör. `expenses.json` | ... (56 kayıt ...)
+        pattern = rf"`{re.escape(filename)}`\s*\|\s*[^|\n]*?\((\d+)"
+        match = re.search(pattern, readme_text)
+        assert match is not None, f"README.md içinde `{filename}` satırında kayıt sayısı bulunamadı"
+        readme_count = int(match.group(1))
+        assert readme_count == expected_count, (
+            f"README.md içindeki {filename} sayısı ({readme_count}) "
+            f"generator ile ({expected_count}) eşleşmiyor"
+        )
+
+    # Çağrılar: "30 sahte telefon görüşmesi"
+    calls_match = re.search(r"(\d+)\s+sahte telefon görüşmesi", readme_text)
+    assert calls_match is not None
+    assert int(calls_match.group(1)) == len(bundle) == 30

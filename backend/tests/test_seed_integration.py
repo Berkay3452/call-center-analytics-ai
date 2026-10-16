@@ -16,7 +16,7 @@ import pytest
 
 from app.core.config import Settings
 from scripts.seed.audio import build_wav, write_seed_audio
-from scripts.seed.generator import DATA_DIR
+from scripts.seed.generator import DATA_DIR, generate_dataset, load_calls_bundle
 from scripts.seed.loader import _asyncpg_dsn, seed_database
 
 pytestmark = pytest.mark.skipif(
@@ -28,6 +28,9 @@ EXPECTED_AT_LEAST = {
     "boats": 20,
     "craftsmen": 5,
     "boat_notes": 60,
+    "service_orders": 50,
+    "expenses": 50,
+    "subscriptions": 10,
     "calls": 30,
     "transcripts": 30,
     "analysis_results": 30,
@@ -141,3 +144,32 @@ async def test_seed_attaches_generated_audio_with_real_timing(tmp_path: Path) ->
 
     finally:
         await seed_database(url)  # varsayılan ses klasörüyle eski durumu geri yükle
+
+
+async def test_seeded_table_counts_match_readme_and_synthetic_files() -> None:
+    """Yüklenen kayıt sayıları generator ve JSON dosyalarıyla birebir eşleşmeli (#82).
+
+    Veritabanının bu dosyadaki ilk testle (`reset=True`) yüklenmiş temiz seed durumunda olmasını
+    bekler; elle eklenmiş çağrılar olan bir yerel veritabanında tek başına çalıştırılırsa düşer.
+    """
+    ds = generate_dataset()
+    bundle = load_calls_bundle(data_dir=DATA_DIR)
+    expected = {
+        "customers": len(ds["customers"]),
+        "boats": len(ds["boats"]),
+        "craftsmen": len(ds["craftsmen"]),
+        "service_orders": len(ds["service_orders"]),
+        "boat_notes": len(ds["boat_notes"]),
+        "expenses": len(ds["expenses"]),
+        "subscriptions": len(ds["subscriptions"]),
+        "calls": len(bundle),
+        "transcripts": len(bundle),
+        "transcript_segments": sum(len(item["turns"]) for item in bundle),
+        "analysis_results": sum(1 for item in bundle if item["truth"]),
+    }
+    conn = await asyncpg.connect(_asyncpg_dsn(Settings().database_url), statement_cache_size=0)
+    try:
+        for table, count in expected.items():
+            assert await conn.fetchval(f"SELECT count(*) FROM {table}") == count, table
+    finally:
+        await conn.close()

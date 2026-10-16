@@ -18,7 +18,7 @@ Miço Usta bağlamında yazılmış **30 sahte telefon görüşmesi** ve her bir
 | `craftsmen.json` | Ustalar ve uzmanlık alanları (6 usta) |
 | `service_orders.json` | Geçmiş 1–2 yıla ait servis emirleri (61 kayıt) |
 | `boat_notes.json` | Türkçe usta notları / tekne karnesi (85 not; Miço AI RAG kaynağı) |
-| `expenses.json` | Tekne bakım ve marina giderleri (62 kayıt; Miço AI gider aracı kaynağı) |
+| `expenses.json` | Tekne bakım ve marina giderleri (56 kayıt; Miço AI gider aracı kaynağı) |
 | `subscriptions.json` | Yıllık bakım ve kışlama paketleri (15 kayıt; kalan hak aracı kaynağı) |
 
 ## Görüşme dosyası
