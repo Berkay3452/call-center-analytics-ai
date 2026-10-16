@@ -13,55 +13,57 @@ Bu rehber, projeyi sıfırdan bilgisayarında ayağa kaldırmak isteyen herkes (
 | Node.js | 20+ | Frontend |
 | Git | herhangi | Repo |
 
-## 2. Hızlı başlangıç (5 terminal sekmesi)
+## 2. Hızlı başlangıç (2 terminal)
 
-Tüm komutlar Windows PowerShell için yazıldı; macOS/Linux'ta kopyalama komutu hariç aynıdır.
+Tüm komutlar Windows PowerShell için yazıldı.
 
-**Sekme 1: veritabanı ve Redis** (repo kökünde)
-
-```
-docker compose -f infra/docker-compose.yml up -d
-```
-
-Postgres `localhost:5433`, Redis `localhost:6379` portunda açılır. Durumu `docker compose -f infra/docker-compose.yml ps` ile gör; ikisi de `healthy` olmalı.
-
-**Sekme 2: backend kurulumu** (`backend/` klasöründe)
+**İlk kurulum (bir kez):**
 
 ```
-uv sync --extra ai
+cd backend
+uv sync --extra ai --extra stt
 Copy-Item .env.example .env
-```
-
-`.env` dosyasını aç ve bölüm 3'teki zorunlu değerleri doldur. Sonra:
-
-```
-uv run alembic upgrade head
-uv run python -m scripts.seed
-```
-
-İlk komut tabloları kurar, ikincisi sentetik veriyi (müşteri, tekne, usta, servis kayıtları, 30 çağrı ve analiz sonuçları) yükler. Seed tekrar çalıştırılabilir; sıfırdan yüklemek için `uv run python -m scripts.seed --reset`.
-
-**Sekme 2: API'yi başlat** (aynı klasör)
-
-```
-uv run uvicorn app.main:app --reload
-```
-
-**Sekme 3: Celery işçisi** (`backend/`). Ses yükleme ve yeniden analiz arka planda bu işçide çalışır. Yalnızca seed verisine bakacaksan gerekmez.
-
-```
-uv run celery -A app.workers.celery_app worker -Q default,stt,analysis,index --pool=solo -l info
-```
-
-**Sekme 4: frontend** (`frontend/` klasöründe)
-
-```
+cd ../frontend
 npm install
 Copy-Item .env.example .env.local
+```
+
+`backend/.env` içinde bölüm 3'teki zorunlu değerleri doldur (özellikle `SERVICE_API_KEY` ve `LLM_API_KEY`); `frontend/.env.local` içindeki `SERVICE_KEY`, backend'deki `SERVICE_API_KEY` ile aynı olmalı.
+
+**Terminal 1: backend** (`backend/` klasöründe)
+
+```
+uv run python -m scripts.dev
+```
+
+Bu komut sırayla, zaten hazır olanı atlayarak şunları yapar: Docker Desktop kapalıysa açar; PostgreSQL, Redis ve embedding servisini (bge-m3) başlatır; migration'ı çalıştırır; seed ses dosyalarını üretir (Piper, ilk seferde ~90 sn ve ~60 MB model); veritabanı boşsa seed'ler; arama indeksini doldurur; Celery işçisini arka planda açar (günlük: `backend/storage/logs/celery.log`) ve en sonda API'yi açar. Ctrl+C API'yi ve Celery'yi birlikte kapatır. İlk çalıştırma birkaç dakika sürebilir (embedding modeli ~2,3 GB iner); sonraki açılışlar birkaç saniyedir.
+
+Seçenekler: `--no-rag` (embedding servisini açma), `--no-audio` (seed seslerini üretme), `--no-celery`, `--skip-docker` (altyapı zaten hazır), `--reset-db` (veritabanını sıfırdan seed'le).
+
+**Terminal 2: frontend** (`frontend/` klasöründe)
+
+```
 npm run dev
 ```
 
-Frontend `http://localhost:3000` adresinde açılır. Varsayılan olarak **sahte (mock) veriyle** çalışır. Gerçek backend'e bağlamak için `.env.local` içinde `NEXT_PUBLIC_USE_MOCKS=false` yap, `SERVICE_KEY` değerini backend `.env`'deki `SERVICE_API_KEY` ile aynı yap ve `npm run dev`'i yeniden başlat.
+Frontend `http://localhost:3000` adresinde açılır. Gerçek backend'e bağlı çalışması için `.env.local` içinde `NEXT_PUBLIC_USE_MOCKS=false` olmalı (varsayılan).
+
+> Başlatıcı yalnızca geliştirme içindir; üretimde API Docker, migration veya seed ile ilgilenmez.
+
+### Elle (adım adım) başlatma
+
+Başlatıcıyı kullanmak istemezsen aynı adımlar elle de yapılabilir (repo kökünde ve `backend/` içinde):
+
+```
+docker compose -f infra/docker-compose.yml --profile rag up -d
+uv run alembic upgrade head
+uv run python -m scripts.seed
+uv run python -m scripts.rag_index
+uv run uvicorn app.main:app --reload
+uv run celery -A app.workers.celery_app worker -Q default,stt,analysis,index --pool=solo -l info
+```
+
+(Son iki komut ayrı terminallerde çalışır.)
 
 ## 3. Ortam değişkenleri (backend/.env)
 

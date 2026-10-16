@@ -54,6 +54,7 @@ uv export --frozen --no-hashes --no-emit-project --only-dev -o requirements-dev.
 
 | Ne | Komut |
 |----|-------|
+| **Tüm backend (önerilen)** | `uv run python -m scripts.dev`: Docker, altyapı, migration, seed, indeks, Celery ve API tek komutla |
 | API (geliştirme) | `uv run uvicorn app.main:app --reload` |
 | API dokümantasyonu | http://localhost:8000/docs |
 | Celery işçisi (Windows) | `uv run celery -A app.workers.celery_app worker -Q default,stt,analysis,index --pool=solo -l info` |
