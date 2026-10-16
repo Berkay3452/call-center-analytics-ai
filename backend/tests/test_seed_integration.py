@@ -16,7 +16,7 @@ import pytest
 
 from app.core.config import Settings
 from scripts.seed.audio import build_wav, write_seed_audio
-from scripts.seed.generator import DATA_DIR
+from scripts.seed.generator import DATA_DIR, generate_dataset, load_calls_bundle
 from scripts.seed.loader import _asyncpg_dsn, seed_database
 
 pytestmark = pytest.mark.skipif(
@@ -147,32 +147,29 @@ async def test_seed_attaches_generated_audio_with_real_timing(tmp_path: Path) ->
 
 
 async def test_seeded_table_counts_match_readme_and_synthetic_files() -> None:
-    """Yüklenen kayıt sayıları, README.md ve JSON dosyalarıyla birebir eşleşmeli (#82)."""
+    """Yüklenen kayıt sayıları generator ve JSON dosyalarıyla birebir eşleşmeli (#82).
+
+    Veritabanının bu dosyadaki ilk testle (`reset=True`) yüklenmiş temiz seed durumunda olmasını
+    bekler; elle eklenmiş çağrılar olan bir yerel veritabanında tek başına çalıştırılırsa düşer.
+    """
+    ds = generate_dataset()
+    bundle = load_calls_bundle(data_dir=DATA_DIR)
+    expected = {
+        "customers": len(ds["customers"]),
+        "boats": len(ds["boats"]),
+        "craftsmen": len(ds["craftsmen"]),
+        "service_orders": len(ds["service_orders"]),
+        "boat_notes": len(ds["boat_notes"]),
+        "expenses": len(ds["expenses"]),
+        "subscriptions": len(ds["subscriptions"]),
+        "calls": len(bundle),
+        "transcripts": len(bundle),
+        "transcript_segments": sum(len(item["turns"]) for item in bundle),
+        "analysis_results": sum(1 for item in bundle if item["truth"]),
+    }
     conn = await asyncpg.connect(_asyncpg_dsn(Settings().database_url), statement_cache_size=0)
     try:
-        counts = {
-            "customers": await conn.fetchval("SELECT count(*) FROM customers"),
-            "boats": await conn.fetchval("SELECT count(*) FROM boats"),
-            "craftsmen": await conn.fetchval("SELECT count(*) FROM craftsmen"),
-            "service_orders": await conn.fetchval("SELECT count(*) FROM service_orders"),
-            "boat_notes": await conn.fetchval("SELECT count(*) FROM boat_notes"),
-            "expenses": await conn.fetchval("SELECT count(*) FROM expenses"),
-            "subscriptions": await conn.fetchval("SELECT count(*) FROM subscriptions"),
-            "calls": await conn.fetchval("SELECT count(*) FROM calls"),
-            "transcripts": await conn.fetchval("SELECT count(*) FROM transcripts"),
-            "transcript_segments": await conn.fetchval("SELECT count(*) FROM transcript_segments"),
-            "analysis_results": await conn.fetchval("SELECT count(*) FROM analysis_results"),
-        }
-        assert counts["customers"] == 18
-        assert counts["boats"] == 23
-        assert counts["craftsmen"] == 6
-        assert counts["service_orders"] == 61
-        assert counts["boat_notes"] == 85
-        assert counts["expenses"] == 56
-        assert counts["subscriptions"] == 15
-        assert counts["calls"] == 30
-        assert counts["transcripts"] == 30
-        assert counts["transcript_segments"] == 500
-        assert counts["analysis_results"] == 30
+        for table, count in expected.items():
+            assert await conn.fetchval(f"SELECT count(*) FROM {table}") == count, table
     finally:
         await conn.close()
