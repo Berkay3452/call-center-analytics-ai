@@ -8,6 +8,8 @@ Soru sınıfları:
   Örnek: "Bu ay ne kadar harcadım?", "Kaç bakım hakkım kaldı?", "Son bakım ne zaman yapıldı?"
 - kapsam_disi: Tekne bakımı, kayıtları, giderleri veya aboneliği ile ilgisi olmayan sorular (hava durumu, genel sohbet, kod yazma, başka konular) ve başka bir kullanıcının verisini isteyen sorular.
 
+Belirli bir parça ya da işin ücretini soran sorular ("Akü değişimi için ne kadar ödedim?") sayisal DEĞİL gecmis_oneri'dir: hazır gider aracı yalnızca TÜM giderlerin toplamını verir, tek bir işin ücretini veremez.
+
 Sayısal sorular için `tool` alanını doldur:
 - get_expense_total: gider, masraf, harcama, ödeme toplamı. `period`: soruda "bu ay" geçiyorsa "bu_ay", aksi halde "tumu".
 - get_remaining_package: paket, abonelik, kalan bakım hakkı, paket bitiş tarihi.

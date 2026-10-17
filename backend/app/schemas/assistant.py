@@ -40,11 +40,23 @@ class SourceRef(BaseModel):
     excerpt: str | None = Field(default=None, description="Kayıttan kısa alıntı.")
 
 
+class HistoryTurn(BaseModel):
+    """Oturumdaki önceki bir mesaj (takip sorularını anlamak için)."""
+
+    role: Literal["user", "assistant"]
+    content: str = Field(min_length=1)
+
+
 class AssistantRequest(BaseModel):
     """Tekne sahibinin sorusu. `owner_id` .NET API'nin doğruladığı oturum kullanıcısıdır."""
 
     question: str = Field(min_length=1, max_length=1000)
     owner_id: str = Field(min_length=1, description="Oturumdaki tekne sahibi; zorunlu.")
+    history: list[HistoryTurn] = Field(
+        default_factory=list,
+        max_length=12,
+        description="Aynı oturumun önceki mesajları (eskiden yeniye); takip sorusu içindir.",
+    )
 
     @field_validator("question", "owner_id")
     @classmethod
