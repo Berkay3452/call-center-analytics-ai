@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { fetchCalls } from "@/lib/api";
 import {
@@ -19,6 +20,7 @@ import { CallsFilterBar } from "@/components/CallsFilterBar";
 import { Pagination } from "@/components/Pagination";
 import { EmptyState } from "@/components/EmptyState";
 import type { CallQueryFilters } from "@/lib/api/client";
+import { clampPageSize, lastPageIfOutOfRange, listUrl } from "@/lib/list-query";
 
 export const metadata = { title: "Çağrılar | Miço Usta" };
 
@@ -111,7 +113,7 @@ export default async function CallsPage({ searchParams }: CallsPageProps) {
   const params = searchParams ? await searchParams : {};
   const queryFilters: CallQueryFilters = {
     page: Math.max(1, Number(params?.page) || 1),
-    page_size: Math.max(1, Number(params?.page_size) || 20),
+    page_size: clampPageSize(params?.page_size),
     q: params?.q?.trim() || undefined,
     urgency: params?.urgency?.trim() || undefined,
     call_type: params?.call_type?.trim() || undefined,
@@ -188,6 +190,10 @@ async function CallsListContent({
   } catch (err) {
     errorMsg = err instanceof Error ? err.message : "Çağrılar yüklenemedi";
   }
+
+  // Aralık dışı sayfa (kayıt var ama bu sayfa boş): son sayfaya git, "kayıt yok" deme.
+  const lastPage = errorMsg ? null : lastPageIfOutOfRange(calls.length, total, page, pageSize);
+  if (lastPage !== null) redirect(listUrl("/admin/calls", filters, lastPage));
 
   if (errorMsg) {
     return (
