@@ -130,7 +130,8 @@ async def approve_crm_record(
         review.reviewed_at = now
         review.service_order_id = service_order_id
 
-    await session.flush()
+    # İstek oturumu commit etmez (get_db_session); yazma kararı servis katmanındadır.
+    await session.commit()
 
     return CrmReviewOut(
         id=review.id,
@@ -180,7 +181,8 @@ async def reject_crm_record(
             review.note = payload.note
         review.reviewed_at = now
 
-    await session.flush()
+    # İstek oturumu commit etmez (get_db_session); yazma kararı servis katmanındadır.
+    await session.commit()
 
     return CrmReviewOut(
         id=review.id,

@@ -133,6 +133,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/crm/{call_id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** CRM önerisini onayla */
+        post: operations["approveCrmRecord"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/crm/{call_id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** CRM önerisini reddet */
+        post: operations["rejectCrmRecord"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/analytics/summary": {
         parameters: {
             query?: never;
@@ -238,6 +272,8 @@ export interface components {
         SwitchboardOutcome: "randevu_olusturuldu" | "usta_yonlendirildi" | "kayit_olusturuldu" | "bilgi_verildi" | "geri_aranacak" | "iptal";
         /** @enum {string} */
         LossReason: "fiyat" | "gec_donus" | "rakip" | "takvim" | "guven" | "diger";
+        /** @enum {string} */
+        CrmReviewStatus: "bekliyor" | "onaylandi" | "reddedildi";
         /** @enum {string} */
         CallState: "beklemede" | "yaziya_cevriliyor" | "isleniyor" | "tamam" | "kismi" | "basarisiz";
         /** @enum {string} */
@@ -396,6 +432,38 @@ export interface components {
             evidence: {
                 [key: string]: string;
             };
+            review_status?: components["schemas"]["CrmReviewStatus"];
+            edited_fields?: Record<string, never>;
+            /** Format: uuid */
+            service_order_id?: string | null;
+        };
+        CrmApproveIn: {
+            request_category?: components["schemas"]["RequestCategory"];
+            location?: string | null;
+            problem?: string | null;
+            service_mode?: components["schemas"]["ServiceMode"];
+            urgency?: components["schemas"]["Urgency"];
+            potential_job?: string | null;
+            next_action?: components["schemas"]["NextAction"];
+            note?: string | null;
+        };
+        CrmRejectIn: {
+            note?: string | null;
+        };
+        CrmReviewOut: {
+            /** Format: uuid */
+            id: string;
+            /** Format: uuid */
+            call_id: string;
+            /** Format: uuid */
+            analysis_id: string;
+            status: components["schemas"]["CrmReviewStatus"];
+            edited_fields: Record<string, never>;
+            note?: string | null;
+            /** Format: date-time */
+            reviewed_at?: string | null;
+            /** Format: uuid */
+            service_order_id?: string | null;
         };
         SegmentIn: {
             speaker: components["schemas"]["Speaker"];
@@ -565,6 +633,7 @@ export interface operations {
                 urgency?: components["schemas"]["Urgency"];
                 request_category?: components["schemas"]["RequestCategory"];
                 state?: components["schemas"]["CallState"];
+                marina?: string;
                 q?: string;
                 page?: number;
                 page_size?: number;
@@ -825,6 +894,8 @@ export interface operations {
                 urgency?: components["schemas"]["Urgency"];
                 request_category?: components["schemas"]["RequestCategory"];
                 state?: components["schemas"]["CallState"];
+                status?: components["schemas"]["CrmReviewStatus"];
+                marina?: string;
                 q?: string;
                 page?: number;
                 page_size?: number;
@@ -846,11 +917,91 @@ export interface operations {
             };
         };
     };
+    approveCrmRecord: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                call_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["CrmApproveIn"];
+            };
+        };
+        responses: {
+            /** @description Başarılı */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmReviewOut"];
+                };
+            };
+            /** @description Çağrı bulunamadı */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Müşteri/tekne eşleşmedi */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    rejectCrmRecord: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                call_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["CrmRejectIn"];
+            };
+        };
+        responses: {
+            /** @description Başarılı */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CrmReviewOut"];
+                };
+            };
+            /** @description Çağrı bulunamadı */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
     getKpiSummary: {
         parameters: {
             query?: {
                 date_from?: string;
                 date_to?: string;
+                marina?: string;
             };
             header?: never;
             path?: never;

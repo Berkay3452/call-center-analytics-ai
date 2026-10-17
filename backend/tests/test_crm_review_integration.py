@@ -18,6 +18,7 @@ from datetime import UTC, datetime
 from uuid import uuid4
 
 import pytest
+from httpx import ASGITransport, AsyncClient
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import (
     AsyncConnection,
@@ -26,15 +27,18 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine,
 )
 
+from app.api.deps import get_db_session
 from app.core.config import Settings
 from app.core.errors import ConflictError
 from app.db.models.ai import AnalysisResult as AnalysisRow
 from app.db.models.ai import Call, CrmReview
 from app.db.models.external import ServiceOrder
 from app.domain.enums import CrmReviewStatus, RequestCategory, ServiceOrderStatus, Urgency
+from app.main import create_app
 from app.schemas.api import CallFilters, CrmApproveIn, CrmRejectIn
 from app.services.call_reader import list_crm_records
 from app.services.crm_review_service import approve_crm_record, reject_crm_record
+from tests.conftest import TEST_SERVICE_KEY, make_settings
 
 pytestmark = pytest.mark.skipif(
     os.environ.get("RUN_DB_TESTS") != "1", reason="RUN_DB_TESTS=1 değil (gerçek veritabanı gerekir)"
@@ -294,3 +298,78 @@ async def test_crm_status_filter(
         )
         assert any(item.call_id == call_b.id for item in reddedildi_page.items)
         assert all(item.call_id != call_a.id for item in reddedildi_page.items)
+
+
+# --- Kalıcılık ve HTTP katmanı (inceleme düzeltmeleri) ---
+
+
+async def test_approve_and_reject_commit_their_changes(
+    factory: async_sessionmaker[AsyncSession], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """İstek oturumu kendiliğinden commit etmez; servis commit etmezse onay yanıtı 200 döner ama
+    veritabanına hiçbir şey yazılmaz (gerçek API'de bu hata görüldü)."""
+    async with factory() as session:
+        call, _ = await _get_seed_call_with_analysis(session)
+        commits = 0
+        real_commit = session.commit
+
+        async def counting_commit() -> None:
+            nonlocal commits
+            commits += 1
+            await real_commit()
+
+        monkeypatch.setattr(session, "commit", counting_commit)
+
+        await approve_crm_record(session, call.id, CrmApproveIn())
+        assert commits == 1
+        await reject_crm_record(session, call.id, CrmRejectIn(note="vazgeçildi"))
+        assert commits == 2
+
+
+@pytest.fixture
+async def client(factory: async_sessionmaker[AsyncSession]) -> AsyncIterator[AsyncClient]:
+    app = create_app(make_settings(database_url=Settings().database_url))
+
+    async def override_get_db_session() -> AsyncIterator[AsyncSession]:
+        async with factory() as session:
+            yield session
+
+    app.dependency_overrides[get_db_session] = override_get_db_session
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as c:
+        yield c
+
+
+HEADERS = {"X-Service-Key": TEST_SERVICE_KEY}
+
+
+async def test_http_approve_then_list_shows_review_and_filter(
+    client: AsyncClient, factory: async_sessionmaker[AsyncSession]
+) -> None:
+    async with factory() as session:
+        call, _ = await _get_seed_call_with_analysis(session)
+
+    resp = await client.post(
+        f"/api/v1/crm/{call.id}/approve", json={"urgency": "acil"}, headers=HEADERS
+    )
+
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["status"] == "onaylandi" and body["edited_fields"] == {"urgency": "acil"}
+    listed = await client.get("/api/v1/crm?status=onaylandi&page_size=100", headers=HEADERS)
+    item = next(i for i in listed.json()["items"] if i["call_id"] == str(call.id))
+    assert item["review_status"] == "onaylandi" and item["urgency"] == "acil"
+    assert item["service_order_id"] == body["service_order_id"]
+
+
+async def test_http_error_shapes(client: AsyncClient) -> None:
+    unknown = uuid4()
+    r404 = await client.post(f"/api/v1/crm/{unknown}/approve", headers=HEADERS)
+    assert r404.status_code == 404
+
+    r401 = await client.post(f"/api/v1/crm/{unknown}/reject")
+    assert r401.status_code == 401
+
+    r_invalid = await client.post(
+        f"/api/v1/crm/{unknown}/approve", json={"urgency": "çok-acil"}, headers=HEADERS
+    )
+    assert r_invalid.status_code == 422
