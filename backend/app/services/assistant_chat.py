@@ -25,6 +25,7 @@ from sse_starlette.sse import ServerSentEvent
 
 from app.assistant.assistant import answer_question
 from app.assistant.llm import AssistantLLM, AssistantLLMError
+from app.assistant.rewrite import MAX_HISTORY_TURNS
 from app.core.errors import AppError, NotFoundError
 from app.db.models.ai import ChatMessage, ChatSession
 from app.db.models.external import Customer
@@ -35,7 +36,13 @@ from app.schemas.api import (
     ChatSessionDetail,
     ChatSessionOut,
 )
-from app.schemas.assistant import AssistantAnswer, AssistantRequest, QuestionType, SourceRef
+from app.schemas.assistant import (
+    AssistantAnswer,
+    AssistantRequest,
+    HistoryTurn,
+    QuestionType,
+    SourceRef,
+)
 
 log = structlog.get_logger(__name__)
 
@@ -121,6 +128,27 @@ async def get_or_create_session(
     return chat_session
 
 
+async def load_history(db: AsyncSession, chat_session: ChatSession) -> list[HistoryTurn]:
+    """Oturumdaki son mesajlar (eskiden yeniye). Takip sorusunu anlamak için kullanılır (#111).
+
+    Oturum çağıran tarafından sahibine göre doğrulanmış olmalıdır (`get_or_create_session`);
+    başka sahibin oturumundan geçmiş bu yoldan gelemez. LLM'in erişilemediği turların hazır
+    mesajı bağlam değeri taşımadığı için atlanır.
+    """
+    stmt = (
+        select(ChatMessage)
+        .where(ChatMessage.session_id == chat_session.id)
+        .order_by(ChatMessage.created_at.desc())
+        .limit(MAX_HISTORY_TURNS)
+    )
+    rows = (await db.scalars(stmt)).all()
+    return [
+        HistoryTurn(role="assistant" if m.role == "assistant" else "user", content=m.content)
+        for m in reversed(rows)
+        if m.content.strip() and m.content != ASSISTANT_UNAVAILABLE_MESSAGE
+    ]
+
+
 async def get_session_detail(
     db: AsyncSession,
     owner_uuid: UUID,
@@ -185,6 +213,7 @@ async def execute_chat_turn(
         raise AppError("Geçersiz kullanıcı kimliği.") from None
 
     chat_session = await get_or_create_session(db, owner_uuid, session_id, clean_q)
+    history = await load_history(db, chat_session) if session_id is not None else []
 
     # 1. Kullanıcı sorusunu kaydet
     user_msg = ChatMessage(
@@ -203,7 +232,7 @@ async def execute_chat_turn(
 
     # 2. Asistan cevabını üret
     try:
-        req = AssistantRequest(question=clean_q, owner_id=str(owner_uuid))
+        req = AssistantRequest(question=clean_q, owner_id=str(owner_uuid), history=history)
         answer = await answer_question(req, llm=llm, session=db)
     except (AssistantLLMError, LLMNotConfiguredError):
         # LLM erişilemezse arayüz kesilmesin: nazik bir mesaj kaydedilir, ayrıntı yalnızca logda.
