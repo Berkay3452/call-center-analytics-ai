@@ -4,3 +4,4 @@ export * from "./StatusIndicator";
 export * from "./SuggestedPrompts";
 export * from "./ChatInput";
 export * from "./ChatWindow";
+export * from "./ChatSidebar";
