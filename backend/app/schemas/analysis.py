@@ -143,6 +143,7 @@ class AgentRun(BaseModel):
     prompt_version: str | None = None
     tokens_in: int = 0
     tokens_out: int = 0
+    fallback_from: str | None = None
 
     @classmethod
     def from_result(cls, result: AgentResult[Any]) -> "AgentRun":

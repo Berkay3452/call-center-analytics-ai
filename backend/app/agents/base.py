@@ -68,6 +68,8 @@ class AgentResult[T: BaseModel](BaseModel):
     tokens_out: int = 0
     latency_ms: int = 0
     attempts: int = 1
+    # Birincil model geçici hatayla düşüp yedek modelle üretildiyse birincil modelin adı.
+    fallback_from: str | None = None
 
 
 class BaseAgent[T: BaseModel](ABC):

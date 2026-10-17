@@ -109,6 +109,8 @@ export interface AgentRun {
   prompt_version: string | null;
   tokens_in: number;
   tokens_out: number;
+  /** Birincil model geçici hatayla düştüyse onun adı; yedek modelle üretildiğini gösterir. */
+  fallback_from: string | null;
 }
 
 export interface AnalysisOut {

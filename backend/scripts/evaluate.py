@@ -108,7 +108,9 @@ def compare(truth: dict[str, Any], result: AnalysisResult) -> dict[str, bool | N
 
 
 async def run(call_ids: list[str], settings: Settings) -> list[dict[str, Any]]:
-    orchestrator = Orchestrator(default_stages(settings))
+    orchestrator = Orchestrator(
+        default_stages(settings), agent_timeout_s=settings.llm_agent_timeout_s
+    )
     rows = []
     for cid in call_ids:
         started = time.perf_counter()
@@ -121,6 +123,9 @@ async def run(call_ids: list[str], settings: Settings) -> list[dict[str, Any]]:
                 "seconds": round(time.perf_counter() - started, 1),
                 "scores": compare(load_truth(cid), result),
                 "attempts": {r.agent: r.attempts for r in result.runs},
+                "latencies_ms": [r.latency_ms for r in result.runs],
+                "timeouts": sum(1 for r in result.runs if r.error_kind == "timeout"),
+                "fallbacks": sum(1 for r in result.runs if r.fallback_from),
                 "errors": result.errors,
                 "tokens": sum(r.tokens_in + r.tokens_out for r in result.runs),
                 "output": result.model_dump(mode="json", exclude={"runs"}),
@@ -162,6 +167,17 @@ def report(rows: list[dict[str, Any]], settings: Settings) -> str:
         f"Ortalama süre: {round(sum(r['seconds'] for r in rows) / len(rows), 1)} sn/çağrı"
         f" | toplam token: {sum(r['tokens'] for r in rows)}",
     ]
+    lat = sorted(ms for r in rows for ms in r["latencies_ms"])
+    if lat:
+        p95 = lat[min(len(lat) - 1, int(0.95 * len(lat)))]
+        lines.append(
+            f"Ajan süresi: ortalama {round(sum(lat) / len(lat) / 1000, 1)} sn, "
+            f"p95 {round(p95 / 1000, 1)} sn, en uzun {round(lat[-1] / 1000, 1)} sn"
+        )
+    lines.append(
+        f"Zaman aşımı: {sum(r['timeouts'] for r in rows)} ajan çalışması | "
+        f"yedek modele geçen: {sum(r['fallbacks'] for r in rows)} ajan çalışması"
+    )
     errors = {f"{r['call_id']}/{a}": e for r in rows for a, e in r["errors"].items()}
     if errors:
         lines += ["", "Hatalar:", *(f"- {k}: {v[:160]}" for k, v in errors.items())]
