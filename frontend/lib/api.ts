@@ -25,6 +25,7 @@ import {
   getCallById as getApiCallById,
   getCrmRecords as getApiCrmRecords,
   getKpiSummary as getApiKpiSummary,
+  type CallQueryFilters,
 } from "./api/client";
 import type {
   Call,
@@ -38,7 +39,7 @@ import type {
   RequestCategory,
   LossReason,
 } from "@/lib/types";
-import type { CallState } from "./api/types";
+import type { CallState, Page } from "./api/types";
 
 /** Çağrının analizi bitti mi? (isleniyor/beklemede/yaziya_cevriliyor: bitmedi) */
 function isFinal(state: CallState): state is AnalysisStatus {
@@ -52,12 +53,16 @@ function finalStatus(state: CallState): AnalysisStatus {
 // ---------------------------------------------------------------------------
 // Çağrı listesi
 // ---------------------------------------------------------------------------
-export async function fetchCalls(filters?: { marina?: string }): Promise<Call[]> {
+export async function fetchCalls(
+  filters?: CallQueryFilters,
+): Promise<Page<Call>> {
   const page = await getApiCalls({
-    page_size: 100,
-    ...(filters?.marina ? { marina: filters.marina } : {}),
+    page_size: 20,
+    ...filters,
   });
-  return page.items.map((item) => ({
+  return {
+    ...page,
+    items: page.items.map((item) => ({
     id: item.id,
     caller: item.customer_name ?? "İsimsiz Arayan",
     boatName: item.boat_name ?? undefined,
@@ -87,7 +92,8 @@ export async function fetchCalls(filters?: { marina?: string }): Promise<Call[]>
       evidence: null,
       confidence: 0,
     },
-  }));
+  })),
+};
 }
 
 // ---------------------------------------------------------------------------
@@ -172,24 +178,29 @@ export async function fetchKpis(): Promise<KpiCard[]> {
 // ---------------------------------------------------------------------------
 // CRM önerileri (7 alanlı CRM çıkarımları)
 // ---------------------------------------------------------------------------
-export async function fetchCrmSuggestions(filters?: { marina?: string }): Promise<CrmSuggestion[]> {
+export async function fetchCrmSuggestions(
+  filters?: CallQueryFilters,
+): Promise<Page<CrmSuggestion>> {
   const res = await getApiCrmRecords({
-    page_size: 100,
-    ...(filters?.marina ? { marina: filters.marina } : {}),
+    page_size: 20,
+    ...filters,
   });
-  return res.items.map((item) => ({
-    callId: item.call_id,
-    caller: item.customer_name ?? "İsimsiz",
-    boatName: item.boat_name ?? undefined,
-    requestCategory: item.request_category ?? null,
-    location: item.location ?? null,
-    problem: item.problem ?? null,
-    serviceMode: item.service_mode ?? null,
-    urgency: item.urgency ?? null,
-    potentialJob: item.potential_job ?? null,
-    nextAction: item.next_action ?? null,
-    evidence: item.evidence,
-  }));
+  return {
+    ...res,
+    items: res.items.map((item) => ({
+      callId: item.call_id,
+      caller: item.customer_name ?? "İsimsiz",
+      boatName: item.boat_name ?? undefined,
+      requestCategory: item.request_category ?? null,
+      location: item.location ?? null,
+      problem: item.problem ?? null,
+      serviceMode: item.service_mode ?? null,
+      urgency: item.urgency ?? null,
+      potentialJob: item.potential_job ?? null,
+      nextAction: item.next_action ?? null,
+      evidence: item.evidence,
+    })),
+  };
 }
 
 // ---------------------------------------------------------------------------

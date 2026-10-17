@@ -12,7 +12,10 @@ import {
   type Urgency,
 } from "@/lib/types";
 import { CrmSuggestionsSkeleton } from "@/components/skeletons";
-import { MarinaFilter } from "@/components/MarinaFilter";
+import { CallsFilterBar } from "@/components/CallsFilterBar";
+import { Pagination } from "@/components/Pagination";
+import { EmptyState } from "@/components/EmptyState";
+import type { CallQueryFilters } from "@/lib/api/client";
 
 export const metadata = { title: "CRM Kayıt Önerileri | Miço Usta" };
 
@@ -24,12 +27,45 @@ const URGENCY_BADGE: Record<Urgency, string> = {
 };
 
 interface CrmPageProps {
-  searchParams?: Promise<{ marina?: string }>;
+  searchParams?: Promise<{
+    page?: string;
+    page_size?: string;
+    q?: string;
+    urgency?: string;
+    call_type?: string;
+    request_category?: string;
+    state?: string;
+    marina?: string;
+    date_from?: string;
+    date_to?: string;
+  }>;
 }
 
 export default async function CrmPage({ searchParams }: CrmPageProps) {
   const params = searchParams ? await searchParams : {};
-  const marina = params?.marina;
+  const queryFilters: CallQueryFilters = {
+    page: Math.max(1, Number(params?.page) || 1),
+    page_size: Math.max(1, Number(params?.page_size) || 20),
+    q: params?.q?.trim() || undefined,
+    urgency: params?.urgency?.trim() || undefined,
+    call_type: params?.call_type?.trim() || undefined,
+    request_category: params?.request_category?.trim() || undefined,
+    state: params?.state?.trim() || undefined,
+    marina: params?.marina?.trim() || undefined,
+    date_from: params?.date_from?.trim() || undefined,
+    date_to: params?.date_to?.trim() || undefined,
+  };
+
+  const hasActiveFilters = Boolean(
+    queryFilters.q ||
+      queryFilters.urgency ||
+      queryFilters.request_category ||
+      queryFilters.marina ||
+      queryFilters.date_from ||
+      queryFilters.date_to,
+  );
+
+  const suspenseKey = JSON.stringify(queryFilters);
 
   return (
     <div className="space-y-6">
@@ -42,31 +78,49 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
             Çağrılardan yapay zekâ tarafından otomatik çıkarılan 7 alanlı servis kayıtları
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <MarinaFilter selectedMarina={marina} />
-        </div>
       </div>
 
-      <Suspense key={marina || "all"} fallback={<CrmSuggestionsSkeleton />}>
-        <CrmContent marina={marina} />
+      {/* Arama ve Filtre Kontrolleri (#108) */}
+      <CallsFilterBar
+        showCallType={false}
+        showState={false}
+        placeholder="Müşteri, tekne veya problem ara..."
+      />
+
+      {/* CRM Listesi ve Sayfalama */}
+      <Suspense key={suspenseKey} fallback={<CrmSuggestionsSkeleton />}>
+        <CrmContent filters={queryFilters} hasActiveFilters={hasActiveFilters} />
       </Suspense>
     </div>
   );
 }
 
-async function CrmContent({ marina }: { marina?: string }) {
+async function CrmContent({
+  filters,
+  hasActiveFilters,
+}: {
+  filters: CallQueryFilters;
+  hasActiveFilters: boolean;
+}) {
   let suggestions: CrmSuggestion[] = [];
+  let total = 0;
+  let page = filters.page ?? 1;
+  let pageSize = filters.page_size ?? 20;
   let errorMsg: string | null = null;
 
   try {
-    suggestions = await fetchCrmSuggestions(marina ? { marina } : undefined);
+    const pageData = await fetchCrmSuggestions(filters);
+    suggestions = pageData.items;
+    total = pageData.total;
+    page = pageData.page;
+    pageSize = pageData.page_size;
   } catch (err) {
     errorMsg = err instanceof Error ? err.message : "CRM önerileri yüklenemedi";
   }
 
   if (errorMsg) {
     return (
-      <div className="rounded-xl border border-amber-200 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-950/30 p-6 text-center shadow-sm">
+      <div className="rounded-xl border border-amber-200 dark:border-amber-800/60 bg-amber-50 dark:bg-amber-950/30 p-6 text-center shadow-xs">
         <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">
           ⚠️ CRM kayıtları alınamadı: {errorMsg}
         </p>
@@ -78,26 +132,35 @@ async function CrmContent({ marina }: { marina?: string }) {
   }
 
   if (suggestions.length === 0) {
+    if (hasActiveFilters) {
+      return (
+        <EmptyState
+          title="Filtrelere uyan CRM önerisi bulunamadı"
+          description="Arama teriminizi veya filtre seçimlerinizi değiştirerek tekrar deneyebilirsiniz."
+          icon="🔍"
+          isFiltered={true}
+        />
+      );
+    }
+
     return (
-      <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-12 text-center shadow-sm">
-        <span className="text-3xl">⚓</span>
-        <h3 className="mt-3 text-sm font-bold text-slate-900 dark:text-slate-100">
-          CRM Önerisi Bulunamadı
-        </h3>
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-          {marina
-            ? `"${marina}" marinası için bekleyen CRM önerisi bulunmuyor.`
-            : "Henüz bekleyen bir CRM önerisi bulunmuyor."}
-        </p>
-      </div>
+      <EmptyState
+        title="CRM Önerisi Bulunamadı"
+        description="Henüz bekleyen bir CRM önerisi bulunmuyor."
+        icon="⚓"
+        isFiltered={false}
+      />
     );
   }
 
   return (
-    <>
-      <div className="flex justify-end">
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+          Sayfa {page} / {Math.max(1, Math.ceil(total / pageSize))}
+        </span>
         <span className="rounded-lg bg-sky-50 dark:bg-sky-950/50 px-3 py-1.5 text-xs font-semibold text-sky-800 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
-          {suggestions.length} Bekleyen Öneri
+          {total} Toplam Öneri
         </span>
       </div>
 
@@ -105,7 +168,7 @@ async function CrmContent({ marina }: { marina?: string }) {
         {suggestions.map((s) => (
           <div
             key={s.callId}
-            className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm transition-all hover:border-sky-300 dark:hover:border-sky-500"
+            className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-xs transition-all hover:border-sky-300 dark:hover:border-sky-500"
           >
             {/* Üst Kısım: Arayan, Tekne, Aciliyet ve Buton */}
             <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
@@ -134,7 +197,7 @@ async function CrmContent({ marina }: { marina?: string }) {
                 </span>
                 <Link
                   href={`/admin/calls/${s.callId}`}
-                  className="rounded-lg bg-sky-700 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-sky-800 transition-colors shadow-xs"
+                  className="rounded-lg bg-sky-700 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-sky-800 transition-colors shadow-xs focus:outline-none focus:ring-2 focus:ring-sky-500"
                 >
                   İncele &amp; Onayla →
                 </Link>
@@ -200,6 +263,9 @@ async function CrmContent({ marina }: { marina?: string }) {
           </div>
         ))}
       </div>
-    </>
+
+      {/* Sayfalama Kontrolleri (#108) */}
+      <Pagination page={page} pageSize={pageSize} total={total} />
+    </div>
   );
 }
