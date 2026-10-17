@@ -297,9 +297,11 @@ def start_celery() -> subprocess.Popen[bytes]:
     step("Analiz işçisi (Celery)")
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     log_path = LOG_DIR / "celery.log"
+    schedule_path = LOG_DIR / "celerybeat-schedule"
     log = open(log_path, "ab")  # noqa: SIM115 - süreç boyunca açık kalır
     cmd = [
         sys.executable, "-m", "celery", "-A", "app.workers.celery_app", "worker",
+        "-B", "-s", str(schedule_path),
         "-Q", "default,stt,analysis,index", "--pool=solo", "-l", "info",
     ]  # fmt: skip
     proc = subprocess.Popen(cmd, cwd=BACKEND_DIR, stdout=log, stderr=subprocess.STDOUT)

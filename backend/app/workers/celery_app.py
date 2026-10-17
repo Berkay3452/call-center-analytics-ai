@@ -56,4 +56,34 @@ celery_app.conf.update(
         "app.workers.tasks.analysis.*": {"queue": "analysis"},
         "app.workers.tasks.index.*": {"queue": "index"},
     },
+    # Periyodik görevler (#107): Takılı kalan çağrıları dakikada bir tarar.
+    beat_schedule={
+        "recover-stuck-calls": {
+            "task": "app.workers.tasks.system.recover_stuck_calls",
+            "schedule": 60.0,
+        },
+    },
 )
+
+
+@celery_app.on_after_configure.connect
+def _setup_periodic_tasks(sender: object, **kwargs: object) -> None:
+    pass
+
+
+import structlog  # noqa: E402
+from celery.signals import worker_ready  # noqa: E402
+
+log = structlog.get_logger(__name__)
+
+
+@worker_ready.connect
+def on_worker_ready(sender: object, **kwargs: object) -> None:
+    """İşçi ayağa kalktığında hemen bir takılı çağrı taraması başlatır (#107)."""
+    try:
+        from app.workers.tasks.system import recover_stuck_calls_task
+
+        recover_stuck_calls_task.delay()
+        log.info("celery.worker_ready.stuck_calls_recovery_dispatched")
+    except Exception as exc:
+        log.warning("celery.worker_ready.dispatch_failed", error=str(exc))
