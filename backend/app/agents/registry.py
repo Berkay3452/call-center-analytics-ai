@@ -9,7 +9,7 @@ from app.agents.crm_extraction import CrmExtractionAgent
 from app.agents.orchestrator import Orchestrator, RunRecorder, Stage
 from app.agents.sales_analyzer import SalesAnalyzerAgent
 from app.agents.summarizer import SummarizerAgent
-from app.core.config import Settings
+from app.core.config import Settings, get_settings
 
 
 def default_stages(settings: Settings | None = None) -> list[Stage]:
@@ -30,4 +30,7 @@ def default_stages(settings: Settings | None = None) -> list[Stage]:
 def build_default_orchestrator(
     recorder: RunRecorder | None = None, settings: Settings | None = None
 ) -> Orchestrator:
-    return Orchestrator(default_stages(settings), recorder=recorder)
+    cfg = settings or get_settings()
+    return Orchestrator(
+        default_stages(cfg), agent_timeout_s=cfg.llm_agent_timeout_s, recorder=recorder
+    )

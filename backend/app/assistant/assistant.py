@@ -1,7 +1,8 @@
 """Miço AI'nın dışa açılan tek giriş noktası: `answer_question`.
 
 Akış (diyagram 03): planlayıcı → [tekne karnesi araması | hazır araçlar | nazik ret] →
-cevap üret → kaynak kontrolü. Sohbet API'si (#28) yalnızca bu fonksiyonu çağırır.
+cevap üret → kaynak kontrolü. Takip sorusu (#111) planlayıcıdan önce bağımsız soruya çevrilir.
+Sohbet API'si (#28) yalnızca bu fonksiyonu çağırır.
 """
 
 from datetime import date
@@ -13,6 +14,7 @@ from app.assistant.answer import history_answer, numeric_answer
 from app.assistant.llm import AssistantLLM
 from app.assistant.planner import plan_question
 from app.assistant.retrieval import search_boat_notes
+from app.assistant.rewrite import standalone_question
 from app.schemas.assistant import AssistantAnswer, AssistantRequest, QuestionType
 
 log = structlog.get_logger(__name__)
@@ -38,7 +40,8 @@ async def answer_question(
     llm = llm or AssistantLLM()
     today = today or date.today()
 
-    plan = await plan_question(request.question, llm)
+    question = await standalone_question(request.question, request.history, llm)
+    plan = await plan_question(question, llm)
     log.info("assistant.planned", question_type=plan.question_type, tool=plan.tool)
 
     if plan.question_type == QuestionType.KAPSAM_DISI:
@@ -46,5 +49,5 @@ async def answer_question(
         return AssistantAnswer(answer=REFUSAL_MESSAGE, question_type=plan.question_type)
     if plan.question_type == QuestionType.SAYISAL:
         return await numeric_answer(plan, request.owner_id, today, session=session)
-    passages = await search_boat_notes(request.owner_id, request.question, session=session)
-    return await history_answer(request.question, passages, llm)
+    passages = await search_boat_notes(request.owner_id, question, session=session)
+    return await history_answer(question, passages, llm)

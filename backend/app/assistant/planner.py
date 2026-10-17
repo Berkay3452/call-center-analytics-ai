@@ -42,13 +42,27 @@ def _has(tokens: list[str], *prefixes: str) -> bool:
     return any(t.startswith(p) for t in tokens for p in prefixes)
 
 
+# Belirli bir parça ya da işi anan kökler (normalize edilmiş). Soru bir konu söylüyorsa genel
+# toplam araçları yanlış cevap verir ("akü için ne kadar ödedim" ≠ tüm giderler).
+_TOPIC_PREFIXES = (
+    "aku", "filtre", "impeller", "motor", "jenerator", "boya", "pompa", "yag", "pervane", "anot",
+    "kayis", "sintine", "garanti", "yakit", "elektrik", "klima", "vinc",
+)  # fmt: skip
+
+
+def mentions_topic(tokens: list[str]) -> bool:
+    return _has(tokens, *_TOPIC_PREFIXES)
+
+
 def plan_by_rules(question: str) -> Plan | None:
     """Net sayısal sorular için plan; belirsizse None (LLM'e bırakılır)."""
     text = normalize(question)
     tokens = text.split()
     period: Period = "bu_ay" if "bu ay" in text else "tumu"
 
-    if _has(tokens, "harca", "masraf", "gider", "odeme", "odedi", "fatura"):
+    if _has(tokens, "harca", "masraf", "gider", "odeme", "odedi", "fatura") and not mentions_topic(
+        tokens
+    ):
         return Plan(
             question_type=QuestionType.SAYISAL, tool=AssistantTool.GET_EXPENSE_TOTAL, period=period
         )

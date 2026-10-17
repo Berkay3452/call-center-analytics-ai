@@ -446,3 +446,113 @@ async def test_expense_source_excerpt_uses_turkish_number_format(client: AsyncCl
     excerpts = [s["excerpt"] for s in answer["sources"]]
     assert excerpts and all("14.250,00 TL" in e for e in excerpts)
     assert not any("14,250.00" in e for e in excerpts)
+
+
+# --- 6. Çok turlu bağlam (#111) ---
+
+
+async def test_follow_up_turn_receives_session_history(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """İkinci soru aynı oturumun önceki mesajlarını `history` olarak alır; ilk soru boş alır."""
+    from app.services import assistant_chat
+
+    seen: list[list[tuple[str, str]]] = []
+    real = assistant_chat.answer_question
+
+    async def spy(req: object, **kwargs: object) -> object:
+        seen.append([(t.role, t.content) for t in req.history])  # type: ignore[attr-defined]
+        return await real(req, **kwargs)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(assistant_chat, "answer_question", spy)
+    headers = {"X-Service-Key": TEST_SERVICE_KEY, "X-User-Id": str(AHMET_ID)}
+
+    r1 = await client.post(
+        "/api/v1/chat/messages", json={"question": "Kaç bakım hakkım kaldı?"}, headers=headers
+    )
+    session_id = r1.json()["session_id"]
+    await client.post(
+        "/api/v1/chat/messages",
+        json={"question": "Son bakım ne zaman yapıldı?", "session_id": session_id},
+        headers=headers,
+    )
+
+    assert seen[0] == []
+    assert [role for role, _ in seen[1]] == ["user", "assistant"]
+    assert seen[1][0][1] == "Kaç bakım hakkım kaldı?"
+
+
+async def test_history_never_comes_from_another_owners_session(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Fatma, Ahmet'in oturum kimliğiyle devam etmeye çalışırsa 404 alır; geçmiş okunmaz."""
+    from app.services import assistant_chat
+
+    calls = 0
+    real = assistant_chat.answer_question
+
+    async def spy(*args: object, **kwargs: object) -> object:
+        nonlocal calls
+        calls += 1
+        return await real(*args, **kwargs)  # type: ignore[arg-type]
+
+    monkeypatch.setattr(assistant_chat, "answer_question", spy)
+    ahmet = {"X-Service-Key": TEST_SERVICE_KEY, "X-User-Id": str(AHMET_ID)}
+    fatma = {"X-Service-Key": TEST_SERVICE_KEY, "X-User-Id": str(FATMA_ID)}
+    r1 = await client.post(
+        "/api/v1/chat/messages", json={"question": "Kaç bakım hakkım kaldı?"}, headers=ahmet
+    )
+    session_id = r1.json()["session_id"]
+    assert calls == 1
+
+    r2 = await client.post(
+        "/api/v1/chat/messages",
+        json={"question": "Peki ne yapılmıştı?", "session_id": session_id},
+        headers=fatma,
+    )
+
+    assert r2.status_code == 404
+    assert calls == 1  # asistan hiç çalışmadı
+
+
+async def test_load_history_skips_unavailable_message_and_keeps_order(
+    factory: async_sessionmaker[AsyncSession],
+) -> None:
+    from datetime import UTC, datetime, timedelta
+
+    from app.services.assistant_chat import ASSISTANT_UNAVAILABLE_MESSAGE, load_history
+
+    async with factory() as db:
+        now = datetime.now(UTC)
+        sess = ChatSession(id=uuid4(), owner_id=AHMET_ID, title="t", created_at=now, updated_at=now)
+        db.add(sess)
+        await db.flush()
+        for i, (role, text) in enumerate(
+            [
+                ("user", "bir"),
+                ("assistant", ASSISTANT_UNAVAILABLE_MESSAGE),
+                ("user", "iki"),
+                ("assistant", "cevap"),
+            ]
+        ):
+            db.add(
+                ChatMessage(
+                    id=uuid4(),
+                    session_id=sess.id,
+                    role=role,
+                    content=text,
+                    question_type=None,
+                    sources=[],
+                    found=True,
+                    created_at=now + timedelta(seconds=i),
+                )
+            )
+        await db.flush()
+
+        history = await load_history(db, sess)
+
+    assert [(t.role, t.content) for t in history] == [
+        ("user", "bir"),
+        ("user", "iki"),
+        ("assistant", "cevap"),
+    ]

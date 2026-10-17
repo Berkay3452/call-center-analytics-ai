@@ -33,6 +33,7 @@ import mockCrmList from "@/mocks/crm_listesi.json";
 import mockKpiSummary from "@/mocks/kpi_ozeti.json";
 import mockChatReply from "@/mocks/sohbet_cevabi.json";
 import mockChatSessionDetail from "@/mocks/sohbet_oturumu.json";
+import { mockSeedCalls, mockSeedCrm } from "./mock-seed";
 
 export interface ApiClientConfig {
   baseUrl?: string;
@@ -200,18 +201,79 @@ async function handleMockRequest<T>(
 
   // 1. GET /calls
   if (method === "GET" && path === "/calls") {
-    if (options.params?.marina) {
-      const marinaFilter = String(options.params.marina).toLowerCase();
-      const filtered = mockCallsList.items.filter(
-        (item) => item.marina?.toLowerCase() === marinaFilter
-      );
-      return {
-        ...mockCallsList,
-        items: filtered,
-        total: filtered.length,
-      } as unknown as T;
+    const params = options.params;
+    let list = [...mockSeedCalls];
+
+    if (params?.marina) {
+      const marina = String(params.marina).trim().toLowerCase();
+      if (marina && marina !== "all") {
+        list = list.filter((i) => i.marina?.toLowerCase() === marina);
+      }
     }
-    return mockCallsList as unknown as T;
+
+    if (params?.q) {
+      const q = String(params.q).trim().toLowerCase();
+      if (q) {
+        list = list.filter(
+          (i) =>
+            (i.customer_name && i.customer_name.toLowerCase().includes(q)) ||
+            (i.boat_name && i.boat_name.toLowerCase().includes(q)) ||
+            (i.marina && i.marina.toLowerCase().includes(q)),
+        );
+      }
+    }
+
+    if (params?.urgency) {
+      const urgency = String(params.urgency).trim();
+      if (urgency && urgency !== "all") {
+        list = list.filter((i) => i.urgency === urgency);
+      }
+    }
+
+    if (params?.call_type) {
+      const callType = String(params.call_type).trim();
+      if (callType && callType !== "all") {
+        list = list.filter((i) => i.call_type === callType);
+      }
+    }
+
+    if (params?.request_category) {
+      const reqCat = String(params.request_category).trim();
+      if (reqCat && reqCat !== "all") {
+        list = list.filter((i) => i.request_category === reqCat);
+      }
+    }
+
+    if (params?.state) {
+      const state = String(params.state).trim();
+      if (state && state !== "all") {
+        list = list.filter((i) => i.state === state);
+      }
+    }
+
+    if (params?.date_from) {
+      const fromStr = String(params.date_from).trim();
+      const fromDate = new Date(fromStr.length === 10 ? `${fromStr}T00:00:00` : fromStr);
+      list = list.filter((i) => new Date(i.started_at) >= fromDate);
+    }
+
+    if (params?.date_to) {
+      const toStr = String(params.date_to).trim();
+      const toDate = new Date(toStr.length === 10 ? `${toStr}T23:59:59` : toStr);
+      list = list.filter((i) => new Date(i.started_at) <= toDate);
+    }
+
+    const page = Math.max(1, Number(params?.page) || 1);
+    const pageSize = Math.max(1, Number(params?.page_size) || 20);
+    const start = (page - 1) * pageSize;
+    const pagedItems = list.slice(start, start + pageSize);
+
+    return {
+      items: pagedItems,
+      total: list.length,
+      page,
+      page_size: pageSize,
+    } as unknown as T;
   }
 
   // 2. POST /calls
@@ -240,8 +302,10 @@ async function handleMockRequest<T>(
     if (mockCallDetail.id === id) {
       return mockCallDetail as unknown as T;
     }
-    // İstenen id cagri_listesi'ndeyse id eşleyerek detay üret veya varsayılan detay ver
-    const foundInList = mockCallsList.items.find((item) => item.id === id);
+    // İstenen id mockSeedCalls veya cagri_listesi'ndeyse id eşleyerek detay üret
+    const foundInList =
+      mockSeedCalls.find((item) => item.id === id) ??
+      (mockCallsList.items as unknown as CallListItem[]).find((item) => item.id === id);
     if (foundInList) {
       return {
         ...mockCallDetail,
@@ -262,18 +326,69 @@ async function handleMockRequest<T>(
 
   // 7. GET /crm
   if (method === "GET" && path === "/crm") {
-    if (options.params?.marina) {
-      const marinaFilter = String(options.params.marina).toLowerCase();
-      const filtered = mockCrmList.items.filter(
-        (item) => item.location?.toLowerCase() === marinaFilter
-      );
-      return {
-        ...mockCrmList,
-        items: filtered,
-        total: filtered.length,
-      } as unknown as T;
+    const params = options.params;
+    let list: CrmRecordItem[] =
+      mockSeedCrm.length > 0
+        ? [...mockSeedCrm]
+        : ([...mockCrmList.items] as unknown as CrmRecordItem[]);
+
+    if (params?.marina) {
+      const marina = String(params.marina).trim().toLowerCase();
+      if (marina && marina !== "all") {
+        list = list.filter((i) => i.location?.toLowerCase() === marina);
+      }
     }
-    return mockCrmList as unknown as T;
+
+    if (params?.q) {
+      const q = String(params.q).trim().toLowerCase();
+      if (q) {
+        list = list.filter(
+          (i) =>
+            (i.customer_name && i.customer_name.toLowerCase().includes(q)) ||
+            (i.boat_name && i.boat_name.toLowerCase().includes(q)) ||
+            (i.location && i.location.toLowerCase().includes(q)) ||
+            (i.problem && i.problem.toLowerCase().includes(q)),
+        );
+      }
+    }
+
+    if (params?.urgency) {
+      const urgency = String(params.urgency).trim();
+      if (urgency && urgency !== "all") {
+        list = list.filter((i) => i.urgency === urgency);
+      }
+    }
+
+    if (params?.request_category) {
+      const reqCat = String(params.request_category).trim();
+      if (reqCat && reqCat !== "all") {
+        list = list.filter((i) => i.request_category === reqCat);
+      }
+    }
+
+    if (params?.date_from) {
+      const fromStr = String(params.date_from).trim();
+      const fromDate = new Date(fromStr.length === 10 ? `${fromStr}T00:00:00` : fromStr);
+      list = list.filter((i) => new Date(i.started_at) >= fromDate);
+    }
+
+    if (params?.date_to) {
+      const toStr = String(params.date_to).trim();
+      const toDate = new Date(toStr.length === 10 ? `${toStr}T23:59:59` : toStr);
+      list = list.filter((i) => new Date(i.started_at) <= toDate);
+    }
+
+    const page = Math.max(1, Number(params?.page) || 1);
+    const pageSize = Math.max(1, Number(params?.page_size) || 20);
+    const start = (page - 1) * pageSize;
+    const pagedItems = list.slice(start, start + pageSize);
+
+    return {
+      items: pagedItems,
+      total: list.length,
+      page,
+      page_size: pageSize,
+    } as unknown as T;
   }
 
   // 8. GET /analytics/summary
@@ -288,11 +403,111 @@ async function handleMockRequest<T>(
 
   // 10. GET /chat/sessions
   if (method === "GET" && path === "/chat/sessions") {
-    return [mockChatSessionDetail.session] as unknown as T;
+    const mockSessions: ChatSessionOut[] = [
+      {
+        id: "5e8c2a40-3f1b-4d6e-9a7c-0b1d2e3f4a5b",
+        title: "Teknemin son bakımı ne zamandı?",
+        created_at: "2026-10-12T09:05:00Z",
+        updated_at: "2026-10-12T09:05:03Z",
+      },
+      {
+        id: "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+        title: "Bu ay ne kadar harcadım?",
+        created_at: "2026-10-10T14:30:00Z",
+        updated_at: "2026-10-10T14:30:45Z",
+      },
+      {
+        id: "f1e2d3c4-b5a6-4f7e-8d9c-0b1a2f3e4d5c",
+        title: "Sintine alarmı çaldığında ne yapmalıyım?",
+        created_at: "2026-10-08T11:15:00Z",
+        updated_at: "2026-10-08T11:16:10Z",
+      },
+    ];
+    return mockSessions as unknown as T;
   }
 
   // 11. GET /chat/sessions/:id
   if (method === "GET" && /^\/chat\/sessions\/[^/]+$/.test(path)) {
+    const sessionId = path.split("/")[3];
+    if (sessionId === "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d") {
+      return {
+        session: {
+          id: "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+          title: "Bu ay ne kadar harcadım?",
+          created_at: "2026-10-10T14:30:00Z",
+          updated_at: "2026-10-10T14:30:45Z",
+        },
+        messages: [
+          {
+            id: "msg-q2",
+            role: "user",
+            content: "Bu ay ne kadar harcadım?",
+            created_at: "2026-10-10T14:30:00Z",
+            question_type: "kapsam_disi" as const,
+            sources: [],
+            found: true,
+          },
+          {
+            id: "msg-a2",
+            role: "assistant",
+            content:
+              "Kalamış Marina bağlama sözleşmesi ve elektrik/su tüketimi kapsamında bu ay toplam 14.250 TL harcama kaydedilmiştir. Son ödeme tarihi 25 Ekim 2026'dır.",
+            created_at: "2026-10-10T14:30:45Z",
+            question_type: "sayisal" as const,
+            sources: [
+              {
+                kind: "expense",
+                record_id: "rec-exp-02",
+                title: "Kalamış Marina İskele C-12 Hizmet Faturası",
+                date: "2026-10-01",
+                excerpt: "12m motoryat standart bağlama ve sayaç tüketim bedeli.",
+              },
+            ],
+            found: true,
+          },
+        ],
+      } as unknown as T;
+    }
+    if (sessionId === "f1e2d3c4-b5a6-4f7e-8d9c-0b1a2f3e4d5c") {
+      return {
+        session: {
+          id: "f1e2d3c4-b5a6-4f7e-8d9c-0b1a2f3e4d5c",
+          title: "Sintine alarmı çaldığında ne yapmalıyım?",
+          created_at: "2026-10-08T11:15:00Z",
+          updated_at: "2026-10-08T11:16:10Z",
+        },
+        messages: [
+          {
+            id: "msg-q3",
+            role: "user",
+            content: "Sintine alarmı çaldığında ilk ne yapmalıyım?",
+            created_at: "2026-10-08T11:15:00Z",
+            question_type: "kapsam_disi" as const,
+            sources: [],
+            found: true,
+          },
+          {
+            id: "msg-a3",
+            role: "assistant",
+            content:
+              "Sintine alarmı devreye girdiğinde derhal: 1) Sintine otomatik pompasının (float switch) çalıştığını kontrol edin, 2) Şaft kovanı ve deniz suyu vanalarını (seacock) su sızıntısına karşı gözleyin, 3) Akü ana şalterinin açık olduğundan emin olun.",
+            created_at: "2026-10-08T11:16:10Z",
+            question_type: "gecmis_oneri" as const,
+            sources: [
+              {
+                kind: "boat_note",
+                record_id: "rec-not-04",
+                title: "Miço Usta Acil Güvenlik Kılavuzu",
+                date: "2026-10-09",
+                excerpt: "Sintine su seviyesi alarmı acil müdahale adımları.",
+              },
+            ],
+            found: true,
+          },
+        ],
+      } as unknown as T;
+    }
+    // Default: first session
     return mockChatSessionDetail as unknown as T;
   }
 

@@ -675,7 +675,8 @@
           "model",
           "prompt_version",
           "tokens_in",
-          "tokens_out"
+          "tokens_out",
+          "fallback_from"
         ],
         "properties": {
           "agent": { "type": "string" },
@@ -687,7 +688,8 @@
           "model": { "type": "string", "nullable": true },
           "prompt_version": { "type": "string", "nullable": true },
           "tokens_in": { "type": "integer" },
-          "tokens_out": { "type": "integer" }
+          "tokens_out": { "type": "integer" },
+          "fallback_from": { "type": "string", "nullable": true }
         }
       },
       "AnalysisOut": {

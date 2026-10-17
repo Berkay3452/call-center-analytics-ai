@@ -309,6 +309,7 @@ export interface components {
             prompt_version: string | null;
             tokens_in: number;
             tokens_out: number;
+            fallback_from: string | null;
         };
         AnalysisOut: {
             version: number;
