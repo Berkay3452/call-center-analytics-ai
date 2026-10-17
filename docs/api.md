@@ -34,6 +34,8 @@ Admin/tekne sahibi rol ayrımını .NET uygulaması yapar. Tekne sahibi uçları
 | `GET /calls` | Admin | `CallFilters` (sorgu) | `Page` of `CallListItem` | #51 |
 | `GET /calls/{call_id}` | Admin | — | `CallDetail` | #51 |
 | `GET /crm` | Admin | `CallFilters` (sorgu) | `Page` of `CrmRecordItem` | #51 |
+| `POST /crm/{call_id}/approve` | Admin | `CrmApproveIn` (isteğe bağlı) | `CrmReviewOut`; eşleşme yoksa 409 | #106 |
+| `POST /crm/{call_id}/reject` | Admin | `CrmRejectIn` (isteğe bağlı) | `CrmReviewOut` | #106 |
 | `GET /analytics/summary` | Admin | `PeriodFilter` (sorgu) | `KpiSummary` | #52 |
 | `POST /calls` | Admin | `CallCreate` (JSON) | 202 `CallAccepted` | #48 |
 | `POST /calls/audio` | Admin | multipart: `file` (wav/mp3/m4a/ogg/flac/aac/webm, en fazla 25 MB) + `AudioCallMeta` alanları | 202 `CallAccepted`; aynı ses daha önce yüklendiyse 409 (`details.call_id`) | #49 |
@@ -56,7 +58,7 @@ Başka kullanıcının sohbet oturumu istenirse 404 döner (varlığı da sızd�
 - `CallListItem`: liste satırı. Santral bilgisi + en son analizden `call_type`, `request_category`, `urgency`, `sales_outcome`, `loss_reason`, `summary`. Analiz yoksa bu alanlar `null`.
 - `CallDetail`: çağrı, `TranscriptOut` (metin + `TranscriptSegmentOut` listesi; kişisel veriler maskeli) ve en son analiz `AnalysisOut`.
 - `AnalysisOut`: bir analiz sürümü. Agent çıktıları `CallClassification`, `CrmExtraction`, `SalesAnalysis`, `CallSummary`; agent kayıtları `AgentRun`. Başarısız agent'ın alanı `null`, nedeni `errors`'ta.
-- `CallFilters`: `date_from`, `date_to`, `call_type`, `urgency`, `request_category`, `state`, `marina` (tam eşleşme), `q` (müşteri/tekne/marina adında arama), `page`, `page_size`.
+- `CallFilters`: `date_from`, `date_to`, `call_type`, `urgency`, `request_category`, `state`, `status`, `marina` (tam eşleşme), `q` (müşteri/tekne/marina adında arama), `page`, `page_size`.
 
 ### Çağrı durumu (`CallState`)
 | Değer | Anlamı |
@@ -70,8 +72,11 @@ Arayüz `GET /calls/{id}/status` ile durumu 2–3 saniyede bir sorar; `tamam`, `
 
 > `calls.state` ve `calls.error` sütunları #48 ile eklendi; seed verisindeki analizli çağrılar `tamam` durumundadır.
 
-### CRM önerileri
-- `CrmRecordItem`: hocanın 7 alanı (`request_category`, `location`, `problem`, `service_mode`, `urgency`, `potential_job`, `next_action`), alıntılar (`evidence`) ve kaynağı olan çağrı. Her çağrının en son analiz sürümünden gelir.
+### CRM önerileri (#106)
+- `CrmRecordItem`: hocanın 7 alanı (`request_category`, `location`, `problem`, `service_mode`, `urgency`, `potential_job`, `next_action`), alıntılar (`evidence`), inceleme durumu (`review_status`: `bekliyor` / `onaylandi` / `reddedildi`), düzenlenen alanlar (`edited_fields`), servis emri (`service_order_id`) ve kaynağı olan çağrı. Her çağrının en son analiz sürümünden gelir.
+- `CrmApproveIn`: isteğe bağlı 7 alan düzenlemesi (`request_category`, `location`, `problem`, `service_mode`, `urgency`, `potential_job`, `next_action`) ve `note`.
+- `CrmRejectIn`: red nedeni veya not (`note`).
+- `CrmReviewOut`: inceleme kaydı (`id`, `call_id`, `analysis_id`, `status`, `edited_fields`, `note`, `reviewed_at`, `service_order_id`).
 
 ### Çağrı alma
 - `CallCreate`: sesi olmayan çağrı (geliştirme ve sentetik veri için). `transcript` (düz metin) veya `SegmentIn` listesinden biri zorunlu.

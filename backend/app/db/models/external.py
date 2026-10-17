@@ -82,6 +82,7 @@ class ServiceOrder(UUIDPrimaryKeyMixin, Base):
         in_enum("status", ServiceOrderStatus, nullable=False),
         in_enum("category", RequestCategory),
         Index("ix_orders_boat_id", "boat_id"),
+        Index("ix_orders_source_call_id", "source_call_id"),
     )
 
     boat_id: Mapped[uuid.UUID] = mapped_column(
@@ -100,6 +101,9 @@ class ServiceOrder(UUIDPrimaryKeyMixin, Base):
     )
     scheduled_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    source_call_id: Mapped[uuid.UUID | None] = mapped_column(
+        PG_UUID(as_uuid=True), ForeignKey("calls.id", ondelete="SET NULL"), nullable=True
+    )
     created_at: Mapped[datetime] = _created_at()
 
 

@@ -17,7 +17,10 @@
         "location": "Tuzla Marina'da teknem var",
         "problem": "gaz verdiğimde devir yükselmiyor",
         "next_action": "Yarın bir usta gelebilir mi?"
-      }
+      },
+      "review_status": "bekliyor",
+      "edited_fields": {},
+      "service_order_id": null
     }
   ],
   "total": 1,

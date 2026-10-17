@@ -12,13 +12,14 @@ Kurallar:
 """
 
 from datetime import date, datetime
-from typing import Annotated, Literal
+from typing import Annotated, Any, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, Field, TypeAdapter, model_validator
 
 from app.domain.enums import (
     CallType,
+    CrmReviewStatus,
     LossReason,
     NextAction,
     RequestCategory,
@@ -55,6 +56,10 @@ class CallFilters(BaseModel):
     urgency: Urgency | None = None
     request_category: RequestCategory | None = None
     state: CallState | None = None
+    status: CrmReviewStatus | None = Field(
+        default=None,
+        description="CRM inceleme durumu filtresi (bekliyor | onaylandi | reddedildi).",
+    )
     marina: str | None = Field(default=None, description="Marina adına göre tam eşleşme filtresi.")
     q: str | None = Field(
         default=None, max_length=100, description="Müşteri, tekne veya marina adında arama."
@@ -178,6 +183,41 @@ class CrmRecordItem(BaseModel):
     potential_job: str | None = None
     next_action: NextAction | None = None
     evidence: dict[str, str] = Field(default_factory=dict)
+    review_status: CrmReviewStatus = Field(default=CrmReviewStatus.BEKLIYOR)
+    edited_fields: dict[str, Any] = Field(default_factory=dict)
+    service_order_id: UUID | None = None
+
+
+class CrmApproveIn(BaseModel):
+    """`POST /crm/{call_id}/approve`: isteğe bağlı düzenlenmiş 7 alan ve onay notu (#106)."""
+
+    request_category: RequestCategory | None = None
+    location: str | None = None
+    problem: str | None = None
+    service_mode: ServiceMode | None = None
+    urgency: Urgency | None = None
+    potential_job: str | None = None
+    next_action: NextAction | None = None
+    note: str | None = Field(default=None, description="İsteğe bağlı onay notu.")
+
+
+class CrmRejectIn(BaseModel):
+    """`POST /crm/{call_id}/reject`: red nedeni veya not (#106)."""
+
+    note: str | None = Field(default=None, description="Red nedeni veya not.")
+
+
+class CrmReviewOut(BaseModel):
+    """`POST /crm/{call_id}/approve` ve `POST /crm/{call_id}/reject` yanıtı (#106)."""
+
+    id: UUID
+    call_id: UUID
+    analysis_id: UUID
+    status: CrmReviewStatus
+    edited_fields: dict[str, Any] = Field(default_factory=dict)
+    note: str | None = None
+    reviewed_at: datetime | None = None
+    service_order_id: UUID | None = None
 
 
 # --- Çağrı alma ve analiz (#48, #49) ------------------------------------------------------

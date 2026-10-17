@@ -29,6 +29,7 @@ from app.db.base import Base, UUIDPrimaryKeyMixin
 from app.db.checks import in_enum, in_values
 from app.domain.enums import (
     CallType,
+    CrmReviewStatus,
     LossReason,
     NextAction,
     RequestCategory,
@@ -237,6 +238,32 @@ class AgentRun(UUIDPrimaryKeyMixin, Base):
     tokens_in: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"))
     tokens_out: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"))
     created_at: Mapped[datetime] = _now()
+
+
+class CrmReview(UUIDPrimaryKeyMixin, Base):
+    """CRM önerisi inceleme kaydı (#106): onayla, reddet, düzenle."""
+
+    __tablename__ = "crm_reviews"
+    __table_args__ = (
+        UniqueConstraint("analysis_id", name="uq_crm_reviews_analysis_id"),
+        in_enum("status", CrmReviewStatus, nullable=False),
+        Index("ix_crm_reviews_call_id", "call_id"),
+        Index("ix_crm_reviews_service_order_id", "service_order_id"),
+    )
+
+    analysis_id: Mapped[uuid.UUID] = _uuid_fk("analysis_results.id", ondelete="CASCADE")
+    call_id: Mapped[uuid.UUID] = _uuid_fk("calls.id", ondelete="CASCADE")
+    status: Mapped[str] = mapped_column(Text, nullable=False, server_default=text("'bekliyor'"))
+    edited_fields: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, nullable=False, server_default=text("'{}'::jsonb")
+    )
+    note: Mapped[str | None] = mapped_column(Text)
+    reviewed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    service_order_id: Mapped[uuid.UUID | None] = mapped_column(
+        PG_UUID(as_uuid=True), ForeignKey("service_orders.id", ondelete="SET NULL"), nullable=True
+    )
+    created_at: Mapped[datetime] = _now()
+    updated_at: Mapped[datetime] = _now(onupdate=True)
 
 
 # --- Miço AI sohbeti ----------------------------------------------------------------------------

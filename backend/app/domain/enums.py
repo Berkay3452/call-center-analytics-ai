@@ -111,7 +111,18 @@ class LossReason(StrEnum):
     DIGER = "diger"
 
 
+class CrmReviewStatus(StrEnum):
+    """CRM önerisi inceleme durumu (#106)."""
+
+    BEKLIYOR = "bekliyor"
+    ONAYLANDI = "onaylandi"
+    REDDEDILDI = "reddedildi"
+
+
 LABELS_TR: dict[StrEnum, str] = {
+    CrmReviewStatus.BEKLIYOR: "Bekliyor",
+    CrmReviewStatus.ONAYLANDI: "Onaylandı",
+    CrmReviewStatus.REDDEDILDI: "Reddedildi",
     CallType.YENI_MUSTERI: "Yeni müşteri",
     CallType.SERVIS: "Servis talebi",
     CallType.TEKLIF: "Teklif talebi",
