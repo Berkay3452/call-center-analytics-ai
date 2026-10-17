@@ -10,7 +10,10 @@
 import type { NextRequest } from "next/server";
 
 const ALLOWED = [
-  /^calls(\/[^/]+(\/(analyze|status|audio))?)?$/,
+  /^calls$/,
+  /^calls\/[^/]+$/,
+  /^calls\/[^/]+\/analyze$/,
+  /^calls\/[^/]+\/status$/,
   /^calls\/[^/]+\/audio$/,
   /^calls\/audio$/,
   /^crm$/,
