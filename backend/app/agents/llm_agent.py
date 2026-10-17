@@ -24,6 +24,7 @@ from app.core.config import Settings, get_settings
 from app.llm.client import (
     LLMNotConfiguredError,
     get_chat_model,
+    is_transient_llm_error,
     llm_rate_limiter,
     llm_semaphore,
 )
@@ -121,9 +122,11 @@ class LLMAgent[T: BaseModel](BaseAgent[T]):
         *,
         settings: Settings | None = None,
         model: "BaseChatModel | None" = None,
+        fallback_model: "BaseChatModel | None" = None,
     ) -> None:
         self._settings = settings
         self._model = model
+        self._fallback_model = fallback_model  # testlerde sahte yedek model verilebilir
 
     @property
     def settings(self) -> Settings:
@@ -179,6 +182,31 @@ class LLMAgent[T: BaseModel](BaseAgent[T]):
         name = settings.llm_model_for(self.name, self.model_tier)
         return get_chat_model(self.model_tier, settings, model=name), name
 
+    def _resolve_fallback(
+        self, primary_name: str | None
+    ) -> tuple["BaseChatModel", str | None] | None:
+        """Yedek modeli döner (yoksa None). Sahte model verilmişse yalnızca o kullanılır."""
+        if self._fallback_model is not None:
+            return self._fallback_model, getattr(self._fallback_model, "model_name", None)
+        if self._model is not None:
+            return None  # sahte birincil model: gerçek sağlayıcıya yedek açılmaz
+        settings = self.settings
+        name = settings.llm_fallback_for(self.name, self.model_tier, primary_name)
+        if name is None:
+            return None
+        try:
+            return get_chat_model(self.model_tier, settings, model=name), name
+        except LLMNotConfiguredError:
+            return None
+
+    async def _invoke(self, model: "BaseChatModel", name: str | None, messages: Any) -> Any:
+        # Önce kota sırası (model başına dakikadaki istek), sonra eşzamanlılık sınırı.
+        waited = await llm_rate_limiter(self.settings).acquire(name or self.model_tier)
+        if waited:
+            log.info("agent.rate_limited", agent=self.name, waited_s=round(waited, 1))
+        async with llm_semaphore(self.settings):
+            return await model.ainvoke(messages)
+
     def _fail(self, error: str, kind: str, **extra: Any) -> AgentResult[T]:
         return AgentResult[T].model_validate(
             {
@@ -197,22 +225,37 @@ class LLMAgent[T: BaseModel](BaseAgent[T]):
         except LLMNotConfiguredError as exc:
             return self._fail(f"LLM yapılandırılmadı: {exc}", "runtime")
 
+        messages = self.build_messages(ctx)
+        fallback_from: str | None = None
         try:
-            # Önce kota sırası (model başına dakikadaki istek), sonra eşzamanlılık sınırı.
-            waited = await llm_rate_limiter(self.settings).acquire(model_name or self.model_tier)
-            if waited:
-                log.info("agent.rate_limited", agent=self.name, waited_s=round(waited, 1))
-            async with llm_semaphore(self.settings):
-                response = await model.ainvoke(self.build_messages(ctx))
+            response = await self._invoke(model, model_name, messages)
         except Exception as exc:  # sağlayıcı, ağ, kota vb.; orkestratör tekrar denemez
-            log.warning("agent.llm_error", agent=self.name, error=str(exc))
-            return self._fail(f"LLM çağrısı başarısız: {type(exc).__name__}: {exc}", "runtime")
+            log.warning("agent.llm_error", agent=self.name, model=model_name, error=str(exc))
+            fallback = self._resolve_fallback(model_name) if is_transient_llm_error(exc) else None
+            if fallback is None:
+                return self._fail(f"LLM çağrısı başarısız: {type(exc).__name__}: {exc}", "runtime")
+            fb_model, fb_name = fallback
+            log.warning(
+                "agent.fallback", agent=self.name, from_model=model_name, to_model=fb_name,
+                reason=type(exc).__name__,
+            )  # fmt: skip
+            try:
+                response = await self._invoke(fb_model, fb_name, messages)
+            except Exception as exc2:
+                log.warning("agent.fallback_failed", agent=self.name, error=str(exc2))
+                return self._fail(
+                    f"LLM çağrısı başarısız (yedek model de): {type(exc2).__name__}: {exc2}",
+                    "runtime",
+                    fallback_from=model_name,
+                )
+            fallback_from, model_name = model_name, fb_name
 
         usage = getattr(response, "usage_metadata", None) or {}
         meta = {
             "model": model_name,
             "tokens_in": usage.get("input_tokens", 0),
             "tokens_out": usage.get("output_tokens", 0),
+            "fallback_from": fallback_from,
         }
         try:
             data = extract_json_object(_message_text(response.content))

@@ -37,6 +37,26 @@ class LLMNotConfiguredError(RuntimeError):
     pass
 
 
+_TRANSIENT_NAMES = frozenset(
+    {"APITimeoutError", "APIConnectionError", "RateLimitError", "InternalServerError",
+     "ReadTimeout", "ConnectTimeout", "ConnectError", "TimeoutException", "TimeoutError"}
+)  # fmt: skip
+
+
+def is_transient_llm_error(exc: BaseException) -> bool:
+    """Yedek modele geçmeye değer geçici hata mı? (zaman aşımı, bağlantı, 429, 5xx)
+
+    Kimlik/yetki (401/403), geçersiz istek (400) ve şema hataları geçici değildir: yedek model
+    de aynı hatayı verir. Sağlayıcı istisnaları kütüphane import edilmeden adıyla tanınır.
+    """
+    if isinstance(exc, TimeoutError):
+        return True
+    status = getattr(exc, "status_code", None)
+    if isinstance(status, int):
+        return status == 429 or status >= 500
+    return any(cls.__name__ in _TRANSIENT_NAMES for cls in type(exc).__mro__)
+
+
 def _resolve_base_url(settings: Settings) -> str:
     if settings.llm_base_url:
         return settings.llm_base_url

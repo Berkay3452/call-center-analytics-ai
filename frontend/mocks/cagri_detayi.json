@@ -103,7 +103,8 @@
         "model": "gemini-3.5-flash-lite",
         "prompt_version": "v1",
         "tokens_in": 912,
-        "tokens_out": 64
+        "tokens_out": 64,
+        "fallback_from": null
       },
       {
         "agent": "crm_extraction",
@@ -115,7 +116,8 @@
         "model": "gemini-3.5-flash",
         "prompt_version": "v1",
         "tokens_in": 1530,
-        "tokens_out": 310
+        "tokens_out": 310,
+        "fallback_from": null
       },
       {
         "agent": "sales_analyzer",
@@ -127,7 +129,8 @@
         "model": "gemini-3.5-flash",
         "prompt_version": "v1",
         "tokens_in": 1288,
-        "tokens_out": 120
+        "tokens_out": 120,
+        "fallback_from": null
       },
       {
         "agent": "summarizer",
@@ -139,7 +142,8 @@
         "model": "gemini-3.5-flash-lite",
         "prompt_version": "v1",
         "tokens_in": 1105,
-        "tokens_out": 140
+        "tokens_out": 140,
+        "fallback_from": null
       }
     ]
   }

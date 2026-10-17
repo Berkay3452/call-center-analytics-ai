@@ -83,8 +83,15 @@ class Settings(BaseSettings):
     llm_requests_per_minute: int = Field(default=0, ge=0)
     # Nemotron gibi akıl yürüten modellerde düşünme çıktısını kapatır (NVIDIA): çok daha hızlı.
     llm_disable_thinking: bool = False
-    llm_timeout_s: float = 60.0
-    llm_max_retries: int = 3
+    # İstek başına zaman aşımı ve istemci içi yeniden deneme: kısa tutulur, yavaş/ölü bir model
+    # ajanı dakikalarca bekletmesin (17 Ekim denemesinde 120 sn zaman aşımı görüldü).
+    llm_timeout_s: float = Field(default=30.0, gt=0)
+    llm_max_retries: int = Field(default=1, ge=0)
+    # Ajanın (yedek model denemesi dahil) toplam süre bütçesi; aşılırsa ajan `timeout` ile biter.
+    llm_agent_timeout_s: float = Field(default=90.0, gt=0)
+    # Geçici hatada (zaman aşımı, 429, 5xx, bağlantı) bir kez denenecek yedek model. Boşsa
+    # öteki katmanın modeli (fast <-> smart) yedek sayılır; o da yoksa yedek yoktur.
+    llm_fallback_model: str | None = None
 
     # --- STT (ses → metin) --- (#15; sağlayıcılar `app/stt/`)
     # faster_whisper: yerel, CPU'da çalışır (`stt` ekstrası). openai_compatible: Whisper API'si
@@ -125,6 +132,20 @@ class Settings(BaseSettings):
     embedding_batch_size: int = Field(default=16, ge=1)
 
     # --- Türetilmiş değerler ---
+    @field_validator("llm_fallback_model", mode="before")
+    @classmethod
+    def _empty_fallback_is_none(cls, value: object) -> object:
+        """`.env`'de boş bırakılan satır ("LLM_FALLBACK_MODEL=") yedek model verilmiş sayılmaz."""
+        return None if isinstance(value, str) and not value.strip() else value
+
+    def llm_fallback_for(
+        self, agent_name: str, tier: Literal["fast", "smart"], primary: str | None
+    ) -> str | None:
+        """Geçici hatada kullanılacak yedek model adı; birincilden farklı değilse None."""
+        other_tier = self.llm_smart_model if tier == "fast" else self.llm_fast_model
+        candidate = self.llm_fallback_model or other_tier
+        return candidate if candidate and candidate != primary else None
+
     def llm_model_for(self, agent_name: str, tier: Literal["fast", "smart"]) -> str | None:
         """Agent'ın kullanacağı model adı: önce agent'a özel ayar, yoksa katman modeli."""
         override: str | None = getattr(self, f"llm_{agent_name}_model", None)

@@ -76,6 +76,7 @@ uv run celery -A app.workers.celery_app worker -Q default,stt,analysis,index --p
 | `LLM_API_KEY` | Yalnızca **yeni çağrı analizi** (Celery) ve Miço AI için gerekir. Seed verisini görmek için gerekmez. Anahtarı Berkay'dan değil, kendi hesabından al; `.env` asla commit edilmez |
 | `DATABASE_URL`, `REDIS_URL` | Docker compose ile geliyor, değiştirme |
 | `STT_PROVIDER` | Ses yüklemeyi denemeyeceksen dokunma. Hızlı deneme için `stub`; ayrıntı `backend/README.md` |
+| `LLM_TIMEOUT_S`, `LLM_AGENT_TIMEOUT_S`, `LLM_FALLBACK_MODEL` | Dokunmana gerek yok (30 sn istek, 90 sn ajan bütçesi). Model geçici hatada (zaman aşımı, 429, 5xx) bir kez yedek modelle denenir; `LLM_FALLBACK_MODEL` boşsa öteki katmanın modeli yedek olur |
 | `EMBEDDING_PROVIDER` | Miço AI aramasını denemeyeceksen `hash` yaz (model indirmeden). Gerçek arama için bölüm 5 |
 
 ## 4. Çalıştığını kontrol et
@@ -125,6 +126,7 @@ docker compose -f infra/docker-compose.yml down -v     # durdur ve veritabanın�
 | API 401 `unauthorized` | `X-Service-Key` yok ya da `.env`'deki `SERVICE_API_KEY` ile aynı değil. Frontend için `SERVICE_KEY` da aynı olmalı |
 | `alembic` "relation already exists" | Eski veritabanı kalmış: bölüm 6'daki `down -v` ile sıfırla |
 | `/health/ready` 503 | Postgres veya Redis ayakta değil; yanıtın içinde hangisi olduğu yazar |
+| Analiz günlüğünde `agent.fallback` / `kind=timeout` | Birincil LLM yavaş ya da kota doldu; yedek modele geçildi ya da ajan süre bütçesini aştı. Sürekliyse `LLM_FAST_MODEL`'i değiştir |
 | Yeni çağrı "isleniyor"da takılı | Celery işçisi çalışmıyor (sekme 3) veya `LLM_API_KEY` boş / hatalı |
 | Frontend hâlâ sahte veri gösteriyor | `.env.local` içinde `NEXT_PUBLIC_USE_MOCKS=false` yapıp `npm run dev`'i yeniden başlat |
 | Frontend gerçek backend'e bağlıyken konsolda "uncached data during prerendering" hatası, `npm run build` kırılıyor | Bilinen sorun (Next 16 Suspense kuralı, çağrı sayfaları); `npm run dev` ile sayfalar çalışır. Düzeltme planlanıyor |
