@@ -29,7 +29,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from pathlib import Path
 
 BACKEND_DIR = Path(__file__).resolve().parents[1]
@@ -39,10 +39,19 @@ LOG_DIR = BACKEND_DIR / "storage" / "logs"
 API_PORT = 8000
 
 _DOCKER_BIN_DIRS = [r"C:\Program Files\Docker\Docker\resources\bin"]
-_DOCKER_DESKTOP = [
-    r"D:\Docker\Docker Desktop.exe",
-    r"C:\Program Files\Docker\Docker\Docker Desktop.exe",
-]
+
+
+def docker_desktop_candidates(env: Mapping[str, str] | None = None) -> list[str]:
+    """Docker Desktop'ın olası kurulum yolları (kullanıcıya özel kurulum dahil)."""
+    source: Mapping[str, str] = os.environ if env is None else env
+    paths: list[str] = []
+    local = source.get("LOCALAPPDATA")
+    if local:  # "yalnızca bu kullanıcı için" kurulum
+        paths.append(str(Path(local) / "Programs" / "DockerDesktop" / "Docker Desktop.exe"))
+    program_files = source.get("ProgramFiles", r"C:\Program Files")
+    paths.append(str(Path(program_files) / "Docker" / "Docker" / "Docker Desktop.exe"))
+    paths.append(r"D:\Docker\Docker Desktop.exe")
+    return paths
 
 
 # --- Küçük yardımcılar --------------------------------------------------------------------------
@@ -169,7 +178,7 @@ def ensure_docker() -> str:
     if run([docker, "info"], quiet=True) == 0:
         info("Docker hazır.")
         return docker
-    desktop = next((p for p in _DOCKER_DESKTOP if Path(p).exists()), None)
+    desktop = next((p for p in docker_desktop_candidates() if Path(p).exists()), None)
     if desktop is None or os.name != "nt":
         fail("Docker çalışmıyor. Docker Desktop'ı açın ve komutu yeniden çalıştırın.")
     info("Docker Desktop açılıyor, hazır olması bekleniyor (en fazla 4 dk)...")
