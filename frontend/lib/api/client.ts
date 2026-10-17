@@ -33,6 +33,7 @@ import mockCrmList from "@/mocks/crm_listesi.json";
 import mockKpiSummary from "@/mocks/kpi_ozeti.json";
 import mockChatReply from "@/mocks/sohbet_cevabi.json";
 import mockChatSessionDetail from "@/mocks/sohbet_oturumu.json";
+import { mockSeedCalls, mockSeedCrm } from "./mock-seed";
 
 export interface ApiClientConfig {
   baseUrl?: string;
@@ -200,18 +201,79 @@ async function handleMockRequest<T>(
 
   // 1. GET /calls
   if (method === "GET" && path === "/calls") {
-    if (options.params?.marina) {
-      const marinaFilter = String(options.params.marina).toLowerCase();
-      const filtered = mockCallsList.items.filter(
-        (item) => item.marina?.toLowerCase() === marinaFilter
-      );
-      return {
-        ...mockCallsList,
-        items: filtered,
-        total: filtered.length,
-      } as unknown as T;
+    const params = options.params;
+    let list = [...mockSeedCalls];
+
+    if (params?.marina) {
+      const marina = String(params.marina).trim().toLowerCase();
+      if (marina && marina !== "all") {
+        list = list.filter((i) => i.marina?.toLowerCase() === marina);
+      }
     }
-    return mockCallsList as unknown as T;
+
+    if (params?.q) {
+      const q = String(params.q).trim().toLowerCase();
+      if (q) {
+        list = list.filter(
+          (i) =>
+            (i.customer_name && i.customer_name.toLowerCase().includes(q)) ||
+            (i.boat_name && i.boat_name.toLowerCase().includes(q)) ||
+            (i.marina && i.marina.toLowerCase().includes(q)),
+        );
+      }
+    }
+
+    if (params?.urgency) {
+      const urgency = String(params.urgency).trim();
+      if (urgency && urgency !== "all") {
+        list = list.filter((i) => i.urgency === urgency);
+      }
+    }
+
+    if (params?.call_type) {
+      const callType = String(params.call_type).trim();
+      if (callType && callType !== "all") {
+        list = list.filter((i) => i.call_type === callType);
+      }
+    }
+
+    if (params?.request_category) {
+      const reqCat = String(params.request_category).trim();
+      if (reqCat && reqCat !== "all") {
+        list = list.filter((i) => i.request_category === reqCat);
+      }
+    }
+
+    if (params?.state) {
+      const state = String(params.state).trim();
+      if (state && state !== "all") {
+        list = list.filter((i) => i.state === state);
+      }
+    }
+
+    if (params?.date_from) {
+      const fromStr = String(params.date_from).trim();
+      const fromDate = new Date(fromStr.length === 10 ? `${fromStr}T00:00:00` : fromStr);
+      list = list.filter((i) => new Date(i.started_at) >= fromDate);
+    }
+
+    if (params?.date_to) {
+      const toStr = String(params.date_to).trim();
+      const toDate = new Date(toStr.length === 10 ? `${toStr}T23:59:59` : toStr);
+      list = list.filter((i) => new Date(i.started_at) <= toDate);
+    }
+
+    const page = Math.max(1, Number(params?.page) || 1);
+    const pageSize = Math.max(1, Number(params?.page_size) || 20);
+    const start = (page - 1) * pageSize;
+    const pagedItems = list.slice(start, start + pageSize);
+
+    return {
+      items: pagedItems,
+      total: list.length,
+      page,
+      page_size: pageSize,
+    } as unknown as T;
   }
 
   // 2. POST /calls
@@ -240,8 +302,10 @@ async function handleMockRequest<T>(
     if (mockCallDetail.id === id) {
       return mockCallDetail as unknown as T;
     }
-    // İstenen id cagri_listesi'ndeyse id eşleyerek detay üret veya varsayılan detay ver
-    const foundInList = mockCallsList.items.find((item) => item.id === id);
+    // İstenen id mockSeedCalls veya cagri_listesi'ndeyse id eşleyerek detay üret
+    const foundInList =
+      mockSeedCalls.find((item) => item.id === id) ??
+      (mockCallsList.items as unknown as CallListItem[]).find((item) => item.id === id);
     if (foundInList) {
       return {
         ...mockCallDetail,
@@ -262,18 +326,69 @@ async function handleMockRequest<T>(
 
   // 7. GET /crm
   if (method === "GET" && path === "/crm") {
-    if (options.params?.marina) {
-      const marinaFilter = String(options.params.marina).toLowerCase();
-      const filtered = mockCrmList.items.filter(
-        (item) => item.location?.toLowerCase() === marinaFilter
-      );
-      return {
-        ...mockCrmList,
-        items: filtered,
-        total: filtered.length,
-      } as unknown as T;
+    const params = options.params;
+    let list: CrmRecordItem[] =
+      mockSeedCrm.length > 0
+        ? [...mockSeedCrm]
+        : ([...mockCrmList.items] as unknown as CrmRecordItem[]);
+
+    if (params?.marina) {
+      const marina = String(params.marina).trim().toLowerCase();
+      if (marina && marina !== "all") {
+        list = list.filter((i) => i.location?.toLowerCase() === marina);
+      }
     }
-    return mockCrmList as unknown as T;
+
+    if (params?.q) {
+      const q = String(params.q).trim().toLowerCase();
+      if (q) {
+        list = list.filter(
+          (i) =>
+            (i.customer_name && i.customer_name.toLowerCase().includes(q)) ||
+            (i.boat_name && i.boat_name.toLowerCase().includes(q)) ||
+            (i.location && i.location.toLowerCase().includes(q)) ||
+            (i.problem && i.problem.toLowerCase().includes(q)),
+        );
+      }
+    }
+
+    if (params?.urgency) {
+      const urgency = String(params.urgency).trim();
+      if (urgency && urgency !== "all") {
+        list = list.filter((i) => i.urgency === urgency);
+      }
+    }
+
+    if (params?.request_category) {
+      const reqCat = String(params.request_category).trim();
+      if (reqCat && reqCat !== "all") {
+        list = list.filter((i) => i.request_category === reqCat);
+      }
+    }
+
+    if (params?.date_from) {
+      const fromStr = String(params.date_from).trim();
+      const fromDate = new Date(fromStr.length === 10 ? `${fromStr}T00:00:00` : fromStr);
+      list = list.filter((i) => new Date(i.started_at) >= fromDate);
+    }
+
+    if (params?.date_to) {
+      const toStr = String(params.date_to).trim();
+      const toDate = new Date(toStr.length === 10 ? `${toStr}T23:59:59` : toStr);
+      list = list.filter((i) => new Date(i.started_at) <= toDate);
+    }
+
+    const page = Math.max(1, Number(params?.page) || 1);
+    const pageSize = Math.max(1, Number(params?.page_size) || 20);
+    const start = (page - 1) * pageSize;
+    const pagedItems = list.slice(start, start + pageSize);
+
+    return {
+      items: pagedItems,
+      total: list.length,
+      page,
+      page_size: pageSize,
+    } as unknown as T;
   }
 
   // 8. GET /analytics/summary

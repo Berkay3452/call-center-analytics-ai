@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { fetchCalls } from "@/lib/api";
 import {
@@ -15,7 +16,11 @@ import {
   type Urgency,
 } from "@/lib/types";
 import { CallsTableSkeleton } from "@/components/skeletons";
-import { MarinaFilter } from "@/components/MarinaFilter";
+import { CallsFilterBar } from "@/components/CallsFilterBar";
+import { Pagination } from "@/components/Pagination";
+import { EmptyState } from "@/components/EmptyState";
+import type { CallQueryFilters } from "@/lib/api/client";
+import { clampPageSize, lastPageIfOutOfRange, listUrl } from "@/lib/list-query";
 
 export const metadata = { title: "Çağrılar | Miço Usta" };
 
@@ -90,12 +95,47 @@ function formatDuration(sec: number): string {
 }
 
 interface CallsPageProps {
-  searchParams?: Promise<{ marina?: string }>;
+  searchParams?: Promise<{
+    page?: string;
+    page_size?: string;
+    q?: string;
+    urgency?: string;
+    call_type?: string;
+    request_category?: string;
+    state?: string;
+    marina?: string;
+    date_from?: string;
+    date_to?: string;
+  }>;
 }
 
 export default async function CallsPage({ searchParams }: CallsPageProps) {
   const params = searchParams ? await searchParams : {};
-  const marina = params?.marina;
+  const queryFilters: CallQueryFilters = {
+    page: Math.max(1, Number(params?.page) || 1),
+    page_size: clampPageSize(params?.page_size),
+    q: params?.q?.trim() || undefined,
+    urgency: params?.urgency?.trim() || undefined,
+    call_type: params?.call_type?.trim() || undefined,
+    request_category: params?.request_category?.trim() || undefined,
+    state: params?.state?.trim() || undefined,
+    marina: params?.marina?.trim() || undefined,
+    date_from: params?.date_from?.trim() || undefined,
+    date_to: params?.date_to?.trim() || undefined,
+  };
+
+  const hasActiveFilters = Boolean(
+    queryFilters.q ||
+      queryFilters.urgency ||
+      queryFilters.call_type ||
+      queryFilters.request_category ||
+      queryFilters.state ||
+      queryFilters.marina ||
+      queryFilters.date_from ||
+      queryFilters.date_to,
+  );
+
+  const suspenseKey = JSON.stringify(queryFilters);
 
   return (
     <div className="space-y-6">
@@ -106,11 +146,10 @@ export default async function CallsPage({ searchParams }: CallsPageProps) {
             Tüm marinalardan gelen sesli görüşmeler ve yapay zekâ analiz sonuçları
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <MarinaFilter selectedMarina={marina} />
+        <div className="flex items-center gap-3">
           <Link
             href="/admin/calls/upload"
-            className="inline-flex items-center gap-2 rounded-xl bg-sky-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-sky-800 active:scale-[0.98] transition-all"
+            className="inline-flex items-center gap-2 rounded-xl bg-sky-700 px-4 py-2.5 text-sm font-bold text-white shadow-xs hover:bg-sky-800 active:scale-[0.98] transition-all focus:outline-none focus:ring-2 focus:ring-sky-500"
           >
             <span>🎙️</span>
             <span>+ Yeni Çağrı Yükle</span>
@@ -118,26 +157,47 @@ export default async function CallsPage({ searchParams }: CallsPageProps) {
         </div>
       </div>
 
-      <Suspense key={marina || "all"} fallback={<CallsTableSkeleton />}>
-        <CallsListContent marina={marina} />
+      {/* Arama ve Filtre Kontrolleri (#108) */}
+      <CallsFilterBar />
+
+      {/* Çağrı Listesi Tablosu ve Sayfalama */}
+      <Suspense key={suspenseKey} fallback={<CallsTableSkeleton />}>
+        <CallsListContent filters={queryFilters} hasActiveFilters={hasActiveFilters} />
       </Suspense>
     </div>
   );
 }
 
-async function CallsListContent({ marina }: { marina?: string }) {
+async function CallsListContent({
+  filters,
+  hasActiveFilters,
+}: {
+  filters: CallQueryFilters;
+  hasActiveFilters: boolean;
+}) {
   let calls: Call[] = [];
+  let total = 0;
+  let page = filters.page ?? 1;
+  let pageSize = filters.page_size ?? 20;
   let errorMsg: string | null = null;
 
   try {
-    calls = await fetchCalls(marina ? { marina } : undefined);
+    const pageData = await fetchCalls(filters);
+    calls = pageData.items;
+    total = pageData.total;
+    page = pageData.page;
+    pageSize = pageData.page_size;
   } catch (err) {
     errorMsg = err instanceof Error ? err.message : "Çağrılar yüklenemedi";
   }
 
+  // Aralık dışı sayfa (kayıt var ama bu sayfa boş): son sayfaya git, "kayıt yok" deme.
+  const lastPage = errorMsg ? null : lastPageIfOutOfRange(calls.length, total, page, pageSize);
+  if (lastPage !== null) redirect(listUrl("/admin/calls", filters, lastPage));
+
   if (errorMsg) {
     return (
-      <div className="rounded-xl border border-amber-200 dark:border-amber-900/60 bg-amber-50 dark:bg-amber-950/40 p-6 text-center shadow-sm">
+      <div className="rounded-xl border border-amber-200 dark:border-amber-900/60 bg-amber-50 dark:bg-amber-950/40 p-6 text-center shadow-xs">
         <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">
           ⚠️ Veriler alınırken bir sorun oluştu: {errorMsg}
         </p>
@@ -149,96 +209,109 @@ async function CallsListContent({ marina }: { marina?: string }) {
   }
 
   if (calls.length === 0) {
+    if (hasActiveFilters) {
+      return (
+        <EmptyState
+          title="Filtrelere uyan çağrı bulunamadı"
+          description="Arama kriterlerinizi değiştirerek veya filtreleri temizleyerek tekrar deneyebilirsiniz."
+          icon="🔍"
+          isFiltered={true}
+        />
+      );
+    }
+
     return (
-      <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-12 text-center shadow-sm">
-        <span className="text-3xl">⚓</span>
-        <h3 className="mt-3 text-sm font-bold text-gray-900 dark:text-slate-100">
-          Çağrı Bulunamadı
-        </h3>
-        <p className="mt-1 text-xs text-gray-500 dark:text-slate-400">
-          {marina
-            ? `"${marina}" marinası için kayıtlı çağrı bulunmuyor.`
-            : "Henüz sisteme kaydedilmiş bir çağrı bulunmuyor."}
-        </p>
-      </div>
+      <EmptyState
+        title="Çağrı Bulunamadı"
+        description="Henüz sisteme kaydedilmiş bir çağrı bulunmuyor."
+        icon="⚓"
+        isFiltered={false}
+      />
     );
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
-      <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-800">
-        <thead className="bg-gray-50 dark:bg-slate-800/70">
-          <tr>
-            {["Arayan & Tekne", "Marina", "Çağrı Tipi", "Süre", "Aciliyet", "Analiz Durumu", "Satış Durumu", ""].map((h) => (
-              <th
-                key={h}
-                className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400"
-              >
-                {h}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
-          {calls.map((call) => (
-            <tr key={call.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/60 transition-colors">
-              <td className="px-4 py-3">
-                <div className="text-sm font-semibold text-gray-900 dark:text-slate-100">{call.caller}</div>
-                <div className="text-xs text-gray-500 dark:text-slate-400">
-                  {call.boatName || "Tekne belirtilmedi"}
-                </div>
-              </td>
-              <td className="px-4 py-3 text-sm text-gray-600 dark:text-slate-300">
-                {call.location ?? EMPTY_LABEL}
-              </td>
-              <td className="px-4 py-3">
-                <span
-                  className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${call.callType ? CALL_TYPE_BADGE[call.callType] : "bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300"}`}
-                >
-                  {labelOf(CALL_TYPE_LABELS, call.callType)}
-                </span>
-              </td>
-              <td className="px-4 py-3 text-sm text-gray-500 dark:text-slate-400">
-                {formatDuration(call.durationSec)}
-              </td>
-              <td className="px-4 py-3">
-                <span
-                  className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${call.urgency ? URGENCY_BADGE[call.urgency] : "bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700"}`}
-                >
-                  {call.urgency === "acil" && <span className="mr-1">🚨</span>}
-                  {labelOf(URGENCY_LABELS, call.urgency)}
-                </span>
-              </td>
-              {/* Analiz Durumu Sütunu */}
-              <td className="px-4 py-3">
-                {call.pendingState ? (
-                  <span className="inline-flex items-center gap-1 rounded-full border border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-950/60 px-2.5 py-0.5 text-xs font-semibold text-sky-700 dark:text-sky-300">
-                    ⏳ {call.pendingState === "beklemede" ? "Sırada" : "İşleniyor"}
-                  </span>
-                ) : (
-                  <span
-                    className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${ANALYSIS_STATUS_BADGE[call.analysisStatus]}`}
+    <div className="space-y-4">
+      <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs">
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-800">
+            <thead className="bg-gray-50 dark:bg-slate-800/70">
+              <tr>
+                {["Arayan & Tekne", "Marina", "Çağrı Tipi", "Süre", "Aciliyet", "Analiz Durumu", "Satış Durumu", ""].map((h) => (
+                  <th
+                    key={h}
+                    className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-slate-400"
                   >
-                    {ANALYSIS_STATUS_ICON[call.analysisStatus]}{" "}
-                    {labelOf(ANALYSIS_STATUS_LABELS, call.analysisStatus)}
-                  </span>
-                )}
-              </td>
-              <td className="px-4 py-3 text-sm">
-                <SalesBadge sales={call.sales} />
-              </td>
-              <td className="px-4 py-3 text-right text-sm">
-                <Link
-                  href={`/admin/calls/${call.id}`}
-                  className="font-medium text-sky-700 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 hover:underline"
-                >
-                  Detay &amp; CRM →
-                </Link>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
+              {calls.map((call) => (
+                <tr key={call.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/60 transition-colors">
+                  <td className="px-4 py-3">
+                    <div className="text-sm font-semibold text-gray-900 dark:text-slate-100">{call.caller}</div>
+                    <div className="text-xs text-gray-500 dark:text-slate-400">
+                      {call.boatName || "Tekne belirtilmedi"}
+                    </div>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-600 dark:text-slate-300">
+                    {call.location ?? EMPTY_LABEL}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${call.callType ? CALL_TYPE_BADGE[call.callType] : "bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-slate-300"}`}
+                    >
+                      {labelOf(CALL_TYPE_LABELS, call.callType)}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-500 dark:text-slate-400">
+                    {formatDuration(call.durationSec)}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span
+                      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${call.urgency ? URGENCY_BADGE[call.urgency] : "bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700"}`}
+                    >
+                      {call.urgency === "acil" && <span className="mr-1">🚨</span>}
+                      {labelOf(URGENCY_LABELS, call.urgency)}
+                    </span>
+                  </td>
+                  {/* Analiz Durumu Sütunu */}
+                  <td className="px-4 py-3">
+                    {call.pendingState ? (
+                      <span className="inline-flex items-center gap-1 rounded-full border border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-950/60 px-2.5 py-0.5 text-xs font-semibold text-sky-700 dark:text-sky-300">
+                        ⏳ {call.pendingState === "beklemede" ? "Sırada" : "İşleniyor"}
+                      </span>
+                    ) : (
+                      <span
+                        className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold ${ANALYSIS_STATUS_BADGE[call.analysisStatus]}`}
+                      >
+                        {ANALYSIS_STATUS_ICON[call.analysisStatus]}{" "}
+                        {labelOf(ANALYSIS_STATUS_LABELS, call.analysisStatus)}
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-sm">
+                    <SalesBadge sales={call.sales} />
+                  </td>
+                  <td className="px-4 py-3 text-right text-sm">
+                    <Link
+                      href={`/admin/calls/${call.id}`}
+                      className="font-medium text-sky-700 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 hover:underline"
+                    >
+                      Detay &amp; CRM →
+                    </Link>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Sayfalama Kontrolleri (#108) */}
+      <Pagination page={page} pageSize={pageSize} total={total} />
     </div>
   );
 }
