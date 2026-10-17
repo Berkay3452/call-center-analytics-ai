@@ -288,11 +288,111 @@ async function handleMockRequest<T>(
 
   // 10. GET /chat/sessions
   if (method === "GET" && path === "/chat/sessions") {
-    return [mockChatSessionDetail.session] as unknown as T;
+    const mockSessions: ChatSessionOut[] = [
+      {
+        id: "5e8c2a40-3f1b-4d6e-9a7c-0b1d2e3f4a5b",
+        title: "Teknemin son bakımı ne zamandı?",
+        created_at: "2026-10-12T09:05:00Z",
+        updated_at: "2026-10-12T09:05:03Z",
+      },
+      {
+        id: "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+        title: "Bu ay ne kadar harcadım?",
+        created_at: "2026-10-10T14:30:00Z",
+        updated_at: "2026-10-10T14:30:45Z",
+      },
+      {
+        id: "f1e2d3c4-b5a6-4f7e-8d9c-0b1a2f3e4d5c",
+        title: "Sintine alarmı çaldığında ne yapmalıyım?",
+        created_at: "2026-10-08T11:15:00Z",
+        updated_at: "2026-10-08T11:16:10Z",
+      },
+    ];
+    return mockSessions as unknown as T;
   }
 
   // 11. GET /chat/sessions/:id
   if (method === "GET" && /^\/chat\/sessions\/[^/]+$/.test(path)) {
+    const sessionId = path.split("/")[3];
+    if (sessionId === "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d") {
+      return {
+        session: {
+          id: "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+          title: "Bu ay ne kadar harcadım?",
+          created_at: "2026-10-10T14:30:00Z",
+          updated_at: "2026-10-10T14:30:45Z",
+        },
+        messages: [
+          {
+            id: "msg-q2",
+            role: "user",
+            content: "Bu ay ne kadar harcadım?",
+            created_at: "2026-10-10T14:30:00Z",
+            question_type: "kapsam_disi" as const,
+            sources: [],
+            found: true,
+          },
+          {
+            id: "msg-a2",
+            role: "assistant",
+            content:
+              "Kalamış Marina bağlama sözleşmesi ve elektrik/su tüketimi kapsamında bu ay toplam 14.250 TL harcama kaydedilmiştir. Son ödeme tarihi 25 Ekim 2026'dır.",
+            created_at: "2026-10-10T14:30:45Z",
+            question_type: "sayisal" as const,
+            sources: [
+              {
+                kind: "expense",
+                record_id: "rec-exp-02",
+                title: "Kalamış Marina İskele C-12 Hizmet Faturası",
+                date: "2026-10-01",
+                excerpt: "12m motoryat standart bağlama ve sayaç tüketim bedeli.",
+              },
+            ],
+            found: true,
+          },
+        ],
+      } as unknown as T;
+    }
+    if (sessionId === "f1e2d3c4-b5a6-4f7e-8d9c-0b1a2f3e4d5c") {
+      return {
+        session: {
+          id: "f1e2d3c4-b5a6-4f7e-8d9c-0b1a2f3e4d5c",
+          title: "Sintine alarmı çaldığında ne yapmalıyım?",
+          created_at: "2026-10-08T11:15:00Z",
+          updated_at: "2026-10-08T11:16:10Z",
+        },
+        messages: [
+          {
+            id: "msg-q3",
+            role: "user",
+            content: "Sintine alarmı çaldığında ilk ne yapmalıyım?",
+            created_at: "2026-10-08T11:15:00Z",
+            question_type: "kapsam_disi" as const,
+            sources: [],
+            found: true,
+          },
+          {
+            id: "msg-a3",
+            role: "assistant",
+            content:
+              "Sintine alarmı devreye girdiğinde derhal: 1) Sintine otomatik pompasının (float switch) çalıştığını kontrol edin, 2) Şaft kovanı ve deniz suyu vanalarını (seacock) su sızıntısına karşı gözleyin, 3) Akü ana şalterinin açık olduğundan emin olun.",
+            created_at: "2026-10-08T11:16:10Z",
+            question_type: "gecmis_oneri" as const,
+            sources: [
+              {
+                kind: "boat_note",
+                record_id: "rec-not-04",
+                title: "Miço Usta Acil Güvenlik Kılavuzu",
+                date: "2026-10-09",
+                excerpt: "Sintine su seviyesi alarmı acil müdahale adımları.",
+              },
+            ],
+            found: true,
+          },
+        ],
+      } as unknown as T;
+    }
+    // Default: first session
     return mockChatSessionDetail as unknown as T;
   }
 
