@@ -103,3 +103,14 @@ def test_kill_tree_stops_child_and_grandchild() -> None:
         ["tasklist", "/FI", f"PID eq {grandchild_pid}"], capture_output=True, text=True, check=False
     ).stdout
     assert str(grandchild_pid) not in out  # torun da kapandı
+
+
+def test_docker_desktop_candidates_include_per_user_install() -> None:
+    r"""Docker Desktop çoğu zaman `%LOCALAPPDATA%\Programs\DockerDesktop` altına kurulur."""
+    env = {"LOCALAPPDATA": r"C:\Users\ada\AppData\Local", "ProgramFiles": r"C:\Program Files"}
+
+    paths = dev.docker_desktop_candidates(env)
+
+    assert paths[0].endswith(r"Programs\DockerDesktop\Docker Desktop.exe") and "ada" in paths[0]
+    assert any(p.endswith(r"Docker\Docker\Docker Desktop.exe") for p in paths)
+    assert dev.docker_desktop_candidates({}) != []  # ortam değişkeni olmasa da varsayılanlar var
