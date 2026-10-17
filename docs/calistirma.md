@@ -60,10 +60,11 @@ uv run alembic upgrade head
 uv run python -m scripts.seed
 uv run python -m scripts.rag_index
 uv run uvicorn app.main:app --reload
-uv run celery -A app.workers.celery_app worker -B -Q default,stt,analysis,index --pool=solo -l info
+uv run celery -A app.workers.celery_app worker -Q default,stt,analysis,index --pool=solo -l info
+uv run celery -A app.workers.celery_app beat -l info
 ```
 
-(Son iki komut ayrı terminallerde çalışır. `-B` bayrağı Celery Beat zamanlayıcısını çalıştırır; dakikada bir ve işçi açılışında takılı kalan çağrıları tarayıp kurtarır [#107].)
+(Son üç komut ayrı terminallerde çalışır. `beat` zamanlayıcısı dakikada bir takılı kalan çağrıları tarayıp kurtarır [#107]; işçi de açılışında bir kez tarar. Windows'ta `worker -B` çalışmaz, bu yüzden `beat` ayrı süreçtir.)
 
 ## 3. Ortam değişkenleri (backend/.env)
 

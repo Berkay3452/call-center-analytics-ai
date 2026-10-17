@@ -115,3 +115,23 @@ def test_docker_desktop_candidates_include_per_user_install() -> None:
     assert paths[0].endswith("Programs/DockerDesktop/Docker Desktop.exe") and "ada" in paths[0]
     assert any(p.endswith("Docker/Docker/Docker Desktop.exe") for p in paths)
     assert dev.docker_desktop_candidates({}) != []  # ortam değişkeni olmasa da varsayılanlar var
+
+
+def test_celery_beat_is_a_separate_process_without_dash_b(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    """`worker -B` Windows'ta çalışmaz (#107): zamanlayıcı ayrı `beat` süreci olarak açılır."""
+    commands: list[list[str]] = []
+
+    def fake_popen(cmd: list[str], **kwargs: object) -> object:
+        commands.append(cmd)
+        return object()
+
+    monkeypatch.setattr(dev, "LOG_DIR", tmp_path)
+    monkeypatch.setattr(dev.subprocess, "Popen", fake_popen)
+
+    procs = dev.start_celery()
+
+    assert len(procs) == 2
+    assert "worker" in commands[0] and "beat" in commands[1]
+    assert all("-B" not in cmd for cmd in commands)

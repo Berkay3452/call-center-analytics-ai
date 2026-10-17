@@ -11,12 +11,15 @@ Kuyruklar (mimari dokümanı §5.1):
 Not: Windows'ta Celery'nin prefork havuzu desteklenmez; geliştirmede `--pool=solo` kullanılır.
 """
 
+import structlog
 from celery import Celery
+from celery.signals import worker_ready
 from kombu import Queue
 
 from app.core.config import get_settings
 
 settings = get_settings()
+log = structlog.get_logger(__name__)
 
 celery_app = Celery(
     "call_center",
@@ -64,17 +67,6 @@ celery_app.conf.update(
         },
     },
 )
-
-
-@celery_app.on_after_configure.connect
-def _setup_periodic_tasks(sender: object, **kwargs: object) -> None:
-    pass
-
-
-import structlog  # noqa: E402
-from celery.signals import worker_ready  # noqa: E402
-
-log = structlog.get_logger(__name__)
 
 
 @worker_ready.connect

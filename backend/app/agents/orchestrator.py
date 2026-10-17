@@ -2,7 +2,7 @@
 
 Agent'lar aşamalar (stage) halinde çalışır. Aynı aşamadaki agent'lar birbirinden bağımsızdır ve
 paralel çalışır; bir sonraki aşama, öncekilerin başarılı çıktılarını `ctx.prior` içinde görür.
-Varsayılan akış (Sistem mimarisi v3 §6.1):
+Varsayılan akış (Sistem mimarisi v4 §6.1):
 
     Çağrı Sınıflandırma → (CRM Bilgi Çıkarım ‖ Satış Analiz ‖ Özetleme) → sonuç
 
