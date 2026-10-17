@@ -109,8 +109,9 @@ def test_docker_desktop_candidates_include_per_user_install() -> None:
     r"""Docker Desktop çoğu zaman `%LOCALAPPDATA%\Programs\DockerDesktop` altına kurulur."""
     env = {"LOCALAPPDATA": r"C:\Users\ada\AppData\Local", "ProgramFiles": r"C:\Program Files"}
 
-    paths = dev.docker_desktop_candidates(env)
+    # Ayraç işletim sistemine göre değişir (CI Linux'tur): karşılaştırmadan önce `/` yapılır.
+    paths = [p.replace("\\", "/") for p in dev.docker_desktop_candidates(env)]
 
-    assert paths[0].endswith(r"Programs\DockerDesktop\Docker Desktop.exe") and "ada" in paths[0]
-    assert any(p.endswith(r"Docker\Docker\Docker Desktop.exe") for p in paths)
+    assert paths[0].endswith("Programs/DockerDesktop/Docker Desktop.exe") and "ada" in paths[0]
+    assert any(p.endswith("Docker/Docker/Docker Desktop.exe") for p in paths)
     assert dev.docker_desktop_candidates({}) != []  # ortam değişkeni olmasa da varsayılanlar var
