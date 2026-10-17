@@ -261,6 +261,7 @@
           { "name": "urgency", "in": "query", "schema": { "$ref": "#/components/schemas/Urgency" }, "required": false },
           { "name": "request_category", "in": "query", "schema": { "$ref": "#/components/schemas/RequestCategory" }, "required": false },
           { "name": "state", "in": "query", "schema": { "$ref": "#/components/schemas/CallState" }, "required": false },
+          { "name": "status", "in": "query", "schema": { "$ref": "#/components/schemas/CrmReviewStatus" }, "required": false },
           { "name": "marina", "in": "query", "schema": { "type": "string" }, "required": false },
           { "name": "q", "in": "query", "schema": { "type": "string" }, "required": false },
           { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 }, "required": false },
@@ -272,6 +273,84 @@
             "content": {
               "application/json": {
                 "schema": { "$ref": "#/components/schemas/PageCrmRecordItem" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/crm/{call_id}/approve": {
+      "post": {
+        "summary": "CRM önerisini onayla",
+        "operationId": "approveCrmRecord",
+        "parameters": [
+          { "name": "call_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CrmApproveIn" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Başarılı",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CrmReviewOut" }
+              }
+            }
+          },
+          "404": {
+            "description": "Çağrı bulunamadı",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "409": {
+            "description": "Müşteri/tekne eşleşmedi",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/crm/{call_id}/reject": {
+      "post": {
+        "summary": "CRM önerisini reddet",
+        "operationId": "rejectCrmRecord",
+        "parameters": [
+          { "name": "call_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CrmRejectIn" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Başarılı",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CrmReviewOut" }
+              }
+            }
+          },
+          "404": {
+            "description": "Çağrı bulunamadı",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
               }
             }
           }
@@ -460,6 +539,10 @@
       "LossReason": {
         "type": "string",
         "enum": ["fiyat", "gec_donus", "rakip", "takvim", "guven", "diger"]
+      },
+      "CrmReviewStatus": {
+        "type": "string",
+        "enum": ["bekliyor", "onaylandi", "reddedildi"]
       },
       "CallState": {
         "type": "string",
@@ -771,7 +854,49 @@
           "evidence": {
             "type": "object",
             "additionalProperties": { "type": "string" }
-          }
+          },
+          "review_status": { "$ref": "#/components/schemas/CrmReviewStatus" },
+          "edited_fields": { "type": "object" },
+          "service_order_id": { "type": "string", "format": "uuid", "nullable": true }
+        }
+      },
+      "CrmApproveIn": {
+        "type": "object",
+        "properties": {
+          "request_category": { "$ref": "#/components/schemas/RequestCategory", "nullable": true },
+          "location": { "type": "string", "nullable": true },
+          "problem": { "type": "string", "nullable": true },
+          "service_mode": { "$ref": "#/components/schemas/ServiceMode", "nullable": true },
+          "urgency": { "$ref": "#/components/schemas/Urgency", "nullable": true },
+          "potential_job": { "type": "string", "nullable": true },
+          "next_action": { "$ref": "#/components/schemas/NextAction", "nullable": true },
+          "note": { "type": "string", "nullable": true }
+        }
+      },
+      "CrmRejectIn": {
+        "type": "object",
+        "properties": {
+          "note": { "type": "string", "nullable": true }
+        }
+      },
+      "CrmReviewOut": {
+        "type": "object",
+        "required": [
+          "id",
+          "call_id",
+          "analysis_id",
+          "status",
+          "edited_fields"
+        ],
+        "properties": {
+          "id": { "type": "string", "format": "uuid" },
+          "call_id": { "type": "string", "format": "uuid" },
+          "analysis_id": { "type": "string", "format": "uuid" },
+          "status": { "$ref": "#/components/schemas/CrmReviewStatus" },
+          "edited_fields": { "type": "object" },
+          "note": { "type": "string", "nullable": true },
+          "reviewed_at": { "type": "string", "format": "date-time", "nullable": true },
+          "service_order_id": { "type": "string", "format": "uuid", "nullable": true }
         }
       },
       "SegmentIn": {

@@ -156,6 +156,14 @@ export interface CrmRecord {
   evidence?: Partial<Record<string, string>>;
 }
 
+export type CrmReviewStatus = "bekliyor" | "onaylandi" | "reddedildi";
+
+export const CRM_REVIEW_STATUS_LABELS: Record<CrmReviewStatus, string> = {
+  bekliyor: "Bekliyor",
+  onaylandi: "Onaylandı",
+  reddedildi: "Reddedildi",
+};
+
 // ---------------------------------------------------------------------------
 // CRM Önerisi Kartı (Sayfalar ve API için)
 // ---------------------------------------------------------------------------
@@ -163,6 +171,9 @@ export interface CrmSuggestion extends CrmRecord {
   callId: string;
   caller: string;
   boatName?: string;
+  reviewStatus?: CrmReviewStatus;
+  editedFields?: Record<string, unknown>;
+  serviceOrderId?: string | null;
 }
 
 // ---------------------------------------------------------------------------

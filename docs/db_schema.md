@@ -467,6 +467,33 @@ Tekne karnesi, usta notları, giderler ve abonelik verilerinin RAG için parçal
 
 ---
 
+### 3.9 `crm_reviews`
+
+Analiz çıktısından üretilen CRM önerisinin admin tarafından incelenmesi (onay, red veya düzenleyerek onay) kaydı (#106). İnceleme analiz sürümüne bağlıdır.
+
+| Sütun | Tip | Zorunlu | Varsayılan | Açıklama |
+|-------|-----|---------|------------|----------|
+| `id` | `UUID` | ✅ | `gen_random_uuid()` | Birincil anahtar |
+| `analysis_id` | `UUID` | ✅ | — | `analysis_results(id)` FK; incelenen analiz sürümü (UNIQUE) |
+| `call_id` | `UUID` | ✅ | — | `calls(id)` FK; çağrı referansı |
+| `status` | `TEXT` | ✅ | `'bekliyor'` | İnceleme durumu. CHECK: `bekliyor`, `onaylandi`, `reddedildi` |
+| `edited_fields` | `JSONB` | ✅ | `'{}'::jsonb` | Yalnızca admin tarafından düzenlenen 7 CRM alanı |
+| `note` | `TEXT` | — | — | Red nedeni veya onay notu |
+| `reviewed_at` | `TIMESTAMPTZ` | — | — | İncelenme zamanı |
+| `service_order_id` | `UUID` | — | — | `service_orders(id)` FK; onayda oluşturulan servis emri |
+| `created_at` | `TIMESTAMPTZ` | ✅ | `now()` | Oluşturma zamanı |
+| `updated_at` | `TIMESTAMPTZ` | ✅ | `now()` | Güncelleme zamanı |
+
+**Kısıtlamalar:**
+- `PK (id)`
+- `UNIQUE (analysis_id)`
+- `FK (analysis_id) REFERENCES analysis_results(id) ON DELETE CASCADE`
+- `FK (call_id) REFERENCES calls(id) ON DELETE CASCADE`
+- `FK (service_order_id) REFERENCES service_orders(id) ON DELETE SET NULL`
+- `CHECK (status IN ('bekliyor', 'onaylandi', 'reddedildi'))`
+
+---
+
 ## 4. Tablolar — Grup 2: Miço Usta (🔶 Dış Kaynak)
 
 > **⚠️ Bu tablolar varsayımdır.** Gerçek şema hocadan alınca güncellenecektir.
@@ -522,12 +549,14 @@ Servis emirleri. Bir teknede yapılacak/yapılmış iş.
 | `status` | `TEXT` | ✅ | `'yeni_atandi'` | Servis emri durumu (Miço Usta iş akışı). CHECK: `yeni_atandi`, `kesifte`, `onaylandi`, `devam_ediyor`, `tamamlandi` |
 | `scheduled_at` | `TIMESTAMPTZ` | — | — | Planlanan tarih |
 | `completed_at` | `TIMESTAMPTZ` | — | — | Tamamlanma tarihi |
+| `source_call_id` | `UUID` | — | — | `calls(id)` FK; servis emrinin doğduğu kaynak çağrı (#106) |
 | `created_at` | `TIMESTAMPTZ` | ✅ | `now()` | Kayıt oluşturma zamanı |
 
 **Kısıtlamalar:**
 - `FK (boat_id) REFERENCES boats(id)`
 - `FK (customer_id) REFERENCES customers(id)`
 - `FK (craftsman_id) REFERENCES craftsmen(id)`
+- `FK (source_call_id) REFERENCES calls(id) ON DELETE SET NULL`
 - `CHECK (status IN ('yeni_atandi', 'kesifte', 'onaylandi', 'devam_ediyor', 'tamamlandi'))`
 - `CHECK (category IS NULL OR category IN ('makine', 'mekanik_hidrolik', 'elektrik_elektronik', 'su_sihhi_tesisat', 'iklimlendirme', 'tekne_guvenligi', 'temizlik_bakim', 'diger'))`
 

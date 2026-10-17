@@ -263,6 +263,14 @@ def test_openapi_schema_includes_read_endpoints() -> None:
     assert "get" in paths["/api/v1/crm"]
     assert paths["/api/v1/crm"]["get"]["operationId"] == "listCrmRecords"
 
+    assert "/api/v1/crm/{call_id}/approve" in paths
+    assert "post" in paths["/api/v1/crm/{call_id}/approve"]
+    assert paths["/api/v1/crm/{call_id}/approve"]["post"]["operationId"] == "approveCrmRecord"
+
+    assert "/api/v1/crm/{call_id}/reject" in paths
+    assert "post" in paths["/api/v1/crm/{call_id}/reject"]
+    assert paths["/api/v1/crm/{call_id}/reject"]["post"]["operationId"] == "rejectCrmRecord"
+
 
 async def test_list_calls_and_crm_forward_marina_parameter(
     authed_client: httpx.AsyncClient, spy: CallReaderSpy
@@ -276,3 +284,36 @@ async def test_list_calls_and_crm_forward_marina_parameter(
     assert resp_crm.status_code == 200
     assert spy.last_crm_filters is not None
     assert spy.last_crm_filters.marina == "Tuzla Marina"
+
+
+async def test_crm_endpoints_require_service_key(
+    authed_client: httpx.AsyncClient,
+) -> None:
+    cid = str(CALL_ID)
+    resp_approve = await authed_client.post(f"/api/v1/crm/{cid}/approve")
+    assert resp_approve.status_code == 401
+
+    resp_reject = await authed_client.post(f"/api/v1/crm/{cid}/reject")
+    assert resp_reject.status_code == 401
+
+
+async def test_approve_crm_validates_enums(
+    authed_client: httpx.AsyncClient,
+) -> None:
+    cid = str(CALL_ID)
+    resp = await authed_client.post(
+        f"/api/v1/crm/{cid}/approve",
+        headers=HEADERS,
+        json={"urgency": "asiri_acil_boyle_bir_deger_yok"},
+    )
+    assert resp.status_code == 422
+    assert resp.json()["error"]["code"] == "validation_error"
+
+
+async def test_list_crm_forwards_status_filter(
+    authed_client: httpx.AsyncClient, spy: CallReaderSpy
+) -> None:
+    resp = await authed_client.get("/api/v1/crm?status=onaylandi", headers=HEADERS)
+    assert resp.status_code == 200
+    assert spy.last_crm_filters is not None
+    assert spy.last_crm_filters.status == "onaylandi"

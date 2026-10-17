@@ -42,6 +42,9 @@ SHARED_MODELS: list[type[BaseModel]] = [
     api.TranscriptOut,
     api.CallDetail,
     api.CrmRecordItem,
+    api.CrmApproveIn,
+    api.CrmRejectIn,
+    api.CrmReviewOut,
     api.SegmentIn,
     api.CallCreate,
     api.AudioCallMeta,
@@ -107,6 +110,7 @@ def test_page_fields_match() -> None:
         ("StreamStage", set(get_args(api.StreamStage))),
         ("QuestionType", {m.value for m in assistant.QuestionType}),
         ("SwitchboardOutcome", {m.value for m in SwitchboardOutcome}),
+        ("CrmReviewStatus", {m.value for m in api.CrmReviewStatus}),
     ],
 )
 def test_frontend_unions_match_backend(ts_name: str, values: set[str]) -> None:

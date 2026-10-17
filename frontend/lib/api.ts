@@ -189,6 +189,9 @@ export async function fetchCrmSuggestions(filters?: { marina?: string }): Promis
     potentialJob: item.potential_job ?? null,
     nextAction: item.next_action ?? null,
     evidence: item.evidence,
+    reviewStatus: item.review_status,
+    editedFields: item.edited_fields,
+    serviceOrderId: item.service_order_id,
   }));
 }
 

@@ -45,6 +45,8 @@ export type QuestionType = "gecmis_oneri" | "sayisal" | "kapsam_disi";
 
 export type SourceKind = "service_record" | "boat_note" | "expense" | "subscription";
 
+export type CrmReviewStatus = "bekliyor" | "onaylandi" | "reddedildi";
+
 // ---------------------------------------------------------------------------
 // Ortak
 // ---------------------------------------------------------------------------
@@ -194,6 +196,35 @@ export interface CrmRecordItem {
   potential_job: string | null;
   next_action: NextAction | null;
   evidence: Record<string, string>;
+  review_status: CrmReviewStatus;
+  edited_fields: Record<string, unknown>;
+  service_order_id: string | null;
+}
+
+export interface CrmApproveIn {
+  request_category?: RequestCategory | null;
+  location?: string | null;
+  problem?: string | null;
+  service_mode?: ServiceMode | null;
+  urgency?: Urgency | null;
+  potential_job?: string | null;
+  next_action?: NextAction | null;
+  note?: string | null;
+}
+
+export interface CrmRejectIn {
+  note?: string | null;
+}
+
+export interface CrmReviewOut {
+  id: string;
+  call_id: string;
+  analysis_id: string;
+  status: CrmReviewStatus;
+  edited_fields: Record<string, unknown>;
+  note: string | null;
+  reviewed_at: IsoDateTime | null;
+  service_order_id: string | null;
 }
 
 // ---------------------------------------------------------------------------

@@ -12,13 +12,14 @@ from datetime import UTC, datetime, time
 from typing import Any
 from uuid import UUID
 
-from sqlalchemy import BinaryExpression, ColumnElement, func, or_, select
+from sqlalchemy import BinaryExpression, ColumnElement, func, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.sql import Select
 
 from app.core.errors import NotFoundError
 from app.db.models.ai import AnalysisResult as AnalysisRow
-from app.db.models.ai import Call, Transcript, TranscriptSegment
+from app.db.models.ai import Call, CrmReview, Transcript, TranscriptSegment
+from app.domain.enums import CrmReviewStatus
 from app.schemas.api import (
     CallDetail,
     CallFilters,
@@ -241,11 +242,14 @@ async def list_crm_records(session: AsyncSession, filters: CallFilters) -> Page[
     """Analiz edilmiş çağrılardan çıkarılan CRM önerilerini sayfalı olarak döndürür."""
     latest_analysis = _latest_analysis_subquery()
     conditions = _build_filter_conditions(filters, latest_analysis)
+    if filters.status:
+        conditions.append(func.coalesce(CrmReview.status, "bekliyor") == filters.status.value)
 
     count_stmt: Select[Any] = (
         select(func.count(Call.id))
         .select_from(Call)
         .join(latest_analysis, Call.id == latest_analysis.c.call_id)
+        .outerjoin(CrmReview, CrmReview.analysis_id == latest_analysis.c.id)
     )
     if conditions:
         count_stmt = count_stmt.where(*conditions)
@@ -267,9 +271,13 @@ async def list_crm_records(session: AsyncSession, filters: CallFilters) -> Page[
             latest_analysis.c.potential_job,
             latest_analysis.c.next_action,
             latest_analysis.c.crm_evidence,
+            func.coalesce(CrmReview.status, "bekliyor").label("review_status"),
+            func.coalesce(CrmReview.edited_fields, text("'{}'::jsonb")).label("edited_fields"),
+            CrmReview.service_order_id,
         )
         .select_from(Call)
         .join(latest_analysis, Call.id == latest_analysis.c.call_id)
+        .outerjoin(CrmReview, CrmReview.analysis_id == latest_analysis.c.id)
     )
     if conditions:
         query_stmt = query_stmt.where(*conditions)
@@ -282,24 +290,29 @@ async def list_crm_records(session: AsyncSession, filters: CallFilters) -> Page[
 
     rows: Sequence[Any] = (await session.execute(query_stmt)).all()
 
-    items = [
-        CrmRecordItem(
-            call_id=r[0],
-            started_at=r[1],
-            customer_name=r[2],
-            boat_name=r[3],
-            analysis_version=r[4],
-            request_category=r[5],
-            location=r[6],
-            problem=r[7],
-            service_mode=r[8],
-            urgency=r[9],
-            potential_job=r[10],
-            next_action=r[11],
-            evidence=r[12] or {},
+    items = []
+    for r in rows:
+        edited = r[14] or {}
+        items.append(
+            CrmRecordItem(
+                call_id=r[0],
+                started_at=r[1],
+                customer_name=r[2],
+                boat_name=r[3],
+                analysis_version=r[4],
+                request_category=edited.get("request_category", r[5]),
+                location=edited.get("location", r[6]),
+                problem=edited.get("problem", r[7]),
+                service_mode=edited.get("service_mode", r[8]),
+                urgency=edited.get("urgency", r[9]),
+                potential_job=edited.get("potential_job", r[10]),
+                next_action=edited.get("next_action", r[11]),
+                evidence=r[12] or {},
+                review_status=CrmReviewStatus(r[13]),
+                edited_fields=edited,
+                service_order_id=r[15],
+            )
         )
-        for r in rows
-    ]
 
     return Page[CrmRecordItem](
         items=items,
