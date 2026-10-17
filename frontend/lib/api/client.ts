@@ -12,6 +12,7 @@ import type {
   CallCreate,
   CallDetail,
   CallListItem,
+  CallState,
   CallStatus,
   ChatQuestion,
   ChatReply,
@@ -34,6 +35,13 @@ import mockKpiSummary from "@/mocks/kpi_ozeti.json";
 import mockChatReply from "@/mocks/sohbet_cevabi.json";
 import mockChatSessionDetail from "@/mocks/sohbet_oturumu.json";
 import { mockSeedCalls, mockSeedCrm } from "./mock-seed";
+
+interface MockAnalysisProgress {
+  step: number;
+  startedAt: number;
+  analysisVersion: number;
+}
+const mockReanalyzeMap = new Map<string, MockAnalysisProgress>();
 
 export interface ApiClientConfig {
   baseUrl?: string;
@@ -286,13 +294,44 @@ async function handleMockRequest<T>(
     return mockCallAccepted as unknown as T;
   }
 
+  // In-memory mock progress tracking for simulated live analysis (#110)
   // 4. POST /calls/:id/analyze
   if (method === "POST" && /^\/calls\/[^/]+\/analyze$/.test(path)) {
-    return mockCallAccepted as unknown as T;
+    const id = path.split("/")[2];
+    const prev = mockReanalyzeMap.get(id);
+    const nextVersion = (prev?.analysisVersion ?? 1) + 1;
+    mockReanalyzeMap.set(id, {
+      step: 0,
+      startedAt: Date.now(),
+      analysisVersion: nextVersion,
+    });
+    return {
+      call_id: id,
+      state: "beklemede",
+      analysis_version: nextVersion,
+      created_at: new Date().toISOString(),
+    } as unknown as T;
   }
 
   // 5. GET /calls/:id/status
   if (method === "GET" && /^\/calls\/[^/]+\/status$/.test(path)) {
+    const id = path.split("/")[2];
+    const progress = mockReanalyzeMap.get(id);
+    if (progress) {
+      const steps: CallState[] = ["beklemede", "yaziya_cevriliyor", "isleniyor", "tamam"];
+      const currentStepState = steps[Math.min(progress.step, steps.length - 1)];
+      const result: CallStatus = {
+        call_id: id,
+        state: currentStepState,
+        analysis_version: progress.analysisVersion,
+        error: null,
+        updated_at: new Date().toISOString(),
+      };
+      if (progress.step < steps.length - 1) {
+        progress.step += 1;
+      }
+      return result as unknown as T;
+    }
     return mockCallStatus as unknown as T;
   }
 
@@ -590,6 +629,13 @@ export async function analyzeCall(callId: string): Promise<CallAccepted> {
   return apiFetch<CallAccepted>(`/calls/${callId}/analyze`, {
     method: "POST",
   });
+}
+
+/**
+ * POST /calls/{call_id}/analyze - Çağrıyı yeniden analize gönder (#110)
+ */
+export async function reanalyzeCall(callId: string): Promise<CallAccepted> {
+  return analyzeCall(callId);
 }
 
 /**

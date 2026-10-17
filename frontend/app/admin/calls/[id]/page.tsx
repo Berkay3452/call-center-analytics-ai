@@ -16,6 +16,7 @@ import type {
 import { PlaceholderCard } from "@/components/PlaceholderCard";
 import { CallDetailSkeleton } from "@/components/skeletons";
 import { AudioPlayer } from "@/components/AudioPlayer";
+import { ReanalyzeButton } from "@/components/ReanalyzeButton";
 import {
   CALL_TYPE_LABELS,
   EMPTY_LABEL,
@@ -252,6 +253,8 @@ async function CallDetailContent({ params }: Props) {
               {labelOf(CALL_TYPE_LABELS, callType as CallType)}
             </span>
           )}
+          {/* Yeniden Analiz Et Butonu (#110) */}
+          <ReanalyzeButton callId={call.id} currentState={call.state} variant="header" />
         </div>
       </div>
 
@@ -259,11 +262,14 @@ async function CallDetailContent({ params }: Props) {
       {isPartial && !inProgress && (
         <div className="rounded-xl border border-amber-300 dark:border-amber-900/70 bg-amber-50/90 dark:bg-amber-950/40 p-4 shadow-sm">
           <div className="flex items-start gap-3">
-            <span className="text-xl">⚠️</span>
+            <span className="text-xl" aria-hidden="true">⚠️</span>
             <div className="flex-1">
-              <h3 className="text-sm font-bold text-amber-900 dark:text-amber-200">
-                Kısmi Analiz — Bazı Alanlar Üretilemedi
-              </h3>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h3 className="text-sm font-bold text-amber-900 dark:text-amber-200">
+                  Kısmi Analiz — Bazı Alanlar Üretilemedi
+                </h3>
+                <ReanalyzeButton callId={call.id} currentState={call.state} variant="banner" />
+              </div>
               <p className="mt-0.5 text-xs text-amber-800 dark:text-amber-300">
                 Bu görüşmenin analizinde bazı bölümler üretilemedi; diğer bölümlerin sonuçları geçerlidir.
               </p>
