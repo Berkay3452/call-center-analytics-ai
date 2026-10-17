@@ -46,6 +46,9 @@ class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379/0"
     celery_broker_url: str | None = None  # boşsa redis_url kullanılır
     celery_result_backend: str | None = None  # boşsa redis_url kullanılır
+    # Takılı kalan çağrı zaman aşımı (dakika). Bu süreden uzun süredir
+    # 'beklemede', 'yaziya_cevriliyor' veya 'isleniyor' olan çağrılar otomatik kurtarılır (#107).
+    stuck_call_timeout_min: int = Field(default=10, ge=1)
 
     # --- Sağlık kontrolü ---
     health_check_timeout_s: float = 2.0

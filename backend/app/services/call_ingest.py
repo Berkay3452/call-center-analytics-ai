@@ -10,7 +10,7 @@ Her geçiş ayrı bir işlemde kaydedilir; arayüz `GET /calls/{id}/status` ile 
 """
 
 from collections.abc import Sequence
-from typing import Literal, Protocol
+from typing import Any, Literal, Protocol
 from uuid import UUID
 
 import structlog
@@ -92,9 +92,19 @@ async def store_segments(
 
 
 async def set_state(
-    session: AsyncSession, call_id: UUID, state: CallState, error: str | None = None
+    session: AsyncSession,
+    call_id: UUID,
+    state: CallState,
+    error: str | None = None,
+    *,
+    clear_error: bool = False,
 ) -> None:
-    await session.execute(update(Call).where(Call.id == call_id).values(state=state, error=error))
+    values: dict[str, Any] = {"state": state}
+    if error is not None:
+        values["error"] = error
+    elif clear_error or state in ("tamam", "kismi"):
+        values["error"] = None
+    await session.execute(update(Call).where(Call.id == call_id).values(**values))
 
 
 AnalysisKind = Literal["analysis", "stt"]
@@ -117,7 +127,7 @@ async def request_analysis(session: AsyncSession, call_id: UUID) -> AnalysisKind
     )
     if not has_text and not call.audio_path:
         raise NoTranscriptError("Çağrının transkripti ve ses kaydı yok.")
-    await set_state(session, call_id, "beklemede")
+    await set_state(session, call_id, "beklemede", clear_error=True)
     return "analysis" if has_text else "stt"
 
 

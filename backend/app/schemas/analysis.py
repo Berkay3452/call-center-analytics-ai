@@ -203,7 +203,7 @@ class DailyCount(BaseModel):
 
 
 class KpiSummary(BaseModel):
-    """Çağrı Analitiği ekranının KPI kartları ve grafikleri (Sistem mimarisi v3.1 §6.1).
+    """Çağrı Analitiği ekranının KPI kartları ve grafikleri (Sistem mimarisi v4 §6.1).
 
     Sayılar her çağrının en son analiz sürümünden hesaplanır (`GET /analytics/summary`, #52).
     """

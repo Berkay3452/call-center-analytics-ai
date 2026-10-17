@@ -36,7 +36,7 @@ from app.domain.enums import (
 from app.schemas.analysis import CrmExtraction
 from tests.llm_fakes import scripted
 
-# Hocanın örnek senaryosu (Sistem mimarisi v3.1 §6.1).
+# Hocanın örnek senaryosu (Sistem mimarisi v4 §6.1).
 TUZLA_SEGMENTS = [
     Segment(
         idx=0,

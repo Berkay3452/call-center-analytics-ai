@@ -61,9 +61,10 @@ uv run python -m scripts.seed
 uv run python -m scripts.rag_index
 uv run uvicorn app.main:app --reload
 uv run celery -A app.workers.celery_app worker -Q default,stt,analysis,index --pool=solo -l info
+uv run celery -A app.workers.celery_app beat -l info
 ```
 
-(Son iki komut ayrı terminallerde çalışır.)
+(Son üç komut ayrı terminallerde çalışır. `beat` zamanlayıcısı dakikada bir takılı kalan çağrıları tarayıp kurtarır [#107]; işçi de açılışında bir kez tarar. Windows'ta `worker -B` çalışmaz, bu yüzden `beat` ayrı süreçtir.)
 
 ## 3. Ortam değişkenleri (backend/.env)
 
@@ -78,6 +79,7 @@ uv run celery -A app.workers.celery_app worker -Q default,stt,analysis,index --p
 | `STT_PROVIDER` | Ses yüklemeyi denemeyeceksen dokunma. Hızlı deneme için `stub`; ayrıntı `backend/README.md` |
 | `LLM_TIMEOUT_S`, `LLM_AGENT_TIMEOUT_S`, `LLM_FALLBACK_MODEL` | Dokunmana gerek yok (30 sn istek, 90 sn ajan bütçesi). Model geçici hatada (zaman aşımı, 429, 5xx) bir kez yedek modelle denenir; `LLM_FALLBACK_MODEL` boşsa öteki katmanın modeli yedek olur |
 | `EMBEDDING_PROVIDER` | Miço AI aramasını denemeyeceksen `hash` yaz (model indirmeden). Gerçek arama için bölüm 5 |
+| `STUCK_CALL_TIMEOUT_MIN` | Takılı kalan çağrı zaman aşımı (dakika, varsayılan 10). Beklemede veya işlemdeki çağrılar bu süreyi aşınca otomatik kurtarılır (#107) |
 
 ## 4. Çalıştığını kontrol et
 

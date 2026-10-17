@@ -1,6 +1,6 @@
 # Backend (FastAPI)
 
-Çağrı merkezi analitiği sisteminin API'si ve arka plan işçileri. Mimari için repo kökündeki `Sistem_mimarisi_v1.md` dosyasına bakın.
+Çağrı merkezi analitiği sisteminin API'si ve arka plan işçileri. Mimari için repo kökündeki `Sistem_mimarisi_v4.md` dosyasına bakın.
 
 > Tüm sistemi (backend + frontend) sıfırdan ayağa kaldırmak için önce [`docs/calistirma.md`](../docs/calistirma.md) rehberine bak.
 

@@ -9,7 +9,7 @@ Sırayla (zaten hazır olanı atlayarak):
 4. Migration (`alembic upgrade head`).
 5. Seed ses dosyaları yoksa üretir (Piper); veritabanı boşsa (veya ses yeni üretildiyse) seed'ler.
 6. Vektörü olmayan RAG parçalarını indeksler.
-7. Celery işçisini arka planda açar (günlüğü `storage/logs/celery.log`).
+7. Celery işçisini ve zamanlayıcısını (Beat) arka planda açar (günlüğü `storage/logs/celery.log`).
 8. API'yi (`uvicorn --reload`) ön planda açar; Ctrl+C hepsini kapatır.
 
 Frontend ayrı terminalde: `cd frontend && npm run dev`.
@@ -293,18 +293,26 @@ def index_rag(*, embeddings_ready: bool) -> None:
         warn("İndeksleme başarısız; sonra `uv run python -m scripts.rag_index` ile deneyin.")
 
 
-def start_celery() -> subprocess.Popen[bytes]:
+def start_celery() -> list[subprocess.Popen[bytes]]:
+    """İşçi + zamanlayıcı (Beat). `worker -B` Windows'ta çalışmadığı için Beat ayrı süreçtir."""
     step("Analiz işçisi (Celery)")
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     log_path = LOG_DIR / "celery.log"
     log = open(log_path, "ab")  # noqa: SIM115 - süreç boyunca açık kalır
-    cmd = [
+    worker_cmd = [
         sys.executable, "-m", "celery", "-A", "app.workers.celery_app", "worker",
         "-Q", "default,stt,analysis,index", "--pool=solo", "-l", "info",
     ]  # fmt: skip
-    proc = subprocess.Popen(cmd, cwd=BACKEND_DIR, stdout=log, stderr=subprocess.STDOUT)
-    info(f"Celery arka planda çalışıyor (günlük: {log_path}).")
-    return proc
+    beat_cmd = [
+        sys.executable, "-m", "celery", "-A", "app.workers.celery_app", "beat",
+        "-s", str(LOG_DIR / "celerybeat-schedule"), "-l", "info",
+    ]  # fmt: skip
+    procs = [
+        subprocess.Popen(cmd, cwd=BACKEND_DIR, stdout=log, stderr=subprocess.STDOUT)
+        for cmd in (worker_cmd, beat_cmd)
+    ]
+    info(f"Celery işçisi ve zamanlayıcısı arka planda çalışıyor (günlük: {log_path}).")
+    return procs
 
 
 def preflight_warnings() -> None:
@@ -373,7 +381,7 @@ def main(argv: list[str] | None = None) -> None:
     if not args.no_rag:
         index_rag(embeddings_ready=embeddings_ready)
 
-    celery = None if args.no_celery else start_celery()
+    celery = [] if args.no_celery else start_celery()
     banner()
     api = subprocess.Popen(
         [sys.executable, "-m", "uvicorn", "app.main:app", "--reload", "--port", str(API_PORT)],
@@ -386,8 +394,8 @@ def main(argv: list[str] | None = None) -> None:
     finally:
         print("\nKapatılıyor...", flush=True)
         kill_tree(api)
-        if celery is not None:
-            kill_tree(celery)
+        for proc in celery:
+            kill_tree(proc)
 
 
 if __name__ == "__main__":
