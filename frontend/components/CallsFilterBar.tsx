@@ -24,6 +24,7 @@ const STATE_OPTIONS: { value: string; label: string }[] = [
 export interface CallsFilterBarProps {
   showCallType?: boolean;
   showState?: boolean;
+  showStatus?: boolean;
   className?: string;
   placeholder?: string;
 }
@@ -31,6 +32,7 @@ export interface CallsFilterBarProps {
 export function CallsFilterBar({
   showCallType = true,
   showState = true,
+  showStatus = false,
   className = "",
   placeholder = "Müşteri adı, tekne adı veya marina ara...",
 }: CallsFilterBarProps) {
@@ -44,6 +46,7 @@ export function CallsFilterBar({
   const urlCallType = searchParams.get("call_type") ?? "";
   const urlRequestCategory = searchParams.get("request_category") ?? "";
   const urlState = searchParams.get("state") ?? "";
+  const urlStatus = searchParams.get("status") ?? "";
   const urlMarina = searchParams.get("marina") ?? "";
   const urlDateFrom = searchParams.get("date_from") ?? "";
   const urlDateTo = searchParams.get("date_to") ?? "";
@@ -99,6 +102,7 @@ export function CallsFilterBar({
       urlCallType ||
       urlRequestCategory ||
       urlState ||
+      urlStatus ||
       urlMarina ||
       urlDateFrom ||
       urlDateTo,
@@ -273,6 +277,28 @@ export function CallsFilterBar({
                   {s.label}
                 </option>
               ))}
+            </select>
+          </div>
+        )}
+
+        {/* CRM İnceleme Durumu Seçici (#113) */}
+        {showStatus && (
+          <div>
+            <label className="sr-only" htmlFor="filter-status">
+              İnceleme Durumu
+            </label>
+            <select
+              id="filter-status"
+              value={urlStatus || "all"}
+              onChange={(e) => applyFilterChanges({ status: e.target.value })}
+              disabled={isPending}
+              aria-label="İnceleme durumu"
+              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 shadow-xs focus:outline-none focus:ring-2 focus:ring-sky-500 transition-colors"
+            >
+              <option value="all">📋 İnceleme (Tümü)</option>
+              <option value="bekliyor">⏳ Bekliyor</option>
+              <option value="onaylandi">✓ Onaylandı</option>
+              <option value="reddedildi">✕ Reddedildi</option>
             </select>
           </div>
         )}

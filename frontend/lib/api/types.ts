@@ -57,7 +57,15 @@ export type CallAccepted = Schema["CallAccepted"];
 export type CallStatus = Schema["CallStatus"];
 
 // CRM ve KPI Modelleri
-export type CrmRecordItem = Schema["CrmRecordItem"];
+export type CrmReviewStatus = Schema["CrmReviewStatus"];
+export type CrmRecordItem = Omit<Schema["CrmRecordItem"], "edited_fields"> & {
+  edited_fields?: Record<string, unknown>;
+};
+export type CrmApproveIn = Schema["CrmApproveIn"];
+export type CrmRejectIn = Schema["CrmRejectIn"];
+export type CrmReviewOut = Omit<Schema["CrmReviewOut"], "edited_fields"> & {
+  edited_fields?: Record<string, unknown>;
+};
 export type CountItem = Schema["CountItem"];
 export type DailyCount = Schema["DailyCount"];
 export type KpiSummary = Schema["KpiSummary"];
@@ -77,4 +85,3 @@ export type DeltaEvent = Schema["DeltaEvent"];
 export type DoneEvent = Schema["DoneEvent"];
 export type ErrorEvent = Schema["ErrorEvent"];
 export type ChatStreamEvent = StatusEvent | DeltaEvent | DoneEvent | ErrorEvent;
-

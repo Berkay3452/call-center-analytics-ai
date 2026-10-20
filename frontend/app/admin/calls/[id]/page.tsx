@@ -5,11 +5,7 @@ import { getCallById, getCalls } from "@/lib/api/client";
 import { isApiError } from "@/lib/api/errors";
 import type {
   CallDetail,
-  Urgency,
   CallType,
-  RequestCategory,
-  ServiceMode,
-  NextAction,
   SalesOutcomeType,
   LossReason,
 } from "@/lib/api/types";
@@ -17,16 +13,12 @@ import { PlaceholderCard } from "@/components/PlaceholderCard";
 import { CallDetailSkeleton } from "@/components/skeletons";
 import { AudioPlayer } from "@/components/AudioPlayer";
 import { ReanalyzeButton } from "@/components/ReanalyzeButton";
+import { CrmSuggestionCard } from "@/components/crm";
 import {
   CALL_TYPE_LABELS,
-  EMPTY_LABEL,
   labelOf,
   LOSS_REASON_LABELS,
-  NEXT_ACTION_LABELS,
-  REQUEST_CATEGORY_LABELS,
   SALES_OUTCOME_LABELS,
-  SERVICE_MODE_LABELS,
-  URGENCY_LABELS,
 } from "@/lib/types";
 import mockCallsList from "@/mocks/cagri_listesi.json";
 
@@ -54,13 +46,6 @@ export async function generateMetadata({ params }: Props) {
     return { title: "Çağrı Analizi | Miço Usta" };
   }
 }
-
-const URGENCY_COLOR: Record<Urgency, { bg: string; text: string; border: string }> = {
-  acil: { bg: "bg-red-50 dark:bg-red-950/50", text: "text-red-700 dark:text-red-300", border: "border-red-300 dark:border-red-900" },
-  yuksek: { bg: "bg-orange-50 dark:bg-orange-950/50", text: "text-orange-700 dark:text-orange-300", border: "border-orange-300 dark:border-orange-900" },
-  normal: { bg: "bg-blue-50 dark:bg-blue-950/50", text: "text-blue-700 dark:text-blue-300", border: "border-blue-300 dark:border-blue-900" },
-  dusuk: { bg: "bg-gray-50 dark:bg-slate-800", text: "text-gray-700 dark:text-slate-300", border: "border-gray-300 dark:border-slate-700" },
-};
 
 const SALES_OUTCOME_BADGE: Record<SalesOutcomeType, string> = {
   satisa_donustu: "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800",
@@ -130,7 +115,6 @@ async function CallDetailContent({ params }: Props) {
 
   // Aciliyet çıkarılamadıysa nötr renk kullanılır.
   const urgency = crm?.urgency;
-  const urgencyStyle = urgency ? URGENCY_COLOR[urgency] : URGENCY_COLOR.dusuk;
   const callType = classification?.call_type;
   const inProgress =
     call.state === "beklemede" || call.state === "yaziya_cevriliyor" || call.state === "isleniyor";
@@ -471,128 +455,27 @@ async function CallDetailContent({ params }: Props) {
           </div>
         </div>
 
-        {/* SAĞ: 7 CRM Alanı & Servis Emri Önerisi (5 Kolon) */}
+        {/* SAĞ: 7 CRM Alanı & Servis Emri Önerisi (#113: Onayla, Reddet, Düzenle) (5 Kolon) */}
         <div className="space-y-6 lg:col-span-5">
-          <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
-            <div className="flex items-center justify-between border-b border-gray-200 dark:border-slate-800 pb-3 mb-4">
-              <div>
-                <h2 className="text-base font-bold text-gray-900 dark:text-slate-100">
-                  CRM Kayıt Önerisi
-                </h2>
-                <p className="text-xs text-gray-500 dark:text-slate-400">
-                  7 Temel Alan (Miço Usta AI Çıkarımı)
-                </p>
-              </div>
-              <span className="rounded-full bg-blue-50 dark:bg-sky-950/70 border border-blue-200 dark:border-sky-800 px-2.5 py-1 text-xs font-bold text-blue-700 dark:text-sky-300">
-                7 / 7 Alan
-              </span>
-            </div>
-
-            <div className="space-y-3">
-              {/* 1. Müşteri Talebi */}
-              <div className="rounded-lg border border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/80 p-3">
-                <span className="block text-[11px] font-semibold text-gray-500 dark:text-slate-400 uppercase">
-                  1. Müşteri Talebi (Kategori)
-                </span>
-                <span className="mt-0.5 block text-sm font-semibold text-gray-900 dark:text-slate-100">
-                  {labelOf(REQUEST_CATEGORY_LABELS, crm?.request_category as RequestCategory | null | undefined)}
-                </span>
-              </div>
-
-              {/* 2. Lokasyon */}
-              <div className="rounded-lg border border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/80 p-3">
-                <span className="block text-[11px] font-semibold text-gray-500 dark:text-slate-400 uppercase">
-                  2. Marina / Lokasyon
-                </span>
-                <span className="mt-0.5 block text-sm font-semibold text-gray-900 dark:text-slate-100">
-                  📍 {crm?.location ?? EMPTY_LABEL}
-                </span>
-              </div>
-
-              {/* 3. Problem Tanımı */}
-              <div className="rounded-lg border border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/80 p-3">
-                <span className="block text-[11px] font-semibold text-gray-500 dark:text-slate-400 uppercase">
-                  3. Problem Tanımı
-                </span>
-                <p className="mt-0.5 text-sm text-gray-800 dark:text-slate-200">
-                  {crm?.problem ?? EMPTY_LABEL}
-                </p>
-              </div>
-
-              {/* 4. Hizmet Biçimi */}
-              <div className="rounded-lg border border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/80 p-3">
-                <span className="block text-[11px] font-semibold text-gray-500 dark:text-slate-400 uppercase">
-                  4. Talep / Hizmet Biçimi
-                </span>
-                <span className="mt-0.5 block text-sm font-semibold text-gray-900 dark:text-slate-100">
-                  ⚙️ {labelOf(SERVICE_MODE_LABELS, crm?.service_mode as ServiceMode | null | undefined)}
-                </span>
-              </div>
-
-              {/* 5. Aciliyet */}
-              <div className={`rounded-lg border p-3 ${urgencyStyle.bg} ${urgencyStyle.border}`}>
-                <span className="block text-[11px] font-semibold text-gray-500 dark:text-slate-400 uppercase">
-                  5. Aciliyet Seviyesi
-                </span>
-                <span className={`mt-0.5 block text-sm font-bold ${urgencyStyle.text}`}>
-                  {crm?.urgency === "acil" && "🚨 "}
-                  {labelOf(URGENCY_LABELS, crm?.urgency as Urgency | null | undefined)}
-                </span>
-              </div>
-
-              {/* 6. Potansiyel İş */}
-              <div className="rounded-lg border border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/80 p-3">
-                <span className="block text-[11px] font-semibold text-gray-500 dark:text-slate-400 uppercase">
-                  6. Doğacak Potansiyel İş
-                </span>
-                <span className="mt-0.5 block text-sm font-semibold text-gray-900 dark:text-slate-100">
-                  💼 {crm?.potential_job ?? EMPTY_LABEL}
-                </span>
-              </div>
-
-              {/* 7. Sonraki Aksiyon / Servis Emri */}
-              <div className="rounded-lg border border-sky-200 dark:border-sky-800 bg-sky-50 dark:bg-sky-950/60 p-3">
-                <span className="block text-[11px] font-semibold text-sky-700 dark:text-sky-300 uppercase">
-                  7. Önerilen Sonraki Aksiyon
-                </span>
-                <span className="mt-0.5 block text-sm font-bold text-sky-900 dark:text-sky-200">
-                  📋 {labelOf(NEXT_ACTION_LABELS, crm?.next_action as NextAction | null | undefined)}
-                </span>
-              </div>
-            </div>
-
-            {/* Kanıt Alıntıları */}
-            {crm?.evidence && Object.keys(crm.evidence).length > 0 && (
-              <div className="mt-4 rounded-lg bg-amber-50/50 dark:bg-amber-950/30 p-3 border border-amber-200/60 dark:border-amber-900/60">
-                <span className="block text-[11px] font-semibold text-amber-800 dark:text-amber-300 uppercase mb-1">
-                  🔍 Konuşmadan Kanıt Alıntıları
-                </span>
-                <div className="space-y-1 text-xs text-amber-900 dark:text-amber-200">
-                  {Object.entries(crm.evidence).map(([key, val]) => (
-                    <div key={key}>
-                      <span className="font-semibold text-amber-700 dark:text-amber-400">{key}:</span> &ldquo;{val}&rdquo;
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Aksiyon Butonları */}
-            <div className="mt-6 space-y-2 border-t border-gray-100 dark:border-slate-800 pt-4">
-              <button
-                type="button"
-                className="w-full rounded-xl bg-sky-700 px-4 py-3 text-sm font-bold text-white shadow-sm hover:bg-sky-800 active:scale-[0.98] transition-colors"
-              >
-                ✓ Onayla ve Servis Emri Oluştur
-              </button>
-              <button
-                type="button"
-                className="w-full rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 active:scale-[0.98] transition-colors"
-              >
-                ✕ Öneriyi Reddet / Düzenle
-              </button>
-            </div>
-          </div>
+          <CrmSuggestionCard
+            suggestion={{
+              callId: call.id,
+              caller: call.customer_name ?? "İsimsiz",
+              boatName: call.boat_name ?? undefined,
+              requestCategory: crm?.request_category ?? null,
+              location: crm?.location ?? null,
+              problem: crm?.problem ?? null,
+              serviceMode: crm?.service_mode ?? null,
+              urgency: crm?.urgency ?? null,
+              potentialJob: crm?.potential_job ?? null,
+              nextAction: crm?.next_action ?? null,
+              evidence: crm?.evidence ?? {},
+              reviewStatus: "bekliyor",
+              editedFields: {},
+              serviceOrderId: null,
+            }}
+            variant="detail"
+          />
         </div>
       </div>
     </div>
