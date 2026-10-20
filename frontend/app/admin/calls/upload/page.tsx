@@ -5,23 +5,13 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   createCall,
+  analyzeCall,
   createCallWithAudio,
   getCallStatus,
 } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
 import type { CallCreate, CallState, CallStatus } from "@/lib/api/types";
-
-const MARINA_OPTIONS = [
-  "Tuzla Marina",
-  "Kalamış Marina",
-  "Marinturk İstanbul City Port (Pendik)",
-  "Ataköy Marina",
-  "Setur Yalova Marina",
-  "D-Marin Turgutreis (Bodrum)",
-  "Marmaris Yacht Marina",
-  "Göcek D-Marin",
-  "Diğer",
-];
+import { MARINA_OPTIONS } from "@/lib/types";
 
 const ALLOWED_AUDIO_EXTENSIONS = [
   "wav",
@@ -287,13 +277,11 @@ function CallUploadContent() {
     [router, stopPolling],
   );
 
-  // URL'de ?call_id=... varsa sayfa açılışında doğrudan izlemeye bağlan.
-  // Tüm state'ler lazy initializer ile zaten ayarlı; burada sadece polling başlatılır.
-  const urlCallIdConnected = useRef(false);
+  // URL'de ?call_id=... varsa sayfa açılışında doğrudan izlemeye bağlan. Tüm state'ler lazy
+  // initializer ile zaten ayarlı. Effect tekrar çalıştırılabilir olmalı (React Strict Mode
+  // geliştirmede mount → cleanup → mount yapar; cleanup izlemeyi durdurduğu için yeniden başlar).
   useEffect(() => {
-    if (urlCallIdConnected.current) return;
     if (!initialUrlCallId) return;
-    urlCallIdConnected.current = true;
     startPolling(initialUrlCallId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -383,6 +371,8 @@ function CallUploadContent() {
       }
 
       setCreatedCallId(callId);
+      // Sayfa yenilenirse veya kullanıcı geri dönerse izleme aynı çağrıdan devam eder.
+      router.replace(`/admin/calls/upload?call_id=${callId}`);
       startPolling(callId);
     } catch (err: unknown) {
       const { message, conflict } = resolveServerError(err);
@@ -392,6 +382,35 @@ function CallUploadContent() {
       setStatusMessage("");
       setErrorMessage(message);
       if (conflict) setConflictInfo(conflict);
+    }
+  };
+
+  /** Otomatik yönlendirmeyi iptal eder; kullanıcı sayfada kalır. */
+  const [redirectCancelled, setRedirectCancelled] = useState(false);
+  const cancelRedirect = () => {
+    if (redirectTimerRef.current !== null) {
+      clearTimeout(redirectTimerRef.current);
+      redirectTimerRef.current = null;
+    }
+    setRedirectCancelled(true);
+  };
+
+  /** Başarısız çağrıyı aynı kayıt üzerinde yeniden analize gönderir. */
+  const handleReanalyze = async () => {
+    if (!createdCallId) return;
+    setBackendError(null);
+    setErrorMessage(null);
+    setAnalysisState("beklemede");
+    setProgressPercent(STATE_INFO.beklemede.percent);
+    setStatusMessage("Yeniden analiz isteği gönderiliyor...");
+    try {
+      await analyzeCall(createdCallId);
+      startPolling(createdCallId);
+    } catch (err: unknown) {
+      const { message } = resolveServerError(err);
+      setAnalysisState("basarisiz");
+      setProgressPercent(100);
+      setErrorMessage(message);
     }
   };
 
@@ -409,6 +428,8 @@ function CallUploadContent() {
     setBackendError(null);
     setStatusMessage("");
     setCreatedCallId(null);
+    setRedirectCancelled(false);
+    router.replace("/admin/calls/upload");
   };
 
   /** Yüklendi → STT → Agent → Tamamlandı adım göstergesi */
@@ -607,8 +628,9 @@ function CallUploadContent() {
                 🎉 Analiz Başarıyla Tamamlandı
               </p>
               <p className="text-xs text-emerald-700 dark:text-emerald-400 mb-3">
-                {AUTO_REDIRECT_MS / 1000} saniye içinde otomatik olarak çağrı
-                detayına yönlendirileceksiniz.
+                {redirectCancelled
+                  ? "Otomatik yönlendirme iptal edildi."
+                  : `${AUTO_REDIRECT_MS / 1000} saniye içinde otomatik olarak çağrı detayına yönlendirileceksiniz.`}
               </p>
               <Link
                 href={`/admin/calls/${createdCallId}`}
@@ -616,6 +638,15 @@ function CallUploadContent() {
               >
                 Sonucu Aç →
               </Link>
+              {!redirectCancelled && (
+                <button
+                  type="button"
+                  onClick={cancelRedirect}
+                  className="ml-2 inline-flex items-center rounded-lg border border-emerald-600 px-4 py-2 text-xs font-semibold text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors"
+                >
+                  Burada kal
+                </button>
+              )}
             </div>
           )}
 
@@ -654,12 +685,21 @@ function CallUploadContent() {
                   Detay: {backendError}
                 </p>
               )}
+              {createdCallId && (
+                <button
+                  type="button"
+                  onClick={() => void handleReanalyze()}
+                  className="mr-2 inline-flex items-center gap-1.5 rounded-lg bg-sky-700 px-4 py-2 text-xs font-bold text-white hover:bg-sky-800 transition-colors"
+                >
+                  Aynı çağrıyı yeniden analiz et
+                </button>
+              )}
               <button
                 type="button"
                 onClick={handleRetry}
                 className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-4 py-2 text-xs font-bold text-white hover:bg-red-700 transition-colors"
               >
-                ← Yeniden Dene
+                ← Yeni yükleme
               </button>
             </div>
           )}
