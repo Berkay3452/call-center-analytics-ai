@@ -12,6 +12,8 @@ Referans metin: ses dosyasıyla aynı adlı sentetik çağrı (`data/synthetic/c
 → `call_001.wav`) veya ses yanındaki `.txt`. Ölçütler:
 - WER / CER: kelime ve karakter hata oranı (düşük iyi; maskeli adlar hesaba katılmaz)
 - RTF: işlem süresi / ses süresi (1'den küçükse gerçek zamandan hızlı)
+- Konuşmacı WER'i (`wer_rep`, `wer_customer`): her konuşmacının metni ayrı karşılaştırılır.
+  Konuşmacılar doğru ayrılmazsa (ör. mono kayıt) bu değerler genel WER'den çok yüksek çıkar.
 """
 
 import argparse
@@ -41,6 +43,18 @@ def reference_text(audio: Path) -> str | None:
     if sidecar.exists():
         return " ".join(s.text for s in parse_transcript(sidecar.read_text(encoding="utf-8")))
     return None
+
+
+def reference_by_speaker(audio: Path) -> dict[str, str] | None:
+    """Sentetik çağrıda konuşmacı başına referans metin (`rep`, `customer`)."""
+    synthetic = DATA / f"{audio.stem}.json"
+    if not synthetic.exists():
+        return None
+    turns = json.loads(synthetic.read_text(encoding="utf-8"))["turns"]
+    return {
+        who: " ".join(t["text"] for t in turns if t["speaker"] == who)
+        for who in ("rep", "customer")
+    }
 
 
 def audio_files(target: Path) -> list[Path]:
@@ -75,6 +89,11 @@ async def run(args: argparse.Namespace) -> list[dict[str, Any]]:
                 continue
             text = " ".join(t.text for t in result.turns)
             ref = reference_text(audio)
+            by_speaker = reference_by_speaker(audio)
+            hyp = {
+                who: " ".join(t.text for t in result.turns if t.speaker == who)
+                for who in ("rep", "customer")
+            }
             row |= {
                 "model": result.model,
                 "duration_s": round(result.duration_sec, 1),
@@ -85,11 +104,16 @@ async def run(args: argparse.Namespace) -> list[dict[str, Any]]:
                 "turns": len(result.turns),
                 "wer": round(wer(ref, text), 3) if ref else None,
                 "cer": round(cer(ref, text), 3) if ref else None,
+                "wer_rep": round(wer(by_speaker["rep"], hyp["rep"]), 3) if by_speaker else None,
+                "wer_customer": round(wer(by_speaker["customer"], hyp["customer"]), 3)
+                if by_speaker
+                else None,
                 "text": text,
             }
             rows.append(row)
             print(
                 f"  {provider:18} {audio.name:20} WER={row['wer']}  CER={row['cer']}  "
+                f"WER(temsilci/müşteri)={row['wer_rep']}/{row['wer_customer']}  "
                 f"RTF={row['rtf']}  süre={row['duration_s']}s  tur={row['turns']}"
             )
     return rows
@@ -106,9 +130,13 @@ def summarize(rows: list[dict[str, Any]]) -> None:
         ok = [r for r in mine if "error" not in r]
         wer_avg = _mean([r["wer"] for r in ok if r["wer"] is not None])
         rtf_avg = _mean([r["rtf"] for r in ok if r["rtf"] is not None])
+        spk = _mean(
+            [(r["wer_rep"] + r["wer_customer"]) / 2 for r in ok if r.get("wer_rep") is not None]
+        )
         print(
             f"  {provider:18} dosya={len(ok)}  hata={len(mine) - len(ok)}"
             f"  WER={None if wer_avg is None else round(wer_avg, 3)}"
+            f"  konuşmacı-WER={None if spk is None else round(spk, 3)}"
             f"  RTF={None if rtf_avg is None else round(rtf_avg, 2)}"
         )
 
