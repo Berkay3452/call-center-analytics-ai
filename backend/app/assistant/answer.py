@@ -78,7 +78,34 @@ async def numeric_answer(
             question_type=qt,
             sources=last.sources,
         )
+    if plan.tool == AssistantTool.GET_UPCOMING_MAINTENANCE:
+        upcoming = await tools.get_upcoming_maintenance(owner_id, today=today, session=session)
+        if not upcoming:
+            return not_found(qt, NO_UPCOMING_MESSAGE)
+        shown = upcoming[:MAX_UPCOMING_ITEMS]
+        lines = [_upcoming_line(item) for item in shown]
+        more = len(upcoming) - len(shown)
+        tail = f"\n(ve {more} iş daha)" if more > 0 else ""
+        return AssistantAnswer(
+            answer="Teknelerinizde yakında yapılması gerekenler:\n" + "\n".join(lines) + tail,
+            question_type=qt,
+            sources=[src for item in shown for src in item.sources],
+        )
     raise ValueError(f"Bilinmeyen araç: {plan.tool}")
+
+
+NO_UPCOMING_MESSAGE = (
+    "Kayıtlarınıza göre yakında yapılması gereken veya planlanmış bir iş görünmüyor."
+)
+MAX_UPCOMING_ITEMS = 6
+
+
+def _upcoming_line(item: tools.UpcomingItem) -> str:
+    when = format_date(item.due_on) if item.due_on else "tarih belirsiz"
+    if item.overdue:
+        when += ", gecikmiş"
+    boat = f"{item.boat_name}: " if item.boat_name else ""
+    return f"- {boat}{item.what} ({when}; {item.reason})"
 
 
 async def history_answer(

@@ -36,6 +36,9 @@ Admin/tekne sahibi rol ayrımını .NET uygulaması yapar. Tekne sahibi uçları
 | `GET /crm` | Admin | `CallFilters` (sorgu) | `Page` of `CrmRecordItem` | #51 |
 | `POST /crm/{call_id}/approve` | Admin | `CrmApproveIn` (isteğe bağlı) | `CrmReviewOut`; eşleşme yoksa 409 | #106 |
 | `POST /crm/{call_id}/reject` | Admin | `CrmRejectIn` (isteğe bağlı) | `CrmReviewOut` | #106 |
+| `GET /service-orders` | Admin | `ServiceOrderFilters` (sorgu) | `Page` of `ServiceOrderListItem` | #118 |
+| `GET /service-orders/{order_id}` | Admin | — | `ServiceOrderDetail` | #118 |
+| `PATCH /service-orders/{order_id}/status` | Admin | `ServiceOrderStatusUpdate` | `ServiceOrderDetail` | #118 |
 | `GET /analytics/summary` | Admin | `PeriodFilter` (sorgu) | `KpiSummary` | #52 |
 | `POST /calls` | Admin | `CallCreate` (JSON) | 202 `CallAccepted` | #48 |
 | `POST /calls/audio` | Admin | multipart: `file` (wav/mp3/m4a/ogg/flac/aac/webm, en fazla 25 MB) + `AudioCallMeta` alanları | 202 `CallAccepted`; aynı ses daha önce yüklendiyse 409 (`details.call_id`) | #49 |
@@ -71,6 +74,17 @@ Başka kullanıcının sohbet oturumu istenirse 404 döner (varlığı da sızd�
 Arayüz `GET /calls/{id}/status` ile durumu 2–3 saniyede bir sorar; `tamam`, `kismi` veya `basarisiz` gelince durur.
 
 > `calls.state` ve `calls.error` sütunları #48 ile eklendi; seed verisindeki analizli çağrılar `tamam` durumundadır.
+
+### Servis emirleri (#118)
+- `ServiceOrderListItem`: sayfalı liste satırı (`id`, `status`, `category`, `description`, `scheduled_at`, `completed_at`, `created_at`, `customer_id`, `customer_name`, `customer_phone`, `boat_id`, `boat_name`, `boat_model`, `marina`, `craftsman_id`, `craftsman_name`, `source_call_id`).
+- `ServiceOrderDetail`: servis emri detayı (`customer`: `ServiceOrderCustomerOut`, `boat`: `ServiceOrderBoatOut`, `craftsman`: `ServiceOrderCraftsmanOut`, `source_call`: `ServiceOrderSourceCallOut`).
+- `ServiceOrderCustomerOut`: müşteri bilgisi (`id`, `full_name`, `phone`, `email`, `marina`).
+- `ServiceOrderBoatOut`: tekne bilgisi (`id`, `name`, `model`, `year`, `marina`).
+- `ServiceOrderCraftsmanOut`: atanan usta bilgisi (`id`, `full_name`, `specialty`, `phone`).
+- `ServiceOrderSourceCallOut`: servis emrinin kaynak çağrısı ve CRM önerisi özeti (#106).
+- `ServiceOrderStatusUpdate`: durum güncelleme gövdesi (`status`: `ServiceOrderStatus`).
+- `ServiceOrderFilters`: `status`, `date_from`, `date_to`, `marina`, `q`, `page`, `page_size`.
+- **Durum Geçişi:** `yeni_atandi` -> `kesifte` -> `onaylandi` -> `devam_ediyor` -> `tamamlandi`. Geçersiz geçiş 400 döner. `tamamlandi` durumuna geçildiğinde `completed_at` otomatik doldurulur.
 
 ### CRM önerileri (#106)
 - `CrmRecordItem`: hocanın 7 alanı (`request_category`, `location`, `problem`, `service_mode`, `urgency`, `potential_job`, `next_action`), alıntılar (`evidence`), inceleme durumu (`review_status`: `bekliyor` / `onaylandi` / `reddedildi`), düzenlenen alanlar (`edited_fields`), servis emri (`service_order_id`) ve kaynağı olan çağrı. Her çağrının en son analiz sürümünden gelir.
@@ -113,6 +127,8 @@ Arayüz `GET /calls/{id}/status` ile durumu 2–3 saniyede bir sorar; `tamam`, `
 | `cagri_listesi.json` | `Page` of `CallListItem` |
 | `cagri_detayi.json` | `CallDetail` (hocanın Tuzla Marina senaryosu) |
 | `crm_listesi.json` | `Page` of `CrmRecordItem` |
+| `servis_emirleri.json` | `Page` of `ServiceOrderListItem` |
+| `servis_emri_detayi.json` | `ServiceOrderDetail` |
 | `kpi_ozeti.json` | `KpiSummary` |
 | `cagri_olustur_istek.json` | `CallCreate` |
 | `cagri_kabul.json` | `CallAccepted` |

@@ -103,11 +103,15 @@ class Settings(BaseSettings):
     stt_language: str = "tr"
     # Konuşmacı ayrımı: santral kaydı stereo ise her kanal bir konuşmacıdır (temsilci sol/sağ).
     # Mono kayıtta konuşmacı ayrılamaz ("unknown"); model tabanlı ayrım sonraki adımdır.
-    stt_channel_layout: Literal["mono", "stereo_rep_left", "stereo_rep_right"] = "mono"
+    # Santral kayıtları iki kanallıdır (temsilci sol); mono dosyalar otomatik mono işlenir.
+    stt_channel_layout: Literal["mono", "stereo_rep_left", "stereo_rep_right"] = "stereo_rep_left"
     whisper_model: str = "small"  # CPU için small/medium; GPU varsa large-v3
     whisper_compute_type: str = "int8"  # CPU: int8; GPU varsa float16
     whisper_cpu_threads: int = Field(default=0, ge=0)  # 0: otomatik
     whisper_beam_size: int = Field(default=5, ge=1)
+    # Ses etkinliği (VAD) eşiği: 0,5 dar bant telefon sesinde konuşmayı sessizlik sanıp atıyor
+    # (#124 ölçümü: 97 kelimeden 28'i kalıyordu); 0,2 hem temiz hem telefon sesinde güvenli.
+    whisper_vad_threshold: float = Field(default=0.2, gt=0, lt=1)
     # Modelin indirileceği klasör; boşsa Hugging Face varsayılanı (~/.cache/huggingface).
     whisper_download_root: str | None = None
 

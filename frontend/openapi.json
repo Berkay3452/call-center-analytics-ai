@@ -18,23 +18,99 @@
         "description": "Filtrelere göre sayfalı çağrı listesi döndürür.",
         "operationId": "listCalls",
         "parameters": [
-          { "name": "date_from", "in": "query", "schema": { "type": "string", "format": "date" }, "required": false },
-          { "name": "date_to", "in": "query", "schema": { "type": "string", "format": "date" }, "required": false },
-          { "name": "call_type", "in": "query", "schema": { "$ref": "#/components/schemas/CallType" }, "required": false },
-          { "name": "urgency", "in": "query", "schema": { "$ref": "#/components/schemas/Urgency" }, "required": false },
-          { "name": "request_category", "in": "query", "schema": { "$ref": "#/components/schemas/RequestCategory" }, "required": false },
-          { "name": "state", "in": "query", "schema": { "$ref": "#/components/schemas/CallState" }, "required": false },
-          { "name": "marina", "in": "query", "schema": { "type": "string" }, "required": false },
-          { "name": "q", "in": "query", "schema": { "type": "string" }, "required": false },
-          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 }, "required": false },
-          { "name": "page_size", "in": "query", "schema": { "type": "integer", "default": 20 }, "required": false }
+          {
+            "name": "date_from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "required": false
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "required": false
+          },
+          {
+            "name": "call_type",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CallType"
+            },
+            "required": false
+          },
+          {
+            "name": "urgency",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Urgency"
+            },
+            "required": false
+          },
+          {
+            "name": "request_category",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/RequestCategory"
+            },
+            "required": false
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CallState"
+            },
+            "required": false
+          },
+          {
+            "name": "marina",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "required": false
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            },
+            "required": false
+          }
         ],
         "responses": {
           "200": {
             "description": "Başarılı",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PageCallListItem" }
+                "schema": {
+                  "$ref": "#/components/schemas/PageCallListItem"
+                }
               }
             }
           },
@@ -42,7 +118,9 @@
             "description": "Geçersiz istek parametresi",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -50,7 +128,9 @@
             "description": "Yetkisiz erişim",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -64,7 +144,9 @@
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/CallCreate" }
+              "schema": {
+                "$ref": "#/components/schemas/CallCreate"
+              }
             }
           }
         },
@@ -73,7 +155,9 @@
             "description": "Çağrı kabul edildi",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/CallAccepted" }
+                "schema": {
+                  "$ref": "#/components/schemas/CallAccepted"
+                }
               }
             }
           },
@@ -81,7 +165,9 @@
             "description": "Geçersiz istek gövdesi",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -98,18 +184,50 @@
             "multipart/form-data": {
               "schema": {
                 "type": "object",
-                "required": ["file", "started_at"],
+                "required": [
+                  "file",
+                  "started_at"
+                ],
                 "properties": {
-                  "file": { "type": "string", "format": "binary" },
-                  "started_at": { "type": "string", "format": "date-time" },
-                  "duration_s": { "type": "integer", "nullable": true },
-                  "answer_delay_s": { "type": "integer", "nullable": true },
-                  "switchboard_outcome": { "$ref": "#/components/schemas/SwitchboardOutcome" },
-                  "customer_name": { "type": "string", "nullable": true },
-                  "customer_phone": { "type": "string", "nullable": true },
-                  "boat_name": { "type": "string", "nullable": true },
-                  "boat_model": { "type": "string", "nullable": true },
-                  "marina": { "type": "string", "nullable": true }
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  },
+                  "started_at": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "duration_s": {
+                    "type": "integer",
+                    "nullable": true
+                  },
+                  "answer_delay_s": {
+                    "type": "integer",
+                    "nullable": true
+                  },
+                  "switchboard_outcome": {
+                    "$ref": "#/components/schemas/SwitchboardOutcome"
+                  },
+                  "customer_name": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "customer_phone": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "boat_name": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "boat_model": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "marina": {
+                    "type": "string",
+                    "nullable": true
+                  }
                 }
               }
             }
@@ -120,7 +238,9 @@
             "description": "Ses yüklendi ve işleme alındı",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/CallAccepted" }
+                "schema": {
+                  "$ref": "#/components/schemas/CallAccepted"
+                }
               }
             }
           },
@@ -128,7 +248,9 @@
             "description": "Geçersiz ses formatı veya alanlar",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -141,14 +263,24 @@
         "description": "Belirli bir çağrının tüm santral, transkript ve analiz verilerini getirir.",
         "operationId": "getCallById",
         "parameters": [
-          { "name": "call_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "name": "call_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "responses": {
           "200": {
             "description": "Çağrı bulundu",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/CallDetail" }
+                "schema": {
+                  "$ref": "#/components/schemas/CallDetail"
+                }
               }
             }
           },
@@ -156,7 +288,9 @@
             "description": "Çağrı bulunamadı",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -168,14 +302,24 @@
         "summary": "Çağrıyı yeniden analiz et",
         "operationId": "analyzeCall",
         "parameters": [
-          { "name": "call_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "name": "call_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "responses": {
           "202": {
             "description": "Analiz kuyruğa alındı",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/CallAccepted" }
+                "schema": {
+                  "$ref": "#/components/schemas/CallAccepted"
+                }
               }
             }
           },
@@ -183,7 +327,9 @@
             "description": "Çağrı bulunamadı",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -195,14 +341,24 @@
         "summary": "Çağrı analiz durumu",
         "operationId": "getCallStatus",
         "parameters": [
-          { "name": "call_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "name": "call_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "responses": {
           "200": {
             "description": "Çağrı durumu",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/CallStatus" }
+                "schema": {
+                  "$ref": "#/components/schemas/CallStatus"
+                }
               }
             }
           },
@@ -210,7 +366,9 @@
             "description": "Çağrı bulunamadı",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -222,20 +380,35 @@
         "summary": "Çağrı ses kaydı",
         "operationId": "getCallAudio",
         "parameters": [
-          { "name": "call_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "name": "call_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "responses": {
           "200": {
             "description": "Ses dosyası akışı (Range destekli, 200 veya 206)",
             "content": {
-              "audio/*": { "schema": { "type": "string", "format": "binary" } }
+              "audio/*": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
             }
           },
           "401": {
             "description": "Yetkisiz erişim",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -243,7 +416,9 @@
             "description": "Ses veya çağrı bulunamadı",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -255,24 +430,107 @@
         "summary": "CRM öneri ve kayıtları",
         "operationId": "listCrmRecords",
         "parameters": [
-          { "name": "date_from", "in": "query", "schema": { "type": "string", "format": "date" }, "required": false },
-          { "name": "date_to", "in": "query", "schema": { "type": "string", "format": "date" }, "required": false },
-          { "name": "call_type", "in": "query", "schema": { "$ref": "#/components/schemas/CallType" }, "required": false },
-          { "name": "urgency", "in": "query", "schema": { "$ref": "#/components/schemas/Urgency" }, "required": false },
-          { "name": "request_category", "in": "query", "schema": { "$ref": "#/components/schemas/RequestCategory" }, "required": false },
-          { "name": "state", "in": "query", "schema": { "$ref": "#/components/schemas/CallState" }, "required": false },
-          { "name": "status", "in": "query", "schema": { "$ref": "#/components/schemas/CrmReviewStatus" }, "required": false },
-          { "name": "marina", "in": "query", "schema": { "type": "string" }, "required": false },
-          { "name": "q", "in": "query", "schema": { "type": "string" }, "required": false },
-          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 }, "required": false },
-          { "name": "page_size", "in": "query", "schema": { "type": "integer", "default": 20 }, "required": false }
+          {
+            "name": "date_from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "required": false
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "required": false
+          },
+          {
+            "name": "call_type",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CallType"
+            },
+            "required": false
+          },
+          {
+            "name": "urgency",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/Urgency"
+            },
+            "required": false
+          },
+          {
+            "name": "request_category",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/RequestCategory"
+            },
+            "required": false
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CallState"
+            },
+            "required": false
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/CrmReviewStatus"
+            },
+            "required": false
+          },
+          {
+            "name": "marina",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "required": false
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            },
+            "required": false
+          }
         ],
         "responses": {
           "200": {
             "description": "Başarılı",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/PageCrmRecordItem" }
+                "schema": {
+                  "$ref": "#/components/schemas/PageCrmRecordItem"
+                }
               }
             }
           }
@@ -284,13 +542,23 @@
         "summary": "CRM önerisini onayla",
         "operationId": "approveCrmRecord",
         "parameters": [
-          { "name": "call_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "name": "call_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "requestBody": {
           "required": false,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/CrmApproveIn" }
+              "schema": {
+                "$ref": "#/components/schemas/CrmApproveIn"
+              }
             }
           }
         },
@@ -299,7 +567,9 @@
             "description": "Başarılı",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/CrmReviewOut" }
+                "schema": {
+                  "$ref": "#/components/schemas/CrmReviewOut"
+                }
               }
             }
           },
@@ -307,7 +577,9 @@
             "description": "Çağrı bulunamadı",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           },
@@ -315,7 +587,9 @@
             "description": "Müşteri/tekne eşleşmedi",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -327,13 +601,23 @@
         "summary": "CRM önerisini reddet",
         "operationId": "rejectCrmRecord",
         "parameters": [
-          { "name": "call_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "name": "call_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "requestBody": {
           "required": false,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/CrmRejectIn" }
+              "schema": {
+                "$ref": "#/components/schemas/CrmRejectIn"
+              }
             }
           }
         },
@@ -342,7 +626,9 @@
             "description": "Başarılı",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/CrmReviewOut" }
+                "schema": {
+                  "$ref": "#/components/schemas/CrmReviewOut"
+                }
               }
             }
           },
@@ -350,7 +636,9 @@
             "description": "Çağrı bulunamadı",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -362,16 +650,41 @@
         "summary": "KPI ve analitik özeti",
         "operationId": "getKpiSummary",
         "parameters": [
-          { "name": "date_from", "in": "query", "schema": { "type": "string", "format": "date" }, "required": false },
-          { "name": "date_to", "in": "query", "schema": { "type": "string", "format": "date" }, "required": false },
-          { "name": "marina", "in": "query", "schema": { "type": "string" }, "required": false }
+          {
+            "name": "date_from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "required": false
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "required": false
+          },
+          {
+            "name": "marina",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          }
         ],
         "responses": {
           "200": {
             "description": "Başarılı",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/KpiSummary" }
+                "schema": {
+                  "$ref": "#/components/schemas/KpiSummary"
+                }
               }
             }
           }
@@ -383,13 +696,23 @@
         "summary": "Miço AI asistana soru gönder (senkron)",
         "operationId": "askChat",
         "parameters": [
-          { "name": "X-User-Id", "in": "header", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/ChatQuestion" }
+              "schema": {
+                "$ref": "#/components/schemas/ChatQuestion"
+              }
             }
           }
         },
@@ -398,7 +721,9 @@
             "description": "Başarılı",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ChatReply" }
+                "schema": {
+                  "$ref": "#/components/schemas/ChatReply"
+                }
               }
             }
           }
@@ -410,13 +735,23 @@
         "summary": "Miço AI asistana soru gönder (SSE akışı)",
         "operationId": "askChatStream",
         "parameters": [
-          { "name": "X-User-Id", "in": "header", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/ChatQuestion" }
+              "schema": {
+                "$ref": "#/components/schemas/ChatQuestion"
+              }
             }
           }
         },
@@ -425,7 +760,9 @@
             "description": "SSE Olay Akışı",
             "content": {
               "text/event-stream": {
-                "schema": { "type": "string" }
+                "schema": {
+                  "type": "string"
+                }
               }
             }
           }
@@ -437,7 +774,15 @@
         "summary": "Kullanıcının sohbet oturumları listesi",
         "operationId": "listChatSessions",
         "parameters": [
-          { "name": "X-User-Id", "in": "header", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -446,7 +791,9 @@
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/ChatSessionOut" }
+                  "items": {
+                    "$ref": "#/components/schemas/ChatSessionOut"
+                  }
                 }
               }
             }
@@ -459,15 +806,33 @@
         "summary": "Sohbet oturumu detayı ve mesaj geçmişi",
         "operationId": "getChatSessionDetail",
         "parameters": [
-          { "name": "X-User-Id", "in": "header", "required": true, "schema": { "type": "string", "format": "uuid" } },
-          { "name": "session_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
         ],
         "responses": {
           "200": {
             "description": "Başarılı",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ChatSessionDetail" }
+                "schema": {
+                  "$ref": "#/components/schemas/ChatSessionDetail"
+                }
               }
             }
           },
@@ -475,7 +840,227 @@
             "description": "Oturum bulunamadı",
             "content": {
               "application/json": {
-                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/service-orders": {
+      "get": {
+        "summary": "Servis emirleri listesi",
+        "operationId": "listServiceOrders",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "": "#/components/schemas/ServiceOrderStatus"
+            },
+            "required": false
+          },
+          {
+            "name": "date_from",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "required": false
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "required": false
+          },
+          {
+            "name": "marina",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "required": false
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Başarılı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/PageServiceOrderListItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Geçersiz filtre parametresi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Yetkisiz erişim",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/service-orders/{order_id}": {
+      "get": {
+        "summary": "Servis emri detayı",
+        "operationId": "getServiceOrderById",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Başarılı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ServiceOrderDetail"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Yetkisiz erişim",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Servis emri bulunamadı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/service-orders/{order_id}/status": {
+      "patch": {
+        "summary": "Servis emri durumunu güncelle",
+        "operationId": "updateServiceOrderStatus",
+        "parameters": [
+          {
+            "name": "order_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "": "#/components/schemas/ServiceOrderStatusUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Başarılı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ServiceOrderDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Geçersiz durum geçişi",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Yetkisiz erişim",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Servis emri bulunamadı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "": "#/components/schemas/ErrorResponse"
+                }
               }
             }
           }
@@ -487,7 +1072,13 @@
     "schemas": {
       "CallType": {
         "type": "string",
-        "enum": ["yeni_musteri", "servis", "teklif", "acil", "bilgi"]
+        "enum": [
+          "yeni_musteri",
+          "servis",
+          "teklif",
+          "acil",
+          "bilgi"
+        ]
       },
       "RequestCategory": {
         "type": "string",
@@ -504,11 +1095,20 @@
       },
       "ServiceMode": {
         "type": "string",
-        "enum": ["yerinde_servis", "atolyede", "uzaktan_destek"]
+        "enum": [
+          "yerinde_servis",
+          "atolyede",
+          "uzaktan_destek"
+        ]
       },
       "Urgency": {
         "type": "string",
-        "enum": ["dusuk", "normal", "yuksek", "acil"]
+        "enum": [
+          "dusuk",
+          "normal",
+          "yuksek",
+          "acil"
+        ]
       },
       "NextAction": {
         "type": "string",
@@ -523,7 +1123,11 @@
       },
       "SalesOutcomeType": {
         "type": "string",
-        "enum": ["satisa_donustu", "kaybedildi", "beklemede"]
+        "enum": [
+          "satisa_donustu",
+          "kaybedildi",
+          "beklemede"
+        ]
       },
       "SwitchboardOutcome": {
         "type": "string",
@@ -538,82 +1142,171 @@
       },
       "LossReason": {
         "type": "string",
-        "enum": ["fiyat", "gec_donus", "rakip", "takvim", "guven", "diger"]
+        "enum": [
+          "fiyat",
+          "gec_donus",
+          "rakip",
+          "takvim",
+          "guven",
+          "diger"
+        ]
       },
       "CrmReviewStatus": {
         "type": "string",
-        "enum": ["bekliyor", "onaylandi", "reddedildi"]
+        "enum": [
+          "bekliyor",
+          "onaylandi",
+          "reddedildi"
+        ]
       },
       "CallState": {
         "type": "string",
-        "enum": ["beklemede", "yaziya_cevriliyor", "isleniyor", "tamam", "kismi", "basarisiz"]
+        "enum": [
+          "beklemede",
+          "yaziya_cevriliyor",
+          "isleniyor",
+          "tamam",
+          "kismi",
+          "basarisiz"
+        ]
       },
       "AnalysisStatus": {
         "type": "string",
-        "enum": ["tamam", "kismi", "basarisiz"]
+        "enum": [
+          "tamam",
+          "kismi",
+          "basarisiz"
+        ]
       },
       "Speaker": {
         "type": "string",
-        "enum": ["customer", "rep"]
+        "enum": [
+          "customer",
+          "rep"
+        ]
       },
       "QuestionType": {
         "type": "string",
-        "enum": ["gecmis_oneri", "sayisal", "kapsam_disi"]
+        "enum": [
+          "gecmis_oneri",
+          "sayisal",
+          "kapsam_disi"
+        ]
       },
       "SourceKind": {
         "type": "string",
-        "enum": ["service_record", "boat_note", "expense", "subscription"]
+        "enum": [
+          "service_record",
+          "boat_note",
+          "expense",
+          "subscription"
+        ]
       },
       "ErrorBody": {
         "type": "object",
-        "required": ["code", "message", "details", "request_id"],
+        "required": [
+          "code",
+          "message",
+          "details",
+          "request_id"
+        ],
         "properties": {
-          "code": { "type": "string" },
-          "message": { "type": "string" },
-          "details": { "type": "object", "additionalProperties": true },
-          "request_id": { "type": "string", "nullable": true }
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "details": {
+            "type": "object",
+            "additionalProperties": true
+          },
+          "request_id": {
+            "type": "string",
+            "nullable": true
+          }
         }
       },
       "ErrorResponse": {
         "type": "object",
-        "required": ["error"],
+        "required": [
+          "error"
+        ],
         "properties": {
-          "error": { "$ref": "#/components/schemas/ErrorBody" }
+          "error": {
+            "$ref": "#/components/schemas/ErrorBody"
+          }
         }
       },
       "PageCallListItem": {
         "type": "object",
-        "required": ["items", "total", "page", "page_size"],
+        "required": [
+          "items",
+          "total",
+          "page",
+          "page_size"
+        ],
         "properties": {
           "items": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/CallListItem" }
+            "items": {
+              "$ref": "#/components/schemas/CallListItem"
+            }
           },
-          "total": { "type": "integer" },
-          "page": { "type": "integer" },
-          "page_size": { "type": "integer" }
+          "total": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "page_size": {
+            "type": "integer"
+          }
         }
       },
       "PageCrmRecordItem": {
         "type": "object",
-        "required": ["items", "total", "page", "page_size"],
+        "required": [
+          "items",
+          "total",
+          "page",
+          "page_size"
+        ],
         "properties": {
           "items": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/CrmRecordItem" }
+            "items": {
+              "$ref": "#/components/schemas/CrmRecordItem"
+            }
           },
-          "total": { "type": "integer" },
-          "page": { "type": "integer" },
-          "page_size": { "type": "integer" }
+          "total": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "page_size": {
+            "type": "integer"
+          }
         }
       },
       "CallClassification": {
         "type": "object",
-        "required": ["call_type", "confidence", "reason"],
+        "required": [
+          "call_type",
+          "confidence",
+          "reason"
+        ],
         "properties": {
-          "call_type": { "$ref": "#/components/schemas/CallType" },
-          "confidence": { "type": "number" },
-          "reason": { "type": "string" }
+          "call_type": {
+            "$ref": "#/components/schemas/CallType"
+          },
+          "confidence": {
+            "type": "number"
+          },
+          "reason": {
+            "type": "string"
+          }
         }
       },
       "CrmExtraction": {
@@ -629,37 +1322,82 @@
           "evidence"
         ],
         "properties": {
-          "request_category": { "$ref": "#/components/schemas/RequestCategory", "nullable": true },
-          "location": { "type": "string", "nullable": true },
-          "problem": { "type": "string", "nullable": true },
-          "service_mode": { "$ref": "#/components/schemas/ServiceMode", "nullable": true },
-          "urgency": { "$ref": "#/components/schemas/Urgency", "nullable": true },
-          "potential_job": { "type": "string", "nullable": true },
-          "next_action": { "$ref": "#/components/schemas/NextAction", "nullable": true },
+          "request_category": {
+            "$ref": "#/components/schemas/RequestCategory",
+            "nullable": true
+          },
+          "location": {
+            "type": "string",
+            "nullable": true
+          },
+          "problem": {
+            "type": "string",
+            "nullable": true
+          },
+          "service_mode": {
+            "$ref": "#/components/schemas/ServiceMode",
+            "nullable": true
+          },
+          "urgency": {
+            "$ref": "#/components/schemas/Urgency",
+            "nullable": true
+          },
+          "potential_job": {
+            "type": "string",
+            "nullable": true
+          },
+          "next_action": {
+            "$ref": "#/components/schemas/NextAction",
+            "nullable": true
+          },
           "evidence": {
             "type": "object",
-            "additionalProperties": { "type": "string" }
+            "additionalProperties": {
+              "type": "string"
+            }
           }
         }
       },
       "SalesAnalysis": {
         "type": "object",
-        "required": ["outcome", "loss_reason", "evidence", "confidence"],
+        "required": [
+          "outcome",
+          "loss_reason",
+          "evidence",
+          "confidence"
+        ],
         "properties": {
-          "outcome": { "$ref": "#/components/schemas/SalesOutcomeType" },
-          "loss_reason": { "$ref": "#/components/schemas/LossReason", "nullable": true },
-          "evidence": { "type": "string", "nullable": true },
-          "confidence": { "type": "number" }
+          "outcome": {
+            "$ref": "#/components/schemas/SalesOutcomeType"
+          },
+          "loss_reason": {
+            "$ref": "#/components/schemas/LossReason",
+            "nullable": true
+          },
+          "evidence": {
+            "type": "string",
+            "nullable": true
+          },
+          "confidence": {
+            "type": "number"
+          }
         }
       },
       "CallSummary": {
         "type": "object",
-        "required": ["summary", "key_points"],
+        "required": [
+          "summary",
+          "key_points"
+        ],
         "properties": {
-          "summary": { "type": "string" },
+          "summary": {
+            "type": "string"
+          },
           "key_points": {
             "type": "array",
-            "items": { "type": "string" }
+            "items": {
+              "type": "string"
+            }
           }
         }
       },
@@ -679,17 +1417,44 @@
           "fallback_from"
         ],
         "properties": {
-          "agent": { "type": "string" },
-          "status": { "type": "string" },
-          "attempts": { "type": "integer" },
-          "latency_ms": { "type": "integer" },
-          "error": { "type": "string", "nullable": true },
-          "error_kind": { "type": "string", "nullable": true },
-          "model": { "type": "string", "nullable": true },
-          "prompt_version": { "type": "string", "nullable": true },
-          "tokens_in": { "type": "integer" },
-          "tokens_out": { "type": "integer" },
-          "fallback_from": { "type": "string", "nullable": true }
+          "agent": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "attempts": {
+            "type": "integer"
+          },
+          "latency_ms": {
+            "type": "integer"
+          },
+          "error": {
+            "type": "string",
+            "nullable": true
+          },
+          "error_kind": {
+            "type": "string",
+            "nullable": true
+          },
+          "model": {
+            "type": "string",
+            "nullable": true
+          },
+          "prompt_version": {
+            "type": "string",
+            "nullable": true
+          },
+          "tokens_in": {
+            "type": "integer"
+          },
+          "tokens_out": {
+            "type": "integer"
+          },
+          "fallback_from": {
+            "type": "string",
+            "nullable": true
+          }
         }
       },
       "AnalysisOut": {
@@ -706,20 +1471,43 @@
           "runs"
         ],
         "properties": {
-          "version": { "type": "integer" },
-          "status": { "$ref": "#/components/schemas/AnalysisStatus" },
-          "created_at": { "type": "string", "format": "date-time" },
-          "classification": { "$ref": "#/components/schemas/CallClassification", "nullable": true },
-          "crm": { "$ref": "#/components/schemas/CrmExtraction", "nullable": true },
-          "sales": { "$ref": "#/components/schemas/SalesAnalysis", "nullable": true },
-          "summary": { "$ref": "#/components/schemas/CallSummary", "nullable": true },
+          "version": {
+            "type": "integer"
+          },
+          "status": {
+            "$ref": "#/components/schemas/AnalysisStatus"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "classification": {
+            "$ref": "#/components/schemas/CallClassification",
+            "nullable": true
+          },
+          "crm": {
+            "$ref": "#/components/schemas/CrmExtraction",
+            "nullable": true
+          },
+          "sales": {
+            "$ref": "#/components/schemas/SalesAnalysis",
+            "nullable": true
+          },
+          "summary": {
+            "$ref": "#/components/schemas/CallSummary",
+            "nullable": true
+          },
           "errors": {
             "type": "object",
-            "additionalProperties": { "type": "string" }
+            "additionalProperties": {
+              "type": "string"
+            }
           },
           "runs": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/AgentRun" }
+            "items": {
+              "$ref": "#/components/schemas/AgentRun"
+            }
           }
         }
       },
@@ -743,42 +1531,111 @@
           "summary"
         ],
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "started_at": { "type": "string", "format": "date-time" },
-          "duration_s": { "type": "integer", "nullable": true },
-          "answer_delay_s": { "type": "integer", "nullable": true },
-          "switchboard_outcome": { "$ref": "#/components/schemas/SwitchboardOutcome", "nullable": true },
-          "customer_name": { "type": "string", "nullable": true },
-          "boat_name": { "type": "string", "nullable": true },
-          "marina": { "type": "string", "nullable": true },
-          "state": { "$ref": "#/components/schemas/CallState" },
-          "call_type": { "$ref": "#/components/schemas/CallType", "nullable": true },
-          "request_category": { "$ref": "#/components/schemas/RequestCategory", "nullable": true },
-          "urgency": { "$ref": "#/components/schemas/Urgency", "nullable": true },
-          "sales_outcome": { "$ref": "#/components/schemas/SalesOutcomeType", "nullable": true },
-          "loss_reason": { "$ref": "#/components/schemas/LossReason", "nullable": true },
-          "summary": { "type": "string", "nullable": true }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "duration_s": {
+            "type": "integer",
+            "nullable": true
+          },
+          "answer_delay_s": {
+            "type": "integer",
+            "nullable": true
+          },
+          "switchboard_outcome": {
+            "$ref": "#/components/schemas/SwitchboardOutcome",
+            "nullable": true
+          },
+          "customer_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "boat_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "marina": {
+            "type": "string",
+            "nullable": true
+          },
+          "state": {
+            "$ref": "#/components/schemas/CallState"
+          },
+          "call_type": {
+            "$ref": "#/components/schemas/CallType",
+            "nullable": true
+          },
+          "request_category": {
+            "$ref": "#/components/schemas/RequestCategory",
+            "nullable": true
+          },
+          "urgency": {
+            "$ref": "#/components/schemas/Urgency",
+            "nullable": true
+          },
+          "sales_outcome": {
+            "$ref": "#/components/schemas/SalesOutcomeType",
+            "nullable": true
+          },
+          "loss_reason": {
+            "$ref": "#/components/schemas/LossReason",
+            "nullable": true
+          },
+          "summary": {
+            "type": "string",
+            "nullable": true
+          }
         }
       },
       "TranscriptSegmentOut": {
         "type": "object",
-        "required": ["index", "speaker", "start_ms", "end_ms", "text"],
+        "required": [
+          "index",
+          "speaker",
+          "start_ms",
+          "end_ms",
+          "text"
+        ],
         "properties": {
-          "index": { "type": "integer" },
-          "speaker": { "$ref": "#/components/schemas/Speaker" },
-          "start_ms": { "type": "integer", "nullable": true },
-          "end_ms": { "type": "integer", "nullable": true },
-          "text": { "type": "string" }
+          "index": {
+            "type": "integer"
+          },
+          "speaker": {
+            "$ref": "#/components/schemas/Speaker"
+          },
+          "start_ms": {
+            "type": "integer",
+            "nullable": true
+          },
+          "end_ms": {
+            "type": "integer",
+            "nullable": true
+          },
+          "text": {
+            "type": "string"
+          }
         }
       },
       "TranscriptOut": {
         "type": "object",
-        "required": ["text", "segments"],
+        "required": [
+          "text",
+          "segments"
+        ],
         "properties": {
-          "text": { "type": "string" },
+          "text": {
+            "type": "string"
+          },
           "segments": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/TranscriptSegmentOut" }
+            "items": {
+              "$ref": "#/components/schemas/TranscriptSegmentOut"
+            }
           }
         }
       },
@@ -804,23 +1661,74 @@
           "analysis"
         ],
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "started_at": { "type": "string", "format": "date-time" },
-          "duration_s": { "type": "integer", "nullable": true },
-          "answer_delay_s": { "type": "integer", "nullable": true },
-          "switchboard_outcome": { "$ref": "#/components/schemas/SwitchboardOutcome", "nullable": true },
-          "customer_id": { "type": "string", "format": "uuid", "nullable": true },
-          "boat_id": { "type": "string", "format": "uuid", "nullable": true },
-          "customer_name": { "type": "string", "nullable": true },
-          "customer_phone": { "type": "string", "nullable": true },
-          "boat_name": { "type": "string", "nullable": true },
-          "boat_model": { "type": "string", "nullable": true },
-          "marina": { "type": "string", "nullable": true },
-          "has_audio": { "type": "boolean" },
-          "state": { "$ref": "#/components/schemas/CallState" },
-          "error": { "type": "string", "nullable": true },
-          "transcript": { "$ref": "#/components/schemas/TranscriptOut", "nullable": true },
-          "analysis": { "$ref": "#/components/schemas/AnalysisOut", "nullable": true }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "duration_s": {
+            "type": "integer",
+            "nullable": true
+          },
+          "answer_delay_s": {
+            "type": "integer",
+            "nullable": true
+          },
+          "switchboard_outcome": {
+            "$ref": "#/components/schemas/SwitchboardOutcome",
+            "nullable": true
+          },
+          "customer_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "boat_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "customer_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "customer_phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "boat_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "boat_model": {
+            "type": "string",
+            "nullable": true
+          },
+          "marina": {
+            "type": "string",
+            "nullable": true
+          },
+          "has_audio": {
+            "type": "boolean"
+          },
+          "state": {
+            "$ref": "#/components/schemas/CallState"
+          },
+          "error": {
+            "type": "string",
+            "nullable": true
+          },
+          "transcript": {
+            "$ref": "#/components/schemas/TranscriptOut",
+            "nullable": true
+          },
+          "analysis": {
+            "$ref": "#/components/schemas/AnalysisOut",
+            "nullable": true
+          }
         }
       },
       "CrmRecordItem": {
@@ -841,44 +1749,116 @@
           "evidence"
         ],
         "properties": {
-          "call_id": { "type": "string", "format": "uuid" },
-          "started_at": { "type": "string", "format": "date-time" },
-          "customer_name": { "type": "string", "nullable": true },
-          "boat_name": { "type": "string", "nullable": true },
-          "analysis_version": { "type": "integer" },
-          "request_category": { "$ref": "#/components/schemas/RequestCategory", "nullable": true },
-          "location": { "type": "string", "nullable": true },
-          "problem": { "type": "string", "nullable": true },
-          "service_mode": { "$ref": "#/components/schemas/ServiceMode", "nullable": true },
-          "urgency": { "$ref": "#/components/schemas/Urgency", "nullable": true },
-          "potential_job": { "type": "string", "nullable": true },
-          "next_action": { "$ref": "#/components/schemas/NextAction", "nullable": true },
+          "call_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "customer_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "boat_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "analysis_version": {
+            "type": "integer"
+          },
+          "request_category": {
+            "$ref": "#/components/schemas/RequestCategory",
+            "nullable": true
+          },
+          "location": {
+            "type": "string",
+            "nullable": true
+          },
+          "problem": {
+            "type": "string",
+            "nullable": true
+          },
+          "service_mode": {
+            "$ref": "#/components/schemas/ServiceMode",
+            "nullable": true
+          },
+          "urgency": {
+            "$ref": "#/components/schemas/Urgency",
+            "nullable": true
+          },
+          "potential_job": {
+            "type": "string",
+            "nullable": true
+          },
+          "next_action": {
+            "$ref": "#/components/schemas/NextAction",
+            "nullable": true
+          },
           "evidence": {
             "type": "object",
-            "additionalProperties": { "type": "string" }
+            "additionalProperties": {
+              "type": "string"
+            }
           },
-          "review_status": { "$ref": "#/components/schemas/CrmReviewStatus" },
-          "edited_fields": { "type": "object" },
-          "service_order_id": { "type": "string", "format": "uuid", "nullable": true }
+          "review_status": {
+            "$ref": "#/components/schemas/CrmReviewStatus"
+          },
+          "edited_fields": {
+            "type": "object"
+          },
+          "service_order_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
         }
       },
       "CrmApproveIn": {
         "type": "object",
         "properties": {
-          "request_category": { "$ref": "#/components/schemas/RequestCategory", "nullable": true },
-          "location": { "type": "string", "nullable": true },
-          "problem": { "type": "string", "nullable": true },
-          "service_mode": { "$ref": "#/components/schemas/ServiceMode", "nullable": true },
-          "urgency": { "$ref": "#/components/schemas/Urgency", "nullable": true },
-          "potential_job": { "type": "string", "nullable": true },
-          "next_action": { "$ref": "#/components/schemas/NextAction", "nullable": true },
-          "note": { "type": "string", "nullable": true }
+          "request_category": {
+            "$ref": "#/components/schemas/RequestCategory",
+            "nullable": true
+          },
+          "location": {
+            "type": "string",
+            "nullable": true
+          },
+          "problem": {
+            "type": "string",
+            "nullable": true
+          },
+          "service_mode": {
+            "$ref": "#/components/schemas/ServiceMode",
+            "nullable": true
+          },
+          "urgency": {
+            "$ref": "#/components/schemas/Urgency",
+            "nullable": true
+          },
+          "potential_job": {
+            "type": "string",
+            "nullable": true
+          },
+          "next_action": {
+            "$ref": "#/components/schemas/NextAction",
+            "nullable": true
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
         }
       },
       "CrmRejectIn": {
         "type": "object",
         "properties": {
-          "note": { "type": "string", "nullable": true }
+          "note": {
+            "type": "string",
+            "nullable": true
+          }
         }
       },
       "CrmReviewOut": {
@@ -891,43 +1871,114 @@
           "edited_fields"
         ],
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "call_id": { "type": "string", "format": "uuid" },
-          "analysis_id": { "type": "string", "format": "uuid" },
-          "status": { "$ref": "#/components/schemas/CrmReviewStatus" },
-          "edited_fields": { "type": "object" },
-          "note": { "type": "string", "nullable": true },
-          "reviewed_at": { "type": "string", "format": "date-time", "nullable": true },
-          "service_order_id": { "type": "string", "format": "uuid", "nullable": true }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "call_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "analysis_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/CrmReviewStatus"
+          },
+          "edited_fields": {
+            "type": "object"
+          },
+          "note": {
+            "type": "string",
+            "nullable": true
+          },
+          "reviewed_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "service_order_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
         }
       },
       "SegmentIn": {
         "type": "object",
-        "required": ["speaker", "text"],
+        "required": [
+          "speaker",
+          "text"
+        ],
         "properties": {
-          "speaker": { "$ref": "#/components/schemas/Speaker" },
-          "text": { "type": "string" },
-          "start_ms": { "type": "integer", "nullable": true },
-          "end_ms": { "type": "integer", "nullable": true }
+          "speaker": {
+            "$ref": "#/components/schemas/Speaker"
+          },
+          "text": {
+            "type": "string"
+          },
+          "start_ms": {
+            "type": "integer",
+            "nullable": true
+          },
+          "end_ms": {
+            "type": "integer",
+            "nullable": true
+          }
         }
       },
       "CallCreate": {
         "type": "object",
-        "required": ["started_at"],
+        "required": [
+          "started_at"
+        ],
         "properties": {
-          "started_at": { "type": "string", "format": "date-time" },
-          "duration_s": { "type": "integer", "nullable": true },
-          "answer_delay_s": { "type": "integer", "nullable": true },
-          "switchboard_outcome": { "$ref": "#/components/schemas/SwitchboardOutcome", "nullable": true },
-          "customer_name": { "type": "string", "nullable": true },
-          "customer_phone": { "type": "string", "nullable": true },
-          "boat_name": { "type": "string", "nullable": true },
-          "boat_model": { "type": "string", "nullable": true },
-          "marina": { "type": "string", "nullable": true },
-          "transcript": { "type": "string", "nullable": true },
+          "started_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "duration_s": {
+            "type": "integer",
+            "nullable": true
+          },
+          "answer_delay_s": {
+            "type": "integer",
+            "nullable": true
+          },
+          "switchboard_outcome": {
+            "$ref": "#/components/schemas/SwitchboardOutcome",
+            "nullable": true
+          },
+          "customer_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "customer_phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "boat_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "boat_model": {
+            "type": "string",
+            "nullable": true
+          },
+          "marina": {
+            "type": "string",
+            "nullable": true
+          },
+          "transcript": {
+            "type": "string",
+            "nullable": true
+          },
           "segments": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/SegmentIn" },
+            "items": {
+              "$ref": "#/components/schemas/SegmentIn"
+            },
             "nullable": true
           }
         }
@@ -935,53 +1986,128 @@
       "AudioCallMeta": {
         "type": "object",
         "description": "POST /calls/audio form alanları (ses dosyası `file` alanında).",
-        "required": ["started_at"],
+        "required": [
+          "started_at"
+        ],
         "properties": {
-          "started_at": { "type": "string", "format": "date-time" },
-          "duration_s": { "type": "integer", "nullable": true },
-          "answer_delay_s": { "type": "integer", "nullable": true },
-          "switchboard_outcome": { "$ref": "#/components/schemas/SwitchboardOutcome" },
-          "customer_name": { "type": "string", "nullable": true },
-          "customer_phone": { "type": "string", "nullable": true },
-          "boat_name": { "type": "string", "nullable": true },
-          "boat_model": { "type": "string", "nullable": true },
-          "marina": { "type": "string", "nullable": true }
+          "started_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "duration_s": {
+            "type": "integer",
+            "nullable": true
+          },
+          "answer_delay_s": {
+            "type": "integer",
+            "nullable": true
+          },
+          "switchboard_outcome": {
+            "$ref": "#/components/schemas/SwitchboardOutcome"
+          },
+          "customer_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "customer_phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "boat_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "boat_model": {
+            "type": "string",
+            "nullable": true
+          },
+          "marina": {
+            "type": "string",
+            "nullable": true
+          }
         }
       },
       "CallAccepted": {
         "type": "object",
-        "required": ["call_id", "state", "task_id"],
+        "required": [
+          "call_id",
+          "state",
+          "task_id"
+        ],
         "properties": {
-          "call_id": { "type": "string", "format": "uuid" },
-          "state": { "$ref": "#/components/schemas/CallState" },
-          "task_id": { "type": "string", "nullable": true }
+          "call_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "state": {
+            "$ref": "#/components/schemas/CallState"
+          },
+          "task_id": {
+            "type": "string",
+            "nullable": true
+          }
         }
       },
       "CallStatus": {
         "type": "object",
-        "required": ["call_id", "state", "analysis_version", "error", "updated_at"],
+        "required": [
+          "call_id",
+          "state",
+          "analysis_version",
+          "error",
+          "updated_at"
+        ],
         "properties": {
-          "call_id": { "type": "string", "format": "uuid" },
-          "state": { "$ref": "#/components/schemas/CallState" },
-          "analysis_version": { "type": "integer", "nullable": true },
-          "error": { "type": "string", "nullable": true },
-          "updated_at": { "type": "string", "format": "date-time" }
+          "call_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "state": {
+            "$ref": "#/components/schemas/CallState"
+          },
+          "analysis_version": {
+            "type": "integer",
+            "nullable": true
+          },
+          "error": {
+            "type": "string",
+            "nullable": true
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "CountItem": {
         "type": "object",
-        "required": ["name", "count"],
+        "required": [
+          "name",
+          "count"
+        ],
         "properties": {
-          "name": { "type": "string" },
-          "count": { "type": "integer" }
+          "name": {
+            "type": "string"
+          },
+          "count": {
+            "type": "integer"
+          }
         }
       },
       "DailyCount": {
         "type": "object",
-        "required": ["day", "count"],
+        "required": [
+          "day",
+          "count"
+        ],
         "properties": {
-          "day": { "type": "string", "format": "date" },
-          "count": { "type": "integer" }
+          "day": {
+            "type": "string",
+            "format": "date"
+          },
+          "count": {
+            "type": "integer"
+          }
         }
       },
       "KpiSummary": {
@@ -1006,139 +2132,648 @@
           "avg_answer_delay_s"
         ],
         "properties": {
-          "period_start": { "type": "string", "format": "date" },
-          "period_end": { "type": "string", "format": "date" },
-          "total_calls": { "type": "integer" },
-          "analyzed_calls": { "type": "integer" },
-          "new_customers": { "type": "integer" },
-          "service_requests": { "type": "integer" },
-          "quote_requests": { "type": "integer" },
-          "urgent_requests": { "type": "integer" },
-          "converted_sales": { "type": "integer" },
-          "conversion_rate": { "type": "number", "nullable": true },
+          "period_start": {
+            "type": "string",
+            "format": "date"
+          },
+          "period_end": {
+            "type": "string",
+            "format": "date"
+          },
+          "total_calls": {
+            "type": "integer"
+          },
+          "analyzed_calls": {
+            "type": "integer"
+          },
+          "new_customers": {
+            "type": "integer"
+          },
+          "service_requests": {
+            "type": "integer"
+          },
+          "quote_requests": {
+            "type": "integer"
+          },
+          "urgent_requests": {
+            "type": "integer"
+          },
+          "converted_sales": {
+            "type": "integer"
+          },
+          "conversion_rate": {
+            "type": "number",
+            "nullable": true
+          },
           "lost_by_reason": {
             "type": "object",
-            "additionalProperties": { "type": "integer" }
+            "additionalProperties": {
+              "type": "integer"
+            }
           },
           "top_problems": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/CountItem" }
+            "items": {
+              "$ref": "#/components/schemas/CountItem"
+            }
           },
           "busiest_marinas": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/CountItem" }
+            "items": {
+              "$ref": "#/components/schemas/CountItem"
+            }
           },
           "by_category": {
             "type": "object",
-            "additionalProperties": { "type": "integer" }
+            "additionalProperties": {
+              "type": "integer"
+            }
           },
           "by_urgency": {
             "type": "object",
-            "additionalProperties": { "type": "integer" }
+            "additionalProperties": {
+              "type": "integer"
+            }
           },
           "daily_calls": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/DailyCount" }
+            "items": {
+              "$ref": "#/components/schemas/DailyCount"
+            }
           },
-          "avg_answer_delay_s": { "type": "number", "nullable": true }
+          "avg_answer_delay_s": {
+            "type": "number",
+            "nullable": true
+          }
         }
       },
       "SourceRef": {
         "type": "object",
-        "required": ["kind", "record_id", "title", "date", "excerpt"],
+        "required": [
+          "kind",
+          "record_id",
+          "title",
+          "date",
+          "excerpt"
+        ],
         "properties": {
-          "kind": { "$ref": "#/components/schemas/SourceKind" },
-          "record_id": { "type": "string" },
-          "title": { "type": "string" },
-          "date": { "type": "string", "format": "date", "nullable": true },
-          "excerpt": { "type": "string", "nullable": true }
+          "kind": {
+            "$ref": "#/components/schemas/SourceKind"
+          },
+          "record_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "excerpt": {
+            "type": "string",
+            "nullable": true
+          }
         }
       },
       "ChatQuestion": {
         "type": "object",
-        "required": ["question"],
+        "required": [
+          "question"
+        ],
         "properties": {
-          "question": { "type": "string" },
-          "session_id": { "type": "string", "format": "uuid", "nullable": true }
+          "question": {
+            "type": "string"
+          },
+          "session_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
         }
       },
       "ChatMessageOut": {
         "type": "object",
-        "required": ["id", "role", "content", "created_at", "question_type", "sources", "found"],
+        "required": [
+          "id",
+          "role",
+          "content",
+          "created_at",
+          "question_type",
+          "sources",
+          "found"
+        ],
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "role": { "type": "string", "enum": ["user", "assistant"] },
-          "content": { "type": "string" },
-          "created_at": { "type": "string", "format": "date-time" },
-          "question_type": { "$ref": "#/components/schemas/QuestionType", "nullable": true },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "assistant"
+            ]
+          },
+          "content": {
+            "type": "string"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "question_type": {
+            "$ref": "#/components/schemas/QuestionType",
+            "nullable": true
+          },
           "sources": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/SourceRef" }
+            "items": {
+              "$ref": "#/components/schemas/SourceRef"
+            }
           },
-          "found": { "type": "boolean" }
+          "found": {
+            "type": "boolean"
+          }
         }
       },
       "ChatReply": {
         "type": "object",
-        "required": ["session_id", "question", "answer"],
+        "required": [
+          "session_id",
+          "question",
+          "answer"
+        ],
         "properties": {
-          "session_id": { "type": "string", "format": "uuid" },
-          "question": { "$ref": "#/components/schemas/ChatMessageOut" },
-          "answer": { "$ref": "#/components/schemas/ChatMessageOut" }
+          "session_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "question": {
+            "$ref": "#/components/schemas/ChatMessageOut"
+          },
+          "answer": {
+            "$ref": "#/components/schemas/ChatMessageOut"
+          }
         }
       },
       "ChatSessionOut": {
         "type": "object",
-        "required": ["id", "title", "created_at", "updated_at"],
+        "required": [
+          "id",
+          "title",
+          "created_at",
+          "updated_at"
+        ],
         "properties": {
-          "id": { "type": "string", "format": "uuid" },
-          "title": { "type": "string", "nullable": true },
-          "created_at": { "type": "string", "format": "date-time" },
-          "updated_at": { "type": "string", "format": "date-time" }
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time"
+          }
         }
       },
       "ChatSessionDetail": {
         "type": "object",
-        "required": ["session", "messages"],
+        "required": [
+          "session",
+          "messages"
+        ],
         "properties": {
-          "session": { "$ref": "#/components/schemas/ChatSessionOut" },
+          "session": {
+            "$ref": "#/components/schemas/ChatSessionOut"
+          },
           "messages": {
             "type": "array",
-            "items": { "$ref": "#/components/schemas/ChatMessageOut" }
+            "items": {
+              "$ref": "#/components/schemas/ChatMessageOut"
+            }
           }
         }
       },
       "StatusEvent": {
         "type": "object",
-        "required": ["type", "stage"],
+        "required": [
+          "type",
+          "stage"
+        ],
         "properties": {
-          "type": { "type": "string", "enum": ["status"] },
-          "stage": { "type": "string", "enum": ["araniyor", "hazirlaniyor", "dogrulaniyor"] }
+          "type": {
+            "type": "string",
+            "enum": [
+              "status"
+            ]
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "araniyor",
+              "hazirlaniyor",
+              "dogrulaniyor"
+            ]
+          }
         }
       },
       "DeltaEvent": {
         "type": "object",
-        "required": ["type", "text"],
+        "required": [
+          "type",
+          "text"
+        ],
         "properties": {
-          "type": { "type": "string", "enum": ["delta"] },
-          "text": { "type": "string" }
+          "type": {
+            "type": "string",
+            "enum": [
+              "delta"
+            ]
+          },
+          "text": {
+            "type": "string"
+          }
         }
       },
       "DoneEvent": {
         "type": "object",
-        "required": ["type", "reply"],
+        "required": [
+          "type",
+          "reply"
+        ],
         "properties": {
-          "type": { "type": "string", "enum": ["done"] },
-          "reply": { "$ref": "#/components/schemas/ChatReply" }
+          "type": {
+            "type": "string",
+            "enum": [
+              "done"
+            ]
+          },
+          "reply": {
+            "$ref": "#/components/schemas/ChatReply"
+          }
         }
       },
       "ErrorEvent": {
         "type": "object",
-        "required": ["type", "code", "message"],
+        "required": [
+          "type",
+          "code",
+          "message"
+        ],
         "properties": {
-          "type": { "type": "string", "enum": ["error"] },
-          "code": { "type": "string" },
-          "message": { "type": "string" }
+          "type": {
+            "type": "string",
+            "enum": [
+              "error"
+            ]
+          },
+          "code": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "ServiceOrderStatus": {
+        "type": "string",
+        "enum": [
+          "yeni_atandi",
+          "kesifte",
+          "onaylandi",
+          "devam_ediyor",
+          "tamamlandi"
+        ]
+      },
+      "ServiceOrderCustomerOut": {
+        "type": "object",
+        "required": [
+          "id",
+          "full_name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "full_name": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          },
+          "marina": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ServiceOrderBoatOut": {
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string",
+            "nullable": true
+          },
+          "year": {
+            "type": "integer",
+            "nullable": true
+          },
+          "marina": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ServiceOrderCraftsmanOut": {
+        "type": "object",
+        "required": [
+          "id",
+          "full_name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "full_name": {
+            "type": "string"
+          },
+          "specialty": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ServiceOrderSourceCallOut": {
+        "type": "object",
+        "required": [
+          "call_id",
+          "started_at"
+        ],
+        "properties": {
+          "call_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "customer_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "boat_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "switchboard_outcome": {
+            "type": "string",
+            "nullable": true
+          },
+          "request_category": {
+            "": "#/components/schemas/RequestCategory"
+          },
+          "location": {
+            "type": "string",
+            "nullable": true
+          },
+          "problem": {
+            "type": "string",
+            "nullable": true
+          },
+          "service_mode": {
+            "": "#/components/schemas/ServiceMode"
+          },
+          "urgency": {
+            "": "#/components/schemas/Urgency"
+          },
+          "potential_job": {
+            "type": "string",
+            "nullable": true
+          },
+          "next_action": {
+            "": "#/components/schemas/NextAction"
+          },
+          "summary": {
+            "type": "string",
+            "nullable": true
+          },
+          "crm_review_status": {
+            "": "#/components/schemas/CrmReviewStatus"
+          },
+          "crm_review_note": {
+            "type": "string",
+            "nullable": true
+          },
+          "crm_reviewed_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        }
+      },
+      "ServiceOrderListItem": {
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "created_at",
+          "customer_id",
+          "customer_name",
+          "boat_id",
+          "boat_name"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "": "#/components/schemas/ServiceOrderStatus"
+          },
+          "category": {
+            "": "#/components/schemas/RequestCategory"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "scheduled_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "completed_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "customer_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "customer_name": {
+            "type": "string"
+          },
+          "customer_phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "boat_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "boat_name": {
+            "type": "string"
+          },
+          "boat_model": {
+            "type": "string",
+            "nullable": true
+          },
+          "marina": {
+            "type": "string",
+            "nullable": true
+          },
+          "craftsman_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "craftsman_name": {
+            "type": "string",
+            "nullable": true
+          },
+          "source_call_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          }
+        }
+      },
+      "PageServiceOrderListItem": {
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "page_size"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "": "#/components/schemas/ServiceOrderListItem"
+            }
+          },
+          "total": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "page_size": {
+            "type": "integer"
+          }
+        }
+      },
+      "ServiceOrderDetail": {
+        "type": "object",
+        "required": [
+          "id",
+          "status",
+          "created_at",
+          "customer",
+          "boat"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "": "#/components/schemas/ServiceOrderStatus"
+          },
+          "category": {
+            "": "#/components/schemas/RequestCategory"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "scheduled_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "completed_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "customer": {
+            "": "#/components/schemas/ServiceOrderCustomerOut"
+          },
+          "boat": {
+            "": "#/components/schemas/ServiceOrderBoatOut"
+          },
+          "craftsman": {
+            "": "#/components/schemas/ServiceOrderCraftsmanOut",
+            "nullable": true
+          },
+          "source_call": {
+            "": "#/components/schemas/ServiceOrderSourceCallOut",
+            "nullable": true
+          }
+        }
+      },
+      "ServiceOrderStatusUpdate": {
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "properties": {
+          "status": {
+            "": "#/components/schemas/ServiceOrderStatus"
+          }
         }
       }
     }

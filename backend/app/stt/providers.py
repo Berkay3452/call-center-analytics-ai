@@ -52,6 +52,28 @@ def _load_whisper(
     )
 
 
+PAUSE_SPLIT_S = 0.8  # bu kadar sessizlik konuşma sırası arası sayılır
+
+
+def split_at_pauses(words: Any, gap_s: float = PAUSE_SPLIT_S) -> list[SttSegment]:
+    """Kelime zamanlı bir segmenti `gap_s` saniyeden uzun duraklamalardan parçalara böler."""
+    parts: list[SttSegment] = []
+    current: list[Any] = []
+    for word in words:
+        if current and word.start - current[-1].end >= gap_s:
+            parts.append(_words_segment(current))
+            current = []
+        current.append(word)
+    if current:
+        parts.append(_words_segment(current))
+    return [p for p in parts if p.text]
+
+
+def _words_segment(words: list[Any]) -> SttSegment:
+    text = "".join(w.word for w in words).strip()
+    return SttSegment(start_ms=_ms(words[0].start), end_ms=_ms(words[-1].end), text=text)
+
+
 class FasterWhisperTranscriber:
     name = "faster_whisper"
 
@@ -62,6 +84,7 @@ class FasterWhisperTranscriber:
         compute_type: str = "int8",
         cpu_threads: int = 0,
         beam_size: int = 5,
+        vad_threshold: float = 0.2,
         download_root: str | None = None,
         model: Any = None,
     ) -> None:
@@ -70,6 +93,7 @@ class FasterWhisperTranscriber:
         self.compute_type = compute_type
         self.cpu_threads = cpu_threads
         self.beam_size = beam_size
+        self.vad_threshold = vad_threshold
         self._model = model  # testlerde sahte model verilebilir
         # CTranslate2 modeli aynı anda tek iş için kullanılır (CPU zaten dolu).
         self._lock = threading.Lock()
@@ -81,7 +105,7 @@ class FasterWhisperTranscriber:
             )
         return self._model
 
-    def _run(self, audio: Any, language: str) -> TranscriptionResult:
+    def _run(self, audio: Any, language: str, *, split_pauses: bool = False) -> TranscriptionResult:
         with self._lock:
             model = self._get_model()
             try:
@@ -90,14 +114,24 @@ class FasterWhisperTranscriber:
                     language=language,
                     beam_size=self.beam_size,
                     vad_filter=True,  # sessizlikleri atlar: hız ve uydurma metne karşı
+                    vad_parameters={"threshold": self.vad_threshold},
                     condition_on_previous_text=False,  # uzun kayıtta tekrar döngüsünü önler
+                    word_timestamps=split_pauses,
                 )
                 # `segments` tembel üreteçtir; asıl çözümleme burada, kilit içinde yapılır.
-                out = [
-                    SttSegment(start_ms=_ms(s.start), end_ms=_ms(s.end), text=s.text.strip())
-                    for s in segments
-                    if s.text and s.text.strip()
-                ]
+                out: list[SttSegment] = []
+                for s in segments:
+                    if not (s.text and s.text.strip()):
+                        continue
+                    words = getattr(s, "words", None)
+                    if split_pauses and words:
+                        out.extend(split_at_pauses(words))
+                    else:
+                        out.append(
+                            SttSegment(
+                                start_ms=_ms(s.start), end_ms=_ms(s.end), text=s.text.strip()
+                            )
+                        )
             except SttError:
                 raise
             except Exception as exc:
@@ -113,8 +147,13 @@ class FasterWhisperTranscriber:
         return await asyncio.to_thread(self._run, str(audio_path), language)
 
     async def transcribe_array(self, audio: Any, *, language: str = "tr") -> TranscriptionResult:
-        """Çözülmüş ses dizisi (16 kHz mono float32) için; stereo kanal ayrımında kullanılır."""
-        return await asyncio.to_thread(self._run, audio, language)
+        """Çözülmüş ses dizisi (16 kHz mono float32) için; stereo kanal ayrımında kullanılır.
+
+        Kanallar ayrı çözüldüğü için iki kanalın parçaları zamana göre iç içe geçirilir. Whisper
+        segmentleri sessizliği aşabilir (bir konuşmacının iki sırası tek segment olur ve sıra
+        bozulur), bu yüzden kelime zamanlarıyla segmentler duraklamalardan bölünür (#124).
+        """
+        return await asyncio.to_thread(self._run, audio, language, split_pauses=True)
 
 
 # --- API: OpenAI uyumlu Whisper -----------------------------------------------------------

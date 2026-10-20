@@ -9,11 +9,12 @@ Kullanım (`backend/` klasöründe; Piper projenin bağımlılığı değildir, 
 
     uv run --with piper-tts python -m scripts.generate_audio
     uv run --with piper-tts python -m scripts.generate_audio --calls call_001,call_004
-    uv run --with piper-tts python -m scripts.generate_audio --stereo   # temsilci sol, müşteri sağ
+    uv run --with piper-tts python -m scripts.generate_audio --mono     # tek kanal (eski biçim)
 
 Ses modeli (`tr_TR-dfki-medium`, ~60 MB) ilk çalıştırmada `--voice-dir` klasörüne indirilir.
-Tek Türkçe Piper sesi vardır: mono kayıtta konuşmacılar ayırt edilemez (bilinen sınırlama);
-`--stereo` kanalları ayırarak `STT_CHANNEL_LAYOUT=stereo_rep_left` denemesine izin verir.
+Varsayılan **stereo** (santral kaydı gibi): temsilci sol, müşteri sağ kanal; STT
+`STT_CHANNEL_LAYOUT=stereo_rep_left` ile konuşmacıları kanaldan ayırır. Tek Türkçe Piper sesi
+olduğu için müşteri sesinin perdesi yükseltilir (`--customer-pitch`), iki farklı kişi gibi duyulur.
 """
 
 from __future__ import annotations
@@ -75,7 +76,15 @@ def main() -> None:
     parser.add_argument(
         "--voice-dir", type=Path, default=DEFAULT_VOICE_DIR, help="Ses modeli klasörü."
     )
-    parser.add_argument("--stereo", action="store_true", help="Temsilci sol, müşteri sağ kanal.")
+    parser.add_argument(
+        "--mono", action="store_true", help="Tek kanal üret (varsayılan stereo: temsilci sol)."
+    )
+    parser.add_argument(
+        "--customer-pitch",
+        type=float,
+        default=1.15,
+        help="Müşteri sesinin perde çarpanı (1 = değişmez; varsayılan 1.15).",
+    )
     parser.add_argument("--force", action="store_true", help="Var olan sesleri yeniden üret.")
     args = parser.parse_args()
 
@@ -96,7 +105,9 @@ def main() -> None:
             skipped += 1
             continue
         turns = json.loads(path.read_text(encoding="utf-8"))["turns"]
-        wav, timing = build_wav(turns, synth, stereo=args.stereo)
+        wav, timing = build_wav(
+            turns, synth, stereo=not args.mono, customer_pitch=args.customer_pitch
+        )
         write_seed_audio(audio_dir, call_id, wav, timing)
         made += 1
         print(f"{call_id}: {len(turns)} tur, {timing[-1][1] / 1000:.0f} sn, {len(wav) // 1024} KB")
