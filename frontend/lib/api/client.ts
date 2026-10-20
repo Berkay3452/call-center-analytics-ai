@@ -286,12 +286,32 @@ async function handleMockRequest<T>(
 
   // 2. POST /calls
   if (method === "POST" && path === "/calls") {
-    return mockCallAccepted as unknown as T;
+    const newCallId = `mock-text-${Date.now()}`;
+    mockReanalyzeMap.set(newCallId, {
+      step: 0,
+      startedAt: Date.now(),
+      analysisVersion: 1,
+    });
+    return {
+      ...mockCallAccepted,
+      call_id: newCallId,
+      state: "beklemede",
+    } as unknown as T;
   }
 
   // 3. POST /calls/audio
   if (method === "POST" && path === "/calls/audio") {
-    return mockCallAccepted as unknown as T;
+    const newCallId = `mock-audio-${Date.now()}`;
+    mockReanalyzeMap.set(newCallId, {
+      step: 0,
+      startedAt: Date.now(),
+      analysisVersion: 1,
+    });
+    return {
+      ...mockCallAccepted,
+      call_id: newCallId,
+      state: "beklemede",
+    } as unknown as T;
   }
 
   // In-memory mock progress tracking for simulated live analysis (#110)
