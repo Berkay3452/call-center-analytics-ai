@@ -324,3 +324,41 @@ async def test_service_orders_auth_required(client: AsyncClient) -> None:
     """Servis anahtarı olmadan yapılan istekler 401 döner."""
     r = await client.get("/api/v1/service-orders")
     assert r.status_code == 401
+
+
+async def test_detail_keeps_approved_analysis_after_reanalysis(
+    client: AsyncClient, factory: async_sessionmaker[AsyncSession]
+) -> None:
+    """Çağrı onaydan sonra yeniden analiz edilse de emir, onaylanan sürümün alanlarını gösterir."""
+    async with factory() as session:
+        stmt = (
+            select(Call, AnalysisRow)
+            .join(AnalysisRow, Call.id == AnalysisRow.call_id)
+            .where(Call.customer_id.is_not(None), Call.boat_id.is_not(None))
+            .order_by(AnalysisRow.version.desc())
+            .limit(1)
+        )
+        row = (await session.execute(stmt)).first()
+        assert row is not None
+        call, approved = row
+        out = await approve_crm_record(session, call.id, CrmApproveIn())
+        assert out.service_order_id is not None
+        # Yeni analiz sürümü: farklı problem ve özet, henüz incelenmemiş.
+        session.add(
+            AnalysisRow(
+                id=uuid4(),
+                call_id=call.id,
+                version=approved.version + 1,
+                status="tamam",
+                problem="Yeni sürümdeki farklı problem",
+                summary="Yeni sürüm özeti",
+            )
+        )
+        await session.commit()
+
+    resp = await client.get(f"/api/v1/service-orders/{out.service_order_id}", headers=HEADERS)
+
+    source = resp.json()["source_call"]
+    assert source["problem"] == approved.problem
+    assert source["summary"] == approved.summary
+    assert source["crm_review_status"] == "onaylandi"

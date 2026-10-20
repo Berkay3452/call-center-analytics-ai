@@ -166,25 +166,22 @@ async def get_service_order_detail(session: AsyncSession, order_id: UUID) -> Ser
     if order.source_call_id is not None:
         call = await session.get(Call, order.source_call_id)
         if call is not None:
+            # Servis emrini doğuran inceleme ve onun analiz sürümü esas alınır: çağrı onaydan
+            # sonra yeniden analiz edilse de emir, onaylanan sürümün alanlarını göstermeli.
             review = await session.scalar(
-                select(CrmReview)
-                .where(
-                    or_(
-                        CrmReview.service_order_id == order.id,
-                        CrmReview.call_id == call.id,
-                    )
-                )
-                .order_by(CrmReview.created_at.desc())
-                .limit(1)
+                select(CrmReview).where(CrmReview.service_order_id == order.id).limit(1)
             )
-            latest_analysis = (
-                await session.execute(
-                    select(AnalysisRow)
-                    .where(AnalysisRow.call_id == call.id)
-                    .order_by(AnalysisRow.version.desc())
-                    .limit(1)
-                )
-            ).scalar_one_or_none()
+            if review is not None:
+                latest_analysis = await session.get(AnalysisRow, review.analysis_id)
+            else:
+                latest_analysis = (
+                    await session.execute(
+                        select(AnalysisRow)
+                        .where(AnalysisRow.call_id == call.id)
+                        .order_by(AnalysisRow.version.desc())
+                        .limit(1)
+                    )
+                ).scalar_one_or_none()
 
             edited = review.edited_fields if review else {}
             source_call_out = ServiceOrderSourceCallOut(
