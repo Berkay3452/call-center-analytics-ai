@@ -17,6 +17,12 @@ const ALLOWED = [
   /^calls\/[^/]+\/audio$/,
   /^calls\/audio$/,
   /^crm$/,
+  /^crm\/[^/]+\/approve$/,
+  /^crm\/[^/]+\/reject$/,
+  /^crm\/suggestions\/[^/]+\/approve$/,
+  /^crm\/suggestions\/[^/]+\/reject$/,
+  /^crm\/suggestions\/[^/]+$/,
+  /^crm\/[^/]+$/,
   /^analytics\/summary$/,
   /^chat\/.+$/,
   /^assistant\/.+$/,
@@ -106,4 +112,11 @@ async function forward(
   return new Response(upstream.body, { status: upstream.status, headers: out });
 }
 
-export { forward as GET, forward as POST, forward as PUT, forward as DELETE, forward as HEAD };
+export {
+  forward as GET,
+  forward as POST,
+  forward as PUT,
+  forward as PATCH,
+  forward as DELETE,
+  forward as HEAD,
+};

@@ -18,7 +18,11 @@ import type {
   ChatReply,
   ChatSessionDetail,
   ChatSessionOut,
+  CrmApproveIn,
   CrmRecordItem,
+  CrmRejectIn,
+  CrmReviewOut,
+  CrmReviewStatus,
   KpiSummary,
   Page,
   SourceRef,
@@ -42,6 +46,16 @@ interface MockAnalysisProgress {
   analysisVersion: number;
 }
 const mockReanalyzeMap = new Map<string, MockAnalysisProgress>();
+
+interface MockCrmReviewProgress {
+  status: CrmReviewStatus;
+  edited_fields: Record<string, unknown>;
+  note?: string | null;
+  service_order_id?: string | null;
+  reviewed_at: string;
+}
+const mockCrmReviewMap = new Map<string, MockCrmReviewProgress>();
+
 
 export interface ApiClientConfig {
   baseUrl?: string;
@@ -363,6 +377,173 @@ async function handleMockRequest<T>(
     } as unknown as T;
   }
 
+
+  // POST /crm/:id/approve veya /crm/suggestions/:id/approve
+  if (
+    method === "POST" &&
+    (/^\/crm\/[^/]+\/approve$/.test(path) || /^\/crm\/suggestions\/[^/]+\/approve$/.test(path))
+  ) {
+    const parts = path.split("/");
+    const id = parts[1] === "suggestions" ? parts[2] : parts[1];
+
+    // 409 Conflict test senaryosu
+    if (id === "mock-conflict-409") {
+      throw new ApiError({
+        code: "CONFLICT",
+        message: "Müşteri veya tekne kaydı sistemde eşleşmediği için servis emri oluşturulamadı.",
+        requestId: "mock-err-409",
+        status: 409,
+        details: { reason: "unmatched_customer_or_boat" },
+      });
+    }
+
+    let payload: Record<string, unknown> = {};
+    try {
+      if (typeof options.body === "string") {
+        payload = JSON.parse(options.body);
+      }
+    } catch {
+      // ignore
+    }
+
+    const serviceOrderId = `SO-2026-${Math.floor(1000 + Math.random() * 9000)}`;
+    const editedFields: Record<string, unknown> = {};
+    const editableKeys = [
+      "request_category",
+      "location",
+      "problem",
+      "service_mode",
+      "urgency",
+      "potential_job",
+      "next_action",
+    ];
+    for (const k of editableKeys) {
+      if (payload[k] !== undefined && payload[k] !== null) {
+        editedFields[k] = payload[k];
+      }
+    }
+
+    const reviewedAt = new Date().toISOString();
+    mockCrmReviewMap.set(id, {
+      status: "onaylandi",
+      edited_fields: editedFields as unknown as Record<string, never>,
+      note: (payload.note as string) ?? null,
+      service_order_id: serviceOrderId,
+      reviewed_at: reviewedAt,
+    });
+
+    // mockSeedCrm listesini de güncelle
+    const found = mockSeedCrm.find((c) => c.call_id === id);
+    if (found) {
+      found.review_status = "onaylandi";
+      found.service_order_id = serviceOrderId;
+      found.edited_fields = editedFields;
+      Object.assign(found, editedFields);
+    }
+
+    return {
+      id: `rev-${id.slice(0, 8)}`,
+      call_id: id,
+      analysis_id: `an-${id.slice(0, 8)}`,
+      status: "onaylandi",
+      edited_fields: editedFields as unknown as Record<string, never>,
+      note: (payload.note as string) ?? null,
+      reviewed_at: reviewedAt,
+      service_order_id: serviceOrderId,
+    } as unknown as T;
+  }
+
+  // POST /crm/:id/reject veya /crm/suggestions/:id/reject
+  if (
+    method === "POST" &&
+    (/^\/crm\/[^/]+\/reject$/.test(path) || /^\/crm\/suggestions\/[^/]+\/reject$/.test(path))
+  ) {
+    const parts = path.split("/");
+    const id = parts[1] === "suggestions" ? parts[2] : parts[1];
+
+    let payload: Record<string, unknown> = {};
+    try {
+      if (typeof options.body === "string") {
+        payload = JSON.parse(options.body);
+      }
+    } catch {
+      // ignore
+    }
+
+    const reviewedAt = new Date().toISOString();
+    const note = (payload.note as string) ?? null;
+    mockCrmReviewMap.set(id, {
+      status: "reddedildi",
+      edited_fields: {},
+      note,
+      service_order_id: null,
+      reviewed_at: reviewedAt,
+    });
+
+    const found = mockSeedCrm.find((c) => c.call_id === id);
+    if (found) {
+      found.review_status = "reddedildi";
+      found.service_order_id = null;
+    }
+
+    return {
+      id: `rev-${id.slice(0, 8)}`,
+      call_id: id,
+      analysis_id: `an-${id.slice(0, 8)}`,
+      status: "reddedildi",
+      edited_fields: {},
+      note,
+      reviewed_at: reviewedAt,
+      service_order_id: null,
+    } as unknown as T;
+  }
+
+  // PATCH /crm/suggestions/:id veya /crm/:id (düzenleme ucu)
+  if (
+    (method === "PATCH" || method === "PUT") &&
+    (/^\/crm\/[^/]+$/.test(path) || /^\/crm\/suggestions\/[^/]+$/.test(path))
+  ) {
+    const parts = path.split("/");
+    const id = parts[1] === "suggestions" ? parts[2] : parts[1];
+
+    let payload: Record<string, unknown> = {};
+    try {
+      if (typeof options.body === "string") {
+        payload = JSON.parse(options.body);
+      }
+    } catch {
+      // ignore
+    }
+
+    const prev = mockCrmReviewMap.get(id);
+    const editedFields = { ...(prev?.edited_fields ?? {}), ...payload };
+    const reviewedAt = new Date().toISOString();
+    mockCrmReviewMap.set(id, {
+      status: prev?.status ?? "bekliyor",
+      edited_fields: editedFields,
+      note: prev?.note,
+      service_order_id: prev?.service_order_id,
+      reviewed_at: reviewedAt,
+    });
+
+    const found = mockSeedCrm.find((c) => c.call_id === id);
+    if (found) {
+      found.edited_fields = editedFields;
+      Object.assign(found, editedFields);
+    }
+
+    return {
+      id: `rev-${id.slice(0, 8)}`,
+      call_id: id,
+      analysis_id: `an-${id.slice(0, 8)}`,
+      status: prev?.status ?? "bekliyor",
+      edited_fields: editedFields,
+      note: prev?.note ?? null,
+      reviewed_at: reviewedAt,
+      service_order_id: prev?.service_order_id ?? null,
+    } as unknown as T;
+  }
+
   // 7. GET /crm
   if (method === "GET" && path === "/crm") {
     const params = options.params;
@@ -569,6 +750,7 @@ export interface CallQueryFilters {
   urgency?: string;
   request_category?: string;
   state?: string;
+  status?: string;
   marina?: string;
   q?: string;
   page?: number;
@@ -1117,3 +1299,68 @@ export async function streamAssistantChat(
   }
 }
 
+
+/**
+ * POST /crm/{call_id}/approve - CRM önerisini onayla (isteğe bağlı 7 alan düzenlemesi ile) (#106 / #113)
+ */
+export async function approveCrmRecord(
+  callId: string,
+  payload?: CrmApproveIn,
+): Promise<CrmReviewOut> {
+  return apiFetch<CrmReviewOut>(`/crm/${callId}/approve`, {
+    method: "POST",
+    body: payload ? JSON.stringify(payload) : "{}",
+  });
+}
+
+/**
+ * POST /crm/{call_id}/reject - CRM önerisini gerekçe ile reddet (#106 / #113)
+ */
+export async function rejectCrmRecord(
+  callId: string,
+  payload?: CrmRejectIn,
+): Promise<CrmReviewOut> {
+  return apiFetch<CrmReviewOut>(`/crm/${callId}/reject`, {
+    method: "POST",
+    body: payload ? JSON.stringify(payload) : "{}",
+  });
+}
+
+/**
+ * Öneriyi onayla yardımcısı (#113).
+ */
+export async function approveSuggestion(
+  callId: string,
+  diff?: Partial<CrmApproveIn>,
+  note?: string,
+): Promise<CrmReviewOut> {
+  return approveCrmRecord(callId, {
+    ...diff,
+    note: note ?? undefined,
+  });
+}
+
+/**
+ * Öneriyi reddet yardımcısı (#113).
+ */
+export async function rejectSuggestion(
+  callId: string,
+  reason?: string,
+): Promise<CrmReviewOut> {
+  return rejectCrmRecord(callId, {
+    note: reason ?? undefined,
+  });
+}
+
+/**
+ * Öneri alanlarını güncelleme / diff gönderme yardımcısı (#113).
+ */
+export async function updateSuggestion(
+  callId: string,
+  diff: Partial<CrmApproveIn>,
+): Promise<CrmReviewOut> {
+  return apiFetch<CrmReviewOut>(`/crm/${callId}`, {
+    method: "PATCH",
+    body: JSON.stringify(diff),
+  });
+}

@@ -1,0 +1,1 @@
+export { CrmSuggestionCard } from "./CrmSuggestionCard";

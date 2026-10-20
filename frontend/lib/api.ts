@@ -262,3 +262,11 @@ export async function fetchLossReasons(filter?: { date_from?: string; date_to?: 
     color: "bg-amber-500",
   }));
 }
+
+export {
+  approveCrmRecord,
+  rejectCrmRecord,
+  approveSuggestion,
+  rejectSuggestion,
+  updateSuggestion,
+} from "./api/client";
