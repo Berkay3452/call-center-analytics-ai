@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { approveCrmRecord, rejectCrmRecord } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
 import {
@@ -86,6 +87,7 @@ export function CrmSuggestionCard({
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [actionError, setActionError] = useState<string | null>(null);
+  const router = useRouter();
   const [is409Error, setIs409Error] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -140,6 +142,7 @@ export function CrmSuggestionCard({
       }
       setIsEditModalOpen(false);
       onStatusChange?.(suggestion.callId, res.status, newOrderId);
+      router.refresh(); // başlıktaki bekleyen sayısı ve durum sekmeleri güncellensin
     } catch (err: unknown) {
       if (err instanceof ApiError && err.status === 409) {
         setIs409Error(true);
@@ -215,6 +218,7 @@ export function CrmSuggestionCard({
       setReviewStatus(res.status);
       setIsRejectModalOpen(false);
       onStatusChange?.(suggestion.callId, res.status, null);
+      router.refresh();
     } catch (err: unknown) {
       setActionError(
         err instanceof Error
