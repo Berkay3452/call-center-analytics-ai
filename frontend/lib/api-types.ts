@@ -47,6 +47,8 @@ export type SourceKind = "service_record" | "boat_note" | "expense" | "subscript
 
 export type CrmReviewStatus = "bekliyor" | "onaylandi" | "reddedildi";
 
+export type MatchMethod = "telefon" | "ad_tekne" | "elle" | "yok";
+
 export type ServiceOrderStatus =
   | "yeni_atandi"
   | "kesifte"
@@ -168,6 +170,11 @@ export interface TranscriptOut {
   segments: TranscriptSegmentOut[];
 }
 
+export interface CallMatchIn {
+  customer_id: string;
+  boat_id?: string | null;
+}
+
 export interface CallDetail {
   id: string;
   started_at: IsoDateTime;
@@ -184,6 +191,7 @@ export interface CallDetail {
   has_audio: boolean;
   state: CallState;
   error: string | null;
+  match_method: MatchMethod | null;
   transcript: TranscriptOut | null;
   analysis: AnalysisOut | null;
 }

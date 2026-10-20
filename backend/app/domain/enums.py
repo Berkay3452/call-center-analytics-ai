@@ -119,10 +119,23 @@ class CrmReviewStatus(StrEnum):
     REDDEDILDI = "reddedildi"
 
 
+class MatchMethod(StrEnum):
+    """Çağrı müşteri ve tekne eşleştirme yöntemi (#119)."""
+
+    TELEFON = "telefon"
+    AD_TEKNE = "ad_tekne"
+    ELLE = "elle"
+    YOK = "yok"
+
+
 LABELS_TR: dict[StrEnum, str] = {
     CrmReviewStatus.BEKLIYOR: "Bekliyor",
     CrmReviewStatus.ONAYLANDI: "Onaylandı",
     CrmReviewStatus.REDDEDILDI: "Reddedildi",
+    MatchMethod.TELEFON: "Telefon",
+    MatchMethod.AD_TEKNE: "Ad & Tekne",
+    MatchMethod.ELLE: "Elle",
+    MatchMethod.YOK: "Eşleşmedi",
     CallType.YENI_MUSTERI: "Yeni müşteri",
     CallType.SERVIS: "Servis talebi",
     CallType.TEKLIF: "Teklif talebi",

@@ -33,6 +33,7 @@ Admin/tekne sahibi rol ayrımını .NET uygulaması yapar. Tekne sahibi uçları
 |---|---|---|---|---|
 | `GET /calls` | Admin | `CallFilters` (sorgu) | `Page` of `CallListItem` | #51 |
 | `GET /calls/{call_id}` | Admin | — | `CallDetail` | #51 |
+| `PUT /calls/{call_id}/match` | Admin | `CallMatchIn` | `CallDetail` | #119 |
 | `GET /crm` | Admin | `CallFilters` (sorgu) | `Page` of `CrmRecordItem` | #51 |
 | `POST /crm/{call_id}/approve` | Admin | `CrmApproveIn` (isteğe bağlı) | `CrmReviewOut`; eşleşme yoksa 409 | #106 |
 | `POST /crm/{call_id}/reject` | Admin | `CrmRejectIn` (isteğe bağlı) | `CrmReviewOut` | #106 |
@@ -59,7 +60,9 @@ Başka kullanıcının sohbet oturumu istenirse 404 döner (varlığı da sızd�
 
 ### Çağrılar
 - `CallListItem`: liste satırı. Santral bilgisi + en son analizden `call_type`, `request_category`, `urgency`, `sales_outcome`, `loss_reason`, `summary`. Analiz yoksa bu alanlar `null`.
-- `CallDetail`: çağrı, `TranscriptOut` (metin + `TranscriptSegmentOut` listesi; kişisel veriler maskeli) ve en son analiz `AnalysisOut`.
+- `CallDetail`: çağrı, `TranscriptOut` (metin + `TranscriptSegmentOut` listesi; kişisel veriler maskeli), `match_method` (`MatchMethod`: `telefon`, `ad_tekne`, `elle`, `yok`) ve en son analiz `AnalysisOut`.
+- `CallMatchIn`: çağrıyı müşteri ve tekneye elle eşleştirme istek gövdesi (`customer_id`, isteğe bağlı `boat_id`) (#119).
+- **Müşteri ve tekne eşleştirme (#119):** Analiz bitince otomatik çalışır. Önce normalize telefon numarası ile `customers.phone` üzerinden kesin eşleşme aranır ve tekneler taranır. Telefon yoksa müşteri adı + tekne adı (normalize edilmiş) üzerinden eşleşme aranır; birden fazla aday varsa belirsiz sayılıp yanlış bağlamamak için boş bırakılır (`yok`). Eşleşmeyen veya yanlış bağlanan çağrılar `PUT /calls/{id}/match` ile elle bağlanabilir (`elle`).
 - `AnalysisOut`: bir analiz sürümü. Agent çıktıları `CallClassification`, `CrmExtraction`, `SalesAnalysis`, `CallSummary`; agent kayıtları `AgentRun`. Başarısız agent'ın alanı `null`, nedeni `errors`'ta.
 - `CallFilters`: `date_from`, `date_to`, `call_type`, `urgency`, `request_category`, `state`, `status`, `marina` (tam eşleşme), `q` (müşteri/tekne/marina adında arama), `page`, `page_size`.
 

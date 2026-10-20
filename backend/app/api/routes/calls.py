@@ -10,9 +10,9 @@ from fastapi import APIRouter, Query
 from fastapi.responses import FileResponse
 
 from app.api.deps import ServiceCallerDep, SessionDep, SettingsDep
-from app.schemas.api import CallDetail, CallFilters, CallListItem
+from app.schemas.api import CallDetail, CallFilters, CallListItem, CallMatchIn
 from app.schemas.common import ErrorResponse, Page
-from app.services import audio_ingest, call_reader
+from app.services import audio_ingest, call_matching, call_reader
 
 router = APIRouter(prefix="/calls", tags=["calls"])
 
@@ -53,6 +53,30 @@ async def get_call(
 ) -> CallDetail:
     """Belirli bir çağrının tüm santral, transkript ve analiz verilerini getirir."""
     return await call_reader.get_call_detail(session, call_id)
+
+
+@router.put(
+    "/{call_id}/match",
+    response_model=CallDetail,
+    summary="Çağrıyı müşteri ve tekneye elle eşleştir",
+    operation_id="matchCall",
+    responses={
+        400: {"model": ErrorResponse},
+        401: {"model": ErrorResponse},
+        404: {"model": ErrorResponse},
+    },
+)
+async def match_call_endpoint(
+    call_id: UUID,
+    payload: CallMatchIn,
+    _: ServiceCallerDep,
+    session: SessionDep,
+) -> CallDetail:
+    """Eşleşmeyen veya yanlış bağlanan çağrıyı belirli bir müşteri ve tekneye bağlar (#119)."""
+    async with session.begin():
+        return await call_matching.manual_match_call(
+            session, call_id, payload.customer_id, payload.boat_id
+        )
 
 
 @router.get(
