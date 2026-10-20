@@ -114,19 +114,19 @@ async def session() -> AsyncIterator[AsyncSession]:
 
 async def _clear(session: AsyncSession, owner: UUID) -> None:
     """Sahibin planlı işlerini sıfırlar: kural testleri kendi kaydını ekler."""
-    from sqlalchemy import delete, select
+    from sqlalchemy import delete, select, update
 
     from app.db.models.external import Boat
 
     boat_ids = select(Boat.id).where(Boat.owner_id == owner).scalar_subquery()
     await session.execute(delete(BoatNote).where(BoatNote.boat_id.in_(boat_ids)))
     await session.execute(
-        ServiceOrder.__table__.update()
+        update(ServiceOrder)
         .where(ServiceOrder.boat_id.in_(boat_ids))
         .values(status="tamamlandi", category="diger")
     )
     await session.execute(
-        Subscription.__table__.update()
+        update(Subscription)
         .where(Subscription.customer_id == owner)
         .values(expires_at=date(2030, 1, 1))
     )
