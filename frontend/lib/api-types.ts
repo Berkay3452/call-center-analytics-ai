@@ -47,6 +47,13 @@ export type SourceKind = "service_record" | "boat_note" | "expense" | "subscript
 
 export type CrmReviewStatus = "bekliyor" | "onaylandi" | "reddedildi";
 
+export type ServiceOrderStatus =
+  | "yeni_atandi"
+  | "kesifte"
+  | "onaylandi"
+  | "devam_ediyor"
+  | "tamamlandi";
+
 // ---------------------------------------------------------------------------
 // Ortak
 // ---------------------------------------------------------------------------
@@ -385,3 +392,86 @@ export interface ErrorEvent {
 }
 
 export type ChatStreamEvent = StatusEvent | DeltaEvent | DoneEvent | ErrorEvent;
+
+// ---------------------------------------------------------------------------
+// Servis emirleri (#118) — GET /service-orders, GET /service-orders/{id}, PATCH /service-orders/{id}/status
+// ---------------------------------------------------------------------------
+export interface ServiceOrderListItem {
+  id: string;
+  status: ServiceOrderStatus;
+  category: RequestCategory | string | null;
+  description: string | null;
+  scheduled_at: IsoDateTime | null;
+  completed_at: IsoDateTime | null;
+  created_at: IsoDateTime;
+  customer_id: string;
+  customer_name: string;
+  customer_phone: string | null;
+  boat_id: string;
+  boat_name: string;
+  boat_model: string | null;
+  marina: string | null;
+  craftsman_id: string | null;
+  craftsman_name: string | null;
+  source_call_id: string | null;
+}
+
+export interface ServiceOrderCustomerOut {
+  id: string;
+  full_name: string;
+  phone: string | null;
+  email: string | null;
+  marina: string | null;
+}
+
+export interface ServiceOrderBoatOut {
+  id: string;
+  name: string;
+  model: string | null;
+  year: number | null;
+  marina: string | null;
+}
+
+export interface ServiceOrderCraftsmanOut {
+  id: string;
+  full_name: string;
+  specialty: string | null;
+  phone: string | null;
+}
+
+export interface ServiceOrderSourceCallOut {
+  call_id: string;
+  started_at: IsoDateTime;
+  customer_name: string | null;
+  boat_name: string | null;
+  switchboard_outcome: SwitchboardOutcome | string | null;
+  request_category: RequestCategory | string | null;
+  location: string | null;
+  problem: string | null;
+  service_mode: ServiceMode | string | null;
+  urgency: Urgency | string | null;
+  potential_job: string | null;
+  next_action: NextAction | string | null;
+  summary: string | null;
+  crm_review_status: CrmReviewStatus | string | null;
+  crm_review_note: string | null;
+  crm_reviewed_at: IsoDateTime | null;
+}
+
+export interface ServiceOrderDetail {
+  id: string;
+  status: ServiceOrderStatus;
+  category: RequestCategory | string | null;
+  description: string | null;
+  scheduled_at: IsoDateTime | null;
+  completed_at: IsoDateTime | null;
+  created_at: IsoDateTime;
+  customer: ServiceOrderCustomerOut;
+  boat: ServiceOrderBoatOut;
+  craftsman: ServiceOrderCraftsmanOut | null;
+  source_call: ServiceOrderSourceCallOut | null;
+}
+
+export interface ServiceOrderStatusUpdate {
+  status: ServiceOrderStatus;
+}
