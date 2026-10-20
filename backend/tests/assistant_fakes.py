@@ -310,9 +310,18 @@ async def search_boat_notes(
     return [p for _, p in scored[:limit]]
 
 
+async def get_upcoming_maintenance(
+    owner_id: str, *, today: date, session: object = None
+) -> list[object]:
+    """Çevrimdışı testlerde yaklaşan iş yoktur; kurallar gerçek veritabanında denenir (#125)."""
+    require_owner(owner_id)
+    return []
+
+
 def install(monkeypatch: pytest.MonkeyPatch) -> None:
     """Araçların ve aramanın yerine sahte sürümlerini koyar (yalnızca bu test oturumunda)."""
     monkeypatch.setattr(tools, "get_expense_total", get_expense_total)
     monkeypatch.setattr(tools, "get_remaining_package", get_remaining_package)
     monkeypatch.setattr(tools, "get_last_maintenance", get_last_maintenance)
+    monkeypatch.setattr(tools, "get_upcoming_maintenance", get_upcoming_maintenance)
     monkeypatch.setattr(assistant_module, "search_boat_notes", search_boat_notes)

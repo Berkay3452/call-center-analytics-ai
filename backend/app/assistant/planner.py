@@ -69,6 +69,12 @@ def plan_by_rules(question: str) -> Plan | None:
     if _has(tokens, "paket", "abone") or (_has(tokens, "hak") and _has(tokens, "kal")):
         return Plan(question_type=QuestionType.SAYISAL, tool=AssistantTool.GET_REMAINING_PACKAGE)
     if (
+        "yakinda" in tokens
+        or _has(tokens, "yaklasan", "planli")
+        or ("yapilmasi gereken" in text or "yapmam gereken" in text)
+    ):
+        return Plan(question_type=QuestionType.SAYISAL, tool=AssistantTool.GET_UPCOMING_MAINTENANCE)
+    if (
         "son" in tokens
         and _has(tokens, "bakim", "servis")
         and (_has(tokens, "zaman", "tarih") or "ne zaman" in text)
