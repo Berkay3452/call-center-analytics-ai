@@ -1,0 +1,18 @@
+{
+  "call_id": "call_031",
+  "call_type": "acil",
+  "crm": {
+    "request_category": "elektrik_elektronik",
+    "location": "Tuzla Marina",
+    "problem": "Makine dairesinden duman ve yanık kablo kokusu geliyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "acil",
+    "potential_job": "Elektrik tesisatı kısa devre tespiti ve onarımı",
+    "next_action": "usta_ata"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Duman ve yanık kablo kokusu: acil, elektrik. Usta hemen yönlendirildi."
+}

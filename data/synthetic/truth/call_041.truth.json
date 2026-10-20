@@ -1,0 +1,18 @@
+{
+  "call_id": "call_041",
+  "call_type": "teklif",
+  "crm": {
+    "request_category": "makine",
+    "location": "Bodrum Milta Marina",
+    "problem": null,
+    "service_mode": "atolyede",
+    "urgency": "dusuk",
+    "potential_job": "Karada kışlama: iki motor, jeneratör, klima kışlaması, karina zehirli boya",
+    "next_action": "teklif_hazirla"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Paket talebinde en ağır kalem motor kışlaması: makine. Karada kışlama: atölyede. Teklif yarın gönderilecek: teklif_hazirla, karar bekliyor: beklemede."
+}

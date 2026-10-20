@@ -1,0 +1,65 @@
+{
+  "call_id": "call_048",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Bora'nın can salı muayenesinin süresi doldu mu, öğrenmek istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kayıtlarda can salınızın son servisi geçen yıl kasımda yapılmış, yıllık yenilenmesi gerekiyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yani bu kasım tekrar yapılması lazım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet. Yangın söndürücülerin dolum tarihi de aynı ay."
+    },
+    {
+      "speaker": "customer",
+      "text": "İkisini birlikte yaptırırsam fiyat ne olur?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Can salı servisi ve dört söndürücü dolumu toplam on bir bin lira."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, kasım başında yaptıralım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kasım başı için takvimden size uygun günü ayarlayıp kısa mesajla bildireceğiz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tekneyi Pendik'te mi bırakayım?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, ustamız Pendik'e gelir, can salını atölyeye alır."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, anlaştık."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kaydınızı oluşturdum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler."
+    }
+  ]
+}

@@ -18,7 +18,7 @@ from app.schemas.analysis import CallClassification
 class CallClassifierAgent(LLMAgent[CallClassification]):
     name: ClassVar[str] = CALL_CLASSIFIER
     prompt_file: ClassVar[str] = "call_classifier"
-    prompt_version: ClassVar[str] = "call_classifier.v1"
+    prompt_version: ClassVar[str] = "call_classifier.v2"
     output_schema: ClassVar[type[BaseModel]] = CallClassification
     # Sınıflandırma hafif bir iş; hızlı model yeterli.
     model_tier: ClassVar[ModelTier] = "fast"

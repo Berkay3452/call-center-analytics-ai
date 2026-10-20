@@ -1,0 +1,77 @@
+{
+  "call_id": "call_035",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler. Ataköy Marina'da yeni bir tekne aldım, sizin abonelik paketlerinizi duydum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hoş geldiniz. Teknenizin modeli nedir?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Jeanneau Merry Fisher 795, dıştan takma motorlu, adı Deniz Kızı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Güzel tekne. Yıllık bakım paketlerimiz var: Başlangıç, Standart ve VIP."
+    },
+    {
+      "speaker": "customer",
+      "text": "Farkları ne?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Başlangıçta iki bakım hakkı var, Standart'ta dört, VIP'te sınırsız arıza desteği ve öncelikli usta."
+    },
+    {
+      "speaker": "customer",
+      "text": "Benim tekne küçük, çok kullanmayacağım. Başlangıç yeter herhalde."
+    },
+    {
+      "speaker": "rep",
+      "text": "Dıştan takma motor için yılda bir motor bakımı, bir de sezon hazırlığı yeterli olur."
+    },
+    {
+      "speaker": "customer",
+      "text": "Fiyatı nedir?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Başlangıç paketi yıllık on dört bin lira."
+    },
+    {
+      "speaker": "customer",
+      "text": "Makul. Ama önce teknenin bir genel kontrolünü yapsanız iyi olur, ikinci el aldım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii, paket başlarken ilk bakımda genel ekspertiz yapıyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, Başlangıç paketine başlayalım o zaman."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kaydınızı oluşturuyorum. Telefon numaranız?"
+    },
+    {
+      "speaker": "customer",
+      "text": "[TELEFON]."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teşekkürler. Ekspertiz için ustamız sizi arayıp gün belirleyecek."
+    },
+    {
+      "speaker": "customer",
+      "text": "Harika, bekliyorum."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "call_id": "call_038",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Yakamoz'un sahibiyim, Tuzla'dayız. Sancak motor rölantide tekliyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Seyirde de oluyor mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Seyirde düzeliyor, sadece rölantide ve ilk çalıştırmada."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ne zamandan beri?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Bir haftadır. Teknemi kullanıyorum ama içim rahat değil."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anladım. Yakıt filtresi veya enjektör kaynaklı olabilir, ustamız bakmalı."
+    },
+    {
+      "speaker": "customer",
+      "text": "Acelesi yok, gelecek hafta olabilir."
+    },
+    {
+      "speaker": "rep",
+      "text": "Salı ya da çarşamba uygun mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Çarşamba öğleden sonra olsun."
+    },
+    {
+      "speaker": "rep",
+      "text": "Çarşamba saat iki, randevunuzu oluşturuyorum. Yakıt filtrelerini ve enjektörleri kontrol edecek."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yakıt filtresini değiştirirse fiyatı ne kadar?"
+    },
+    {
+      "speaker": "rep",
+      "text": "İki motorun filtreleri işçilikle birlikte yaklaşık altı bin lira."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, gerekirse değiştirsin."
+    },
+    {
+      "speaker": "rep",
+      "text": "Not ettim. Çarşamba saat ikide ustamız tekne başında olacak."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    }
+  ]
+}

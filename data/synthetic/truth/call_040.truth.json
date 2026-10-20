@@ -1,0 +1,18 @@
+{
+  "call_id": "call_040",
+  "call_type": "bilgi",
+  "crm": {
+    "request_category": null,
+    "location": "Göcek D-Marin",
+    "problem": null,
+    "service_mode": null,
+    "urgency": "dusuk",
+    "potential_job": null,
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Yalnızca genel bilgi (çalışma saati, kalan hak, şifre): kategori, hizmet biçimi null. Her şey görüşmede yanıtlandı: aksiyon_yok."
+}

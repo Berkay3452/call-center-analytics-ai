@@ -1,0 +1,18 @@
+{
+  "call_id": "call_035",
+  "call_type": "yeni_musteri",
+  "crm": {
+    "request_category": "makine",
+    "location": "Ataköy Marina",
+    "problem": null,
+    "service_mode": "yerinde_servis",
+    "urgency": "dusuk",
+    "potential_job": "Başlangıç bakım paketi ve dıştan takma motor bakımı, ilk ekspertiz",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "İlk kez arayan, paket satın aldı: satışa dönüştü. Planlı bakım: düşük. Usta arayıp gün belirleyecek: randevu oluştur. Kayıtlı olmayan müşteri."
+}

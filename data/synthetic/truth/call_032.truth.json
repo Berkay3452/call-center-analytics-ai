@@ -1,0 +1,18 @@
+{
+  "call_id": "call_032",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "makine",
+    "location": "Bodrum Milta Marina",
+    "problem": "Seyirde motor ısınıyor, hararet alarmı çalıyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "yuksek",
+    "potential_job": "Soğutma devresi kontrolü ve impeller değişimi",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Tekne kullanılabiliyor ama müşteri hafta sonundan önce çözüm istiyor ve alarm var: yüksek. Tahmin impeller, belirti hararet: makine."
+}

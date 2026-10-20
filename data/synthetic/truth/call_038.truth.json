@@ -1,0 +1,18 @@
+{
+  "call_id": "call_038",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "makine",
+    "location": "Tuzla Marina",
+    "problem": "Sancak motor rölantide ve ilk çalıştırmada tekliyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": "Yakıt filtresi ve enjektör kontrolü, filtre değişimi",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Tekne kullanılıyor, acelesi yok: normal. Tekleme: makine."
+}

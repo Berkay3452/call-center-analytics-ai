@@ -1,0 +1,18 @@
+{
+  "call_id": "call_036",
+  "call_type": "acil",
+  "crm": {
+    "request_category": "su_sihhi_tesisat",
+    "location": "Yalıkavak Marina",
+    "problem": "Sağ gövdeye şaft tarafından su giriyor, sintine pompası durmadan çalışıyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "acil",
+    "potential_job": "Şaft keçesi kontrolü ve onarımı",
+    "next_action": "usta_ata"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Tekne su alıyor: acil. Kategori kuralı: teknenin su alması su_sihhi_tesisat (call_002 ile aynı); kaynak şaft olsa da belirti su alma. Usta yönlendirildi: satışa dönüştü."
+}

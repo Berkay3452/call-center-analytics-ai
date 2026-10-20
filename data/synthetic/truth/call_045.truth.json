@@ -1,0 +1,18 @@
+{
+  "call_id": "call_045",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "elektrik_elektronik",
+    "location": "Çeşme Marina",
+    "problem": "Akü iki günde boşalıyor, motor çalışmıyor",
+    "service_mode": "uzaktan_destek",
+    "urgency": "normal",
+    "potential_job": null,
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Telefonda yönlendirme yapıldı: uzaktan_destek. Firmanın yapacağı bir şey kalmadı, müşteri dönerse aranacak: aksiyon_yok. İş verilmedi: beklemede, potansiyel iş yok."
+}

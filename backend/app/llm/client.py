@@ -39,13 +39,16 @@ class LLMNotConfiguredError(RuntimeError):
 
 _TRANSIENT_NAMES = frozenset(
     {"APITimeoutError", "APIConnectionError", "RateLimitError", "InternalServerError",
-     "ReadTimeout", "ConnectTimeout", "ConnectError", "TimeoutException", "TimeoutError"}
+     "NotFoundError", "ReadTimeout", "ConnectTimeout", "ConnectError", "TimeoutException",
+     "TimeoutError"}
 )  # fmt: skip
 
 
 def is_transient_llm_error(exc: BaseException) -> bool:
-    """Yedek modele geçmeye değer geçici hata mı? (zaman aşımı, bağlantı, 429, 5xx)
+    """Yedek modele geçmeye değer hata mı? (zaman aşımı, bağlantı, 429, 5xx, 404)
 
+    404: sağlayıcı modeli kaldırmış veya geçici olarak sunmuyor (20 Ekim'de NVIDIA'nın güçlü
+    modeli listede görünüp 404 verdi); başka model aynı isteği karşılayabilir.
     Kimlik/yetki (401/403), geçersiz istek (400) ve şema hataları geçici değildir: yedek model
     de aynı hatayı verir. Sağlayıcı istisnaları kütüphane import edilmeden adıyla tanınır.
     """
@@ -53,7 +56,7 @@ def is_transient_llm_error(exc: BaseException) -> bool:
         return True
     status = getattr(exc, "status_code", None)
     if isinstance(status, int):
-        return status == 429 or status >= 500
+        return status in (404, 429) or status >= 500
     return any(cls.__name__ in _TRANSIENT_NAMES for cls in type(exc).__mro__)
 
 

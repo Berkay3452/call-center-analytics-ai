@@ -30,8 +30,8 @@ def truths() -> dict[str, dict[str, Any]]:
     return {cid: load(DATA / "truth" / f"{cid}.truth.json") for cid in CALL_IDS}
 
 
-def test_thirty_calls_with_matching_files() -> None:
-    assert len(CALL_IDS) == 30
+def test_fifty_calls_with_matching_files() -> None:
+    assert len(CALL_IDS) == 50
     assert (
         sorted(p.name.removesuffix(".truth.json") for p in (DATA / "truth").glob("*.json"))
         == CALL_IDS
@@ -102,22 +102,22 @@ def test_distribution_covers_every_class() -> None:
     t = truths()
 
     assert Counter(x["call_type"] for x in t.values()) == {
-        "acil": 4,
-        "servis": 11,
-        "teklif": 6,
-        "yeni_musteri": 4,
-        "bilgi": 5,
+        "acil": 7,
+        "servis": 18,
+        "teklif": 12,
+        "yeni_musteri": 6,
+        "bilgi": 7,
     }
     assert Counter(x["sales"]["outcome"] for x in t.values()) == {
-        "satisa_donustu": 10,
-        "kaybedildi": 11,
-        "beklemede": 9,
+        "satisa_donustu": 18,
+        "kaybedildi": 16,
+        "beklemede": 16,
     }
     lost = Counter(
         x["sales"]["loss_reason"] for x in t.values() if x["sales"]["outcome"] == "kaybedildi"
     )
     # Altı kayıp nedeninin hepsi temsil ediliyor.
-    assert lost == {"fiyat": 3, "gec_donus": 2, "rakip": 2, "takvim": 2, "guven": 1, "diger": 1}
+    assert lost == {"fiyat": 4, "gec_donus": 3, "rakip": 3, "takvim": 3, "guven": 2, "diger": 1}
 
 
 def test_every_request_category_and_urgency_is_represented() -> None:
@@ -138,11 +138,12 @@ def test_every_request_category_and_urgency_is_represented() -> None:
 
 
 def test_split_marks_untouchable_test_set() -> None:
-    """Geliştirme çağrıları (001-010) prompt ayarında kullanılabilir; test çağrılarına bakılmaz."""
+    """Geliştirme çağrıları (001-010, 031-050) prompt ayarında kullanılabilir; test (011-030)
+    çağrılarına bakılmaz."""
     split = {m["call_id"]: m["split"] for m in load(DATA / "calls_meta.json")}
 
     assert set(split.values()) == {"gelistirme", "test"}
-    assert {c for c, v in split.items() if v == "gelistirme"} == set(CALL_IDS[:10])
+    assert {c for c, v in split.items() if v == "gelistirme"} == set(CALL_IDS[:10] + CALL_IDS[30:])
     assert len([v for v in split.values() if v == "test"]) == 20
 
 

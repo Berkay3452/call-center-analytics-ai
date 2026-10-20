@@ -1,0 +1,65 @@
+{
+  "call_id": "call_034",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Poyraz'ın sahibiyim, Kalamış Marina'dayız. Geçen hafta atölyeye bıraktığım jeneratör ne durumda, onu soracaktım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hemen bakıyorum. Jeneratörünüz atölyede, sargı kontrolü yapıldı."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ne çıktı peki?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Regülatör arızalı çıkmış, parça siparişi verilmiş, perşembe gelmesi bekleniyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Perşembe gelirse ne zaman biter?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Parça gelince bir günde takılır, cuma akşamı teslim edebiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Fiyat konuşulmuştu, değişen bir şey var mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Hayır, onayladığınız tutar geçerli."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam. Bitince bana haber verir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii, iş bitince size mesaj atacağız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler. Teslim alırken bir şey getirmem gerekiyor mu?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Sadece servis fişiniz yeterli."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, o zaman haberinizi bekliyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederim, iyi günler."
+    }
+  ]
+}

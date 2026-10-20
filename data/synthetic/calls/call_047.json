@@ -1,0 +1,65 @@
+{
+  "call_id": "call_047",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Fora katamaranımızda tuvalet pompası çalışmıyor, Göcek'teyiz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Elektrikli pompa mı, manuel mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Elektrikli. Düğmeye basınca ses geliyor ama su çekmiyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hangi tuvalet, iskele mi sancak mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "İskele taraftaki. Diğeri çalışıyor, onu kullanıyoruz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tamam, o zaman çok acil değil. Pompanın tıkanması veya çek valfi olabilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yarın misafir gelecek ama diğeri çalıştığı için idare ederiz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Bu hafta içi perşembe uygun mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Perşembe öğleden sonra olsun."
+    },
+    {
+      "speaker": "rep",
+      "text": "Perşembe saat üçte ustamız gelsin, randevunuzu oluşturdum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Parça gerekirse yanında getirir mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yaygın pompa modelleri için yedek parça getirecek."
+    },
+    {
+      "speaker": "customer",
+      "text": "Harika, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederim, iyi günler."
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "call_id": "call_042",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Pruva'nın sahibiyim, Marmaris Netsel'deyiz. Pervane titreşim yapıyor, değişmesi gerekiyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Pervane hasarlı mı, kontrol ettiniz mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Dalgıç baktı, bir kanadı eğrilmiş."
+    },
+    {
+      "speaker": "rep",
+      "text": "O zaman pervane değişimi veya tamiri gerekir. Tekne karaya alınmalı."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ne zaman yapabilirsiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Marmaris'teki ustamızın takvimi dolu, en erken üç hafta sonra."
+    },
+    {
+      "speaker": "customer",
+      "text": "Üç hafta çok uzun, benim gelecek hafta seyahatim var."
+    },
+    {
+      "speaker": "rep",
+      "text": "Maalesef daha erken bir tarih veremiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "O zaman başka birini bulmam lazım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum, gerçekten üzgünüm."
+    },
+    {
+      "speaker": "customer",
+      "text": "Sorun değil, sizin suçunuz değil. Başka zaman görüşürüz."
+    },
+    {
+      "speaker": "rep",
+      "text": "İhtiyacınız olursa her zaman arayın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, iyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler."
+    }
+  ]
+}

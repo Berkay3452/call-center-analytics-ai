@@ -1,0 +1,69 @@
+{
+  "call_id": "call_046",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, sizi bir arkadaş önerdi. Kalamış'ta teknem var, osmoz tedavisi yaptırmak istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teknenizin modeli ve yaşı nedir?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Bavaria C42, on iki yaşında, adı Mavi Rota."
+    },
+    {
+      "speaker": "rep",
+      "text": "Osmoz için önce nem ölçümü yapıyoruz, sonra karina soyulup kurutuluyor ve epoksi uygulanıyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ne kadar sürer?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Kurumayla birlikte altı ile sekiz hafta."
+    },
+    {
+      "speaker": "customer",
+      "text": "Garantisi var mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "İşçiliğe iki yıl garanti veriyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "İki yıl az değil mi? Başka yerde beş yıl diyorlar."
+    },
+    {
+      "speaker": "rep",
+      "text": "Epoksi üreticisinin garantisi ayrıca var, bizim işçilik garantimiz iki yıl."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ben açıkçası emin olamadım, daha önce yapılmış işlerinizi görebilir miyim?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Referans işlerimizi gönderebilirim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Gerek yok, ben beş yıl garanti veren yerle devam edeceğim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum, fikriniz değişirse bekleriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler, iyi günler."
+    }
+  ]
+}

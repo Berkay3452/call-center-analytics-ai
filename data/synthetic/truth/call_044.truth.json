@@ -1,0 +1,18 @@
+{
+  "call_id": "call_044",
+  "call_type": "teklif",
+  "crm": {
+    "request_category": "temizlik_bakim",
+    "location": "Marmaris Netsel Marina",
+    "problem": null,
+    "service_mode": "yerinde_servis",
+    "urgency": "dusuk",
+    "potential_job": "Tüm iç ve dış döşemelerin yenilenmesi",
+    "next_action": "geri_ara"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Döşeme: temizlik_bakim. Karar verilmedi, salı aranacak: geri_ara."
+}

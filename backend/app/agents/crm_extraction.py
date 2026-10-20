@@ -22,7 +22,7 @@ log = structlog.get_logger(__name__)
 class CrmExtractionAgent(LLMAgent[CrmExtraction]):
     name: ClassVar[str] = CRM_EXTRACTION
     prompt_file: ClassVar[str] = "crm_extraction"
-    prompt_version: ClassVar[str] = "crm_extraction.v2"
+    prompt_version: ClassVar[str] = "crm_extraction.v3"
     output_schema: ClassVar[type[BaseModel]] = CrmExtraction
     # En çok alanı çıkaran ve yanlışın en pahalı olduğu agent; güçlü model kullanılır.
     model_tier: ClassVar[ModelTier] = "smart"

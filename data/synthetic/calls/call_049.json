@@ -1,0 +1,65 @@
+{
+  "call_id": "call_049",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Kutup için verdiğiniz hidrolik dümen teklifini konuşmak istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii, Kalamış'taki tekneniz değil mi? Teklif kırk iki bin liraydı."
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet. Açıkçası teklifi bekledim ama bu arada marinadaki başka bir usta işi yaptı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum. Dümen sorunu çözüldü mü?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, hidrolik pompa contası değişti, şimdi düzgün."
+    },
+    {
+      "speaker": "rep",
+      "text": "Sevindim. Bundan sonra bir şey olursa yine bizi arayın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tabii, sizinle başka işlerimiz var zaten."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kaydı kapatıyorum o zaman."
+    },
+    {
+      "speaker": "customer",
+      "text": "Kapatabilirsiniz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Başka yardımcı olabileceğim bir şey var mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yok, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dilerim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Size de."
+    },
+    {
+      "speaker": "rep",
+      "text": "Görüşmek üzere."
+    }
+  ]
+}

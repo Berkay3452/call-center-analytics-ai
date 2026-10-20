@@ -24,7 +24,7 @@ log = structlog.get_logger(__name__)
 class SalesAnalyzerAgent(LLMAgent[SalesAnalysis]):
     name: ClassVar[str] = SALES_ANALYZER
     prompt_file: ClassVar[str] = "sales_analyzer"
-    prompt_version: ClassVar[str] = "sales_analyzer.v1"
+    prompt_version: ClassVar[str] = "sales_analyzer.v2"
     output_schema: ClassVar[type[BaseModel]] = SalesAnalysis
     # Kayıp nedenini ayırt etmek ince bir yorum gerektirir; güçlü model kullanılır.
     model_tier: ClassVar[ModelTier] = "smart"

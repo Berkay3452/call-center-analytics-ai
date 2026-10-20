@@ -1,0 +1,69 @@
+{
+  "call_id": "call_040",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler. Bir şey soracağım, cumartesi günleri açık mısınız?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Atölyemiz cumartesi on üçe kadar açık, acil hattımız yedi gün yirmi dört saat."
+    },
+    {
+      "speaker": "customer",
+      "text": "Göcek'te de mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Göcek'te cumartesi bir ustamız nöbetçi oluyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Güzel. Bir de paketimde kaç bakım hakkım kaldı, öğrenebilir miyim?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Uygulamada Tekne Sahibi panelinden görebilirsiniz, ama ben de bakayım. Standart paketinizde iki hakkınız kalmış."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, teşekkürler. Paket ne zaman bitiyor?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Mart sonunda sona eriyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Anladım. Şimdilik bir ihtiyacım yok, sadece öğrenmek istedim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ne zaman isterseniz buradayız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler, iyi çalışmalar."
+    },
+    {
+      "speaker": "rep",
+      "text": "Size de iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bir şey daha, uygulamaya şifremle giremiyorum, onu nereden sıfırlarım?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Giriş ekranında 'şifremi unuttum' bağlantısı var, e-postanıza bağlantı gelir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, deneyeceğim. Teşekkürler."
+    }
+  ]
+}

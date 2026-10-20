@@ -1,0 +1,18 @@
+{
+  "call_id": "call_049",
+  "call_type": "teklif",
+  "crm": {
+    "request_category": "mekanik_hidrolik",
+    "location": "Kalamış Marina",
+    "problem": "Hidrolik dümen arızası",
+    "service_mode": "yerinde_servis",
+    "urgency": "dusuk",
+    "potential_job": "Hidrolik dümen onarımı",
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "rakip"
+  },
+  "notes": "İşi marinadaki başka usta yaptı: rakip. Geç dönüş açıkça şikâyet edilmedi. Sorun çözülmüş, risk kalmadı: düşük. Teklif kapandı: aksiyon_yok."
+}

@@ -1,0 +1,18 @@
+{
+  "call_id": "call_039",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "elektrik_elektronik",
+    "location": "Ataköy Marina",
+    "problem": "Direk ışığı ve bir seyir feneri yanmıyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "dusuk",
+    "potential_job": "Direk ve seyir feneri tesisatı onarımı",
+    "next_action": "geri_ara"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Fener tesisatı elektrik (fener kontrolü güvenlik değil, tesisat arızası). Müşteri yurtdışında, iki hafta sonra aranacak: geri_ara, düşük."
+}
