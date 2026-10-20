@@ -12,7 +12,7 @@ from typing import Any, get_args
 import pytest
 from pydantic import BaseModel, ValidationError
 
-from app.domain.enums import SwitchboardOutcome
+from app.domain.enums import ServiceOrderStatus, SwitchboardOutcome
 from app.schemas import analysis, api, assistant, common
 from app.schemas.common import Page
 
@@ -59,6 +59,13 @@ SHARED_MODELS: list[type[BaseModel]] = [
     api.DeltaEvent,
     api.DoneEvent,
     api.ErrorEvent,
+    api.ServiceOrderListItem,
+    api.ServiceOrderCustomerOut,
+    api.ServiceOrderBoatOut,
+    api.ServiceOrderCraftsmanOut,
+    api.ServiceOrderSourceCallOut,
+    api.ServiceOrderDetail,
+    api.ServiceOrderStatusUpdate,
 ]
 
 # Örnek dosya → doğrulandığı model.
@@ -73,6 +80,8 @@ EXAMPLE_MODELS: dict[str, Any] = {
     "sohbet_soru_istek.json": api.ChatQuestion,
     "sohbet_cevabi.json": api.ChatReply,
     "sohbet_oturumu.json": api.ChatSessionDetail,
+    "servis_emirleri.json": Page[api.ServiceOrderListItem],
+    "servis_emri_detayi.json": api.ServiceOrderDetail,
 }
 
 
@@ -111,6 +120,7 @@ def test_page_fields_match() -> None:
         ("QuestionType", {m.value for m in assistant.QuestionType}),
         ("SwitchboardOutcome", {m.value for m in SwitchboardOutcome}),
         ("CrmReviewStatus", {m.value for m in api.CrmReviewStatus}),
+        ("ServiceOrderStatus", {m.value for m in ServiceOrderStatus}),
     ],
 )
 def test_frontend_unions_match_backend(ts_name: str, values: set[str]) -> None:
@@ -148,7 +158,12 @@ def test_stream_example_is_valid_sse() -> None:
 
 def test_every_shared_model_is_documented() -> None:
     doc = API_DOC.read_text(encoding="utf-8")
-    models: list[type[BaseModel]] = [*SHARED_MODELS, api.CallFilters, api.PeriodFilter]
+    models: list[type[BaseModel]] = [
+        *SHARED_MODELS,
+        api.CallFilters,
+        api.PeriodFilter,
+        api.ServiceOrderFilters,
+    ]
     for model in models:
         if model.__module__.endswith(("api", "analysis")):
             assert f"`{model.__name__}`" in doc, model.__name__
@@ -163,15 +178,16 @@ def test_call_create_needs_text() -> None:
     api.CallCreate(started_at="2026-10-12T09:00:00Z", transcript="Müşteri: Merhaba")
 
 
-@pytest.mark.parametrize("model", [api.CallFilters, api.PeriodFilter])
+@pytest.mark.parametrize("model", [api.CallFilters, api.PeriodFilter, api.ServiceOrderFilters])
 def test_filters_reject_reversed_dates(model: type[BaseModel]) -> None:
     with pytest.raises(ValidationError, match="date_to"):
         model.model_validate({"date_from": "2026-10-10", "date_to": "2026-10-01"})
 
 
-def test_call_filters_limit_page_size() -> None:
+@pytest.mark.parametrize("model", [api.CallFilters, api.ServiceOrderFilters])
+def test_call_filters_limit_page_size(model: type[BaseModel]) -> None:
     with pytest.raises(ValidationError):
-        api.CallFilters(page_size=500)
+        model.model_validate({"page_size": 500})
 
 
 def test_chat_question_has_no_owner_id() -> None:

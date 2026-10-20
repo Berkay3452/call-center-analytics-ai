@@ -252,6 +252,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/service-orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Servis emirleri listesi */
+        get: operations["listServiceOrders"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/service-orders/{order_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Servis emri detayı */
+        get: operations["getServiceOrderById"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/service-orders/{order_id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Servis emri durumunu güncelle */
+        patch: operations["updateServiceOrderStatus"];
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -614,6 +665,105 @@ export interface components {
             type: "error";
             code: string;
             message: string;
+        };
+        /** @enum {string} */
+        ServiceOrderStatus: "yeni_atandi" | "kesifte" | "onaylandi" | "devam_ediyor" | "tamamlandi";
+        ServiceOrderCustomerOut: {
+            /** Format: uuid */
+            id: string;
+            full_name: string;
+            phone?: string | null;
+            email?: string | null;
+            marina?: string | null;
+        };
+        ServiceOrderBoatOut: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            model?: string | null;
+            year?: number | null;
+            marina?: string | null;
+        };
+        ServiceOrderCraftsmanOut: {
+            /** Format: uuid */
+            id: string;
+            full_name: string;
+            specialty?: string | null;
+            phone?: string | null;
+        };
+        ServiceOrderSourceCallOut: {
+            /** Format: uuid */
+            call_id: string;
+            /** Format: date-time */
+            started_at: string;
+            customer_name?: string | null;
+            boat_name?: string | null;
+            switchboard_outcome?: string | null;
+            request_category?: unknown;
+            location?: string | null;
+            problem?: string | null;
+            service_mode?: unknown;
+            urgency?: unknown;
+            potential_job?: string | null;
+            next_action?: unknown;
+            summary?: string | null;
+            crm_review_status?: unknown;
+            crm_review_note?: string | null;
+            /** Format: date-time */
+            crm_reviewed_at?: string | null;
+        };
+        ServiceOrderListItem: {
+            /** Format: uuid */
+            id: string;
+            status: unknown;
+            category?: unknown;
+            description?: string | null;
+            /** Format: date-time */
+            scheduled_at?: string | null;
+            /** Format: date-time */
+            completed_at?: string | null;
+            /** Format: date-time */
+            created_at: string;
+            /** Format: uuid */
+            customer_id: string;
+            customer_name: string;
+            customer_phone?: string | null;
+            /** Format: uuid */
+            boat_id: string;
+            boat_name: string;
+            boat_model?: string | null;
+            marina?: string | null;
+            /** Format: uuid */
+            craftsman_id?: string | null;
+            craftsman_name?: string | null;
+            /** Format: uuid */
+            source_call_id?: string | null;
+        };
+        PageServiceOrderListItem: {
+            items: unknown[];
+            total: number;
+            page: number;
+            page_size: number;
+        };
+        ServiceOrderDetail: {
+            /** Format: uuid */
+            id: string;
+            status: unknown;
+            category?: unknown;
+            description?: string | null;
+            /** Format: date-time */
+            scheduled_at?: string | null;
+            /** Format: date-time */
+            completed_at?: string | null;
+            /** Format: date-time */
+            created_at: string;
+            customer: unknown;
+            boat: unknown;
+            craftsman?: unknown;
+            source_call?: unknown;
+        };
+        ServiceOrderStatusUpdate: {
+            status: unknown;
         };
     };
     responses: never;
@@ -1123,6 +1273,145 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    listServiceOrders: {
+        parameters: {
+            query?: {
+                status?: unknown;
+                date_from?: string;
+                date_to?: string;
+                marina?: string;
+                q?: string;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Başarılı */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Geçersiz filtre parametresi */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Yetkisiz erişim */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    getServiceOrderById: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                order_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Başarılı */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Yetkisiz erişim */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Servis emri bulunamadı */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    updateServiceOrderStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                order_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": unknown;
+            };
+        };
+        responses: {
+            /** @description Başarılı */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Geçersiz durum geçişi */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Yetkisiz erişim */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Servis emri bulunamadı */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
         };

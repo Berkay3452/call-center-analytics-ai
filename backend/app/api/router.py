@@ -2,7 +2,7 @@
 
 from fastapi import APIRouter
 
-from app.api.routes import analytics, assistant, auth, call_intake, calls, crm
+from app.api.routes import analytics, assistant, auth, call_intake, calls, crm, service_orders
 
 api_v1_router = APIRouter()
 api_v1_router.include_router(auth.router)
@@ -11,3 +11,4 @@ api_v1_router.include_router(calls.router)
 api_v1_router.include_router(crm.router)
 api_v1_router.include_router(analytics.router)
 api_v1_router.include_router(assistant.router)
+api_v1_router.include_router(service_orders.router)

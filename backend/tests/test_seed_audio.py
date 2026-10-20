@@ -15,6 +15,7 @@ from scripts.seed.audio import (
     build_wav,
     clean_for_speech,
     load_seed_audio,
+    shift_pitch,
     write_seed_audio,
 )
 
@@ -49,7 +50,7 @@ def test_clean_for_speech_replaces_masks_and_drops_other_brackets() -> None:
 
 
 def test_mono_wav_has_gaps_and_real_timing() -> None:
-    wav, timing = build_wav(TURNS, fake_synth, gap_ms=100)
+    wav, timing = build_wav(TURNS, fake_synth, stereo=False, gap_ms=100)
 
     channels, rate, samples = read_wav(wav)
     assert (channels, rate) == (1, RATE)
@@ -69,6 +70,23 @@ def test_stereo_puts_rep_on_left_and_customer_on_right() -> None:
     assert left[0:70].count(1000) == 70 and right[0:70].count(1000) == 0  # temsilci: sol
     assert right[170:220].count(1000) == 50 and left[170:220].count(1000) == 0  # müşteri: sağ
     assert timing == [(0, 70), (170, 220)]
+
+
+def test_default_is_stereo_and_customer_pitch_shortens_customer_turn() -> None:
+    wav, timing = build_wav(TURNS, fake_synth, customer_pitch=1.25, gap_ms=100)
+
+    channels, _, _ = read_wav(wav)
+    assert channels == 2
+    assert timing == [(0, 70), (170, 210)]  # müşteri sırası 50 → 40 örnek (perde yükseldi)
+
+
+def test_shift_pitch_keeps_identity_and_resamples() -> None:
+    pcm = array("h", range(0, 1000, 10)).tobytes()
+
+    assert shift_pitch(pcm, 1.0) == pcm
+    shifted = array("h")
+    shifted.frombytes(shift_pitch(pcm, 2.0))
+    assert list(shifted) == list(range(0, 1000, 20))
 
 
 def test_build_wav_rejects_empty_conversation_and_mixed_rates() -> None:
