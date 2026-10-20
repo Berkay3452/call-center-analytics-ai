@@ -1,0 +1,18 @@
+{
+  "call_id": "call_048",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "tekne_guvenligi",
+    "location": "Pendik Marinturk Marina",
+    "problem": null,
+    "service_mode": "atolyede",
+    "urgency": "dusuk",
+    "potential_job": "Can salı yıllık servisi ve yangın söndürücü dolumu",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Can salı ve söndürücü: tekne_guvenligi. Can salı atölyeye alınıyor: atolyede. Planlı yıllık bakım: düşük. Müşteri işi kabul etti, gün ayarlanacak: randevu oluştur. Arıza yok: problem null."
+}

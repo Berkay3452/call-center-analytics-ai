@@ -1,0 +1,65 @@
+{
+  "call_id": "call_037",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Göcek'teki Ufuk için klima sisteminin yenilenmesine teklif istemiştim, size ulaştı mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, teklifimiz dün size iletildi. Üç ünitenin değişimi toplam yüz seksen bin lira."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok yüksek geldi açıkçası."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ünitelerin üçü de değişecek, işçilik ve montaj dahil."
+    },
+    {
+      "speaker": "customer",
+      "text": "Biliyorum ama başka bir firma yüz yirmi beş verdi, aynı marka."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hangi model önerdiler, biliyor musunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Aynı marka, aynı kapasite dediler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Biz garantili orijinal parça kullanıyoruz, iki yıl işçilik garantisi veriyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Anlıyorum ama arada elli beş bin fark var."
+    },
+    {
+      "speaker": "rep",
+      "text": "Size yüzde beş indirim yapabilirim, daha fazlası mümkün değil."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yine de çok fark kalıyor. Diğer firmayla devam edeceğim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum. Fikriniz değişirse teklifimiz bir ay geçerli."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler, iyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler."
+    }
+  ]
+}

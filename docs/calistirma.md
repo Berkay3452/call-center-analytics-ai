@@ -89,8 +89,8 @@ uv run celery -A app.workers.celery_app beat -l info
 | `http://localhost:8000/health/ready` | Veritabanı ve Redis `ok`; değilse 503 |
 | `http://localhost:8000/docs` | Swagger arayüzü; `Authorize` ile `X-Service-Key` gir |
 | `GET /api/v1/me` (başlık: `X-Service-Key`) | 200 |
-| `GET /api/v1/calls?page_size=5` | 5 çağrı, `total` 30 |
-| `GET /api/v1/analytics/summary?date_from=2026-10-01&date_to=2026-10-31` | `total_calls` 30 |
+| `GET /api/v1/calls?page_size=5` | 5 çağrı, `total` 50 |
+| `GET /api/v1/analytics/summary?date_from=2026-10-01&date_to=2026-10-31` | `total_calls` 50 |
 | `http://localhost:3000` | `/admin/analytics` sayfasına yönlenir |
 
 Komut satırından deneme örneği:
@@ -103,7 +103,7 @@ curl -H "X-Service-Key: <SERVICE_API_KEY>" "http://localhost:8000/api/v1/calls?p
 
 - **Miço AI araması (bge-m3 embedding):** `docker compose -f infra/docker-compose.yml --profile rag up -d` (ilk açılışta ~2,3 GB model iner), sonra `backend/` içinde `uv run python -m scripts.rag_index`. Ayrıntı: `backend/README.md`.
 - **Ses → yazı (STT):** `uv sync --extra ai --extra stt`; ilk kullanımda model (`small`, ~500 MB) iner. Model varsayılan olarak `C:\Users\<sen>\.cache\huggingface` altına iner; C: diskin doluysa `.env` içinde `WHISPER_DOWNLOAD_ROOT=D:/models/whisper` yaz (klasörü önceden aç). Denemek için bir ses dosyası `POST /api/v1/calls/audio` ile yüklenir (`file` + `started_at` form alanları); durum `yaziya_cevriliyor` → `isleniyor` → `tamam` ilerler. Mono kayıtta konuşmacılar ayrılamaz (tek parça çıkar). Ayrıntı: `backend/README.md`.
-- **Seed çağrıları için ses (çağrı detayında dinlemek için):** seed çağrılarının ses dosyası yoktur. Türkçe, çevrimdışı Piper ile üretilir (30 çağrı ~90 sn, ~90 MB, model ~60 MB ilk seferde iner): `uv run --with piper-tts python -m scripts.generate_audio`, ardından `uv run python -m scripts.seed` sesleri bağlar (seed çıktısında `calls_with_audio: 30`). Sesler `AUDIO_STORAGE_DIR/seed/` altına yazılır (git'e girmez); çağrının süresi ve segment zamanları sesin gerçek değerleri olur. Tek Türkçe Piper sesi vardır, mono kayıtta konuşmacılar ayrılamaz; `--stereo` temsilciyi sol, müşteriyi sağ kanala koyar.
+- **Seed çağrıları için ses (çağrı detayında dinlemek için):** seed çağrılarının ses dosyası yoktur. Türkçe, çevrimdışı Piper ile üretilir (50 çağrı ~2,5 dk, ~150 MB, model ~60 MB ilk seferde iner): `uv run --with piper-tts python -m scripts.generate_audio`, ardından `uv run python -m scripts.seed` sesleri bağlar (seed çıktısında `calls_with_audio: 50`). Sesler `AUDIO_STORAGE_DIR/seed/` altına yazılır (git'e girmez); çağrının süresi ve segment zamanları sesin gerçek değerleri olur. Tek Türkçe Piper sesi vardır, mono kayıtta konuşmacılar ayrılamaz; `--stereo` temsilciyi sol, müşteriyi sağ kanala koyar.
 - **Miço AI sohbeti (gerçek veriyle):** `.env`'de `LLM_API_KEY` dolu olmalı ve arama için `EMBEDDING_PROVIDER=hash` (hızlı) ya da bge-m3 (ilk madde). Seed sahibi `606bd734-644f-5c21-af2f-dc734c4ecd67` (Ahmet Yılmaz, tekne Poyraz) ile: `curl -N -X POST -H "X-Service-Key: <anahtar>" -H "X-User-Id: 606bd734-644f-5c21-af2f-dc734c4ecd67" -H "Content-Type: application/json" -d '{"question":"Kaç bakım hakkım kaldı?"}' http://localhost:8000/api/v1/chat/messages/stream` (SSE: `status` → `delta` → `done`).
 - **Testler:** `uv run pytest` (hızlı, DB gerekmez). Gerçek veritabanı testleri: Docker ayaktayken `$env:RUN_DB_TESTS="1"; uv run pytest`.
 

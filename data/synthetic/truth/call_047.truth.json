@@ -1,0 +1,18 @@
+{
+  "call_id": "call_047",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "su_sihhi_tesisat",
+    "location": "Göcek D-Marin",
+    "problem": "İskele taraftaki tuvaletin elektrikli pompası su çekmiyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": "Tuvalet pompası onarımı veya değişimi",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Diğer tuvalet çalışıyor, tekne kullanılabiliyor: normal. Banyo: su_sihhi_tesisat."
+}

@@ -1,0 +1,69 @@
+{
+  "call_id": "call_031",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, acil bir durum var. Tuzla Marina'dayız, Karayel'in makine dairesinden duman geliyor!"
+    },
+    {
+      "speaker": "rep",
+      "text": "Hemen anlıyorum. Motor şu an çalışıyor mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Az önce çalıştırdım, sonra yanık kokusu geldi, motoru kapattım ama duman hâlâ biraz var."
+    },
+    {
+      "speaker": "rep",
+      "text": "Çok doğru yapmışsınız. Akü ana şalterini kapatabilir misiniz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Kapattım, şimdi kapattım. Kokunun kablo kokusu gibi olduğunu düşünüyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yangın söndürücünüz yanınızda mı? Alev görüyor musunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Söndürücü elimde, alev yok, sadece duman ve koku."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tamam. Kimse içeride kalmasın, kapağı açık tutun. Tuzla'daki elektrikçi ustamızı hemen yönlendiriyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ne kadar sürede gelir?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Usta yirmi dakika içinde orada olur. Marina görevlisine de haber verelim mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Ben söyledim, yanımızdalar."
+    },
+    {
+      "speaker": "rep",
+      "text": "Çok iyi. Ustamız gelince tesisatı kontrol edecek, kısa devre olan yeri bulacak."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, bekliyoruz. Numaram [TELEFON], usta ararsa açarım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Not aldım. Lütfen motoru tekrar çalıştırmayın, ustamız size dönecek."
+    },
+    {
+      "speaker": "customer",
+      "text": "Anladım, teşekkürler, çabuk olsun lütfen."
+    }
+  ]
+}

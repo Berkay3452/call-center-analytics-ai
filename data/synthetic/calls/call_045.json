@@ -1,0 +1,69 @@
+{
+  "call_id": "call_045",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, İmbat'ın aküsü sürekli boşalıyor. Çeşme'deyiz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tekneyi kullanmadığınızda mı boşalıyor?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, iki gün dursa motor çalışmıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kara elektriğine bağlı mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Hayır, şamandıradayız, bağlı değil."
+    },
+    {
+      "speaker": "rep",
+      "text": "Bir şey açık kalıyor olabilir. Buzdolabı veya pompa otomatiği açık mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Buzdolabı açık kalıyordu galiba."
+    },
+    {
+      "speaker": "rep",
+      "text": "Buzdolabını kapatıp ana şalteri indirerek bırakın, iki gün sonra tekrar deneyin."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki öyle yaparsam yeterli mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Akü sağlıklıysa yeterli olur. Akü yaşlıysa değişmesi gerekebilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Akü üç yaşında."
+    },
+    {
+      "speaker": "rep",
+      "text": "O zaman büyük ihtimalle sorun buzdolabı. Olmazsa bizi arayın, ustamız gelsin."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, önce öyle deneyeyim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kolay gelsin."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    }
+  ]
+}

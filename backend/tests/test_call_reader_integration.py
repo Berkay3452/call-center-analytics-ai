@@ -197,10 +197,10 @@ async def test_list_calls_loss_reason_for_lost_calls(
     """Kaybedilen çağrılarda loss_reason dolu, diğerlerinde null gelir (#79)."""
     async with factory() as session:
         calls_page = await list_calls(session, CallFilters(page=1, page_size=100))
-        assert calls_page.total >= 30
+        assert calls_page.total >= 50
 
         lost_calls = [c for c in calls_page.items if c.sales_outcome == SalesOutcomeType.KAYBEDILDI]
-        assert len(lost_calls) == 11
+        assert len(lost_calls) == 16
         for call in lost_calls:
             assert call.loss_reason is not None
             assert isinstance(call.loss_reason, LossReason)
@@ -208,7 +208,7 @@ async def test_list_calls_loss_reason_for_lost_calls(
         non_lost_calls = [
             c for c in calls_page.items if c.sales_outcome != SalesOutcomeType.KAYBEDILDI
         ]
-        assert len(non_lost_calls) == 19
+        assert len(non_lost_calls) == 34
         for call in non_lost_calls:
             assert call.loss_reason is None
 
@@ -219,11 +219,11 @@ async def test_list_calls_and_crm_marina_filter(
     """marina filtresi hem calls hem de crm için tam eşleşme yapar (#81)."""
     async with factory() as session:
         calls = await list_calls(session, CallFilters(marina="Tuzla Marina", page_size=50))
-        assert calls.total == 4
-        assert len(calls.items) == 4
+        assert calls.total == 6
+        assert len(calls.items) == 6
         assert all(c.marina == "Tuzla Marina" for c in calls.items)
 
         crm = await list_crm_records(session, CallFilters(marina="Tuzla Marina", page_size=50))
-        assert crm.total == 4
-        assert len(crm.items) == 4
+        assert crm.total == 6
+        assert len(crm.items) == 6
         assert all(r.location == "Tuzla Marina" for r in crm.items)

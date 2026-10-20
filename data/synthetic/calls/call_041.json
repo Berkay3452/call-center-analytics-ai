@@ -1,0 +1,69 @@
+{
+  "call_id": "call_041",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Akdeniz için kışlama teklifi istiyorum, Bodrum Milta'dayız."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii. Teknenin karaya çekilmesini de istiyor musunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, karada kışlasın. Motorların kışlaması, jeneratör ve klima da dahil olsun."
+    },
+    {
+      "speaker": "rep",
+      "text": "İki Cummins motor, jeneratör ve klima için tam kışlama paketi hazırlayalım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bir de karinaya zehirli boya yapılsın."
+    },
+    {
+      "speaker": "rep",
+      "text": "Karina temizliği ve zehirli boyayı da ekliyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ne zaman çekilir tekne?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Kasım ikinci haftası uygun, takvime göre netleşir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teklifi ne zaman alırım?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yarın öğlene kadar e-postanıza gönderirim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, adresim kayıtlı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, kayıtlı adresinize gönderiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Fiyat iyi olursa sizinle yapmak isterim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Size uygun bir teklif hazırlayacağız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler, bekliyorum."
+    }
+  ]
+}

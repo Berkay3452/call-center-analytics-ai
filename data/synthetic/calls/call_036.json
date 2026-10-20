@@ -1,0 +1,65 @@
+{
+  "call_id": "call_036",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Yalıkavak'tayım, Martı katamaranımın sağ gövdesine su giriyor! Sintine pompası durmadan çalışıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Su seviyesi yükseliyor mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Pompa yetişiyor ama sürekli çalışıyor, son bir saattir böyle."
+    },
+    {
+      "speaker": "rep",
+      "text": "Suyun nereden geldiğini görebiliyor musunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Arka kamarada, şaft tarafından geliyor gibi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Şaft keçesi olabilir. Pompanın aküsü şarjda mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Kara elektriğine bağlıyız, şarj oluyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tamam. Yalıkavak'taki ustamızı hemen yönlendiriyorum, gerekirse tekneyi karaya çektiririz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ne kadar sürer gelmesi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Kırk beş dakika içinde orada olur. Pompa durursa hemen bizi arayın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Anladım. Marina da bilgilendirildi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Çok iyi. Ustamızın numarasını mesajla gönderiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, bekliyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geçmiş olsun, ustamız yolda."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "call_id": "call_039",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Meltem'in sahibiyim. Yelken direğinin ışığı yanmıyor, bir de seyir fenerlerinden biri."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ataköy'de değil mi tekneniz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, Ataköy Marina."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ampul mü yoksa kablo mu, kontrol ettiniz mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Ampulü değiştirdim, yine yanmadı. Kabloyu bilmiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "O zaman tesisatta bir sorun olabilir. Direğe çıkmak gerekebilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ben şu an yurtdışındayım, iki hafta sonra döneceğim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anladım. Tekneniz o zamana kadar kullanılmayacak sanırım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, kullanmıyorum. Döndüğümde konuşalım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tamam, sizi iki hafta sonra arayalım, randevuyu birlikte belirleriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Olur, öyle yapalım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Numaranız kayıtlı, [TELEFON] değil mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, o numara."
+    },
+    {
+      "speaker": "rep",
+      "text": "Not ettim. İyi yolculuklar."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    }
+  ]
+}

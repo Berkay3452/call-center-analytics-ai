@@ -70,7 +70,13 @@ def test_no_fallback_when_it_equals_primary() -> None:
 
 @pytest.mark.parametrize(
     "exc",
-    [TimeoutError(), APITimeoutError("zaman aşımı"), StatusError(429), StatusError(503)],
+    [
+        TimeoutError(),
+        APITimeoutError("zaman aşımı"),
+        StatusError(404),
+        StatusError(429),
+        StatusError(503),
+    ],
 )
 def test_transient_errors(exc: Exception) -> None:
     assert is_transient_llm_error(exc) is True

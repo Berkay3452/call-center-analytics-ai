@@ -113,7 +113,7 @@ async def test_agent_builds_prompt_and_parses_output() -> None:
     assert result.status == "ok"
     assert result.output is not None
     assert result.output.call_type == CallType.SERVIS
-    assert (result.model, result.prompt_version) == ("sahte-model", "call_classifier.v1")
+    assert (result.model, result.prompt_version) == ("sahte-model", "call_classifier.v2")
     assert (result.tokens_in, result.tokens_out) == (120, 30)
     # Sistem mesajı: ortak kurallar + agent'ın kendi talimatı.
     assert load_prompt("common").splitlines()[0] in model.last_system

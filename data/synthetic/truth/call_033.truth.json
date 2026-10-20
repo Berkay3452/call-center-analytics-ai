@@ -1,0 +1,18 @@
+{
+  "call_id": "call_033",
+  "call_type": "teklif",
+  "crm": {
+    "request_category": "temizlik_bakim",
+    "location": "Kalamış Marina",
+    "problem": null,
+    "service_mode": "yerinde_servis",
+    "urgency": "dusuk",
+    "potential_job": "Güverte tiki yenileme",
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "gec_donus"
+  },
+  "notes": "Müşteri teklif gecikmesinden şikâyet edip başka firmayla anlaştı: geç dönüş baskın neden. Problem değil, iş talebi: problem null."
+}

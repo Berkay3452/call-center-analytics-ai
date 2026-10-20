@@ -1,0 +1,18 @@
+{
+  "call_id": "call_050",
+  "call_type": "teklif",
+  "crm": {
+    "request_category": "elektrik_elektronik",
+    "location": "Çeşme Marina",
+    "problem": null,
+    "service_mode": "yerinde_servis",
+    "urgency": "dusuk",
+    "potential_job": "Navigasyon cihazı ve VHF telsiz temini ve montajı",
+    "next_action": "teklif_hazirla"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "İlk kez arayan ama fiyat/seçenek teklifi istiyor: öncelik kuralı teklif > yeni_musteri. Seçenekler gönderilecek: teklif_hazirla. Kayıtlı olmayan müşteri."
+}

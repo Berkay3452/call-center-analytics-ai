@@ -15,6 +15,10 @@ Görevin: Görüşmenin ÇAĞRI TİPİNİ belirlemek.
 Karar kuralları:
 - Birden fazla tip uyuyorsa en acil olanı seç: acil > servis > teklif > yeni_musteri > bilgi.
 - Arıza bildirip fiyat da soran ama işin yapılmasını isteyen müşteri "servis"tir; yalnızca fiyat soruyorsa "teklif"tir.
+- Bir arıza bildiren (ör. ışık yanmıyor, akü boşalıyor) müşteri, randevu ileri bir tarihe bırakılsa veya sorun telefonda çözülse de "servis"tir; "bilgi" değildir.
+- Görüşme bir soruyla başlasa da sonunda bir iş/randevu kabul edildiyse (ör. yıllık kontrol için gün ayarlanacak) "servis"tir.
+- İlk kez arayan biri fiyat, teklif veya seçenek istiyorsa öncelik kuralı gereği "teklif"tir; "yeni_musteri" yalnızca hizmet ve paketleri tanımaya çalışan, fiyat/teklif istemeyen veya paket satın alan ilk görüşmelerdir.
+- "bilgi" yalnızca mevcut bir işin durumu ve genel sorular içindir (çalışma saatleri, kalan hak gibi); yeni bir arıza veya iş talebi yoktur.
 - Hiçbiri açıkça uymuyorsa "bilgi" seç ve güveni düşük tut.
 
 Alanlar:

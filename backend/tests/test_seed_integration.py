@@ -31,9 +31,9 @@ EXPECTED_AT_LEAST = {
     "service_orders": 50,
     "expenses": 50,
     "subscriptions": 10,
-    "calls": 30,
-    "transcripts": 30,
-    "analysis_results": 30,
+    "calls": 50,
+    "transcripts": 50,
+    "analysis_results": 50,
 }
 
 
@@ -47,7 +47,7 @@ async def test_seed_fills_empty_database_and_is_idempotent() -> None:
     assert first == second == third
     for table, minimum in EXPECTED_AT_LEAST.items():
         assert first[table] >= minimum, (table, first[table])
-    assert first["transcript_segments"] >= 30 * 15
+    assert first["transcript_segments"] >= 50 * 15
     assert first["rag_chunks"] >= first["boat_notes"]
 
 
@@ -78,7 +78,14 @@ async def test_seeded_data_is_consistent() -> None:
                 "SELECT customer_name FROM calls WHERE customer_id IS NULL OR boat_id IS NULL"
             )
         }
-        assert unmatched == {"Volkan Tekin", "Ece Aksoy", "Tuncay Erdem"}
+        assert unmatched == {
+            "Volkan Tekin",
+            "Ece Aksoy",
+            "Tuncay Erdem",
+            "Hakan Özdemir",
+            "Engin Taşkıran",
+            "Serkan Bulut",
+        }
 
         # RAG parçalarının sahibi, teknenin sahibiyle aynı olmalı (yetkilendirme verisi).
         wrong_owner = await conn.fetchval(

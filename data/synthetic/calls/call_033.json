@@ -1,0 +1,65 @@
+{
+  "call_id": "call_033",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, iki gün önce aradım, bir teklif bekliyordum, hâlâ dönen olmadı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Özür dilerim, hangi iş için teklif istemiştiniz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Lodos'un güverte tikinin yenilenmesi. Kalamış'tayız."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kaydınızı görüyorum, ustamız ölçü almış ama teklif henüz hazırlanmamış."
+    },
+    {
+      "speaker": "customer",
+      "text": "İki gün oldu ama. Ben başka bir yerden de fiyat aldım bu arada."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum, bugün içinde size teklifi iletebilirim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Gerek yok aslında. Diğer firma dün aynı gün teklif verdi, onlarla anlaştım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Bunu duyduğuma üzüldüm. Gecikme için tekrar özür dilerim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Sizinle daha önce çalışmıştım, memnundum, ama bu sefer çok beklettiniz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Haklısınız. Geri bildiriminizi ilettim, bir dahaki sefere daha hızlı olacağız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Umarım. Kaydı iptal edebilirsiniz."
+    },
+    {
+      "speaker": "rep",
+      "text": "İptal ediyorum. Başka bir ihtiyacınız olursa bizi arayın lütfen."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, iyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler, kolay gelsin."
+    }
+  ]
+}

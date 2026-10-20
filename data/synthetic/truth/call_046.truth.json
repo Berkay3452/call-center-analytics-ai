@@ -1,0 +1,18 @@
+{
+  "call_id": "call_046",
+  "call_type": "yeni_musteri",
+  "crm": {
+    "request_category": "diger",
+    "location": "Kalamış Marina",
+    "problem": "Karinada osmoz",
+    "service_mode": "atolyede",
+    "urgency": "dusuk",
+    "potential_job": "Osmoz tedavisi: nem ölçümü, karina soyma, epoksi",
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "guven"
+  },
+  "notes": "İlk kez arayan. Garanti süresi ve güvenilirlikten emin olamadı: güven. Osmoz: diğer. Kayıtlı olmayan müşteri."
+}

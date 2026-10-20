@@ -1,0 +1,69 @@
+{
+  "call_id": "call_043",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, denizdeyiz, İstinye açığında! İki motor da durdu, çalışmıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teknede kaç kişi var, herkes iyi mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Dört kişiyiz, herkes iyi. Akıntı bizi kıyıya doğru itiyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Çapa atabiliyor musunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Attık, şimdilik tutuyor gibi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Çok iyi. Sahil Güvenlik'i de bilgilendirin, yüz elli sekizi arayın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Aradık, haberleri var."
+    },
+    {
+      "speaker": "rep",
+      "text": "Konumunuzu mesaj atabilir misiniz? Botla ustamızı gönderiyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Gönderiyorum şimdi. Yakıt var, sabah doldurduk."
+    },
+    {
+      "speaker": "rep",
+      "text": "Motorlar birden mi durdu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Önce biri öksürdü, sonra ikisi de durdu."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yakıtta su veya tıkanma olabilir. Ustamız otuz dakika içinde yanınızda."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, bekliyoruz, numaram [TELEFON]."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kaydettim. Can yeleklerini giyin lütfen, ustamız yolda."
+    },
+    {
+      "speaker": "customer",
+      "text": "Giyiyoruz, teşekkürler."
+    }
+  ]
+}

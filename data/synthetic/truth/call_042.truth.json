@@ -1,0 +1,18 @@
+{
+  "call_id": "call_042",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "mekanik_hidrolik",
+    "location": "Marmaris Netsel Marina",
+    "problem": "Pervane kanadı eğrilmiş, titreşim yapıyor",
+    "service_mode": "atolyede",
+    "urgency": "normal",
+    "potential_job": "Pervane değişimi veya tamiri",
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "takvim"
+  },
+  "notes": "İstediği zamana usta yok: takvim. Çözüm gelecek haftaya kadar isteniyor (bugün/yarın değil), tekne kullanılabiliyor: normal. Müşteri vazgeçti: aksiyon_yok."
+}

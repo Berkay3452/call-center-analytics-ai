@@ -1,0 +1,69 @@
+{
+  "call_id": "call_032",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Poseidon'un sahibiyim, Bodrum Milta'dayız. Motor ısınıyor, hararet alarmı çalıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ne zamandır böyle? Seyirde mi oluyor?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Dün akşam dönerken oldu. Yarım saat seyirden sonra alarm çaldı, devri düşürünce sustu."
+    },
+    {
+      "speaker": "rep",
+      "text": "Egzozdan su geliyor mu, yani soğutma suyu çıkıyor mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Eskisine göre az geliyor gibi. Bilmiyorum, belki impeller'dır."
+    },
+    {
+      "speaker": "rep",
+      "text": "Olabilir, ama ustamız bakınca anlarız. Tekneyi şu an kullanmayı düşünüyor musunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Hafta sonu misafirlerim var, cumartesiden önce halledilmesi lazım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum. Perşembe sabahı ustamızı Milta'ya gönderebilirim, uygun mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Perşembe olur. Saat kaçta?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Saat dokuz gibi. Soğutma devresini, impeller'ı ve eşanjörü kontrol edecek."
+    },
+    {
+      "speaker": "customer",
+      "text": "Fiyat hakkında bir fikir verebilir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Kontrol ve impeller değişimi olursa yaklaşık dört bin lira, parça durumuna göre değişir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, uygun. Perşembe dokuzda bekliyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Randevunuzu oluşturdum. O zamana kadar uzun seyir yapmamanızı öneririm."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, yapmam. Teşekkürler."
+    }
+  ]
+}

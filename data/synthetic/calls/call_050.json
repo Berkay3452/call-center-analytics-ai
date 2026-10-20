@@ -1,0 +1,69 @@
+{
+  "call_id": "call_050",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Çeşme'de küçük bir motorbotum var. Navigasyon cihazı ve VHF telsiz taktırmak istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii. Teknenizin modeli nedir?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Quicksilver Activ 605, adı Lal."
+    },
+    {
+      "speaker": "rep",
+      "text": "Konsol yeri müsaitse ikisini birlikte montaj yapabiliriz. Cihazları siz mi alacaksınız?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Hangisi iyi bilmiyorum, siz önerebilir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Bütçenize göre üç seçenek hazırlayabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bütçem yaklaşık otuz bin lira."
+    },
+    {
+      "speaker": "rep",
+      "text": "O bütçeyle iyi bir plotter ve sabit VHF olur. Seçenekleri ve montaj fiyatını hazırlayıp size gönderelim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Olur, e-postayla gönderin."
+    },
+    {
+      "speaker": "rep",
+      "text": "E-posta adresinizi alabilir miyim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Mesajla atayım size."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tamam. Seçenekleri gönderdikten sonra sizi arayıp karar verelim mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, iyi olur."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teşekkürler, yarın gönderiyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "call_id": "call_044",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler. Marmaris Netsel'deki Kalyon guletimizin tüm döşemelerinin yenilenmesini düşünüyoruz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii. Hangi alanlar: salon, kamaralar, dış minderler?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Hepsi. Dış minderler güneşten yıprandı, kamaralar da eskidi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kaç kamara var?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Altı kamara, bir salon, bir de güverte oturma alanı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Bunun için ustamızın teknede ölçü alması gerekiyor, sonra kumaş seçeneklerini sunarız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ben aslında önce kabaca bir fiyat duymak isterim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ölçü almadan sağlıklı fiyat vermek zor, ama bu büyüklükte yüz elli ile iki yüz elli bin arası."
+    },
+    {
+      "speaker": "customer",
+      "text": "Hımm. Bunu eşimle konuşmam lazım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii. Ölçü için ustamızı göndermemizi ister misiniz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Önce eşimle konuşayım, ben size dönerim. Ya da siz beni haftaya arayın."
+    },
+    {
+      "speaker": "rep",
+      "text": "Haftaya salı sizi arayalım mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Olur, salı arayın."
+    },
+    {
+      "speaker": "rep",
+      "text": "Not ettim, salı arayacağız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    }
+  ]
+}
