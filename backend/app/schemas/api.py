@@ -25,6 +25,7 @@ from app.domain.enums import (
     RequestCategory,
     SalesOutcomeType,
     ServiceMode,
+    ServiceOrderStatus,
     SwitchboardOutcome,
     Urgency,
 )
@@ -372,3 +373,128 @@ ChatStreamEvent = Annotated[
     StatusEvent | DeltaEvent | DoneEvent | ErrorEvent, Field(discriminator="type")
 ]
 chat_stream_event_adapter: TypeAdapter[ChatStreamEvent] = TypeAdapter(ChatStreamEvent)
+
+
+# --- Servis emirleri (#118) ---------------------------------------------------------------
+
+
+class ServiceOrderFilters(BaseModel):
+    """`GET /service-orders` sorgu parametreleri. Hepsi isteğe bağlıdır."""
+
+    status: ServiceOrderStatus | None = Field(
+        default=None, description="Servis emri durumu filtresi."
+    )
+    date_from: date | None = Field(
+        default=None, description="Bu tarihten itibaren (oluşturulma tarihi, dahil)."
+    )
+    date_to: date | None = Field(
+        default=None, description="Bu tarihe kadar (oluşturulma tarihi, dahil)."
+    )
+    marina: str | None = Field(default=None, description="Marina adına göre tam eşleşme filtresi.")
+    q: str | None = Field(
+        default=None,
+        max_length=100,
+        description="Müşteri adı, tekne adı, usta adı veya açıklamada arama.",
+    )
+    page: int = Field(default=1, ge=1)
+    page_size: int = Field(default=20, ge=1, le=100)
+
+    @model_validator(mode="after")
+    def _dates_ordered(self) -> "ServiceOrderFilters":
+        if self.date_from and self.date_to and self.date_to < self.date_from:
+            raise ValueError("date_to, date_from'dan önce olamaz.")
+        return self
+
+
+class ServiceOrderListItem(BaseModel):
+    """Sayfalı servis emirleri listesindeki bir satır."""
+
+    id: UUID
+    status: ServiceOrderStatus
+    category: RequestCategory | str | None = None
+    description: str | None = None
+    scheduled_at: datetime | None = None
+    completed_at: datetime | None = None
+    created_at: datetime
+    customer_id: UUID
+    customer_name: str
+    customer_phone: str | None = None
+    boat_id: UUID
+    boat_name: str
+    boat_model: str | None = None
+    marina: str | None = None
+    craftsman_id: UUID | None = None
+    craftsman_name: str | None = None
+    source_call_id: UUID | None = None
+
+
+class ServiceOrderCustomerOut(BaseModel):
+    """Servis emrindeki müşteri bilgisi."""
+
+    id: UUID
+    full_name: str
+    phone: str | None = None
+    email: str | None = None
+    marina: str | None = None
+
+
+class ServiceOrderBoatOut(BaseModel):
+    """Servis emrindeki tekne bilgisi."""
+
+    id: UUID
+    name: str
+    model: str | None = None
+    year: int | None = None
+    marina: str | None = None
+
+
+class ServiceOrderCraftsmanOut(BaseModel):
+    """Servis emrine atanan usta bilgisi."""
+
+    id: UUID
+    full_name: str
+    specialty: str | None = None
+    phone: str | None = None
+
+
+class ServiceOrderSourceCallOut(BaseModel):
+    """Servis emrinin kaynak çağrısı ve CRM önerisi özeti (#106)."""
+
+    call_id: UUID
+    started_at: datetime
+    customer_name: str | None = None
+    boat_name: str | None = None
+    switchboard_outcome: SwitchboardOutcome | str | None = None
+    request_category: RequestCategory | str | None = None
+    location: str | None = None
+    problem: str | None = None
+    service_mode: ServiceMode | str | None = None
+    urgency: Urgency | str | None = None
+    potential_job: str | None = None
+    next_action: NextAction | str | None = None
+    summary: str | None = None
+    crm_review_status: CrmReviewStatus | str | None = None
+    crm_review_note: str | None = None
+    crm_reviewed_at: datetime | None = None
+
+
+class ServiceOrderDetail(BaseModel):
+    """`GET /service-orders/{id}` yanıtı."""
+
+    id: UUID
+    status: ServiceOrderStatus
+    category: RequestCategory | str | None = None
+    description: str | None = None
+    scheduled_at: datetime | None = None
+    completed_at: datetime | None = None
+    created_at: datetime
+    customer: ServiceOrderCustomerOut
+    boat: ServiceOrderBoatOut
+    craftsman: ServiceOrderCraftsmanOut | None = None
+    source_call: ServiceOrderSourceCallOut | None = None
+
+
+class ServiceOrderStatusUpdate(BaseModel):
+    """`PATCH /service-orders/{id}/status` istek gövdesi."""
+
+    status: ServiceOrderStatus = Field(description="Geçilmek istenen yeni durum.")
