@@ -25,6 +25,7 @@ class AssistantTool(StrEnum):
     GET_EXPENSE_TOTAL = "get_expense_total"
     GET_REMAINING_PACKAGE = "get_remaining_package"
     GET_LAST_MAINTENANCE = "get_last_maintenance"
+    GET_UPCOMING_MAINTENANCE = "get_upcoming_maintenance"
 
 
 SourceKind = Literal["service_record", "boat_note", "expense", "subscription"]

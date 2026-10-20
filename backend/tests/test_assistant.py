@@ -93,7 +93,6 @@ def test_rules_classify_clear_numeric_questions_without_llm(
     "question",
     [
         "Yakıt filtresi ne zaman değişti?",
-        "Yakında yapılması gereken bir şey var mı?",
         "Hava nasıl?",
     ],
 )

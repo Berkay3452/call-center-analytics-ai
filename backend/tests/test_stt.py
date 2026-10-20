@@ -384,3 +384,37 @@ async def test_real_faster_whisper_tiny_on_silence(tmp_path: Path) -> None:
 
     assert result.duration_sec == pytest.approx(2.0, abs=0.1)
     assert result.segments == []  # sessizlikte metin uydurulmamalı (VAD)
+
+
+# --- Stereo sıralaması: segmentleri duraklamalardan bölme (#124) --------------------------------
+
+
+def test_split_at_pauses_breaks_segment_on_long_silence() -> None:
+    from types import SimpleNamespace
+
+    from app.stt.providers import split_at_pauses
+
+    words = [
+        SimpleNamespace(start=0.0, end=0.4, word=" Merhaba"),
+        SimpleNamespace(start=0.5, end=0.9, word=" buyurun."),
+        # 3 sn sessizlik: arada öteki kanalda müşteri konuştu
+        SimpleNamespace(start=3.9, end=4.3, word=" Teknenin"),
+        SimpleNamespace(start=4.4, end=4.8, word=" adı?"),
+    ]
+
+    parts = split_at_pauses(words)
+
+    assert [(p.start_ms, p.end_ms, p.text) for p in parts] == [
+        (0, 900, "Merhaba buyurun."),
+        (3900, 4800, "Teknenin adı?"),
+    ]
+
+
+def test_split_at_pauses_keeps_short_gaps_together() -> None:
+    from types import SimpleNamespace
+
+    from app.stt.providers import split_at_pauses
+
+    words = [SimpleNamespace(start=i * 0.5, end=i * 0.5 + 0.4, word=f" k{i}") for i in range(4)]
+
+    assert len(split_at_pauses(words)) == 1
