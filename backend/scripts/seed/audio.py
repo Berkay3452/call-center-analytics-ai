@@ -49,22 +49,47 @@ def clean_for_speech(text: str) -> str:
     return re.sub(r"\s+", " ", re.sub(r"\[[^\]]*\]", "", spoken)).strip()
 
 
+def shift_pitch(pcm: bytes, factor: float) -> bytes:
+    """16-bit mono PCM'in perdesini `factor` kadar yükseltir (yeniden örnekleme; süre kısalır).
+
+    Tek Türkçe Piper sesi olduğu için müşteri sesi bununla temsilciden ayırt edilir hale gelir.
+    """
+    if factor == 1.0:
+        return pcm
+    src = array("h")
+    src.frombytes(pcm)
+    n = int(len(src) / factor)
+    out = array("h", bytes(2 * n))
+    for i in range(n):
+        pos = i * factor
+        j = int(pos)
+        frac = pos - j
+        a = src[j]
+        b = src[j + 1] if j + 1 < len(src) else a
+        out[i] = int(a + (b - a) * frac)
+    return out.tobytes()
+
+
 def build_wav(
     turns: Sequence[dict[str, Any]],
     synth: Synth,
     *,
-    stereo: bool = False,
+    stereo: bool = True,
+    customer_pitch: float = 1.0,
     gap_ms: int = DEFAULT_GAP_MS,
 ) -> tuple[bytes, list[tuple[int, int]]]:
     """Konuşma sıralarını tek WAV'da birleştirir; (wav baytları, tur başına (başlangıç, bitiş) ms).
 
-    `stereo=True`: temsilci (`rep`) sol, müşteri (`customer`) sağ kanala konur; böylece
-    `STT_CHANNEL_LAYOUT=stereo_rep_left` ile konuşmacılar ayrılabilir. Varsayılan mono.
+    `stereo=True` (varsayılan, santral kaydı gibi): temsilci (`rep`) sol, müşteri (`customer`)
+    sağ kanala konur; `STT_CHANNEL_LAYOUT=stereo_rep_left` ile konuşmacılar kanaldan ayrılır.
+    `customer_pitch` > 1 müşteri sesinin perdesini yükseltir (iki farklı ses gibi duyulur).
     """
     chunks: list[tuple[str, bytes]] = []
     rate = 0
     for turn in turns:
         pcm, sr = synth(clean_for_speech(turn["text"]))
+        if turn["speaker"] == "customer":
+            pcm = shift_pitch(pcm, customer_pitch)
         if rate and sr != rate:
             raise ValueError("Tüm sıralar aynı örnekleme hızında olmalı.")
         rate = sr
