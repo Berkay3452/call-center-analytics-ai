@@ -227,4 +227,24 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
     await lightButton.click();
     await expect(page.locator("html")).not.toHaveClass(/dark/);
   });
+  // ──────────────────────────────────────────────────────────────────────────
+  // Senaryo 7: Miço AI gerçek cevap (yalnızca gerçek backend; mock modunda atlanır)
+  // ──────────────────────────────────────────────────────────────────────────
+  test("Senaryo 7 (Miço AI gerçek cevap): sayısal soru kaynak kartıyla cevaplanır", async ({
+    page,
+  }) => {
+    test.skip(
+      process.env.NEXT_PUBLIC_USE_MOCKS !== "false",
+      "Gerçek backend gerekir: NEXT_PUBLIC_USE_MOCKS=false ile koşun.",
+    );
+
+    await page.goto("/owner/assistant");
+    const chatInput = page.locator("#assistant-chat-input");
+    await chatInput.fill("Kaç bakım hakkım kaldı?");
+    await chatInput.press("Enter");
+
+    // Sayısal sorular LLM'siz, kodla cevaplanır: cevap ve paket kaynak kartı gelir.
+    await expect(page.getByText(/bakım hakkınız kaldı/i).first()).toBeVisible({ timeout: 20000 });
+    await expect(page.getByRole("region", { name: /Kaynak:/i }).first()).toBeVisible();
+  });
 });
