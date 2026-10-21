@@ -444,7 +444,7 @@ export default function AnalyticsDashboard() {
               </p>
               <p className="mt-1 text-2xl font-black text-red-700 dark:text-red-400">
                 {data.urgent_requests.toLocaleString("tr-TR")}
-                <span className="ml-1 text-xs font-normal text-red-400 dark:text-red-500">adet</span>
+                <span className="ml-1 text-xs font-normal text-red-700 dark:text-red-400">adet</span>
               </p>
               <p className="mt-1 text-[11px] font-bold text-red-700 dark:text-red-400">
                 Acil müdahale
@@ -461,7 +461,7 @@ export default function AnalyticsDashboard() {
                   ? `%${Math.round(data.conversion_rate * 100)}`
                   : EMPTY_LABEL}
               </p>
-              <p className="mt-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+              <p className="mt-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
                 {data.converted_sales} başarılı satış
               </p>
             </div>
@@ -511,7 +511,12 @@ export default function AnalyticsDashboard() {
                 Bu tarih aralığında günlük çağrı grafiği verisi bulunamadı.
               </div>
             ) : (
-              <div className="flex items-end gap-2 sm:gap-3 h-44 pt-6 pb-2 border-b border-gray-100 dark:border-slate-800 overflow-x-auto">
+              <div
+                role="region"
+                aria-label="Günlük çağrı sayısı grafiği (yatay kaydırılabilir)"
+                tabIndex={0}
+                className="flex items-end gap-2 sm:gap-3 h-44 pt-6 pb-2 border-b border-gray-100 dark:border-slate-800 overflow-x-auto"
+              >
                 {dailyCalls.map((day) => {
                   const isZero = day.count === 0;
                   // 0 olan günler için en az 4px taban çizgisi, diğerleri oransal

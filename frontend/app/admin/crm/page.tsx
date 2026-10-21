@@ -119,7 +119,7 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
           <span>⏳</span>
           <span>Bekliyor</span>
           {pendingCount !== null && (
-            <span className="ml-1 rounded-full bg-amber-700/30 px-1.5 py-0.2 text-[10px]">
+            <span className="ml-1 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-900 dark:bg-amber-900 dark:text-amber-100">
               {pendingCount}
             </span>
           )}
