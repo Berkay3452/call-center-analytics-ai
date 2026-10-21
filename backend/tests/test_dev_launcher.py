@@ -135,3 +135,35 @@ def test_celery_beat_is_a_separate_process_without_dash_b(
     assert len(procs) == 2
     assert "worker" in commands[0] and "beat" in commands[1]
     assert all("-B" not in cmd for cmd in commands)
+
+
+def test_redis_port_comes_from_redis_url(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Windows 6379'u ayırırsa REDIS_URL'deki port kullanılır; başlatıcı compose'a aktarır."""
+    from app.core.config import get_settings
+
+    monkeypatch.setenv("REDIS_URL", "redis://localhost:6400/0")
+    get_settings.cache_clear()
+    try:
+        assert dev.redis_port() == 6400
+        monkeypatch.setenv("REDIS_URL", "redis://localhost/0")
+        get_settings.cache_clear()
+        assert dev.redis_port() == 6379
+    finally:
+        get_settings.cache_clear()
+
+
+def test_compose_gets_redis_port_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    seen: dict[str, object] = {}
+
+    def fake_run(cmd: list[str], *, quiet: bool = False, env: dict[str, str] | None = None) -> int:
+        seen["env"] = env
+        return 0
+
+    monkeypatch.setattr(dev, "run", fake_run)
+    monkeypatch.setattr(dev, "redis_port", lambda: 6400)
+    monkeypatch.setattr(dev, "wait_until", lambda *a, **k: True)
+
+    dev.start_infrastructure("docker", rag=False)
+
+    assert seen["env"] == {"REDIS_PORT": "6400"}
+    assert "${REDIS_PORT:-6379}" in dev.COMPOSE_FILE.read_text(encoding="utf-8")
