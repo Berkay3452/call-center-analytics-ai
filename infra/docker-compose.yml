@@ -1,5 +1,12 @@
-# Yerel geliştirme bağımlılıkları: PostgreSQL (pgvector) + Redis.
-# Çalıştırma (repo kökünden): docker compose -f infra/docker-compose.yml up -d
+# Yerel geliştirme ve sunum/demo bağımlılıkları.
+#
+# 1. Demo / Sunum (Tek komutla tüm sistem: Postgres + Redis + Backend API + Celery İşçisi + Web Arayüzü):
+#    docker compose -f infra/docker-compose.yml --profile app up -d
+#    (İsteğe bağlı RAG embedding servisi ile: --profile app --profile rag)
+#
+# 2. Yerel geliştirme (scripts.dev başlatıcısı veya elle bağımsız geliştirme):
+#    docker compose -f infra/docker-compose.yml up -d
+#    (Yalnızca Postgres ve Redis ayağa kalkar; API ve Celery host makinede çalıştırılır.)
 #
 # Not: Üretimde veritabanı Supabase'tir. Bu Postgres, Supabase hazır olana kadar
 # backend'i yerelde çalıştırmak içindir (aynı sürüm: PG 17 + pgvector 0.8).
@@ -48,6 +55,131 @@ services:
     volumes:
       - hf-cache:/data
 
+  # -----------------------------------------------------------------------------------
+  # "app" Profili: Tüm sistemi tek komutla ayağa kaldıran uygulama servisleri (#120)
+  # -----------------------------------------------------------------------------------
+
+  # Tek seferlik hazırlık servisi: Migration'ları uygular, boşsa seed verilerini yükler
+  init:
+    image: call-center-backend:latest
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    profiles: ["app"]
+    command: ["python", "-m", "scripts.docker_init"]
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - path: ../backend/.env
+        required: false
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/call_center
+      - REDIS_URL=redis://redis:6379/0
+      - TEI_URL=http://embeddings:80
+    volumes:
+      - ../data:/data:ro
+      - audio-storage:/app/storage/audio
+      - model-cache:/app/storage/models
+
+  # FastAPI Backend API servisi
+  api:
+    image: call-center-backend:latest
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    profiles: ["app"]
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    depends_on:
+      init:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - path: ../backend/.env
+        required: false
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/call_center
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+      - TEI_URL=http://embeddings:80
+    volumes:
+      - ../data:/data:ro
+      - audio-storage:/app/storage/audio
+      - model-cache:/app/storage/models
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+
+  # Celery Asenkron Analiz ve STT İşçisi (Beat zamanlayıcı dahil)
+  worker:
+    image: call-center-backend:latest
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    profiles: ["app"]
+    restart: unless-stopped
+    command: ["celery", "-A", "app.workers.celery_app", "worker", "-B", "-Q", "default,stt,analysis,index", "-l", "info"]
+    depends_on:
+      init:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - path: ../backend/.env
+        required: false
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/call_center
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+      - TEI_URL=http://embeddings:80
+    volumes:
+      - ../data:/data:ro
+      - audio-storage:/app/storage/audio
+      - model-cache:/app/storage/models
+
+  # Next.js Frontend Web Arayüzü
+  web:
+    image: call-center-frontend:latest
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    profiles: ["app"]
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - API_URL=http://api:8000/api/v1
+      - SERVICE_KEY=${SERVICE_API_KEY:-change-me-in-local-env}
+      - NEXT_PUBLIC_USE_MOCKS=false
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
 volumes:
   pgdata:
   hf-cache:
+  audio-storage:
+  model-cache:
