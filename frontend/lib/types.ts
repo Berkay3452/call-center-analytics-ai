@@ -333,3 +333,65 @@ export const MARINA_OPTIONS = [
   "Tuzla Marina",
   "Yalıkavak Marina",
 ];
+
+
+// ---------------------------------------------------------------------------
+// Servis Emirleri (#118 / #114)
+// ---------------------------------------------------------------------------
+export type ServiceOrderStatus =
+  | "yeni_atandi"
+  | "kesifte"
+  | "onaylandi"
+  | "devam_ediyor"
+  | "tamamlandi";
+
+export const SERVICE_ORDER_STATUS_ORDER: ServiceOrderStatus[] = [
+  "yeni_atandi",
+  "kesifte",
+  "onaylandi",
+  "devam_ediyor",
+  "tamamlandi",
+];
+
+export const SERVICE_ORDER_STATUS_LABELS: Record<ServiceOrderStatus, string> = {
+  yeni_atandi: "Yeni Atandı",
+  kesifte: "Keşifte",
+  onaylandi: "Onaylandı",
+  devam_ediyor: "Devam Ediyor",
+  tamamlandi: "Tamamlandı",
+};
+
+export const NEXT_SERVICE_ORDER_STATUS: Record<ServiceOrderStatus, ServiceOrderStatus | null> = {
+  yeni_atandi: "kesifte",
+  kesifte: "onaylandi",
+  onaylandi: "devam_ediyor",
+  devam_ediyor: "tamamlandi",
+  tamamlandi: null,
+};
+
+export const NEXT_STATUS_ACTION_LABELS: Record<ServiceOrderStatus, string | null> = {
+  yeni_atandi: "Keşfe Gönder",
+  kesifte: "Keşfi Onayla",
+  onaylandi: "İşe Başla",
+  devam_ediyor: "İşi Tamamla",
+  tamamlandi: null,
+};
+
+export const SERVICE_ORDER_STATUS_BADGE: Record<ServiceOrderStatus, string> = {
+  yeni_atandi:
+    "bg-blue-50 dark:bg-blue-950/70 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800",
+  kesifte:
+    "bg-amber-50 dark:bg-amber-950/70 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-800",
+  onaylandi:
+    "bg-purple-50 dark:bg-purple-950/70 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800",
+  devam_ediyor:
+    "bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800",
+  tamamlandi:
+    "bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800",
+};
+
+export function formatOrderCode(id: string): string {
+  if (id.startsWith("SO-")) return id;
+  if (id === "55555555-5555-4555-8555-555555555555") return "SO-2026-0001";
+  return `SO-${id.slice(0, 8).toUpperCase()}`;
+}

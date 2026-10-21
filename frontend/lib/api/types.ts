@@ -1,6 +1,6 @@
 /**
  * OpenAPI'den türetilen TypeScript tipleri.
- * Kaynak: lib/api/schema.ts
+ * Kaynak: lib/api/schema.ts ve lib/api-types.ts
  */
 
 import type { components, paths } from "./schema";
@@ -69,6 +69,106 @@ export type CrmReviewOut = Omit<Schema["CrmReviewOut"], "edited_fields"> & {
 export type CountItem = Schema["CountItem"];
 export type DailyCount = Schema["DailyCount"];
 export type KpiSummary = Schema["KpiSummary"];
+
+// Servis Emirleri Modelleri (#118 / #114)
+export type ServiceOrderStatus =
+  | "yeni_atandi"
+  | "kesifte"
+  | "onaylandi"
+  | "devam_ediyor"
+  | "tamamlandi";
+
+export interface ServiceOrderCustomerOut {
+  id: string;
+  full_name: string;
+  phone: string | null;
+  email: string | null;
+  marina: string | null;
+}
+
+export interface ServiceOrderBoatOut {
+  id: string;
+  name: string;
+  model: string | null;
+  year: number | null;
+  marina: string | null;
+}
+
+export interface ServiceOrderCraftsmanOut {
+  id: string;
+  full_name: string;
+  specialty: string | null;
+  phone: string | null;
+}
+
+export interface ServiceOrderSourceCallOut {
+  call_id: string;
+  started_at: string;
+  customer_name: string | null;
+  boat_name: string | null;
+  switchboard_outcome: SwitchboardOutcome | string | null;
+  request_category: RequestCategory | string | null;
+  location: string | null;
+  problem: string | null;
+  service_mode: ServiceMode | string | null;
+  urgency: Urgency | string | null;
+  potential_job: string | null;
+  next_action: NextAction | string | null;
+  summary: string | null;
+  crm_review_status: CrmReviewStatus | string | null;
+  crm_review_note: string | null;
+  crm_reviewed_at: string | null;
+}
+
+export interface ServiceOrderListItem {
+  id: string;
+  status: ServiceOrderStatus;
+  category: RequestCategory | string | null;
+  description: string | null;
+  scheduled_at: string | null;
+  completed_at: string | null;
+  created_at: string;
+  customer_id: string;
+  customer_name: string;
+  customer_phone: string | null;
+  boat_id: string;
+  boat_name: string;
+  boat_model: string | null;
+  marina: string | null;
+  craftsman_id: string | null;
+  craftsman_name: string | null;
+  source_call_id: string | null;
+}
+
+export interface ServiceOrderDetail {
+  id: string;
+  status: ServiceOrderStatus;
+  category: RequestCategory | string | null;
+  description: string | null;
+  scheduled_at: string | null;
+  completed_at: string | null;
+  created_at: string;
+  customer: ServiceOrderCustomerOut;
+  boat: ServiceOrderBoatOut;
+  craftsman: ServiceOrderCraftsmanOut | null;
+  source_call: ServiceOrderSourceCallOut | null;
+}
+
+export interface ServiceOrderStatusUpdate {
+  status: ServiceOrderStatus;
+}
+
+export type PageServiceOrderListItem = Page<ServiceOrderListItem>;
+
+export interface ServiceOrderFilters {
+  status?: ServiceOrderStatus | string;
+  date_from?: string;
+  date_to?: string;
+  marina?: string;
+  q?: string;
+  page?: number;
+  page_size?: number;
+}
 
 // Asistan & Chat Modelleri
 export type SourceRef = Schema["SourceRef"];

@@ -16,6 +16,7 @@ const ADMIN_NAV: NavItem[] = [
   { href: "/admin/calls", label: "Çağrılar", icon: "📞" },
   { href: "/admin/calls/upload", label: "Çağrı Yükle", icon: "🎙️" },
   { href: "/admin/crm", label: "CRM Önerisi", icon: "💡" },
+  { href: "/admin/service-orders", label: "Servis Emirleri", icon: "📋" },
 ];
 
 const OWNER_NAV: NavItem[] = [
