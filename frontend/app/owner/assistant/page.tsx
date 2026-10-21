@@ -364,7 +364,7 @@ export default function AssistantPage() {
             <button
               type="button"
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden rounded-lg p-1.5 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+              className="lg:hidden rounded-lg p-1.5 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
               aria-label="Sohbet geçmişini aç"
               aria-expanded={sidebarOpen}
               aria-controls="chat-sidebar"
@@ -415,7 +415,7 @@ export default function AssistantPage() {
               type="button"
               onClick={handleClearChat}
               disabled={isLoading || messages.length <= 1}
-              className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300 transition-colors hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100 disabled:opacity-40 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+              className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300 transition-colors hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100 disabled:opacity-40 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
               title="Yeni sohbet başlat"
             >
               Temizle

@@ -47,7 +47,7 @@ export function ServiceOrdersTable({
                 Müşteri
               </th>
               <th scope="col" className="px-4 py-3.5 whitespace-nowrap">
-                Tekne & Marina
+                Tekne &amp; Marina
               </th>
               <th scope="col" className="px-4 py-3.5 whitespace-nowrap">
                 Kategori
@@ -88,7 +88,7 @@ export function ServiceOrdersTable({
                         e.stopPropagation();
                         handleOpenDetail(order.id);
                       }}
-                      className="hover:underline focus:outline-none focus:ring-1 focus:ring-sky-500 rounded"
+                      className="hover:underline focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 rounded"
                     >
                       {code}
                     </button>
@@ -151,9 +151,9 @@ export function ServiceOrdersTable({
                       <Link
                         href={`/admin/calls/${order.source_call_id}`}
                         onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center gap-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800/80 px-2.5 py-1 text-[11px] font-semibold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-900/60 transition-colors"
+                        className="inline-flex items-center gap-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800/80 px-2.5 py-1 text-[11px] font-semibold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-900/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                       >
-                        <span>📞</span>
+                        <span aria-hidden="true">📞</span>
                         <span>Çağrı Detayı</span>
                       </Link>
                     ) : (
@@ -169,10 +169,10 @@ export function ServiceOrdersTable({
                         e.stopPropagation();
                         handleOpenDetail(order.id);
                       }}
-                      className="inline-flex items-center gap-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors"
+                      className="inline-flex items-center gap-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                     >
                       <span>İncele</span>
-                      <span>➔</span>
+                      <span aria-hidden="true">➔</span>
                     </button>
                   </td>
                 </tr>

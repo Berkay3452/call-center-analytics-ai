@@ -107,7 +107,7 @@ export function ChatWindow({
               {/* "Bulamadım" Özel Durumu */}
               {isNotFound && !msg.isStreaming && (
                 <div className="mt-2.5 flex items-center gap-2 rounded-lg bg-amber-100/70 dark:bg-amber-950/60 p-2 text-xs text-amber-900 dark:text-amber-200">
-                  <span className="text-sm">🔍</span>
+                  <span className="text-sm" aria-hidden="true">🔍</span>
                   <span className="text-[11px] leading-snug">
                     Veritabanı ve servis kayıtlarında eşleşen belge bulunamadı. Kaynak kartları gizlendi.
                   </span>
@@ -121,7 +121,7 @@ export function ChatWindow({
               {hasError && msg.error && (
                 <div className="mt-3 rounded-xl border border-rose-300 dark:border-rose-800 bg-rose-100/80 dark:bg-rose-950/50 p-3 text-xs text-rose-950 dark:text-rose-200">
                   <div className="flex items-start gap-2">
-                    <span className="text-base text-rose-600 dark:text-rose-400">⚠️</span>
+                    <span className="text-base text-rose-600 dark:text-rose-400" aria-hidden="true">⚠️</span>
                     <div className="flex-1 space-y-1">
                       <p className="font-semibold text-rose-900 dark:text-rose-200">
                         {msg.error.isApiKeyError ||
@@ -150,7 +150,7 @@ export function ChatWindow({
                       <button
                         type="button"
                         onClick={onRetry}
-                        className="inline-flex items-center gap-1.5 rounded-lg bg-rose-700 px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-rose-800 transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500"
+                        className="inline-flex items-center gap-1.5 rounded-lg bg-rose-700 px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-rose-800 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                       >
                         <svg
                           className="w-3.5 h-3.5"
@@ -158,6 +158,7 @@ export function ChatWindow({
                           viewBox="0 0 24 24"
                           stroke="currentColor"
                           strokeWidth="2"
+                          aria-hidden="true"
                         >
                           <path
                             strokeLinecap="round"

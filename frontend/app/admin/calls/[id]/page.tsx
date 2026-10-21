@@ -97,7 +97,7 @@ async function CallDetailContent({ params }: Props) {
         </p>
         <Link
           href="/admin/calls"
-          className="mt-4 inline-block text-xs font-semibold text-sky-700 dark:text-sky-400 hover:underline"
+          className="mt-4 inline-block text-xs font-semibold text-sky-700 dark:text-sky-400 hover:underline px-2 py-1 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
         >
           ← Çağrı listesine dön
         </Link>
@@ -198,15 +198,15 @@ async function CallDetailContent({ params }: Props) {
   return (
     <div className="space-y-6">
       {/* Üst Bar / Geri Dönüş */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <Link
           href="/admin/calls"
-          className="text-sm font-medium text-sky-700 dark:text-sky-400 hover:underline"
+          className="text-sm font-medium text-sky-700 dark:text-sky-400 hover:underline px-2 py-1 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
         >
           ← Çağrı listesine dön
         </Link>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {inProgress && (
             <span className="inline-flex items-center rounded-md bg-sky-50 dark:bg-sky-950/60 px-2.5 py-1 text-xs font-semibold text-sky-800 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
               ⏳ Analiz sürüyor

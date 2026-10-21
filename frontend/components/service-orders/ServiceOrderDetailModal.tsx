@@ -5,6 +5,7 @@ import type { ServiceOrderDetail } from "@/lib/api/types";
 import { getServiceOrderById } from "@/lib/api/client";
 import { ServiceOrderDetailSkeleton } from "@/components/skeletons";
 import { ServiceOrderDetailCard } from "./ServiceOrderDetailCard";
+import { useFocusTrap } from "@/lib/use-focus-trap";
 
 interface ServiceOrderDetailModalProps {
   orderId: string;
@@ -20,6 +21,12 @@ export function ServiceOrderDetailModal({
   const [order, setOrder] = useState<ServiceOrderDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Focus trap & Escape hook: Tab tuşunu kilitler, Escape ile kapatır ve odağı açan elemana iade eder
+  const modalContainerRef = useFocusTrap<HTMLDivElement>({
+    isOpen: true,
+    onClose,
+  });
 
   useEffect(() => {
     let isMounted = true;
@@ -45,19 +52,13 @@ export function ServiceOrderDetailModal({
     };
   }, [orderId]);
 
-  // ESC tuşuyla kapatma
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Servis Emri Detay Modalı"
+    >
       {/* Karartma arka planı */}
       <div
         className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"
@@ -66,12 +67,15 @@ export function ServiceOrderDetailModal({
       />
 
       {/* Modal gövdesi */}
-      <div className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 shadow-2xl z-10 transition-all">
+      <div
+        ref={modalContainerRef}
+        className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 shadow-2xl z-10 transition-all"
+      >
         {/* Kapat butonu */}
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500"
+          className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
           aria-label="Kapat"
         >
           ✕
@@ -81,14 +85,14 @@ export function ServiceOrderDetailModal({
 
         {error && (
           <div className="rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40 p-6 text-center space-y-3">
-            <span className="text-3xl">⚠️</span>
+            <span className="text-3xl" aria-hidden="true">⚠️</span>
             <p className="text-sm font-semibold text-red-800 dark:text-red-200">
               {error}
             </p>
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg bg-slate-800 px-4 py-1.5 text-xs font-bold text-white hover:bg-slate-700"
+              className="rounded-lg bg-slate-800 px-4 py-1.5 text-xs font-bold text-white hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
             >
               Kapat
             </button>
@@ -98,10 +102,7 @@ export function ServiceOrderDetailModal({
         {!loading && !error && order && (
           <ServiceOrderDetailCard
             order={order}
-            onStatusUpdated={(updated) => {
-              setOrder(updated);
-              onStatusUpdated?.(updated);
-            }}
+            onStatusUpdated={onStatusUpdated}
           />
         )}
       </div>

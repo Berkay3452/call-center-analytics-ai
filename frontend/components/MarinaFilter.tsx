@@ -33,13 +33,17 @@ export function MarinaFilter({ selectedMarina, className = "" }: MarinaFilterPro
 
   return (
     <div className={`relative inline-flex items-center gap-2 ${className}`}>
+      <label htmlFor="marina-filter-select" className="sr-only">
+        Marina filtresi
+      </label>
       <select
+        id="marina-filter-select"
         value={currentMarina || "all"}
         onChange={handleChange}
         disabled={isPending}
         title="Marina bazlı filtreleme"
         aria-label="Marina seç"
-        className="rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 disabled:opacity-50 transition-colors"
+        className="rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-slate-200 shadow-sm focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50 transition-colors"
       >
         <option value="all">⚓ Tüm Marinalar</option>
         {MARINA_OPTIONS.map((m) => (
@@ -49,7 +53,9 @@ export function MarinaFilter({ selectedMarina, className = "" }: MarinaFilterPro
         ))}
       </select>
       {isPending && (
-        <span className="text-xs text-sky-600 dark:text-sky-400 animate-spin">⏳</span>
+        <span className="text-xs text-sky-600 dark:text-sky-400 animate-spin" aria-hidden="true">
+          ⏳
+        </span>
       )}
     </div>
   );

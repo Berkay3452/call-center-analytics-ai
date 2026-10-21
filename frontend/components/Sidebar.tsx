@@ -39,14 +39,17 @@ export function Sidebar() {
   const navItems = NAV_MAP[effectiveRole];
 
   return (
-    <aside className="flex h-full w-56 flex-col border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-colors">
+    <aside
+      className="flex h-full w-56 flex-shrink-0 flex-col border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 transition-colors"
+      aria-label="Ana Navigasyon"
+    >
       {/* Logo */}
       <div className="flex h-16 items-center px-4 border-b border-gray-200 dark:border-slate-800">
         <span className="text-lg font-bold text-sky-700 dark:text-sky-400">⚓ Miço Usta</span>
       </div>
 
       {/* Navigasyon */}
-      <nav className="flex-1 overflow-y-auto p-3 space-y-1">
+      <nav className="flex-1 overflow-y-auto p-3 space-y-1" aria-label="Menü Öğeleri">
         {navItems.map((item) => {
           const isActive =
             item.href === "/admin/calls"
@@ -56,13 +59,13 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 ${
                 isActive
                   ? "bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 font-semibold border border-sky-100 dark:border-sky-800/50 shadow-sm"
                   : "text-gray-600 dark:text-slate-300 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white"
               }`}
             >
-              <span>{item.icon}</span>
+              <span aria-hidden="true">{item.icon}</span>
               <span>{item.label}</span>
             </Link>
           );
@@ -79,7 +82,10 @@ export function Sidebar() {
 
 export function SidebarFallback() {
   return (
-    <aside className="flex h-full w-56 flex-col border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+    <aside
+      className="flex h-full w-56 flex-shrink-0 flex-col border-r border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900"
+      aria-label="Ana Navigasyon Yükleniyor"
+    >
       <div className="flex h-16 items-center px-4 border-b border-gray-200 dark:border-slate-800">
         <span className="text-lg font-bold text-sky-700 dark:text-sky-400">⚓ Miço Usta</span>
       </div>

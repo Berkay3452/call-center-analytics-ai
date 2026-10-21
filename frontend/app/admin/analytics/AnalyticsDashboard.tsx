@@ -202,12 +202,17 @@ export default function AnalyticsDashboard() {
         <div className="flex flex-wrap items-center gap-2">
           {/* Marina Seçimi */}
           <div className="relative">
+            <label htmlFor="analytics-marina-select" className="sr-only">
+              Marina filtresi
+            </label>
             <select
+              id="analytics-marina-select"
               value={selectedMarina}
               onChange={(e) => handleMarinaChange(e.target.value)}
               disabled={isLoading}
               title="Marina bazlı filtreleme"
-              className="rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 disabled:opacity-50"
+              aria-label="Marina filtresi"
+              className="rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-slate-200 shadow-sm focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50"
             >
               <option value="all">⚓ Tüm Marinalar</option>
               {MARINA_OPTIONS.map((m) => (
@@ -219,11 +224,16 @@ export default function AnalyticsDashboard() {
           </div>
 
           {/* Tarih Filtresi (date_from & date_to API sorgusu) */}
+          <label htmlFor="analytics-date-range-select" className="sr-only">
+            Tarih aralığı
+          </label>
           <select
+            id="analytics-date-range-select"
             value={dateRange}
             onChange={(e) => handleDateRangeChange(e.target.value)}
             disabled={isLoading}
-            className="rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-slate-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-500 disabled:opacity-50"
+            aria-label="Tarih aralığı"
+            className="rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-slate-200 shadow-sm focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50"
           >
             {DATE_RANGE_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -238,7 +248,8 @@ export default function AnalyticsDashboard() {
             onClick={handleRefresh}
             disabled={isLoading}
             title="Verileri Yenile"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-slate-200 shadow-sm hover:bg-gray-50 dark:hover:bg-slate-700 active:scale-95 transition-all disabled:opacity-50"
+            aria-label="Verileri Yenile"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-slate-200 shadow-sm hover:bg-gray-50 dark:hover:bg-slate-700 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50"
           >
             <span className={isLoading ? "animate-spin" : ""}>🔄</span>
             <span className="hidden sm:inline">Yenile</span>
@@ -273,7 +284,7 @@ export default function AnalyticsDashboard() {
               <button
                 type="button"
                 onClick={handleRefresh}
-                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-xs font-bold text-white shadow hover:bg-red-700 active:scale-95 transition-all"
+                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-xs font-bold text-white shadow hover:bg-red-700 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
               >
                 🔄 Yeniden Dene
               </button>
@@ -286,7 +297,7 @@ export default function AnalyticsDashboard() {
       {isLoading && (
         <div className="space-y-6">
           {/* Skeleton KPI Kartları */}
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-7">
             {Array.from({ length: 7 }).map((_, i) => (
               <div
                 key={i}
@@ -314,7 +325,7 @@ export default function AnalyticsDashboard() {
           </div>
 
           {/* Skeleton 3 Kolon */}
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {Array.from({ length: 3 }).map((_, i) => (
               <div
                 key={i}
@@ -350,13 +361,13 @@ export default function AnalyticsDashboard() {
             <button
               type="button"
               onClick={() => handleDateRangeChange("365")}
-              className="rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-xs font-semibold text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+              className="rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-xs font-semibold text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
             >
               Son 1 Yıllık Verileri Gör
             </button>
             <Link
               href="/admin/calls/upload"
-              className="inline-flex items-center gap-2 rounded-lg bg-sky-700 px-4 py-2 text-xs font-bold text-white shadow hover:bg-sky-800 transition-colors"
+              className="inline-flex items-center gap-2 rounded-lg bg-sky-700 px-4 py-2 text-xs font-bold text-white shadow hover:bg-sky-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
             >
               <span>🎙️</span>
               <span>+ Yeni Çağrı Yükle</span>
@@ -369,7 +380,7 @@ export default function AnalyticsDashboard() {
       {!isLoading && !error && data && data.total_calls > 0 && (
         <div className="space-y-6">
           {/* Üst KPI Kartları Izgarası (7 Kart) */}
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-7">
             {/* 1. Gelen Çağrı (total_calls) */}
             <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500 dark:text-slate-400">
@@ -562,7 +573,7 @@ export default function AnalyticsDashboard() {
           </div>
 
           {/* 3 Temel Dağılım Grafiği */}
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {/* 1. Arıza & Talep Kategori Dağılımı (by_category) */}
             <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
               <div className="flex items-center justify-between mb-1">

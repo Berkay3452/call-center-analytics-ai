@@ -49,7 +49,7 @@ export function SuggestedPrompts({
           type="button"
           onClick={() => onSelectPrompt(prompt)}
           disabled={disabled}
-          className="group inline-flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 shadow-2xs transition-all hover:border-sky-400 dark:hover:border-sky-500 hover:bg-sky-50/70 dark:hover:bg-slate-800 hover:text-sky-900 dark:hover:text-sky-200 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-1 disabled:opacity-50 disabled:pointer-events-none"
+          className="group inline-flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 shadow-2xs transition-all hover:border-sky-400 dark:hover:border-sky-500 hover:bg-sky-50/70 dark:hover:bg-slate-800 hover:text-sky-900 dark:hover:text-sky-200 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50 disabled:pointer-events-none"
         >
           <span className="text-sky-700 dark:text-sky-400 group-hover:scale-110 transition-transform">💬</span>
           <span>{prompt}</span>

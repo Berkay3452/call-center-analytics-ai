@@ -39,14 +39,15 @@ export function ThemeToggle() {
             type="button"
             onClick={() => setTheme(opt.value)}
             title={`${opt.label} Tema`}
+            aria-label={`${opt.label} tema`}
             aria-pressed={isActive}
-            className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold transition-all ${
+            className={`flex items-center gap-1 rounded-md px-2 py-1 text-xs font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 ${
               isActive
                 ? "bg-white dark:bg-slate-900 text-sky-700 dark:text-sky-400 shadow-sm"
-                : "text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200"
+                : "text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200"
             }`}
           >
-            <span className="text-xs">{opt.icon}</span>
+            <span className="text-xs" aria-hidden="true">{opt.icon}</span>
             <span className="hidden sm:inline">{opt.label}</span>
           </button>
         );
