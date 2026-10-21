@@ -270,3 +270,35 @@ export {
   rejectSuggestion,
   updateSuggestion,
 } from "./api/client";
+
+
+// ---------------------------------------------------------------------------
+// Servis Emirleri (#118 / #114)
+// ---------------------------------------------------------------------------
+export {
+  getServiceOrders,
+  getServiceOrderById,
+  updateServiceOrderStatus,
+} from "./api/client";
+
+import {
+  getServiceOrders as getApiServiceOrders,
+  getServiceOrderById as getApiServiceOrderById,
+  updateServiceOrderStatus as updateApiServiceOrderStatus,
+} from "./api/client";
+import type { ServiceOrderFilters, ServiceOrderStatus } from "./api/types";
+
+export async function fetchServiceOrders(filters?: ServiceOrderFilters) {
+  return getApiServiceOrders(filters);
+}
+
+export async function fetchServiceOrderDetail(orderId: string) {
+  return getApiServiceOrderById(orderId);
+}
+
+export async function changeServiceOrderStatus(
+  orderId: string,
+  status: ServiceOrderStatus,
+) {
+  return updateApiServiceOrderStatus(orderId, status);
+}

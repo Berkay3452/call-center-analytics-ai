@@ -27,7 +27,18 @@ import type {
   Page,
   SourceRef,
   StreamStage,
+  ServiceOrderStatus,
+  ServiceOrderListItem,
+  ServiceOrderDetail,
+  ServiceOrderStatusUpdate,
+  ServiceOrderFilters,
+  RequestCategory,
+  ServiceMode,
+  Urgency,
+  NextAction,
 } from "./types";
+
+export type { ServiceOrderStatusUpdate };
 
 // Mock JSON importları (docs/ornekler/api/ ile eşleşen 10 dosya)
 import mockCallDetail from "@/mocks/cagri_detayi.json";
@@ -38,6 +49,7 @@ import mockCrmList from "@/mocks/crm_listesi.json";
 import mockKpiSummary from "@/mocks/kpi_ozeti.json";
 import mockChatReply from "@/mocks/sohbet_cevabi.json";
 import mockChatSessionDetail from "@/mocks/sohbet_oturumu.json";
+import mockServiceOrderDetail from "@/mocks/servis_emri_detayi.json";
 import { mockSeedCalls, mockSeedCrm } from "./mock-seed";
 
 interface MockAnalysisProgress {
@@ -55,6 +67,229 @@ interface MockCrmReviewProgress {
   reviewed_at: string;
 }
 const mockCrmReviewMap = new Map<string, MockCrmReviewProgress>();
+
+const ALLOWED_SERVICE_ORDER_TRANSITIONS: Record<ServiceOrderStatus, Set<ServiceOrderStatus>> = {
+  yeni_atandi: new Set(["kesifte"]),
+  kesifte: new Set(["onaylandi"]),
+  onaylandi: new Set(["devam_ediyor"]),
+  devam_ediyor: new Set(["tamamlandi"]),
+  tamamlandi: new Set(),
+};
+
+function toServiceOrderListItem(order: ServiceOrderDetail): ServiceOrderListItem {
+  return {
+    id: order.id,
+    status: order.status,
+    category: order.category,
+    description: order.description,
+    scheduled_at: order.scheduled_at,
+    completed_at: order.completed_at,
+    created_at: order.created_at,
+    customer_id: order.customer.id,
+    customer_name: order.customer.full_name,
+    customer_phone: order.customer.phone,
+    boat_id: order.boat.id,
+    boat_name: order.boat.name,
+    boat_model: order.boat.model,
+    marina: order.boat.marina ?? order.customer.marina,
+    craftsman_id: order.craftsman?.id ?? null,
+    craftsman_name: order.craftsman?.full_name ?? null,
+    source_call_id: order.source_call?.call_id ?? null,
+  };
+}
+
+const mockServiceOrdersStore: ServiceOrderDetail[] = [
+  mockServiceOrderDetail as unknown as ServiceOrderDetail,
+  {
+    id: "22222222-2222-4222-8222-222222222222",
+    status: "kesifte",
+    category: "su_sihhi_tesisat",
+    description: "Sintine pompası ve su alma arıza keşfi",
+    scheduled_at: "2026-10-16T11:00:00Z",
+    completed_at: null,
+    created_at: "2026-10-14T11:20:00Z",
+    customer: {
+      id: "11111111-2222-4111-8111-111111111111",
+      full_name: "Fatma Kaya",
+      phone: "+90 533 333 44 55",
+      email: "fatma.kaya@example.com",
+      marina: "Göcek D-Marin",
+    },
+    boat: {
+      id: "22222222-3333-4222-8222-222222222222",
+      name: "Albatros",
+      model: "Beneteau 45",
+      year: 2021,
+      marina: "Göcek D-Marin",
+    },
+    craftsman: {
+      id: "33333333-2222-4333-8333-333333333333",
+      full_name: "Mehmet Usta",
+      specialty: "Sıhhi Tesisat & Sintine",
+      phone: "+90 535 444 55 66",
+    },
+    source_call: {
+      call_id: "22222222-2222-4222-8222-222222222222",
+      started_at: "2026-10-14T11:00:00Z",
+      customer_name: "Fatma Kaya",
+      boat_name: "Albatros",
+      switchboard_outcome: "usta_yonlendirildi",
+      request_category: "su_sihhi_tesisat",
+      location: "Göcek D-Marin",
+      problem: "Tekne su alıyor, sintine pompası yetersiz",
+      service_mode: "yerinde_servis",
+      urgency: "acil",
+      potential_job: "Acil sintine ve vana kontrolü",
+      next_action: "usta_ata",
+      summary: "Acil su alma vakası, acil usta yönlendirildi.",
+      crm_review_status: "onaylandi",
+      crm_review_note: "Göcek ekibi görevlendirildi",
+      crm_reviewed_at: "2026-10-14T11:15:00Z",
+    },
+  },
+  {
+    id: "15ad79a7-d92c-57f1-9cf3-dcda09fc8130",
+    status: "onaylandi",
+    category: "elektrik_elektronik",
+    description: "Akü grubu değişimi ve şarj regülatörü testi",
+    scheduled_at: "2026-10-17T14:00:00Z",
+    completed_at: null,
+    created_at: "2026-10-13T10:05:00Z",
+    customer: {
+      id: "11111111-3333-4111-8111-111111111111",
+      full_name: "Mehmet Deniz",
+      phone: "+90 532 555 66 77",
+      email: "mehmet.deniz@example.com",
+      marina: "Bodrum Milta Marina",
+    },
+    boat: {
+      id: "22222222-4444-4222-8222-222222222222",
+      name: "Poseidon",
+      model: "Jeanneau 42",
+      year: 2019,
+      marina: "Bodrum Milta Marina",
+    },
+    craftsman: {
+      id: "33333333-4444-4333-8333-333333333333",
+      full_name: "Ali Usta",
+      specialty: "Elektrik & Elektronik",
+      phone: "+90 536 777 88 99",
+    },
+    source_call: {
+      call_id: "15ad79a7-d92c-57f1-9cf3-dcda09fc8130",
+      started_at: "2026-10-13T09:45:00Z",
+      customer_name: "Mehmet Deniz",
+      boat_name: "Poseidon",
+      switchboard_outcome: "randevu_olusturuldu",
+      request_category: "elektrik_elektronik",
+      location: "Bodrum Milta Marina",
+      problem: "Akü voltajı düşüyor ve invertör devre dışı kalıyor",
+      service_mode: "yerinde_servis",
+      urgency: "yuksek",
+      potential_job: "Akü değişimi",
+      next_action: "servis_randevusu_olustur",
+      summary: "Müşteri akü ve şarj arızası bildirdi.",
+      crm_review_status: "onaylandi",
+      crm_review_note: "Bodrum servisi yönlendirildi",
+      crm_reviewed_at: "2026-10-13T10:00:00Z",
+    },
+  },
+  {
+    id: "1327fac1-7257-5594-af14-cf02e8fb979b",
+    status: "devam_ediyor",
+    category: "makine",
+    description: "Yakıt filtresi değişimi ve enjektör temizliği",
+    scheduled_at: "2026-10-18T09:00:00Z",
+    completed_at: null,
+    created_at: "2026-10-12T14:40:00Z",
+    customer: {
+      id: "11111111-4444-4111-8111-111111111111",
+      full_name: "Kemal Aydoğan",
+      phone: "+90 533 888 99 00",
+      email: "kemal.aydogan@example.com",
+      marina: "Kalamış Marina",
+    },
+    boat: {
+      id: "22222222-5555-4222-8222-222222222222",
+      name: "Lodos",
+      model: "Hanse 415",
+      year: 2017,
+      marina: "Kalamış Marina",
+    },
+    craftsman: {
+      id: "33333333-3333-4333-8333-333333333333",
+      full_name: "Ahmet Usta",
+      specialty: "Motor & Mekanik",
+      phone: "+90 533 222 33 44",
+    },
+    source_call: {
+      call_id: "1327fac1-7257-5594-af14-cf02e8fb979b",
+      started_at: "2026-10-12T14:30:00Z",
+      customer_name: "Kemal Aydoğan",
+      boat_name: "Lodos",
+      switchboard_outcome: "randevu_olusturuldu",
+      request_category: "makine",
+      location: "Kalamış Marina",
+      problem: "Motor seyir halindeyken tekliyor ve siyah duman atıyor",
+      service_mode: "yerinde_servis",
+      urgency: "normal",
+      potential_job: "Yakıt sistemi revizyonu",
+      next_action: "servis_randevusu_olustur",
+      summary: "Yakıt sistemi arızası, yerinde bakım sürüyor.",
+      crm_review_status: "onaylandi",
+      crm_review_note: "Kalamış ustası atandı",
+      crm_reviewed_at: "2026-10-12T14:35:00Z",
+    },
+  },
+  {
+    id: "ac5bc381-e98b-5e92-af9a-31d7954a66d6",
+    status: "tamamlandi",
+    category: "temizlik_bakim",
+    description: "Kışlama motor bakımı ve sintine temizliği",
+    scheduled_at: "2026-10-11T10:00:00Z",
+    completed_at: "2026-10-12T16:00:00Z",
+    created_at: "2026-10-11T09:30:00Z",
+    customer: {
+      id: "11111111-5555-4111-8111-111111111111",
+      full_name: "Deniz Saygın",
+      phone: "+90 535 123 45 67",
+      email: "deniz.saygin@example.com",
+      marina: "Yalıkavak Marina",
+    },
+    boat: {
+      id: "22222222-6666-4222-8222-222222222222",
+      name: "Martı",
+      model: "Lagoon 40",
+      year: 2022,
+      marina: "Yalıkavak Marina",
+    },
+    craftsman: {
+      id: "33333333-5555-4333-8333-333333333333",
+      full_name: "Hasan Usta",
+      specialty: "Genel Bakım & Temizlik",
+      phone: "+90 534 666 77 88",
+    },
+    source_call: {
+      call_id: "ac5bc381-e98b-5e92-af9a-31d7954a66d6",
+      started_at: "2026-10-11T09:00:00Z",
+      customer_name: "Deniz Saygın",
+      boat_name: "Martı",
+      switchboard_outcome: "randevu_olusturuldu",
+      request_category: "temizlik_bakim",
+      location: "Yalıkavak Marina",
+      problem: "Kışlama öncesi genel gövde ve sintine temizliği",
+      service_mode: "yerinde_servis",
+      urgency: "dusuk",
+      potential_job: "Kışlık bakım paketi",
+      next_action: "servis_randevusu_olustur",
+      summary: "Kışlama bakımı başarıyla tamamlandı.",
+      crm_review_status: "onaylandi",
+      crm_review_note: "İşlem teslim edildi",
+      crm_reviewed_at: "2026-10-11T09:15:00Z",
+    },
+  },
+];
+
 
 
 export interface ApiClientConfig {
@@ -443,7 +678,51 @@ async function handleMockRequest<T>(
       }
     }
 
+    const found = mockSeedCrm.find((c) => c.call_id === id);
     const reviewedAt = new Date().toISOString();
+    const newServiceOrder: ServiceOrderDetail = {
+      id: serviceOrderId,
+      status: "yeni_atandi",
+      category: ((payload.request_category as RequestCategory) || (found?.request_category as RequestCategory) || "makine"),
+      description: (payload.problem as string) || (payload.potential_job as string) || found?.problem || "CRM onaylı servis talebi",
+      scheduled_at: null,
+      completed_at: null,
+      created_at: reviewedAt,
+      customer: {
+        id: `cust-${id.slice(0, 8)}`,
+        full_name: found?.customer_name || "Müşteri",
+        phone: "+90 532 000 00 00",
+        email: null,
+        marina: (payload.location as string) || found?.location || "Tuzla Marina",
+      },
+      boat: {
+        id: `boat-${id.slice(0, 8)}`,
+        name: found?.boat_name || "Tekne",
+        model: "Bavaria 38",
+        year: 2020,
+        marina: (payload.location as string) || found?.location || "Tuzla Marina",
+      },
+      craftsman: null,
+      source_call: {
+        call_id: id,
+        started_at: found?.started_at || reviewedAt,
+        customer_name: found?.customer_name || null,
+        boat_name: found?.boat_name || null,
+        switchboard_outcome: "randevu_olusturuldu",
+        request_category: ((payload.request_category as RequestCategory) || (found?.request_category as RequestCategory) || null),
+        location: (payload.location as string) || found?.location || null,
+        problem: (payload.problem as string) || found?.problem || null,
+        service_mode: ((payload.service_mode as ServiceMode) || (found?.service_mode as ServiceMode) || null),
+        urgency: ((payload.urgency as Urgency) || (found?.urgency as Urgency) || null),
+        potential_job: (payload.potential_job as string) || found?.potential_job || null,
+        next_action: ((payload.next_action as NextAction) || (found?.next_action as NextAction) || null),
+        summary: "CRM onayından otomatik oluşturulan servis emri.",
+        crm_review_status: "onaylandi",
+        crm_review_note: (payload.note as string) || null,
+        crm_reviewed_at: reviewedAt,
+      },
+    };
+    mockServiceOrdersStore.unshift(newServiceOrder);
     mockCrmReviewMap.set(id, {
       status: "onaylandi",
       edited_fields: editedFields as unknown as Record<string, never>,
@@ -453,7 +732,6 @@ async function handleMockRequest<T>(
     });
 
     // mockSeedCrm listesini de güncelle
-    const found = mockSeedCrm.find((c) => c.call_id === id);
     if (found) {
       found.review_status = "onaylandi";
       found.service_order_id = serviceOrderId;
@@ -749,6 +1027,145 @@ async function handleMockRequest<T>(
     }
     // Default: first session
     return mockChatSessionDetail as unknown as T;
+  }
+
+
+  // 12. GET /service-orders
+  if (method === "GET" && path === "/service-orders") {
+    const params = options.params;
+    let list = [...mockServiceOrdersStore];
+
+    if (params?.status) {
+      const status = String(params.status).trim();
+      if (status && status !== "all") {
+        list = list.filter((i) => i.status === status);
+      }
+    }
+
+    if (params?.marina) {
+      const marina = String(params.marina).trim().toLowerCase();
+      if (marina && marina !== "all") {
+        list = list.filter(
+          (i) =>
+            i.boat.marina?.toLowerCase() === marina ||
+            i.customer.marina?.toLowerCase() === marina,
+        );
+      }
+    }
+
+    if (params?.q) {
+      const q = String(params.q).trim().toLowerCase();
+      if (q) {
+        list = list.filter(
+          (i) =>
+            i.id.toLowerCase().includes(q) ||
+            i.customer.full_name.toLowerCase().includes(q) ||
+            i.boat.name.toLowerCase().includes(q) ||
+            (i.boat.marina && i.boat.marina.toLowerCase().includes(q)) ||
+            (i.description && i.description.toLowerCase().includes(q)),
+        );
+      }
+    }
+
+    if (params?.date_from) {
+      const fromStr = String(params.date_from).trim();
+      const fromDate = new Date(fromStr.length === 10 ? `${fromStr}T00:00:00` : fromStr);
+      list = list.filter((i) => new Date(i.created_at) >= fromDate);
+    }
+
+    if (params?.date_to) {
+      const toStr = String(params.date_to).trim();
+      const toDate = new Date(toStr.length === 10 ? `${toStr}T23:59:59` : toStr);
+      list = list.filter((i) => new Date(i.created_at) <= toDate);
+    }
+
+    const page = Math.max(1, Number(params?.page) || 1);
+    const pageSize = Math.max(1, Number(params?.page_size) || 20);
+    const start = (page - 1) * pageSize;
+    const paged = list.slice(start, start + pageSize).map(toServiceOrderListItem);
+
+    return {
+      items: paged,
+      total: list.length,
+      page,
+      page_size: pageSize,
+    } as unknown as T;
+  }
+
+  // 13. GET /service-orders/:id
+  if (method === "GET" && /^\/service-orders\/[^/]+$/.test(path)) {
+    const id = path.split("/")[2];
+    const found = mockServiceOrdersStore.find((o) => o.id === id);
+    if (found) {
+      return found as unknown as T;
+    }
+    if (id === mockServiceOrderDetail.id) {
+      return mockServiceOrderDetail as unknown as T;
+    }
+    return {
+      ...mockServiceOrderDetail,
+      id,
+    } as unknown as T;
+  }
+
+  // 14. PATCH /service-orders/:id/status
+  if (
+    (method === "PATCH" || method === "PUT") &&
+    /^\/service-orders\/[^/]+\/status$/.test(path)
+  ) {
+    const id = path.split("/")[2];
+    let payload: { status?: ServiceOrderStatus } = {};
+    try {
+      if (typeof options.body === "string") {
+        payload = JSON.parse(options.body);
+      }
+    } catch {
+      // ignore
+    }
+
+    const newStatus = payload.status;
+    if (!newStatus) {
+      throw new ApiError({
+        code: "VALIDATION_ERROR",
+        message: "Durum alanı zorunludur.",
+        requestId: "mock-err-val",
+        status: 400,
+      });
+    }
+
+    let order = mockServiceOrdersStore.find((o) => o.id === id);
+    if (!order) {
+      if (id === mockServiceOrderDetail.id) {
+        order = mockServiceOrderDetail as unknown as ServiceOrderDetail;
+        mockServiceOrdersStore.push(order);
+      } else {
+        throw new ApiError({
+          code: "NOT_FOUND",
+          message: "Servis emri bulunamadı.",
+          requestId: "mock-err-404",
+          status: 404,
+        });
+      }
+    }
+
+    const currentStatus = order.status;
+    const allowed = ALLOWED_SERVICE_ORDER_TRANSITIONS[currentStatus];
+    if (!allowed || !allowed.has(newStatus)) {
+      throw new ApiError({
+        code: "INVALID_STATUS_TRANSITION",
+        message: `Geçersiz durum geçişi: '${currentStatus}' durumundan '${newStatus}' durumuna geçilemez.`,
+        requestId: "mock-err-transition",
+        status: 400,
+        details: { current_status: currentStatus, target_status: newStatus },
+      });
+    }
+
+    order.status = newStatus;
+    if (newStatus === "tamamlandi") {
+      order.completed_at = new Date().toISOString();
+    }
+
+    return order as unknown as T;
   }
 
   throw new ApiError({
@@ -1382,5 +1799,42 @@ export async function updateSuggestion(
   return apiFetch<CrmReviewOut>(`/crm/${callId}`, {
     method: "PATCH",
     body: JSON.stringify(diff),
+  });
+}
+
+
+/**
+ * GET /service-orders - Sayfalı servis emirleri listesi (#118 / #114)
+ */
+export async function getServiceOrders(
+  filters?: ServiceOrderFilters,
+): Promise<Page<ServiceOrderListItem>> {
+  return apiFetch<Page<ServiceOrderListItem>>("/service-orders", {
+    method: "GET",
+    params: filters as Record<string, string | number | boolean | null | undefined>,
+  });
+}
+
+/**
+ * GET /service-orders/{order_id} - Servis emri detayı (#118 / #114)
+ */
+export async function getServiceOrderById(
+  orderId: string,
+): Promise<ServiceOrderDetail> {
+  return apiFetch<ServiceOrderDetail>(`/service-orders/${orderId}`, {
+    method: "GET",
+  });
+}
+
+/**
+ * PATCH /service-orders/{order_id}/status - Servis emri durumunu güncelle (#118 / #114)
+ */
+export async function updateServiceOrderStatus(
+  orderId: string,
+  status: ServiceOrderStatus,
+): Promise<ServiceOrderDetail> {
+  return apiFetch<ServiceOrderDetail>(`/service-orders/${orderId}/status`, {
+    method: "PATCH",
+    body: JSON.stringify({ status }),
   });
 }

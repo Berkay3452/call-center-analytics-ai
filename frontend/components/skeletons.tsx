@@ -222,3 +222,74 @@ export function AnalyticsDashboardSkeleton() {
     </div>
   );
 }
+
+
+/**
+ * Servis Emirleri tablosu yükleniyor iskeleti (#114)
+ */
+export function ServiceOrdersTableSkeleton() {
+  return (
+    <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm animate-pulse">
+      <div className="border-b border-gray-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/60 px-4 py-3">
+        <div className="grid grid-cols-7 gap-4">
+          <div className="h-4 w-20 rounded bg-gray-200 dark:bg-slate-700" />
+          <div className="h-4 w-24 rounded bg-gray-200 dark:bg-slate-700" />
+          <div className="h-4 w-24 rounded bg-gray-200 dark:bg-slate-700" />
+          <div className="h-4 w-20 rounded bg-gray-200 dark:bg-slate-700" />
+          <div className="h-4 w-32 rounded bg-gray-200 dark:bg-slate-700" />
+          <div className="h-4 w-24 rounded bg-gray-200 dark:bg-slate-700" />
+          <div className="h-4 w-20 rounded bg-gray-200 dark:bg-slate-700 ml-auto" />
+        </div>
+      </div>
+      <div className="divide-y divide-gray-100 dark:divide-slate-800 p-4 space-y-4">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="grid grid-cols-7 gap-4 items-center pt-2">
+            <div className="h-5 w-24 rounded bg-gray-200 dark:bg-slate-700" />
+            <div>
+              <div className="h-4 w-28 rounded bg-gray-200 dark:bg-slate-700 mb-1" />
+              <div className="h-3 w-20 rounded bg-gray-100 dark:bg-slate-800" />
+            </div>
+            <div>
+              <div className="h-4 w-24 rounded bg-gray-200 dark:bg-slate-700 mb-1" />
+              <div className="h-3 w-16 rounded bg-gray-100 dark:bg-slate-800" />
+            </div>
+            <div className="h-5 w-20 rounded-full bg-gray-200 dark:bg-slate-700" />
+            <div className="h-4 w-40 rounded bg-gray-200 dark:bg-slate-700" />
+            <div className="h-6 w-24 rounded-full bg-gray-200 dark:bg-slate-700" />
+            <div className="h-5 w-16 rounded bg-gray-200 dark:bg-slate-700 ml-auto" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Servis Emri detayı yükleniyor iskeleti (#114)
+ */
+export function ServiceOrderDetailSkeleton() {
+  return (
+    <div className="space-y-6 animate-pulse">
+      <div className="flex items-center justify-between">
+        <div className="h-5 w-36 rounded bg-gray-200 dark:bg-slate-800" />
+        <div className="h-8 w-28 rounded-lg bg-gray-200 dark:bg-slate-800" />
+      </div>
+      <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-4">
+        <div className="h-6 w-48 rounded bg-gray-200 dark:bg-slate-700" />
+        <div className="h-16 w-full rounded-lg bg-gray-100 dark:bg-slate-800" />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-3">
+          <div className="h-5 w-32 rounded bg-gray-200 dark:bg-slate-700" />
+          <div className="h-4 w-full rounded bg-gray-100 dark:bg-slate-800" />
+          <div className="h-4 w-3/4 rounded bg-gray-100 dark:bg-slate-800" />
+        </div>
+        <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 space-y-3">
+          <div className="h-5 w-32 rounded bg-gray-200 dark:bg-slate-700" />
+          <div className="h-4 w-full rounded bg-gray-100 dark:bg-slate-800" />
+          <div className="h-4 w-3/4 rounded bg-gray-100 dark:bg-slate-800" />
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -298,9 +298,13 @@ export function CrmSuggestionCard({
           <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300 font-semibold">
             <span>📋</span>
             <span>Servis Emri Oluşturuldu:</span>
-            <span className="font-mono font-bold text-emerald-900 dark:text-emerald-200">
-              {serviceOrderId}
-            </span>
+            <Link
+              href="/admin/service-orders"
+              className="font-mono font-bold text-emerald-900 dark:text-emerald-200 underline hover:text-emerald-700 dark:hover:text-emerald-100"
+              title="Servis Emirleri Sayfasına Git"
+            >
+              {serviceOrderId} ➔
+            </Link>
           </div>
           <span className="rounded bg-emerald-100 dark:bg-emerald-900/60 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-200 uppercase tracking-wider">
             Aktif Servis Emri
