@@ -12,7 +12,7 @@ import structlog
 from fastapi import APIRouter, Depends, File, Form, UploadFile, status
 from starlette.concurrency import run_in_threadpool
 
-from app.api.deps import ServiceCallerDep, SessionDep, SettingsDep
+from app.api.deps import AudioStorageDep, ServiceCallerDep, SessionDep, SettingsDep
 from app.core.errors import ServiceUnavailableError
 from app.domain.enums import SwitchboardOutcome
 from app.schemas.api import AudioCallMeta, CallAccepted, CallCreate, CallStatus
@@ -98,6 +98,7 @@ async def create_audio_call(
     _: ServiceCallerDep,
     session: SessionDep,
     settings: SettingsDep,
+    storage: AudioStorageDep,
     enqueue: EnqueueDep,
     duration_s: Annotated[int | None, Form(ge=0)] = None,
     answer_delay_s: Annotated[int | None, Form(ge=0)] = None,
@@ -129,7 +130,7 @@ async def create_audio_call(
         audio_ingest.store_audio,
         file.file,
         file.filename,
-        audio_ingest.storage_dir(settings),
+        storage,
         max_bytes=settings.audio_max_mb * 1024 * 1024,
     )
     call_id = await audio_ingest.create_audio_call(session, meta, stored)
