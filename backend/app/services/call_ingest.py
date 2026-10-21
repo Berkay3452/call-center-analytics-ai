@@ -216,7 +216,12 @@ async def run_call_analysis(
             await save_analysis(session, analysis)
             await set_state(session, call_id, analysis.status, error)
             if analysis.status in ("tamam", "kismi"):
-                await match_call(session, call_id)
+                # Eşleştirme yardımcı bir adımdır: hata verirse analiz sonucu kaybolmamalı.
+                try:
+                    async with session.begin_nested():
+                        await match_call(session, call_id)
+                except Exception:
+                    log.exception("call.match_failed", call_id=str(call_id))
         log.info("call.analyzed", call_id=str(call_id), status=analysis.status)
         return analysis.status
     except Exception as exc:
