@@ -27,7 +27,9 @@ services:
   redis:
     image: redis:8.10-alpine
     ports:
-      - "6379:6379"
+      # Windows bazı port aralıklarını (ör. 6292-6391) sistem için ayırabilir ve 6379 açılamaz.
+      # O durumda REDIS_PORT=6400 ve backend/.env içinde REDIS_URL=redis://localhost:6400/0 yazın.
+      - "${REDIS_PORT:-6379}:6379"
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s

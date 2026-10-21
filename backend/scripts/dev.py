@@ -106,7 +106,17 @@ def http_ok(url: str, timeout: float = 3.0) -> bool:
         return False
 
 
-def redis_ok(host: str = "127.0.0.1", port: int = 6379) -> bool:
+def redis_port() -> int:
+    """Redis'in yerel portu: `REDIS_URL`'den okunur (varsayılan 6379)."""
+    from urllib.parse import urlparse
+
+    from app.core.config import get_settings
+
+    return urlparse(get_settings().redis_url).port or 6379
+
+
+def redis_ok(host: str = "127.0.0.1", port: int | None = None) -> bool:
+    port = port or redis_port()
     try:
         with socket.create_connection((host, port), timeout=2) as s:
             s.sendall(b"PING\r\n")
@@ -115,8 +125,10 @@ def redis_ok(host: str = "127.0.0.1", port: int = 6379) -> bool:
         return False
 
 
-def run(cmd: list[str], *, quiet: bool = False) -> int:
+def run(cmd: list[str], *, quiet: bool = False, env: dict[str, str] | None = None) -> int:
     kwargs: dict[str, object] = {"cwd": BACKEND_DIR}
+    if env:
+        kwargs["env"] = {**os.environ, **env}
     if quiet:
         kwargs.update(stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     return subprocess.run(cmd, check=False, **kwargs).returncode  # type: ignore[call-overload]
@@ -223,13 +235,16 @@ def db_ready() -> bool:
 
 def start_infrastructure(docker: str, *, rag: bool) -> None:
     step("Altyapı (PostgreSQL, Redis" + (", embedding" if rag else "") + ")")
-    if run(compose_command(docker, rag=rag)) != 0:
+    if run(compose_command(docker, rag=rag), env={"REDIS_PORT": str(redis_port())}) != 0:
         fail("`docker compose up` başarısız.")
     if not wait_until(db_ready, timeout=90):
         fail("PostgreSQL hazır olmadı (localhost:5433).")
     info("PostgreSQL hazır.")
     if not wait_until(redis_ok, timeout=60):
-        fail("Redis hazır olmadı (localhost:6379).")
+        fail(
+            f"Redis hazır olmadı (localhost:{redis_port()}). Windows 6379'u ayırmış olabilir: "
+            "backend/.env içinde REDIS_URL=redis://localhost:6400/0 yazıp yeniden deneyin."
+        )
     info("Redis hazır.")
 
 
