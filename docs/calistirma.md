@@ -106,6 +106,25 @@ curl -H "X-Service-Key: <SERVICE_API_KEY>" "http://localhost:8000/api/v1/calls?p
 - **Seed çağrıları için ses (çağrı detayında dinlemek için):** seed çağrılarının ses dosyası yoktur. Türkçe, çevrimdışı Piper ile üretilir (50 çağrı ~2,5 dk, ~150 MB, model ~60 MB ilk seferde iner): `uv run --with piper-tts python -m scripts.generate_audio`, ardından `uv run python -m scripts.seed` sesleri bağlar (seed çıktısında `calls_with_audio: 50`). Sesler `AUDIO_STORAGE_DIR/seed/` altına yazılır (git'e girmez); çağrının süresi ve segment zamanları sesin gerçek değerleri olur. Sesler varsayılan olarak **stereo** üretilir (temsilci sol, müşteri sağ kanal; müşteri sesinin perdesi yükseltilir) ve STT konuşmacıları kanaldan ayırır (`STT_CHANNEL_LAYOUT=stereo_rep_left`). Eski mono seslerin üzerine yazmak için `--force` ekle; tek kanal için `--mono`. Telefon hattı benzeri bozulmuş ses: `uv run python -m scripts.telephone_audio --src <klasör> --dst <klasör>`. Ölçümler ve karar: `docs/stt_karari.md`.
 - **Miço AI sohbeti (gerçek veriyle):** `.env`'de `LLM_API_KEY` dolu olmalı ve arama için `EMBEDDING_PROVIDER=hash` (hızlı) ya da bge-m3 (ilk madde). Seed sahibi `606bd734-644f-5c21-af2f-dc734c4ecd67` (Ahmet Yılmaz, tekne Poyraz) ile: `curl -N -X POST -H "X-Service-Key: <anahtar>" -H "X-User-Id: 606bd734-644f-5c21-af2f-dc734c4ecd67" -H "Content-Type: application/json" -d '{"question":"Kaç bakım hakkım kaldı?"}' http://localhost:8000/api/v1/chat/messages/stream` (SSE: `status` → `delta` → `done`).
 - **Testler:** `uv run pytest` (hızlı, DB gerekmez). Gerçek veritabanı testleri: Docker ayaktayken `$env:RUN_DB_TESTS="1"; uv run pytest`.
+- **E2E Duman Testleri (Playwright - #116):** `frontend/` dizininde `npm run e2e` komutuyla 6 kritik uçtan uca akış (Analitik KPI'ları, Çağrı listesi/filtreleme/sayfalama, Çağrı detayı & ses çalar, CRM onay/ret akışı, Miço AI asistanı ve Açık/Koyu tema geçişi) Chromium üzerinde otomatik koşturulur.
+  * **Mock verilerle bağımsız koşu (backend veya Docker gerekmez):**
+    ```powershell
+    cd frontend
+    npm run e2e
+    ```
+    (Varsayılan olarak `NEXT_PUBLIC_USE_MOCKS=true` ile Playwright dev sunucusunu otomatik ayağa kaldırıp duman testlerini tamamlar.)
+  * **Canlı backend ile koşu:** Backend ve frontend (`npm run dev`) çalışırken:
+    ```powershell
+    cd frontend
+    $env:BASE_URL="http://localhost:3000"
+    $env:NEXT_PUBLIC_USE_MOCKS="false"
+    npm run e2e
+    ```
+  * **Arayüzlü (UI Modu) test veya rapor:**
+    ```powershell
+    npx playwright test --ui
+    npx playwright show-report
+    ```
 
 ## 6. Durdurma ve sıfırlama
 
