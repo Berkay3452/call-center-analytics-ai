@@ -31,6 +31,7 @@ from app.domain.enums import (
     CallType,
     CrmReviewStatus,
     LossReason,
+    MatchMethod,
     NextAction,
     RequestCategory,
     SalesOutcomeType,
@@ -79,6 +80,7 @@ class Call(UUIDPrimaryKeyMixin, Base):
     __table_args__ = (
         in_enum("switchboard_outcome", SwitchboardOutcome),
         in_values("state", CALL_STATES, nullable=False, name="state"),
+        in_enum("match_method", MatchMethod, nullable=True),
         UniqueConstraint("audio_sha256", name="uq_calls_audio_sha256"),
         Index("ix_calls_started_at", "started_at"),
         Index("ix_calls_customer_id", "customer_id"),
@@ -103,6 +105,8 @@ class Call(UUIDPrimaryKeyMixin, Base):
     # İşlenme durumu: beklemede → yaziya_cevriliyor → isleniyor → tamam | kismi | basarisiz.
     state: Mapped[str] = mapped_column(Text, nullable=False, server_default=text("'beklemede'"))
     error: Mapped[str | None] = mapped_column(Text)  # state=basarisiz ise nedeni
+    # Eşleştirme yöntemi: telefon, ad_tekne, elle, yok (#119).
+    match_method: Mapped[str | None] = mapped_column(Text)
     created_at: Mapped[datetime] = _now()
     updated_at: Mapped[datetime] = _now(onupdate=True)
 

@@ -12,7 +12,7 @@ from typing import Any, get_args
 import pytest
 from pydantic import BaseModel, ValidationError
 
-from app.domain.enums import ServiceOrderStatus, SwitchboardOutcome
+from app.domain.enums import MatchMethod, ServiceOrderStatus, SwitchboardOutcome
 from app.schemas import analysis, api, assistant, common
 from app.schemas.common import Page
 
@@ -41,6 +41,7 @@ SHARED_MODELS: list[type[BaseModel]] = [
     api.TranscriptSegmentOut,
     api.TranscriptOut,
     api.CallDetail,
+    api.CallMatchIn,
     api.CrmRecordItem,
     api.CrmApproveIn,
     api.CrmRejectIn,
@@ -121,6 +122,7 @@ def test_page_fields_match() -> None:
         ("SwitchboardOutcome", {m.value for m in SwitchboardOutcome}),
         ("CrmReviewStatus", {m.value for m in api.CrmReviewStatus}),
         ("ServiceOrderStatus", {m.value for m in ServiceOrderStatus}),
+        ("MatchMethod", {m.value for m in MatchMethod}),
     ],
 )
 def test_frontend_unions_match_backend(ts_name: str, values: set[str]) -> None:

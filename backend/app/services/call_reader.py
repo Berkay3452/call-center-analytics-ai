@@ -233,6 +233,7 @@ async def get_call_detail(session: AsyncSession, call_id: UUID) -> CallDetail:
         has_audio=bool(call.audio_path),
         state=call.state,
         error=call.error,
+        match_method=call.match_method,
         transcript=transcript_out,
         analysis=analysis_out,
     )

@@ -21,6 +21,7 @@ from app.domain.enums import (
     CallType,
     CrmReviewStatus,
     LossReason,
+    MatchMethod,
     NextAction,
     RequestCategory,
     SalesOutcomeType,
@@ -161,8 +162,20 @@ class CallDetail(BaseModel):
     has_audio: bool = False
     state: CallState
     error: str | None = Field(default=None, description="state=basarisiz ise nedeni.")
+    match_method: MatchMethod | None = Field(
+        default=None, description="Çağrının müşteri/tekne eşleştirme yöntemi (#119)."
+    )
     transcript: TranscriptOut | None = None
     analysis: AnalysisOut | None = None
+
+
+class CallMatchIn(BaseModel):
+    """`PUT /calls/{id}/match` istek gövdesi (#119)."""
+
+    customer_id: UUID = Field(description="Eşleştirilecek müşteri kimliği.")
+    boat_id: UUID | None = Field(
+        default=None, description="Eşleştirilecek tekne kimliği (isteğe bağlı)."
+    )
 
 
 # --- CRM kayıt önerileri (#51) ------------------------------------------------------------

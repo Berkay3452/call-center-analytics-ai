@@ -1066,6 +1066,75 @@
           }
         }
       }
+    },
+    "/calls/{call_id}/match": {
+      "put": {
+        "summary": "Çağrıyı müşteri ve tekneye elle eşleştir",
+        "operationId": "matchCall",
+        "parameters": [
+          {
+            "name": "call_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CallMatchIn"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Başarılı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CallDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Geçersiz istek (ör. tekne müşteriye ait değil)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Yetkisiz erişim",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Çağrı, müşteri veya tekne bulunamadı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1727,6 +1796,10 @@
           },
           "analysis": {
             "$ref": "#/components/schemas/AnalysisOut",
+            "nullable": true
+          },
+          "match_method": {
+            "$ref": "#/components/schemas/MatchMethod",
             "nullable": true
           }
         }
@@ -2773,6 +2846,32 @@
         "properties": {
           "status": {
             "": "#/components/schemas/ServiceOrderStatus"
+          }
+        }
+      },
+      "MatchMethod": {
+        "type": "string",
+        "enum": [
+          "telefon",
+          "ad_tekne",
+          "elle",
+          "yok"
+        ]
+      },
+      "CallMatchIn": {
+        "type": "object",
+        "required": [
+          "customer_id"
+        ],
+        "properties": {
+          "customer_id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "boat_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
           }
         }
       }

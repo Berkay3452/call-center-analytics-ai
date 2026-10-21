@@ -24,6 +24,7 @@ from app.db.models.ai import AnalysisResult as AnalysisRow
 from app.db.models.ai import Call, Transcript, TranscriptSegment
 from app.schemas.api import CallCreate, CallState, CallStatus, SegmentIn
 from app.services.analysis_store import save_analysis, save_transcript
+from app.services.call_matching import match_call
 from app.services.masking import mask_text
 from app.services.transcript_text import parse_transcript, with_timings
 
@@ -214,6 +215,13 @@ async def run_call_analysis(
         async with session_factory() as session, session.begin():
             await save_analysis(session, analysis)
             await set_state(session, call_id, analysis.status, error)
+            if analysis.status in ("tamam", "kismi"):
+                # Eşleştirme yardımcı bir adımdır: hata verirse analiz sonucu kaybolmamalı.
+                try:
+                    async with session.begin_nested():
+                        await match_call(session, call_id)
+                except Exception:
+                    log.exception("call.match_failed", call_id=str(call_id))
         log.info("call.analyzed", call_id=str(call_id), status=analysis.status)
         return analysis.status
     except Exception as exc:

@@ -66,6 +66,7 @@ erDiagram
         text marina
         text state
         text error
+        text match_method
         timestamptz created_at
         timestamptz updated_at
     }
@@ -262,6 +263,7 @@ erDiagram
 | `marina` | `TEXT` | — | — | Marina adı (ör. Tuzla Marina) |
 | `state` | `TEXT` | ✅ | `'beklemede'` | İşlenme durumu: `beklemede`, `yaziya_cevriliyor`, `isleniyor`, `tamam`, `kismi`, `basarisiz` (#48) |
 | `error` | `TEXT` | — | — | `state = basarisiz` ise nedeni |
+| `match_method` | `TEXT` | — | — | Eşleştirme yöntemi: `telefon`, `ad_tekne`, `elle`, `yok` (#119) |
 | `created_at` | `TIMESTAMPTZ` | ✅ | `now()` | Kayıt oluşturma zamanı |
 | `updated_at` | `TIMESTAMPTZ` | ✅ | `now()` | Son güncelleme zamanı |
 
@@ -271,6 +273,7 @@ erDiagram
 - `FK (customer_id) REFERENCES customers(id)`, `FK (boat_id) REFERENCES boats(id)` (ikisi de `ON DELETE SET NULL`)
 - `CHECK (switchboard_outcome IN (...))` — geçerli santral sonuçları
 - `CHECK (state IN (...))` — geçerli işlenme durumları (API sözleşmesindeki `CallState`)
+- `CHECK (match_method IS NULL OR match_method IN ('telefon', 'ad_tekne', 'elle', 'yok'))` — geçerli eşleştirme yöntemleri (#119)
 
 ---
 

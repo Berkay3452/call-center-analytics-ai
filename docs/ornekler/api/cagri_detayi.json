@@ -14,6 +14,7 @@
   "has_audio": true,
   "state": "tamam",
   "error": null,
+  "match_method": "telefon",
   "transcript": {
     "text": "Temsilci: Miço Usta, buyurun.\nMüşteri: Merhaba, Tuzla Marina'da teknem var. Motor çalışıyor ama gaz verdiğimde devir yükselmiyor.\nTemsilci: Geçmiş olsun. Teknenin adını alabilir miyim?\nMüşteri: Rüzgar. Yarın bir usta gelebilir mi?\nTemsilci: Usta uygunluğuna bakıp sizi bilgilendireceğiz.",
     "segments": [

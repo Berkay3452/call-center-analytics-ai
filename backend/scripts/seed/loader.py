@@ -347,9 +347,10 @@ async def seed_database(
                     INSERT INTO calls (
                         id, started_at, answer_delay_s, duration_s, switchboard_outcome,
                         audio_path, audio_sha256, customer_id, boat_id,
-                        customer_name, customer_phone, boat_name, boat_model, marina
+                        customer_name, customer_phone, boat_name, boat_model, marina,
+                        match_method
                     )
-                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
                     ON CONFLICT (id) DO UPDATE SET
                         started_at = EXCLUDED.started_at,
                         answer_delay_s = EXCLUDED.answer_delay_s,
@@ -364,6 +365,7 @@ async def seed_database(
                         boat_name = EXCLUDED.boat_name,
                         boat_model = EXCLUDED.boat_model,
                         marina = EXCLUDED.marina,
+                        match_method = EXCLUDED.match_method,
                         updated_at = now()
                     """,
                     call_uuid,
@@ -380,6 +382,7 @@ async def seed_database(
                     cref["boat"],
                     cref["boat_model"],
                     cref["marina"],
+                    "telefon" if cust and boat else "yok",
                 )
 
                 turns = item["turns"]

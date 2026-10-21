@@ -227,3 +227,21 @@ async def test_call_without_text_is_rejected(factory: async_sessionmaker[AsyncSe
     async with factory() as session, session.begin():
         with pytest.raises(NoTranscriptError):
             await create_call(session, payload)
+
+
+async def test_matching_failure_does_not_lose_the_analysis(
+    factory: async_sessionmaker[AsyncSession], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Eşleştirme (#119) yardımcı bir adımdır: hata verirse analiz yine kaydedilir."""
+    from app.services import call_ingest
+
+    async def boom(*args: object, **kwargs: object) -> None:
+        raise RuntimeError("eşleştirme patladı")
+
+    monkeypatch.setattr(call_ingest, "match_call", boom)
+    call_id = await new_call(factory)
+
+    final = await run_call_analysis(call_id, factory, orchestrator=FakeRunner())
+
+    assert final == "tamam"
+    assert await state_of(factory, call_id) == "tamam"
