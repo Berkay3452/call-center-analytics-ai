@@ -93,14 +93,14 @@ export function AudioPlayer({
         aria-label="Ses Kaydı Durumu"
       >
         <div className="flex flex-col items-center justify-center gap-2 text-slate-500 dark:text-slate-400">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200/80 dark:bg-slate-800 text-lg">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200/80 dark:bg-slate-800 text-lg" aria-hidden="true">
             🎙️
           </div>
           <div>
             <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
               Bu çağrı için ses kaydı yok
             </p>
-            <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Cevapsız çağrı, harici aktarım veya ses dosyası yüklenmemiş görüşme
             </p>
           </div>
@@ -153,7 +153,7 @@ export function AudioPlayer({
       {/* Başlık ve Zaman Bilgisi */}
       <div className="flex items-center justify-between mb-3.5">
         <div className="flex items-center gap-2">
-          <span className="flex h-2 w-2 relative">
+          <span className="flex h-2 w-2 relative" aria-hidden="true">
             {isPlaying && (
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
             )}
@@ -191,7 +191,7 @@ export function AudioPlayer({
           value={currentTime}
           onChange={handleSeek}
           aria-label="Ses ilerleme çubuğu"
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 rounded-full"
         />
       </div>
 
@@ -204,7 +204,7 @@ export function AudioPlayer({
             onClick={() => handleSkip(-5)}
             title="5 saniye geri"
             aria-label="5 saniye geri"
-            className="rounded-lg p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+            className="rounded-lg p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
           >
             <span className="text-xs font-bold font-mono">-5s</span>
           </button>
@@ -215,7 +215,7 @@ export function AudioPlayer({
             onClick={togglePlayPause}
             aria-label={isPlaying ? "Duraklat" : "Oynat"}
             title={isPlaying ? "Duraklat" : "Oynat"}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-600 text-white shadow-sm hover:bg-sky-700 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 dark:focus:ring-offset-slate-900"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-600 text-white shadow-sm hover:bg-sky-700 active:scale-95 transition-all focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
           >
             {isPlaying ? (
               <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24" aria-hidden="true">
@@ -235,7 +235,7 @@ export function AudioPlayer({
             onClick={() => handleSkip(5)}
             title="5 saniye ileri"
             aria-label="5 saniye ileri"
-            className="rounded-lg p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+            className="rounded-lg p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
           >
             <span className="text-xs font-bold font-mono">+5s</span>
           </button>
@@ -248,7 +248,7 @@ export function AudioPlayer({
             onClick={cyclePlaybackRate}
             title="Oynatma Hızı"
             aria-label={`Oynatma hızı ${playbackRate}x`}
-            className="rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-slate-200 dark:border-slate-700"
+            className="rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-slate-200 dark:border-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
           >
             {playbackRate}x
           </button>
@@ -259,15 +259,15 @@ export function AudioPlayer({
             onClick={toggleMute}
             title={isMuted ? "Sesi Aç" : "Sesi Kapat"}
             aria-label={isMuted ? "Sesi Aç" : "Sesi Kapat"}
-            className="rounded-lg p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
+            className="rounded-lg p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
           >
             {isMuted ? (
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
               </svg>
             ) : (
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
               </svg>
             )}

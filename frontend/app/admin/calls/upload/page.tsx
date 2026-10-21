@@ -714,7 +714,7 @@ function CallUploadContent() {
             <button
               type="button"
               onClick={() => setMode("audio")}
-              className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 ${
                 mode === "audio"
                   ? "bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-100 shadow-sm"
                   : "text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200"
@@ -726,7 +726,7 @@ function CallUploadContent() {
             <button
               type="button"
               onClick={() => setMode("transcript")}
-              className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 ${
                 mode === "transcript"
                   ? "bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-100 shadow-sm"
                   : "text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200"
@@ -752,11 +752,20 @@ function CallUploadContent() {
 
               {/* Sürükle-bırak alanı */}
               <div
+                role="button"
+                tabIndex={0}
+                aria-label="Ses dosyası seç veya sürükle bırak"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    fileInputRef.current?.click();
+                  }
+                }}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className={`relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 text-center cursor-pointer transition-colors ${
+                className={`relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 text-center cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 ${
                   isDragging
                     ? "border-sky-500 bg-sky-50/50 dark:bg-sky-950/30"
                     : audioFile
@@ -765,10 +774,12 @@ function CallUploadContent() {
                 }`}
               >
                 <input
+                  id="upload-audio-file"
                   ref={fileInputRef}
                   type="file"
                   accept={ALLOWED_AUDIO_ACCEPT}
                   className="hidden"
+                  aria-label="Ses dosyası yükle"
                   onChange={(e) => {
                     if (e.target.files && e.target.files[0]) {
                       handleFileChange(e.target.files[0]);
@@ -840,12 +851,16 @@ function CallUploadContent() {
                 Görüşmeyi satır satır &ldquo;Temsilci:&rdquo; ve
                 &ldquo;Müşteri:&rdquo; formatında girebilirsiniz.
               </p>
+              <label htmlFor="upload-transcript" className="sr-only">
+                Görüşme metni veya transkript
+              </label>
               <textarea
+                id="upload-transcript"
                 rows={8}
                 value={transcript}
                 onChange={(e) => setTranscript(e.target.value)}
                 placeholder={`Temsilci: Miço Usta, buyurun.\nMüşteri: Merhaba, Tuzla Marina'da teknem var. Motor devir almıyor...`}
-                className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 p-3 text-sm font-mono text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:border-sky-500 dark:focus:border-sky-400 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 p-3 text-sm font-mono text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:border-sky-500 dark:focus:border-sky-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
               />
               <div className="mt-2 flex justify-between text-xs text-gray-500 dark:text-slate-400">
                 <span>
@@ -882,65 +897,70 @@ function CallUploadContent() {
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-xs font-semibold uppercase text-gray-600 dark:text-slate-300 mb-1">
+                <label htmlFor="upload-customer-name" className="block text-xs font-semibold uppercase text-gray-600 dark:text-slate-300 mb-1">
                   Müşteri Adı Soyadı
                 </label>
                 <input
+                  id="upload-customer-name"
                   type="text"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   placeholder="Örn: Burak Çelik"
-                  className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:border-sky-500 dark:focus:border-sky-400 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                  className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:border-sky-500 dark:focus:border-sky-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase text-gray-600 dark:text-slate-300 mb-1">
+                <label htmlFor="upload-customer-phone" className="block text-xs font-semibold uppercase text-gray-600 dark:text-slate-300 mb-1">
                   Müşteri Telefonu
                 </label>
                 <input
+                  id="upload-customer-phone"
                   type="text"
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
                   placeholder="Örn: +90 532 123 45 67"
-                  className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:border-sky-500 dark:focus:border-sky-400 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                  className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:border-sky-500 dark:focus:border-sky-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase text-gray-600 dark:text-slate-300 mb-1">
+                <label htmlFor="upload-boat-name" className="block text-xs font-semibold uppercase text-gray-600 dark:text-slate-300 mb-1">
                   Tekne Adı
                 </label>
                 <input
+                  id="upload-boat-name"
                   type="text"
                   value={boatName}
                   onChange={(e) => setBoatName(e.target.value)}
                   placeholder="Örn: Rüzgar"
-                  className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:border-sky-500 dark:focus:border-sky-400 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                  className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:border-sky-500 dark:focus:border-sky-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase text-gray-600 dark:text-slate-300 mb-1">
+                <label htmlFor="upload-boat-model" className="block text-xs font-semibold uppercase text-gray-600 dark:text-slate-300 mb-1">
                   Tekne Modeli
                 </label>
                 <input
+                  id="upload-boat-model"
                   type="text"
                   value={boatModel}
                   onChange={(e) => setBoatModel(e.target.value)}
                   placeholder="Örn: Jeanneau Merry Fisher 795"
-                  className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:border-sky-500 dark:focus:border-sky-400 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                  className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:border-sky-500 dark:focus:border-sky-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                 />
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block text-xs font-semibold uppercase text-gray-600 dark:text-slate-300 mb-1">
+                <label htmlFor="upload-marina" className="block text-xs font-semibold uppercase text-gray-600 dark:text-slate-300 mb-1">
                   Marina / Lokasyon
                 </label>
                 <select
+                  id="upload-marina"
                   value={marina}
                   onChange={(e) => setMarina(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-slate-100 focus:border-sky-500 dark:focus:border-sky-400 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                  className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-slate-100 focus:border-sky-500 dark:focus:border-sky-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                 >
                   <option value="">Seçiniz (isteğe bağlı)</option>
                   {MARINA_OPTIONS.map((m) => (
@@ -957,13 +977,13 @@ function CallUploadContent() {
           <div className="flex items-center justify-end gap-3 pt-2">
             <Link
               href="/admin/calls"
-              className="rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-5 py-2.5 text-sm font-semibold text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors"
+              className="rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-5 py-2.5 text-sm font-semibold text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
             >
               İptal
             </Link>
             <button
               type="submit"
-              className="rounded-xl px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-all bg-sky-700 hover:bg-sky-800 active:scale-[0.98]"
+              className="rounded-xl px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-all bg-sky-700 hover:bg-sky-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
             >
               ⚡ Analizi Başlat
             </button>

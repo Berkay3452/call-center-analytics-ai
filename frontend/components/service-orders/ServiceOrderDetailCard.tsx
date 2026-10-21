@@ -47,8 +47,9 @@ export function ServiceOrderDetailCard({
           {showBackLink && (
             <Link
               href="/admin/service-orders"
-              className="inline-flex items-center justify-center h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+              className="inline-flex items-center justify-center h-8 w-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
               title="Servis Emirlerine Dön"
+              aria-label="Servis Emirlerine Dön"
             >
               ←
             </Link>
@@ -246,14 +247,14 @@ export function ServiceOrderDetailCard({
             <div className="flex items-center gap-2">
               <Link
                 href={`/admin/calls/${order.source_call.call_id}`}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-bold text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 shadow-xs hover:bg-sky-50 dark:hover:bg-slate-700 transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-bold text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800 shadow-xs hover:bg-sky-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
               >
                 <span>🎙️</span>
                 <span>Çağrıyı Aç</span>
               </Link>
               <Link
                 href={`/admin/crm?q=${encodeURIComponent(order.customer.full_name)}`}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-sky-700 dark:bg-sky-600 px-3 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-sky-800 dark:hover:bg-sky-700 transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-sky-700 dark:bg-sky-600 px-3 py-1.5 text-xs font-bold text-white shadow-xs hover:bg-sky-800 dark:hover:bg-sky-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
               >
                 <span>💡</span>
                 <span>CRM Önerisine Git</span>

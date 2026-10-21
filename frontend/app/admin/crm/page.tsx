@@ -100,7 +100,7 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
       <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
         <Link
           href={getStatusTabUrl(undefined)}
-          className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition-colors ${
+          className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 ${
             activeStatus === "all"
               ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 shadow-xs"
               : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
@@ -110,7 +110,7 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
         </Link>
         <Link
           href={getStatusTabUrl("bekliyor")}
-          className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-colors ${
+          className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 ${
             activeStatus === "bekliyor"
               ? "bg-amber-600 text-white shadow-xs"
               : "text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900 hover:bg-amber-100 dark:hover:bg-amber-900/60"
@@ -119,14 +119,14 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
           <span>⏳</span>
           <span>Bekliyor</span>
           {pendingCount !== null && (
-            <span className="ml-1 rounded-full bg-amber-700/30 px-1.5 py-0.2 text-[10px]">
+            <span className="ml-1 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-900 dark:bg-amber-900 dark:text-amber-100">
               {pendingCount}
             </span>
           )}
         </Link>
         <Link
           href={getStatusTabUrl("onaylandi")}
-          className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-colors ${
+          className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 ${
             activeStatus === "onaylandi"
               ? "bg-emerald-600 text-white shadow-xs"
               : "text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 hover:bg-emerald-100 dark:hover:bg-emerald-900/60"
@@ -137,7 +137,7 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
         </Link>
         <Link
           href={getStatusTabUrl("reddedildi")}
-          className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-colors ${
+          className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 ${
             activeStatus === "reddedildi"
               ? "bg-red-600 text-white shadow-xs"
               : "text-red-800 dark:text-red-300 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 hover:bg-red-100 dark:hover:bg-red-900/60"

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
+import { useFocusTrap } from "@/lib/use-focus-trap";
 import { useRouter } from "next/navigation";
 import { approveCrmRecord, rejectCrmRecord } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
@@ -90,6 +91,22 @@ export function CrmSuggestionCard({
   const router = useRouter();
   const [is409Error, setIs409Error] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Modal tetikleyici buton referansları ve focus trap
+  const editTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const rejectTriggerRef = useRef<HTMLButtonElement | null>(null);
+
+  const editModalRef = useFocusTrap<HTMLDivElement>({
+    isOpen: isEditModalOpen,
+    onClose: () => setIsEditModalOpen(false),
+    returnFocusRef: editTriggerRef,
+  });
+
+  const rejectModalRef = useFocusTrap<HTMLDivElement>({
+    isOpen: isRejectModalOpen,
+    onClose: () => setIsRejectModalOpen(false),
+    returnFocusRef: rejectTriggerRef,
+  });
 
   // Düzenleme formunun iç state'i
   const [editFormData, setEditFormData] = useState({
@@ -456,10 +473,11 @@ export function CrmSuggestionCard({
       <div className="mt-5 flex flex-wrap items-center justify-end gap-2 border-t border-slate-100 dark:border-slate-800 pt-4">
         {/* Düzenle Butonu */}
         <button
+          ref={editTriggerRef}
           type="button"
           onClick={openEditModal}
           disabled={isSubmitting}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-sky-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <span>✏️</span>
           <span>Düzenle</span>
@@ -468,13 +486,14 @@ export function CrmSuggestionCard({
         {/* Reddet Butonu */}
         {reviewStatus !== "reddedildi" && (
           <button
+            ref={rejectTriggerRef}
             type="button"
             onClick={() => {
               setActionError(null);
               setIsRejectModalOpen(true);
             }}
             disabled={isSubmitting}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/30 px-3.5 py-2 text-xs font-semibold text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-950/60 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/30 px-3.5 py-2 text-xs font-semibold text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-950/60 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <span>✕</span>
             <span>Reddet</span>
@@ -487,7 +506,7 @@ export function CrmSuggestionCard({
             type="button"
             onClick={() => handleApprove()}
             disabled={isSubmitting}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xs"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xs"
           >
             {isSubmitting ? (
               <>
@@ -506,7 +525,7 @@ export function CrmSuggestionCard({
             type="button"
             onClick={() => handleApprove()}
             disabled={isSubmitting}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 px-3.5 py-2 text-xs font-bold text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 px-3.5 py-2 text-xs font-bold text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
           >
             <span>✓</span>
             <span>Tekrar Onayla (Güncelle)</span>
@@ -520,6 +539,7 @@ export function CrmSuggestionCard({
       {isEditModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
           <div
+            ref={editModalRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby="edit-modal-title"
@@ -537,7 +557,8 @@ export function CrmSuggestionCard({
               <button
                 type="button"
                 onClick={() => setIsEditModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg font-bold"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg font-bold p-1 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                aria-label="Kapat"
               >
                 ✕
               </button>
@@ -553,13 +574,14 @@ export function CrmSuggestionCard({
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {/* 1. Kategori */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label htmlFor="crm-edit-category" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     1. Müşteri Talebi (Kategori)
                   </label>
                   <select
+                    id="crm-edit-category"
                     value={editFormData.request_category}
                     onChange={(e) => setEditFormData({ ...editFormData, request_category: e.target.value })}
-                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                   >
                     <option value="">Seçiniz</option>
                     {Object.entries(REQUEST_CATEGORY_LABELS).map(([k, label]) => (
@@ -572,41 +594,44 @@ export function CrmSuggestionCard({
 
                 {/* 2. Lokasyon / Marina */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label htmlFor="crm-edit-location" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     2. Lokasyon / Marina
                   </label>
                   <input
+                    id="crm-edit-location"
                     type="text"
                     value={editFormData.location}
                     onChange={(e) => setEditFormData({ ...editFormData, location: e.target.value })}
                     placeholder="Örn: Tuzla Marina"
-                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                   />
                 </div>
 
                 {/* 3. Problem Tanımı */}
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label htmlFor="crm-edit-problem" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     3. Problem Tanımı
                   </label>
                   <textarea
+                    id="crm-edit-problem"
                     rows={3}
                     value={editFormData.problem}
                     onChange={(e) => setEditFormData({ ...editFormData, problem: e.target.value })}
                     placeholder="Arıza veya müşteri şikayeti tanımı..."
-                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 p-2.5 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 p-2.5 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                   />
                 </div>
 
                 {/* 4. Hizmet Biçimi */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label htmlFor="crm-edit-service-mode" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     4. Hizmet Biçimi
                   </label>
                   <select
+                    id="crm-edit-service-mode"
                     value={editFormData.service_mode}
                     onChange={(e) => setEditFormData({ ...editFormData, service_mode: e.target.value })}
-                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                   >
                     <option value="">Seçiniz</option>
                     {Object.entries(SERVICE_MODE_LABELS).map(([k, label]) => (
@@ -619,13 +644,14 @@ export function CrmSuggestionCard({
 
                 {/* 5. Aciliyet */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label htmlFor="crm-edit-urgency" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     5. Aciliyet Seviyesi
                   </label>
                   <select
+                    id="crm-edit-urgency"
                     value={editFormData.urgency}
                     onChange={(e) => setEditFormData({ ...editFormData, urgency: e.target.value })}
-                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                   >
                     <option value="">Seçiniz</option>
                     {Object.entries(URGENCY_LABELS).map(([k, label]) => (
@@ -638,27 +664,29 @@ export function CrmSuggestionCard({
 
                 {/* 6. Potansiyel İş */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label htmlFor="crm-edit-potential-job" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     6. Potansiyel İş
                   </label>
                   <input
+                    id="crm-edit-potential-job"
                     type="text"
                     value={editFormData.potential_job}
                     onChange={(e) => setEditFormData({ ...editFormData, potential_job: e.target.value })}
                     placeholder="Örn: Motor arıza tespiti ve bakımı"
-                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                   />
                 </div>
 
                 {/* 7. Sonraki Aksiyon */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label htmlFor="crm-edit-next-action" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     7. Önerilen Sonraki Aksiyon
                   </label>
                   <select
+                    id="crm-edit-next-action"
                     value={editFormData.next_action}
                     onChange={(e) => setEditFormData({ ...editFormData, next_action: e.target.value })}
-                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                   >
                     <option value="">Seçiniz</option>
                     {Object.entries(NEXT_ACTION_LABELS).map(([k, label]) => (
@@ -671,15 +699,16 @@ export function CrmSuggestionCard({
 
                 {/* Onay Notu */}
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label htmlFor="crm-edit-note" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                     İsteğe Bağlı Onay Notu
                   </label>
                   <input
+                    id="crm-edit-note"
                     type="text"
                     value={editFormData.note}
                     onChange={(e) => setEditFormData({ ...editFormData, note: e.target.value })}
                     placeholder="Örn: Müşteri acil usta istediği için öncelik verildi."
-                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                   />
                 </div>
               </div>
@@ -689,14 +718,14 @@ export function CrmSuggestionCard({
                   type="button"
                   onClick={() => setIsEditModalOpen(false)}
                   disabled={isSubmitting}
-                  className="rounded-lg border border-slate-300 dark:border-slate-700 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                  className="rounded-lg border border-slate-300 dark:border-slate-700 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                 >
                   İptal
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-5 py-2 text-xs font-bold text-white hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-50 transition-all shadow-xs"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-5 py-2 text-xs font-bold text-white hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-50 transition-all shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                 >
                   {isSubmitting ? (
                     <>
@@ -722,6 +751,7 @@ export function CrmSuggestionCard({
       {isRejectModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
           <div
+            ref={rejectModalRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby="reject-modal-title"
@@ -734,7 +764,8 @@ export function CrmSuggestionCard({
               <button
                 type="button"
                 onClick={() => setIsRejectModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg font-bold"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg font-bold p-1 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                aria-label="Kapat"
               >
                 ✕
               </button>
@@ -748,15 +779,16 @@ export function CrmSuggestionCard({
 
             <form onSubmit={handleReject} className="space-y-4">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label htmlFor="crm-reject-reason" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                   Red Gerekçesi veya Not <span className="text-slate-400 font-normal">(İsteğe Bağlı)</span>
                 </label>
                 <textarea
+                  id="crm-reject-reason"
                   rows={3}
                   value={rejectReason}
                   onChange={(e) => setRejectReason(e.target.value)}
                   placeholder="Örn: Tekne sahibi başka bir servis ile anlaştı / bilgi amaçlı arama..."
-                  className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 p-2.5 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+                  className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 p-2.5 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-red-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                 />
               </div>
 
@@ -765,14 +797,14 @@ export function CrmSuggestionCard({
                   type="button"
                   onClick={() => setIsRejectModalOpen(false)}
                   disabled={isSubmitting}
-                  className="rounded-lg border border-slate-300 dark:border-slate-700 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                  className="rounded-lg border border-slate-300 dark:border-slate-700 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                 >
                   Vazgeç
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-4 py-2 text-xs font-bold text-white hover:bg-red-700 active:scale-[0.98] disabled:opacity-50 transition-all shadow-xs"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-4 py-2 text-xs font-bold text-white hover:bg-red-700 active:scale-[0.98] disabled:opacity-50 transition-all shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                 >
                   {isSubmitting ? (
                     <>

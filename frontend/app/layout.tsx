@@ -44,23 +44,23 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased overflow-x-hidden`}
       >
         <ThemeProvider>
           <RoleProvider>
-            <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
+            <div className="flex h-screen w-full overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors">
               {/* Sidebar */}
               <Suspense fallback={<SidebarFallback />}>
                 <Sidebar />
               </Suspense>
 
               {/* Sağ içerik alanı */}
-              <div className="flex flex-1 flex-col overflow-hidden">
+              <div className="flex flex-1 flex-col overflow-hidden min-w-0">
                 {/* Üst çubuk */}
                 <Header />
 
                 {/* Sayfa içeriği */}
-                <main className="flex-1 overflow-y-auto p-6 bg-slate-50 dark:bg-slate-950 transition-colors">
+                <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6 bg-slate-50 dark:bg-slate-950 transition-colors min-w-0">
                   {children}
                 </main>
               </div>

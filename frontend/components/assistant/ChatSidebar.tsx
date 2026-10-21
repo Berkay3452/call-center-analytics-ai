@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
+import { useFocusTrap } from "@/lib/use-focus-trap";
 import type { ChatSessionOut } from "@/lib/api/types";
 
 // ──────────────────────────────────────────────────────────────────────────────
@@ -82,16 +83,10 @@ export function ChatSidebar({
   onClose,
 }: ChatSidebarProps) {
   const sidebarRef = useRef<HTMLElement>(null);
-
-  // Mobil: Escape tuşuyla kapat
-  useEffect(() => {
-    if (!isOpen) return;
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
-    }
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
+  const drawerRef = useFocusTrap<HTMLElement>({
+    isOpen,
+    onClose,
+  });
 
   // Mobil: backdrop tıklamasıyla kapat
   function handleBackdropClick(e: React.MouseEvent) {
@@ -113,7 +108,7 @@ export function ChatSidebar({
         <button
           type="button"
           onClick={onClose}
-          className="lg:hidden rounded-lg p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+          className="lg:hidden rounded-lg p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
           aria-label="Kenar çubuğunu kapat"
         >
           <svg
@@ -136,7 +131,7 @@ export function ChatSidebar({
             onNewChat();
             onClose();
           }}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-sky-300 dark:border-sky-700 bg-sky-50 dark:bg-sky-950/30 px-3 py-2.5 text-sm font-semibold text-sky-700 dark:text-sky-300 transition-colors hover:bg-sky-100 dark:hover:bg-sky-950/60 hover:border-sky-400 dark:hover:border-sky-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-sky-300 dark:border-sky-700 bg-sky-50 dark:bg-sky-950/30 px-3 py-2.5 text-sm font-semibold text-sky-700 dark:text-sky-300 transition-colors hover:bg-sky-100 dark:hover:bg-sky-950/60 hover:border-sky-400 dark:hover:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
           aria-label="Yeni sohbet başlat"
         >
           <svg
@@ -210,7 +205,7 @@ export function ChatSidebar({
                     }}
                     aria-current={isActive ? "page" : undefined}
                     className={[
-                      "w-full rounded-xl border px-3 py-2.5 text-left transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500",
+                      "w-full rounded-xl border px-3 py-2.5 text-left transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900",
                       isActive
                         ? "border-sky-300 dark:border-sky-600 bg-sky-50 dark:bg-sky-950/50 text-sky-900 dark:text-sky-100"
                         : "border-transparent hover:border-slate-200 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300",
@@ -264,7 +259,7 @@ export function ChatSidebar({
             aria-hidden="true"
           />
           {/* Panel */}
-          <aside className="relative z-50 flex w-72 max-w-[85vw] flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl">
+          <aside ref={drawerRef} className="relative z-50 flex w-72 max-w-[85vw] flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl">
             {sidebarContent}
           </aside>
         </div>

@@ -74,24 +74,37 @@ export function ServiceOrdersFilterBar({
       >
         {/* Arama Alanı */}
         <div className="relative flex-1">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 select-none text-xs">
+          <span
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 select-none text-xs"
+            aria-hidden="true"
+          >
             🔍
           </span>
+          <label htmlFor="so-filter-q" className="sr-only">
+            Servis emri arama
+          </label>
           <input
+            id="so-filter-q"
             type="text"
             value={searchVal}
             onChange={(e) => setSearchVal(e.target.value)}
             placeholder={placeholder}
-            className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 pl-8 pr-3 py-1.5 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500"
+            aria-label="Servis emri ara"
+            className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 pl-8 pr-3 py-1.5 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
           />
         </div>
 
         {/* Marina Filtresi */}
         <div className="w-full sm:w-48">
+          <label htmlFor="so-filter-marina" className="sr-only">
+            Marina filtresi
+          </label>
           <select
+            id="so-filter-marina"
             value={urlMarina}
             onChange={(e) => updateParam("marina", e.target.value)}
-            className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-sky-500"
+            aria-label="Marina filtresi"
+            className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-200 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
           >
             <option value="">Tüm Marinalar</option>
             {MARINA_OPTIONS.map((m) => (
@@ -107,7 +120,7 @@ export function ServiceOrdersFilterBar({
           <button
             type="submit"
             disabled={isPending}
-            className="rounded-lg bg-sky-700 dark:bg-sky-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-sky-800 dark:hover:bg-sky-700 transition-colors focus:outline-none focus:ring-2 focus:ring-sky-500 disabled:opacity-50"
+            className="rounded-lg bg-sky-700 dark:bg-sky-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-sky-800 dark:hover:bg-sky-700 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50"
           >
             {isPending ? "..." : "Ara"}
           </button>
@@ -117,7 +130,8 @@ export function ServiceOrdersFilterBar({
               type="button"
               onClick={handleReset}
               disabled={isPending}
-              className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+              aria-label="Filtreleri temizle"
+              className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
             >
               Temizle
             </button>

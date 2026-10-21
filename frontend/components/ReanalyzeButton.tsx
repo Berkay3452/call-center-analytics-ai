@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { reanalyzeCall, getCallStatus } from "@/lib/api/client";
 import { isApiError } from "@/lib/api/errors";
 import type { CallState } from "@/lib/api/types";
+import { useFocusTrap } from "@/lib/use-focus-trap";
 
 const POLL_INTERVAL_MS = 2500;
 const POLL_TIMEOUT_MS = 5 * 60 * 1000;
@@ -69,6 +70,9 @@ export function ReanalyzeButton({
   const [statusMessage, setStatusMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
+  // Tetikleyici buton referansı (focus return için)
+  const triggerButtonRef = useRef<HTMLButtonElement | null>(null);
+
   // Polling iptal referansı
   const cancelledRef = useRef(false);
 
@@ -91,19 +95,12 @@ export function ReanalyzeButton({
     setErrorMessage(null);
   }, [isSubmitting, analysisState]);
 
-  // Modal açıkken Escape tuşu ile kapatma (progress aşamasında kullanıcı isterse kapatabilir)
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        if (!isSubmitting || analysisState === "basarisiz" || analysisState === "tamam" || analysisState === "kismi") {
-          handleClose();
-        }
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, isSubmitting, analysisState, handleClose]);
+  // Focus trap hook'u: Escape ile kapatma, Tab kilidi ve kapatıldığında butona odak iadesi
+  const modalContainerRef = useFocusTrap<HTMLDivElement>({
+    isOpen,
+    onClose: handleClose,
+    returnFocusRef: triggerButtonRef,
+  });
 
   const handleStartReanalyze = async () => {
     // Çift tıklamayı engelle
@@ -192,28 +189,32 @@ export function ReanalyzeButton({
       {/* Tetikleyici Buton */}
       {variant === "header" ? (
         <button
+          ref={triggerButtonRef}
           type="button"
           onClick={() => {
             setIsOpen(true);
             setModalStage("confirm");
           }}
           disabled={isSubmitting}
-          className={`inline-flex items-center gap-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 active:scale-[0.98] transition-all shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 disabled:opacity-50 ${className}`}
+          className={`inline-flex items-center gap-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 active:scale-[0.98] transition-all shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50 ${className}`}
           title="Çağrıyı yeniden analize gönder"
+          aria-label="Çağrıyı yeniden analiz et"
         >
           <span className="text-sm" aria-hidden="true">🔄</span>
           <span>Yeniden Analiz Et</span>
         </button>
       ) : (
         <button
+          ref={triggerButtonRef}
           type="button"
           onClick={() => {
             setIsOpen(true);
             setModalStage("confirm");
           }}
           disabled={isSubmitting}
-          className={`inline-flex items-center gap-1.5 rounded-lg bg-amber-600 dark:bg-amber-700 text-white px-3 py-1 text-xs font-bold hover:bg-amber-700 dark:hover:bg-amber-600 transition-colors shadow-xs focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 disabled:opacity-50 ${className}`}
+          className={`inline-flex items-center gap-1.5 rounded-lg bg-amber-600 dark:bg-amber-700 text-white px-3 py-1 text-xs font-bold hover:bg-amber-700 dark:hover:bg-amber-600 transition-colors shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50 ${className}`}
           title="Kısmi analizi tekrar tamamlat"
+          aria-label="Kısmi analizi şimdi yeniden analiz et"
         >
           <span aria-hidden="true">⚡</span>
           <span>Şimdi Yeniden Analiz Et</span>
@@ -228,7 +229,10 @@ export function ReanalyzeButton({
           aria-modal="true"
           aria-labelledby="reanalyze-dialog-title"
         >
-          <div className="relative w-full max-w-md rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-2xl transition-all">
+          <div
+            ref={modalContainerRef}
+            className="relative w-full max-w-md rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-2xl transition-all"
+          >
             {/* 1. Aşama: Onay Diyaloğu */}
             {modalStage === "confirm" && (
               <div>
@@ -258,7 +262,7 @@ export function ReanalyzeButton({
                     type="button"
                     onClick={handleClose}
                     disabled={isSubmitting}
-                    className="rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500"
+                    className="rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                   >
                     Vazgeç
                   </button>
@@ -266,7 +270,7 @@ export function ReanalyzeButton({
                     type="button"
                     onClick={handleStartReanalyze}
                     disabled={isSubmitting}
-                    className="inline-flex items-center gap-2 rounded-xl bg-sky-700 px-5 py-2 text-xs font-bold text-white shadow-xs hover:bg-sky-800 active:scale-[0.98] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 disabled:opacity-50"
+                    className="inline-flex items-center gap-2 rounded-xl bg-sky-700 px-5 py-2 text-xs font-bold text-white shadow-xs hover:bg-sky-800 active:scale-[0.98] transition-all focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50"
                   >
                     {isSubmitting ? (
                       <>
@@ -366,7 +370,7 @@ export function ReanalyzeButton({
                   <button
                     type="button"
                     onClick={handleClose}
-                    className="rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                    className="rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
                   >
                     {analysisState === "basarisiz" ? "Kapat" : "Arka Planda Sürdür"}
                   </button>

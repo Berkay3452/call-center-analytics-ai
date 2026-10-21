@@ -66,7 +66,7 @@ export function ChatInput({
           <button
             type="button"
             onClick={onStopStreaming}
-            className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500 text-white transition-colors hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-400"
+            className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500 text-white transition-colors hover:bg-amber-600 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
             title="Akışı Durdur"
             aria-label="Akışı Durdur"
           >
@@ -84,7 +84,7 @@ export function ChatInput({
             type="button"
             onClick={handleSubmit}
             disabled={disabled || !text.trim()}
-            className="flex h-9 items-center gap-1.5 rounded-xl bg-sky-700 px-4 text-xs font-semibold text-white shadow-xs transition-all hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-1 disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex h-9 items-center gap-1.5 rounded-xl bg-sky-700 px-4 text-xs font-semibold text-white shadow-xs transition-all hover:bg-sky-800 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-40 disabled:cursor-not-allowed"
             aria-label="Mesajı Gönder"
           >
             <span>Gönder</span>
