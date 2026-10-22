@@ -12,11 +12,12 @@ from typing import BinaryIO
 from fastapi.responses import FileResponse, Response
 
 from app.core.errors import NotFoundError
-from app.services.audio_ingest import AudioTooLargeError, UnsupportedAudioError
 from app.storage.base import (
     ALLOWED_EXTENSIONS,
     AudioStorage,
+    AudioTooLargeError,
     StoredAudio,
+    UnsupportedAudioError,
     guess_media_type,
 )
 

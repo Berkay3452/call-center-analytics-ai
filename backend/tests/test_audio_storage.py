@@ -337,3 +337,20 @@ async def test_post_call_audio_with_fake_gcs(
         assert saved_stored is not None
         assert fake_gcs_storage.exists(saved_stored.relative_path) is True
         assert fake_gcs_storage.read_bytes(saved_stored.relative_path) == SAMPLE_WAV
+
+
+@pytest.mark.parametrize(
+    "module",
+    ["app.storage.gcs", "app.storage.local", "app.workers.tasks.stt", "app.services.audio_ingest"],
+)
+def test_modules_import_cleanly_in_a_fresh_interpreter(module: str) -> None:
+    """Dairesel import (#121): işçi `app.workers.tasks.stt` ile başlar; pytest'in import sırası
+    bunu gizler, bu yüzden her modül temiz bir yorumlayıcıda tek başına yüklenir."""
+    import subprocess
+    import sys
+
+    result = subprocess.run(
+        [sys.executable, "-c", f"import {module}"], capture_output=True, text=True, check=False
+    )
+
+    assert result.returncode == 0, result.stderr[-600:]

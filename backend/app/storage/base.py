@@ -12,8 +12,22 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import BinaryIO
 
+from fastapi import status
 from fastapi.responses import Response
 from pydantic import BaseModel
+
+from app.core.errors import AppError
+
+
+class AudioTooLargeError(AppError):
+    status_code = status.HTTP_413_CONTENT_TOO_LARGE
+    code = "payload_too_large"
+
+
+class UnsupportedAudioError(AppError):
+    status_code = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
+    code = "unsupported_media_type"
+
 
 ALLOWED_EXTENSIONS = frozenset({".wav", ".mp3", ".m4a", ".ogg", ".flac", ".aac", ".webm"})
 

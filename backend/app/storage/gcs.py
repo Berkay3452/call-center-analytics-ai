@@ -18,11 +18,12 @@ import structlog
 from fastapi.responses import Response
 
 from app.core.errors import NotFoundError
-from app.services.audio_ingest import AudioTooLargeError, UnsupportedAudioError
 from app.storage.base import (
     ALLOWED_EXTENSIONS,
     AudioStorage,
+    AudioTooLargeError,
     StoredAudio,
+    UnsupportedAudioError,
     guess_media_type,
     parse_range_header,
 )

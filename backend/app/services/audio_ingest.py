@@ -16,20 +16,21 @@ from typing import BinaryIO
 from uuid import UUID
 
 import structlog
-from fastapi import status
 from fastapi.responses import Response
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.core.config import Settings, get_settings
-from app.core.errors import AppError, ConflictError, NotFoundError
+from app.core.errors import ConflictError, NotFoundError
 from app.db.models.ai import Call
 from app.schemas.api import AudioCallMeta, CallState
 from app.services.call_ingest import set_state, store_segments
-from app.storage.base import (
+from app.storage.base import (  # noqa: F401 - hata sınıfları geriye uyumluluk için buradan da erişilir
     AUDIO_MEDIA_TYPES,
     AudioStorage,
+    AudioTooLargeError,
     StoredAudio,
+    UnsupportedAudioError,
 )
 from app.stt.base import SttError, Transcriber
 from app.stt.pipeline import ChannelLayout, transcribe_call
@@ -43,16 +44,6 @@ def storage_dir(settings: Settings) -> Path:
     """Ses klasörü; göreli yol `backend/` klasörüne göredir (API ve işçi aynı yeri görür)."""
     path = Path(settings.audio_storage_dir)
     return path if path.is_absolute() else _BACKEND_DIR / path
-
-
-class AudioTooLargeError(AppError):
-    status_code = status.HTTP_413_CONTENT_TOO_LARGE
-    code = "payload_too_large"
-
-
-class UnsupportedAudioError(AppError):
-    status_code = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
-    code = "unsupported_media_type"
 
 
 class DuplicateAudioError(ConflictError):
