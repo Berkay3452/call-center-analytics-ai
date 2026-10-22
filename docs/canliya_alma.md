@@ -51,9 +51,9 @@ Sistemin bileşenleri:
 | `LLM_PROVIDER` | Seçilen sağlayıcı (`nvidia`, `gemini`, `groq`, `openai_compatible`) | Worker |
 | `LLM_FAST_MODEL` | Hızlı sınıflandırıcı/özetleyici model adı | Worker |
 | `LLM_SMART_MODEL` | Güçlü CRM/satış analizi model adı | Worker |
-| `SUPABASE_URL` | Supabase proje adresi (Storage ve dış tablolar için) | API, Worker |
-| `SUPABASE_SERVICE_ROLE_KEY`| Supabase servis rol anahtarı (#121 ses depolama) | API, Worker |
-| `STORAGE_BUCKET` | Ses kayıtlarının tutulduğu Supabase/GCS bucket adı (`call-audio`) | API, Worker |
+| `AUDIO_STORAGE_BACKEND` | Ses depolama sağlayıcısı: `local` (varsayılan) veya `gcs` (#121) | API, Worker |
+| `GCS_BUCKET_NAME`, `GCS_PROJECT_ID` | Ses kayıtlarının tutulduğu Google Cloud Storage kovası ve projesi (`AUDIO_STORAGE_BACKEND=gcs` iken) | API, Worker |
+| `GCS_CREDENTIALS_FILE` | Servis hesabı anahtar dosyası (Cloud Run'da boş bırakılır, çalışan hesabın kimliği kullanılır) | API, Worker |
 
 ---
 
@@ -92,7 +92,8 @@ Konteynerler durumsuz (stateless) olduğundan, santralden gelen ses dosyaları y
    docker build -t europe-west3-docker.pkg.dev/<PROJECT_ID>/call-center-repo/backend:latest ./backend
    docker push europe-west3-docker.pkg.dev/<PROJECT_ID>/call-center-repo/backend:latest
 
-   # Frontend imajı
+   # Frontend imajı (NEXT_PUBLIC_USE_MOCKS derleme sırasında koda gömülür; Dockerfile varsayılanı
+   # false'tur, çalışma zamanında ortam değişkeniyle değiştirilemez)
    docker build -t europe-west3-docker.pkg.dev/<PROJECT_ID>/call-center-repo/frontend:latest ./frontend
    docker push europe-west3-docker.pkg.dev/<PROJECT_ID>/call-center-repo/frontend:latest
    ```
@@ -122,7 +123,7 @@ Konteynerler durumsuz (stateless) olduğundan, santralden gelen ses dosyaları y
        --port=3000 \
        --allow-unauthenticated \
        --region=europe-west3 \
-       --set-env-vars="API_URL=https://call-center-api-<hash>.a.run.app/api/v1,NEXT_PUBLIC_USE_MOCKS=false" \
+       --set-env-vars="API_URL=https://call-center-api-<hash>.a.run.app/api/v1" \
        --set-secrets="SERVICE_KEY=SERVICE_API_KEY:latest"
    ```
 

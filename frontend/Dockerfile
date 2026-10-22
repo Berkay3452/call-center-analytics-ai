@@ -19,6 +19,10 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+# NEXT_PUBLIC_* değişkenleri derleme sırasında koda gömülür; ayarlanmazsa arayüz sahte (mock)
+# veriyle açılır. Bu yüzden gerçek backend modu derleme argümanıyla sabitlenir.
+ARG NEXT_PUBLIC_USE_MOCKS=false
+ENV NEXT_PUBLIC_USE_MOCKS=$NEXT_PUBLIC_USE_MOCKS
 
 # Standalone derleme çıktısı üret
 RUN npm run build
