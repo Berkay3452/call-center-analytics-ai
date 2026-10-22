@@ -60,8 +60,13 @@ class Settings(BaseSettings):
     supabase_service_role_key: SecretStr | None = None  # yalnızca backend; asla frontend'e verilmez
     storage_bucket: str = "call-audio"
     # Yüklenen çağrı sesleri: geliştirmede yerel klasör (backend/'e göre), canlıda bulut deposu.
+    # --- Ses Depolama (#121) ---
+    audio_storage_backend: Literal["local", "gcs"] = "local"
     audio_storage_dir: str = "storage/audio"
     audio_max_mb: int = Field(default=25, ge=1)
+    gcs_bucket_name: str = "call-audio"
+    gcs_project_id: str | None = None
+    gcs_credentials_file: str | None = None
     # Yalnızca local/test: servis anahtarı kurulmadan uçları denemek için doğrulamayı atlar.
     auth_dev_bypass: bool = False
 

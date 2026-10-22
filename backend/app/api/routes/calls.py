@@ -6,10 +6,9 @@ Sözleşme: docs/api.md.
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Query
-from fastapi.responses import FileResponse
+from fastapi import APIRouter, Query, Request, Response
 
-from app.api.deps import ServiceCallerDep, SessionDep, SettingsDep
+from app.api.deps import AudioStorageDep, ServiceCallerDep, SessionDep
 from app.schemas.api import CallDetail, CallFilters, CallListItem, CallMatchIn
 from app.schemas.common import ErrorResponse, Page
 from app.services import audio_ingest, call_matching, call_reader
@@ -102,10 +101,13 @@ async def match_call_endpoint(
 )
 async def get_call_audio(
     call_id: UUID,
+    request: Request,
     _: ServiceCallerDep,
     session: SessionDep,
-    settings: SettingsDep,
-) -> FileResponse:
+    storage: AudioStorageDep,
+) -> Response:
     """Çağrıya ait ses dosyasını akıtır (Range isteklerini destekler)."""
-    file_path, media_type = await audio_ingest.get_call_audio_file(session, call_id, settings)
-    return FileResponse(file_path, media_type=media_type)
+    range_header = request.headers.get("range")
+    return await audio_ingest.get_call_audio_response(
+        session, call_id, storage, range_header=range_header
+    )

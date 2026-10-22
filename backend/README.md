@@ -133,6 +133,7 @@ Analiz arka planda Celery işçisinde çalışır (`-Q default,analysis,index`);
 | `app/api` | Route'lar ve bağımlılıklar (oturum, servis anahtarı, kullanıcı kimliği) |
 | `app/db` | Async SQLAlchemy motoru, oturumlar, model tabanı (şema Supabase migration'larından gelir) |
 | `app/schemas` | API istek/yanıt şemaları |
+| `app/storage` | Ses depolama soyutlaması (`base.py`), yerel (`local.py`) ve GCS (`gcs.py`) sağlayıcıları (#121) |
 | `app/services` | İş mantığı; `analysis_store.py`: transkript ve analiz sonuçlarını veritabanına yazma/okuma, `DbRunRecorder` |
 | `app/workers` | Celery uygulaması ve kuyruklar (stt, analysis, index) |
 | `app/llm` | Ücretsiz, OpenAI-uyumlu LLM sağlayıcıları için istemci fabrikası |

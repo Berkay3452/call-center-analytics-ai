@@ -12,7 +12,8 @@ import structlog
 from app.core.config import get_settings
 from app.core.errors import NotFoundError
 from app.db.session import create_engine, create_session_factory
-from app.services.audio_ingest import run_transcription, storage_dir
+from app.services.audio_ingest import run_transcription
+from app.storage.registry import build_audio_storage
 from app.stt.base import Transcriber
 from app.stt.registry import build_transcriber
 from app.workers.celery_app import celery_app
@@ -31,11 +32,12 @@ async def _transcribe(call_id: UUID) -> str:
     settings = get_settings()
     engine = create_engine(settings, null_pool=True)
     try:
+        storage = build_audio_storage(settings)
         return await run_transcription(
             call_id,
             create_session_factory(engine),
             _transcriber(),
-            storage_dir=storage_dir(settings),
+            storage=storage,
             layout=settings.stt_channel_layout,
             language=settings.stt_language,
         )

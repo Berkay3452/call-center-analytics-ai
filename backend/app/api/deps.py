@@ -16,6 +16,7 @@ from app.core.security import (
     require_owner_id_value,
     verify_service_key,
 )
+from app.storage.base import AudioStorage
 
 SettingsDep = Annotated[Settings, Depends(get_settings)]
 
@@ -33,6 +34,15 @@ def get_redis(request: Request) -> Redis:
 
 SessionDep = Annotated[AsyncSession, Depends(get_db_session)]
 RedisDep = Annotated[Redis, Depends(get_redis)]
+
+
+def get_audio_storage(settings: SettingsDep) -> AudioStorage:
+    from app.storage.registry import build_audio_storage
+
+    return build_audio_storage(settings)
+
+
+AudioStorageDep = Annotated[AudioStorage, Depends(get_audio_storage)]
 
 
 async def require_service_key(
