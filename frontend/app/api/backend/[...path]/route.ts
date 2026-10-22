@@ -14,6 +14,7 @@ const ALLOWED = [
   /^calls\/[^/]+$/,
   /^calls\/[^/]+\/analyze$/,
   /^calls\/[^/]+\/status$/,
+  /^calls\/[^/]+\/match$/,
   /^calls\/[^/]+\/audio$/,
   /^calls\/audio$/,
   /^crm$/,

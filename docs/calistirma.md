@@ -50,6 +50,39 @@ Frontend `http://localhost:3000` adresinde açılır. Gerçek backend'e bağlı 
 
 > Başlatıcı yalnızca geliştirme içindir; üretimde API Docker, migration veya seed ile ilgilenmez.
 
+### Docker ile tek komutla tüm sistemi çalıştırma (Demo & Sunum #120)
+
+Makinede Node.js veya Python kurulu olmadan, tek bir komutla tüm yığını (PostgreSQL, Redis, Init/Migration, FastAPI Backend, Celery İşçisi ve Next.js Frontend) konteynerler üzerinde ayağa kaldırmak için:
+
+```bash
+# Repo kök dizininde:
+docker compose -f infra/docker-compose.yml --profile app up -d
+```
+
+*(İsteğe bağlı: Miço AI RAG embedding servisini de dahil etmek için `--profile app --profile rag` bayrakları birlikte verilebilir.)*
+
+Bu komut sırasıyla:
+1. PostgreSQL (pgvector) ve Redis altyapısını başlatır ve sağlık kontrollerini (`healthy`) bekler.
+2. `init` servisini çalıştırarak Alembic migration'larını uygular (`alembic upgrade head`) ve veritabanı boşsa 50 çağrılık sentetik seed verisini yükler.
+3. FastAPI Backend API (`:8000`) ve Celery Worker'ı ayağa kaldırır; API'nin `/health/ready` uç noktasından sağlıklı olduğunu doğrular.
+4. Next.js Frontend (`:3000`) konteynerini başlatır.
+
+**İmaj Boyutları ve Başlangıç Süresi (Ölçümler):**
+- **Backend İmajı (`call-center-backend`):** ~627 MB (Python 3.12, multi-stage, `uv.lock`, faster-whisper, ffmpeg, kök olmayan `appuser`).
+- **Frontend İmajı (`call-center-frontend`):** ~65 MB (Next.js 16 standalone çıktı, Node.js 20 Alpine, kök olmayan `nextjs`).
+- **İlk Açılış Süresi:** Sıfır veritabanında migration + seed dahil toplam ~20-25 saniyede tüm servisler `healthy` duruma gelir.
+
+Açılış tamamlandığında:
+- Web Arayüzü: `http://localhost:3000` (gerçek seed verileriyle `/admin/analytics` ve `/admin/calls`)
+- API Sağlık Kontrolü: `http://localhost:8000/health/ready`
+- Swagger API Belgeleri: `http://localhost:8000/docs`
+
+Durdurmak için:
+```bash
+docker compose -f infra/docker-compose.yml --profile app down        # durdurur, veriler kalır
+docker compose -f infra/docker-compose.yml --profile app down -v     # veritabanı ve birimleri sıfırlar
+```
+
 ### Elle (adım adım) başlatma
 
 Başlatıcıyı kullanmak istemezsen aynı adımlar elle de yapılabilir (repo kökünde ve `backend/` içinde):
