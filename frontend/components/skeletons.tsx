@@ -216,38 +216,21 @@ export function AnalyticsDashboardSkeleton() {
  */
 export function ServiceOrdersTableSkeleton() {
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm animate-pulse">
-      <div className="border-b border-gray-200 bg-gray-50 px-4 py-3">
-        <div className="grid grid-cols-7 gap-4">
-          <div className="h-4 w-20 rounded bg-gray-200" />
-          <div className="h-4 w-24 rounded bg-gray-200" />
-          <div className="h-4 w-24 rounded bg-gray-200" />
-          <div className="h-4 w-20 rounded bg-gray-200" />
-          <div className="h-4 w-32 rounded bg-gray-200" />
-          <div className="h-4 w-24 rounded bg-gray-200" />
-          <div className="h-4 w-20 rounded bg-gray-200 ml-auto" />
-        </div>
-      </div>
-      <div className="divide-y divide-gray-100 p-4 space-y-4">
-        {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="grid grid-cols-7 gap-4 items-center pt-2">
-            <div className="h-5 w-24 rounded bg-gray-200" />
-            <div>
-              <div className="h-4 w-28 rounded bg-gray-200 mb-1" />
-              <div className="h-3 w-20 rounded bg-gray-100" />
-            </div>
-            <div>
-              <div className="h-4 w-24 rounded bg-gray-200 mb-1" />
-              <div className="h-3 w-16 rounded bg-gray-100" />
-            </div>
-            <div className="h-5 w-20 rounded-full bg-gray-200" />
-            <div className="h-4 w-40 rounded bg-gray-200" />
-            <div className="h-6 w-24 rounded-full bg-gray-200" />
-            <div className="h-5 w-16 rounded bg-gray-200 ml-auto" />
+    <ul className="space-y-3 animate-pulse" aria-hidden="true">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <li key={i} className="flex justify-between gap-4 rounded-xl border border-slate-200 bg-white p-5">
+          <div className="flex-1 space-y-2">
+            <div className="h-5 w-64 rounded bg-slate-200" />
+            <div className="h-4 w-80 max-w-full rounded bg-slate-100" />
+            <div className="h-4 w-full max-w-md rounded bg-slate-100" />
           </div>
-        ))}
-      </div>
-    </div>
+          <div className="space-y-2">
+            <div className="ml-auto h-5 w-20 rounded-full bg-slate-200" />
+            <div className="h-8 w-32 rounded-lg bg-slate-200" />
+          </div>
+        </li>
+      ))}
+    </ul>
   );
 }
 
