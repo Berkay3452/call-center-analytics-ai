@@ -318,6 +318,68 @@ export const ANALYSIS_STATUS_LABELS: Record<AnalysisStatus, string> = {
   basarisiz: "Başarısız",
 };
 
+/** Analiz durumu rozeti rengi: liste, detay ve her yerde aynı. */
+export const ANALYSIS_STATUS_TONE: Record<AnalysisStatus, "success" | "warning" | "danger"> = {
+  tamam: "success",
+  kismi: "warning",
+  basarisiz: "danger",
+};
+
+/** Ajan/bölüm anahtarı → ekranda gösterilen bölüm adı. */
+export const ANALYSIS_SECTION_LABELS = {
+  classification: "Çağrı sınıflandırma",
+  crm: "CRM çıkarımı",
+  sales: "Satış analizi",
+  summary: "Görüşme özeti",
+} as const;
+
+/** Backend `analysis.errors` anahtarları (ajan adları) → bölüm anahtarı. */
+export const ANALYSIS_ERROR_KEY_TO_SECTION: Record<string, keyof typeof ANALYSIS_SECTION_LABELS> = {
+  call_classifier: "classification",
+  classification: "classification",
+  crm_extraction: "crm",
+  crm: "crm",
+  sales_analyzer: "sales",
+  sales: "sales",
+  summarizer: "summary",
+  summary: "summary",
+};
+
+/**
+ * Analiz durumundan ekranda neyin gösterileceğini türetir.
+ * Güven yüzdesi yalnızca analiz tamamsa gösterilir; kısmi/başarısızda eksik bölümler adlandırılır.
+ */
+export function describeAnalysis(
+  status: AnalysisStatus,
+  analysis: {
+    classification?: unknown;
+    crm?: unknown;
+    sales?: unknown;
+    summary?: unknown;
+    errors?: unknown;
+  } | null | undefined,
+): { showConfidence: boolean; missing: string[] } {
+  const failedKeys = new Set<keyof typeof ANALYSIS_SECTION_LABELS>();
+  const errors = analysis?.errors;
+  if (errors && typeof errors === "object" && !Array.isArray(errors)) {
+    for (const key of Object.keys(errors)) {
+      const section = ANALYSIS_ERROR_KEY_TO_SECTION[key];
+      if (section) failedKeys.add(section);
+    }
+  }
+  if (status !== "tamam") {
+    // Hata kaydı olmasa bile sonucu olmayan bölüm eksiktir
+    for (const section of Object.keys(ANALYSIS_SECTION_LABELS) as Array<keyof typeof ANALYSIS_SECTION_LABELS>) {
+      if (!analysis?.[section]) failedKeys.add(section);
+    }
+  }
+  return {
+    showConfidence: status === "tamam",
+    missing: [...failedKeys].map((k) => ANALYSIS_SECTION_LABELS[k]),
+  };
+}
+
+
 // ---------------------------------------------------------------------------
 // Standart Marina Listesi
 // ---------------------------------------------------------------------------
