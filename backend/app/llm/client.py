@@ -12,7 +12,7 @@ import asyncio
 import time
 from collections import defaultdict, deque
 from collections.abc import Awaitable, Callable
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Any, Literal
 from weakref import WeakKeyDictionary
 
 from app.core.config import Settings
@@ -97,6 +97,7 @@ def get_chat_model(
 
     return ChatOpenAI(
         model=model,
+        http_async_client=_async_http_client(),
         extra_body=extra_body,
         base_url=_resolve_base_url(settings),
         api_key=api_key or "ollama",  # Ollama anahtar istemez ama alan zorunlu
@@ -104,6 +105,28 @@ def get_chat_model(
         timeout=settings.llm_timeout_s,
         max_retries=settings.llm_max_retries,
     )
+
+
+# Her event loop için ayrı httpx istemcisi (#160). langchain_openai varsayılan async httpx
+# istemcisini süreç boyunca önbelleğe alır; Celery görevleri her seferinde yeni döngü açtığı
+# (asyncio.run) için önbellekteki istemcinin bağlantı havuzu kapanmış ilk döngüye bağlı kalıyor ve
+# sonraki görevler "Event loop is closed" ile 10 ms'de düşüyordu.
+_http_clients: "WeakKeyDictionary[asyncio.AbstractEventLoop, Any]" = WeakKeyDictionary()
+
+
+def _async_http_client() -> Any | None:
+    """Çalışan döngüye ait async httpx istemcisi; döngü yoksa (senkron çağrı) None."""
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        return None
+    client = _http_clients.get(loop)
+    if client is None:
+        from openai import DefaultAsyncHttpxClient  # tembel import (ai ekstrası)
+
+        client = DefaultAsyncHttpxClient()
+        _http_clients[loop] = client
+    return client
 
 
 # Her event loop için ayrı semafor: Celery görevleri her seferinde yeni döngü açar
