@@ -205,27 +205,31 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
   });
 
   // ──────────────────────────────────────────────────────────────────────────
-  // Senaryo 6: Tema Geçişi (Açık / Koyu Mod)
+  // Senaryo 6: Uygulama kabuğu (#166) — yan menü yok, üstte sekmeli gezinme
   // ──────────────────────────────────────────────────────────────────────────
-  test("Senaryo 6 (Tema Geçişi): Üst bar tema düğmesiyle açık/koyu mod geçişi yapılır", async ({
+  test("Senaryo 6 (Kabuk): üst bar, rol rozeti ve sekmeler çalışır, yan menü yoktur", async ({
     page,
   }) => {
     await page.goto("/admin/analytics");
 
-    // Tema kontrol grubu
-    const themeGroup = page.getByRole("group", { name: "Tema seçimi" });
-    await expect(themeGroup).toBeVisible();
+    await expect(page.getByRole("complementary")).toHaveCount(0);
+    const nav = page.getByRole("navigation", { name: "Ana gezinme" });
+    for (const label of ["Gösterge Paneli", "Çağrılar", "CRM Önerileri", "Servis Emirleri"]) {
+      await expect(nav.getByRole("link", { name: label })).toBeVisible();
+    }
+    await expect(nav.getByRole("link", { name: "Gösterge Paneli" })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
 
-    const darkButton = page.getByRole("button", { name: "Koyu tema" });
-    const lightButton = page.getByRole("button", { name: "Açık tema" });
+    await nav.getByRole("link", { name: "CRM Önerileri" }).click();
+    await expect(page).toHaveURL(/\/admin\/crm/);
 
-    // Koyu moda geç
-    await darkButton.click();
-    await expect(page.locator("html")).toHaveClass(/dark/);
-
-    // Açık moda geri geç
-    await lightButton.click();
-    await expect(page.locator("html")).not.toHaveClass(/dark/);
+    // Rol seçici: Tekne Sahibi yalnızca Miço AI sekmesini gösterir
+    await page.getByLabel("Rol seç").selectOption("owner");
+    await expect(page).toHaveURL(/\/owner\/assistant/);
+    await expect(nav.getByRole("link")).toHaveCount(1);
+    await expect(nav.getByRole("link", { name: "Miço AI" })).toBeVisible();
   });
   // ──────────────────────────────────────────────────────────────────────────
   // Senaryo 7: Miço AI gerçek cevap (yalnızca gerçek backend; mock modunda atlanır)

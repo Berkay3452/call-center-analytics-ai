@@ -339,7 +339,7 @@ export default function AssistantPage() {
   // ─────────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex h-[calc(100vh-6.5rem)] max-w-6xl mx-auto overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900">
+    <div className="flex h-[calc(100vh-13rem)] min-h-[32rem] max-w-6xl mx-auto overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900">
       {/* ── Sol: Oturum Kenar Çubuğu ─────────────────────────────────────── */}
       <ChatSidebar
         sessions={sessions}
