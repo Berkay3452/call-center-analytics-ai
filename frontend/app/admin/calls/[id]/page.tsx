@@ -19,6 +19,11 @@ import {
   LOSS_REASON_LABELS,
   SALES_OUTCOME_LABELS,
 } from "@/lib/types";
+import {
+  ANALYSIS_STATUS_LABELS,
+  ANALYSIS_STATUS_TONE,
+  describeAnalysis,
+} from "@/lib/types";
 import { Badge, Card, CardHeader, ProgressBar, type Tone } from "@/components/ui";
 import mockCallsList from "@/mocks/cagri_listesi.json";
 
@@ -120,10 +125,11 @@ async function CallDetailContent({ params }: Props) {
     call.state === "beklemede" || call.state === "yaziya_cevriliyor" || call.state === "isleniyor";
   const analysisStatus = call.analysis?.status ?? (call.state === "basarisiz" ? "basarisiz" : "kismi");
 
-  // Gerçek Analiz Güveni: yalnızca classification.confidence varsa gösterilir
+  // Durum etiketi/rengi tek kaynaktan (lib/types); güven yüzdesi yalnızca tam analizde gösterilir.
+  const { showConfidence, missing: missingSections } = describeAnalysis(analysisStatus, call.analysis);
   const rawConfidence = classification?.confidence;
   const confidencePercent =
-    rawConfidence != null
+    showConfidence && !inProgress && rawConfidence != null
       ? Math.round(rawConfidence <= 1 ? rawConfidence * 100 : rawConfidence)
       : null;
 
@@ -164,7 +170,7 @@ async function CallDetailContent({ params }: Props) {
     }
   }
 
-  const isPartial = analysisStatus === "kismi" || errorEntries.length > 0;
+  const isPartial = analysisStatus !== "tamam" || errorEntries.length > 0;
 
   // Transkript segmentleri (Öncelikle segments dizisi, yoksa raw text)
   const segments = (call.transcript?.segments && call.transcript.segments.length > 0)
@@ -197,11 +203,10 @@ async function CallDetailContent({ params }: Props) {
 
   const analysisBadge = inProgress
     ? { tone: "brand" as Tone, text: "Analiz sürüyor" }
-    : analysisStatus === "kismi"
-      ? { tone: "warning" as Tone, text: "Kısmi analiz" }
-      : analysisStatus === "basarisiz"
-        ? { tone: "danger" as Tone, text: "Analiz başarısız" }
-        : { tone: "success" as Tone, text: "Analiz tamamlandı" };
+    : {
+        tone: ANALYSIS_STATUS_TONE[analysisStatus] as Tone,
+        text: `Analiz: ${ANALYSIS_STATUS_LABELS[analysisStatus]}`,
+      };
 
   return (
     <div className="space-y-6">
@@ -232,23 +237,27 @@ async function CallDetailContent({ params }: Props) {
         {confidencePercent !== null && (
           <div className="mt-4 max-w-sm">
             <div className="mb-1 flex justify-between text-xs text-slate-500">
-              <span>Analiz güveni</span>
+              <span>Sınıflandırma güveni</span>
               <span className="font-semibold text-brand-800">%{confidencePercent}</span>
             </div>
-            <ProgressBar value={confidencePercent} tone="success" label="Analiz güveni" />
+            <ProgressBar value={confidencePercent} tone="success" label="Sınıflandırma güveni" />
           </div>
         )}
       </Card>
 
-      {/* Kısmi analiz uyarısı */}
+      {/* Kısmi / başarısız analiz uyarısı: eksik bölümler adlandırılır */}
       {isPartial && !inProgress && (
         <Card className="border-amber-300 bg-amber-50">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 className="text-sm font-semibold text-amber-900">Bazı alanlar üretilemedi</h2>
+            <h2 className="text-sm font-semibold text-amber-900">
+              {analysisStatus === "basarisiz" ? "Analiz tamamlanamadı" : "Analiz kısmen tamamlandı"}
+            </h2>
             <ReanalyzeButton callId={call.id} currentState={call.state} variant="banner" />
           </div>
           <p className="mt-1 text-sm text-amber-800">
-            Bu görüşmenin analizinde bazı bölümler üretilemedi; diğer bölümlerin sonuçları geçerlidir.
+            {missingSections.length > 0
+              ? `${missingSections.join(", ")} üretilemedi; diğer bölümlerin sonuçları geçerlidir. Yeniden analiz ederek deneyebilirsiniz.`
+              : "Bazı bölümler üretilemedi; diğer bölümlerin sonuçları geçerlidir. Yeniden analiz ederek deneyebilirsiniz."}
           </p>
           {errorEntries.length > 0 && (
             <ul className="mt-2 space-y-1 text-sm text-amber-950">

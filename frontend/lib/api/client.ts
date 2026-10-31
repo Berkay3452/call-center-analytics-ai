@@ -646,6 +646,16 @@ async function handleMockRequest<T>(
         boat_name: foundInList.boat_name,
         marina: foundInList.marina,
         state: foundInList.state,
+        // Kısmi analizde sınıflandırma ajanı çökmüş gibi: sonuç ve güven yok, hata kaydı var
+        analysis:
+          foundInList.state === "kismi"
+            ? {
+                ...mockCallDetail.analysis,
+                status: "kismi",
+                classification: undefined,
+                errors: { call_classifier: "Event loop is closed" },
+              }
+            : mockCallDetail.analysis,
       } as unknown as T;
     }
     // Mock detayı genel fallback olarak döndür

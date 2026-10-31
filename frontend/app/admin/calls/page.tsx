@@ -4,12 +4,12 @@ import Link from "next/link";
 import { fetchCalls } from "@/lib/api";
 import {
   ANALYSIS_STATUS_LABELS,
+  ANALYSIS_STATUS_TONE,
   CALL_TYPE_LABELS,
   EMPTY_LABEL,
   labelOf,
   LOSS_REASON_LABELS,
   URGENCY_LABELS,
-  type AnalysisStatus,
   type Call,
   type SalesOutcomeType,
   type Urgency,
@@ -40,12 +40,6 @@ const URGENCY_TONE: Record<Urgency, Tone> = {
   yuksek: "warning",
   normal: "brand",
   dusuk: "neutral",
-};
-
-const ANALYSIS_STATUS_TONE: Record<AnalysisStatus, Tone> = {
-  tamam: "success",
-  kismi: "warning",
-  basarisiz: "danger",
 };
 
 const SALES_TONE: Record<SalesOutcomeType, { text: string; tone: Tone }> = {

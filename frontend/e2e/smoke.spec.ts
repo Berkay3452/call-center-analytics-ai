@@ -112,6 +112,25 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
   });
 
   // ──────────────────────────────────────────────────────────────────────────
+  // Senaryo 3b: Kısmi analiz tutarlılığı (#170)
+  // ──────────────────────────────────────────────────────────────────────────
+  test("Senaryo 3b (Kısmi analiz): rozet 'Kısmi', yüzde gösterilmez, eksik bölüm adlandırılır; tam analizde yüzde görünür", async ({
+    page,
+  }) => {
+    // Mock'ta f32beed7… çağrısı kısmi: sınıflandırma ajanı çökmüş
+    await page.goto("/admin/calls/f32beed7-2e2b-595b-b022-9d68c3b8161d");
+    await expect(page.getByText("Analiz: Kısmi")).toBeVisible();
+    await expect(page.getByText("Analiz kısmen tamamlandı")).toBeVisible();
+    await expect(page.getByText(/Çağrı sınıflandırma üretilemedi/)).toBeVisible();
+    await expect(page.getByText("Sınıflandırma güveni")).toHaveCount(0);
+
+    // Tam analiz: rozet "Tamam" ve güven yüzdesi
+    await page.goto("/admin/calls/11111111-1111-4111-8111-111111111111");
+    await expect(page.getByText("Analiz: Tamam")).toBeVisible();
+    await expect(page.getByText("Sınıflandırma güveni")).toBeVisible();
+  });
+
+  // ──────────────────────────────────────────────────────────────────────────
   // Senaryo 4: CRM Akışı (#113 - Onay, Düzenleme ve Ret Butonları)
   // ──────────────────────────────────────────────────────────────────────────
   test("Senaryo 4 (CRM Akışı): sekmeler, Düzenle/Reddet pencereleri, onay ve elle eşleştirme çalışır", async ({
