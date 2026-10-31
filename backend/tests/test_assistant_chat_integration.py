@@ -9,6 +9,7 @@ Test edilenler:
 - `GET /api/v1/assistant/sessions`: Oturum listesi
 - Soru ve cevapların veritabanına (`chat_sessions`, `chat_messages`) yazılması
 - Başka kullanıcının oturumunun okunamaması (404)
+- Oturum silme (tek / hepsi): yalnızca sahibi, mesajlar CASCADE ile silinir (#176)
 """
 
 import json
@@ -297,6 +298,79 @@ async def test_list_sessions_cross_user_isolation(client: AsyncClient) -> None:
     assert r_fatma.status_code == 200
     fatma_sessions = r_fatma.json()
     assert all(s["id"] != ahmet_session_id for s in fatma_sessions)
+
+
+async def _count_messages(factory: async_sessionmaker[AsyncSession], session_id: str) -> int:
+    async with factory() as s:
+        stmt = select(ChatMessage).where(ChatMessage.session_id == UUID(session_id))
+        rows = await s.scalars(stmt)
+        return len(rows.all())
+
+
+async def test_delete_session_removes_session_and_messages(
+    client: AsyncClient, factory: async_sessionmaker[AsyncSession]
+) -> None:
+    headers = {"X-Service-Key": TEST_SERVICE_KEY, "X-User-Id": str(AHMET_ID)}
+    r = await client.post(
+        "/api/v1/chat/messages", json={"question": "Toplam masrafım ne kadar?"}, headers=headers
+    )
+    session_id = r.json()["session_id"]
+    assert await _count_messages(factory, session_id) == 2
+
+    for path in ("assistant", "chat"):
+        resp = await client.delete(f"/api/v1/{path}/sessions/{session_id}", headers=headers)
+        assert resp.status_code == (204 if path == "assistant" else 404)
+    assert await _count_messages(factory, session_id) == 0
+    get = await client.get(f"/api/v1/chat/sessions/{session_id}", headers=headers)
+    assert get.status_code == 404
+
+
+async def test_delete_session_of_another_owner_is_404_and_keeps_it(
+    client: AsyncClient, factory: async_sessionmaker[AsyncSession]
+) -> None:
+    ahmet = {"X-Service-Key": TEST_SERVICE_KEY, "X-User-Id": str(AHMET_ID)}
+    fatma = {"X-Service-Key": TEST_SERVICE_KEY, "X-User-Id": str(FATMA_ID)}
+    r = await client.post(
+        "/api/v1/chat/messages", json={"question": "Toplam masrafım ne kadar?"}, headers=ahmet
+    )
+    session_id = r.json()["session_id"]
+
+    resp = await client.delete(f"/api/v1/assistant/sessions/{session_id}", headers=fatma)
+    assert resp.status_code == 404
+    assert resp.json()["error"]["code"] == "not_found"
+    resp = await client.delete(f"/api/v1/chat/sessions/{session_id}", headers=fatma)
+    assert resp.status_code == 404
+    # Fatma'nın "hepsini sil" çağrısı Ahmet'in oturumuna dokunmaz.
+    resp = await client.delete("/api/v1/chat/sessions", headers=fatma)
+    assert resp.status_code == 204
+    assert await _count_messages(factory, session_id) == 2
+    assert (
+        await client.get(f"/api/v1/chat/sessions/{session_id}", headers=ahmet)
+    ).status_code == 200
+
+
+async def test_delete_all_sessions_only_removes_own(
+    client: AsyncClient, factory: async_sessionmaker[AsyncSession]
+) -> None:
+    ahmet = {"X-Service-Key": TEST_SERVICE_KEY, "X-User-Id": str(AHMET_ID)}
+    fatma = {"X-Service-Key": TEST_SERVICE_KEY, "X-User-Id": str(FATMA_ID)}
+    ids = []
+    for _ in range(2):
+        r = await client.post(
+            "/api/v1/chat/messages", json={"question": "Toplam masrafım ne kadar?"}, headers=ahmet
+        )
+        ids.append(r.json()["session_id"])
+    other = (
+        await client.post(
+            "/api/v1/chat/messages", json={"question": "Toplam masrafım ne kadar?"}, headers=fatma
+        )
+    ).json()["session_id"]
+
+    assert (await client.delete("/api/v1/assistant/sessions", headers=ahmet)).status_code == 204
+    assert (await client.get("/api/v1/chat/sessions", headers=ahmet)).json() == []
+    for sid in ids:
+        assert await _count_messages(factory, sid) == 0
+    assert await _count_messages(factory, other) == 2
 
 
 async def test_non_existent_customer_returns_404(client: AsyncClient) -> None:

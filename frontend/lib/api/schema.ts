@@ -229,7 +229,8 @@ export interface paths {
         get: operations["listChatSessions"];
         put?: never;
         post?: never;
-        delete?: never;
+        /** Kullanıcının tüm sohbet oturumlarını sil */
+        delete: operations["deleteAllChatSessions"];
         options?: never;
         head?: never;
         patch?: never;
@@ -246,7 +247,8 @@ export interface paths {
         get: operations["getChatSessionDetail"];
         put?: never;
         post?: never;
-        delete?: never;
+        /** Sohbet oturumunu sil (yalnızca sahibi) */
+        delete: operations["deleteChatSession"];
         options?: never;
         head?: never;
         patch?: never;
@@ -301,6 +303,23 @@ export interface paths {
         head?: never;
         /** Servis emri durumunu güncelle */
         patch: operations["updateServiceOrderStatus"];
+        trace?: never;
+    };
+    "/calls/{call_id}/match": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Çağrıyı müşteri ve tekneye elle eşleştir */
+        put: operations["matchCall"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
 }
@@ -464,6 +483,7 @@ export interface components {
             error: string | null;
             transcript: components["schemas"]["TranscriptOut"];
             analysis: components["schemas"]["AnalysisOut"];
+            match_method?: components["schemas"]["MatchMethod"];
         };
         CrmRecordItem: {
             /** Format: uuid */
@@ -764,6 +784,14 @@ export interface components {
         };
         ServiceOrderStatusUpdate: {
             status: unknown;
+        };
+        /** @enum {string} */
+        MatchMethod: "telefon" | "ad_tekne" | "elle" | "yok";
+        CallMatchIn: {
+            /** Format: uuid */
+            customer_id: string;
+            /** Format: uuid */
+            boat_id?: string | null;
         };
     };
     responses: never;
@@ -1244,6 +1272,26 @@ export interface operations {
             };
         };
     };
+    deleteAllChatSessions: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-User-Id": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Silindi */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     getChatSessionDetail: {
         parameters: {
             query?: never;
@@ -1265,6 +1313,37 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ChatSessionDetail"];
                 };
+            };
+            /** @description Oturum bulunamadı */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    deleteChatSession: {
+        parameters: {
+            query?: never;
+            header: {
+                "X-User-Id": string;
+            };
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Silindi */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Oturum bulunamadı */
             404: {
@@ -1412,6 +1491,59 @@ export interface operations {
                 };
                 content: {
                     "application/json": unknown;
+                };
+            };
+        };
+    };
+    matchCall: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                call_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CallMatchIn"];
+            };
+        };
+        responses: {
+            /** @description Başarılı */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CallDetail"];
+                };
+            };
+            /** @description Geçersiz istek (ör. tekne müşteriye ait değil) */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Yetkisiz erişim */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Çağrı, müşteri veya tekne bulunamadı */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
         };
