@@ -418,3 +418,25 @@ def test_split_at_pauses_keeps_short_gaps_together() -> None:
     words = [SimpleNamespace(start=i * 0.5, end=i * 0.5 + 0.4, word=f" k{i}") for i in range(4)]
 
     assert len(split_at_pauses(words)) == 1
+
+
+def test_whisper_model_is_loaded_once_per_process(monkeypatch: pytest.MonkeyPatch) -> None:
+    """#163: model görev başına değil süreç başına bir kez yüklenir"""
+    import faster_whisper
+
+    from app.stt import providers
+
+    loads: list[str] = []
+
+    class FakeModel:
+        def __init__(self, size: str, **_: Any) -> None:
+            loads.append(size)
+
+    monkeypatch.setattr(faster_whisper, "WhisperModel", FakeModel)
+    providers._load_whisper.cache_clear()
+    first = providers.FasterWhisperTranscriber("small")
+    second = providers.FasterWhisperTranscriber("small")
+    assert first._get_model() is second._get_model()
+    first._get_model()
+    assert loads == ["small"]
+    providers._load_whisper.cache_clear()

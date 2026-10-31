@@ -20,6 +20,7 @@ import argparse
 import asyncio
 import json
 import sys
+import time
 from pathlib import Path
 from typing import Any
 
@@ -68,6 +69,12 @@ async def run(args: argparse.Namespace) -> list[dict[str, Any]]:
     overrides: dict[str, Any] = {}
     if args.model:
         overrides["whisper_model"] = args.model
+    if args.beam is not None:
+        overrides["whisper_beam_size"] = args.beam
+    if args.threads is not None:
+        overrides["whisper_cpu_threads"] = args.threads
+    if args.compute_type:
+        overrides["whisper_compute_type"] = args.compute_type
     if overrides:
         settings = settings.model_copy(update=overrides)
     providers = args.providers.split(",") if args.providers else [settings.stt_provider]
@@ -76,6 +83,11 @@ async def run(args: argparse.Namespace) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     for provider in providers:
         transcriber = build_transcriber(settings, provider)
+        load_model = getattr(transcriber, "_get_model", None)
+        if load_model is not None:  # modeli ayrı yükle: soğuk başlangıç süresi (#163)
+            loading = time.perf_counter()
+            load_model()
+            print(f"  {provider:18} model yükleme: {time.perf_counter() - loading:.1f}s")
         for audio in audio_files(Path(args.audio)):
             row: dict[str, Any] = {"provider": provider, "file": audio.name}
             try:
@@ -148,6 +160,9 @@ def main() -> None:
     parser.add_argument("--audio", required=True, help="Ses dosyası veya klasörü")
     parser.add_argument("--providers", help="Virgülle: faster_whisper,openai_compatible,stub")
     parser.add_argument("--model", help="faster-whisper model boyutu (tiny/base/small/medium)")
+    parser.add_argument("--beam", type=int, help="WHISPER_BEAM_SIZE'ı ez (1 en hızlı)")
+    parser.add_argument("--threads", type=int, help="WHISPER_CPU_THREADS'i ez (0: otomatik)")
+    parser.add_argument("--compute-type", help="WHISPER_COMPUTE_TYPE'ı ez (int8, int8_float32...)")
     parser.add_argument("--layout", choices=["mono", "stereo_rep_left", "stereo_rep_right"])
     parser.add_argument("--out", help="Sonuçları JSON olarak kaydet")
     args = parser.parse_args()
