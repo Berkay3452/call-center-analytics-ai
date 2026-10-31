@@ -1,6 +1,7 @@
 """Miço AI (Tekne Sahibi asistanı) testleri. LLM yerine `ScriptedChatModel` kullanılır."""
 
 import json
+import time
 from datetime import date
 from decimal import Decimal
 
@@ -12,12 +13,13 @@ from app.assistant.answer import format_date, format_try
 from app.assistant.assistant import REFUSAL_MESSAGE, answer_question
 from app.assistant.grounding import NOT_FOUND_MESSAGE, AnswerDraft, Claim, ground_draft
 from app.assistant.llm import AssistantLLM, AssistantLLMError
-from app.assistant.planner import Plan, plan_by_rules, plan_question
+from app.assistant.planner import Plan, plan_by_rules, plan_question, smalltalk_reply
 from app.assistant.retrieval import Passage
 from app.schemas.assistant import (
     AssistantAnswer,
     AssistantRequest,
     AssistantTool,
+    HistoryTurn,
     QuestionType,
     SourceRef,
 )
@@ -420,3 +422,75 @@ def test_grounding_does_not_repeat_identical_claims_from_different_sources() -> 
     answer, sources = result
     assert answer == "Yedek filtre bırakılmış."
     assert [s.record_id for s in sources] == ["n1", "n2"]
+
+
+# --- Selam / teşekkür / "sen kimsin": LLM'siz hazır cevap (#161) ---
+
+
+@pytest.mark.parametrize(
+    ("question", "needle"),
+    [
+        ("Selam", "Merhaba!"),
+        ("merhaba", "Merhaba!"),
+        ("Merhabalar Miço", "Merhaba!"),
+        ("Günaydın!", "Merhaba!"),
+        ("iyi akşamlar", "Merhaba!"),
+        ("Selam, nasılsın?", "Merhaba!"),
+        ("bir sorum var", "Merhaba!"),
+        ("Teşekkürler", "Rica ederim"),
+        ("çok teşekkür ederim", "Rica ederim"),
+        ("sağ ol", "Rica ederim"),
+        ("Sen kimsin?", "Miço AI"),
+        ("Ne yapabilirsin", "Miço AI"),
+        ("görüşürüz", "Görüşmek üzere"),
+    ],
+)
+def test_smalltalk_gets_canned_reply(question: str, needle: str) -> None:
+    reply = smalltalk_reply(question)
+    assert reply is not None and needle in reply
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "Selam, bu ay ne kadar harcadım?",
+        "Merhaba, yakıt filtresi için usta ne önermişti?",
+        "Teşekkürler ama motor yağı ne zaman değişti?",
+        "Bu ay ne kadar harcadım?",
+        "Hava nasıl olacak?",
+        "",
+    ],
+)
+def test_real_questions_are_not_smalltalk(question: str) -> None:
+    assert smalltalk_reply(question) is None
+
+
+@pytest.mark.parametrize("question", ["Selam", "Teşekkürler", "Sen kimsin?"])
+async def test_smalltalk_is_answered_without_llm_or_search(question: str) -> None:
+    llm, model = llm_with()  # LLM çağrılırsa test düşer
+
+    started = time.perf_counter()
+    answer = await answer_question(ask(question), llm=llm, today=TODAY)
+    elapsed = time.perf_counter() - started
+
+    assert answer.found and answer.sources == [] and answer.answer
+    assert model.calls == []
+    assert elapsed < 1.0  # hedef: selam < 1 sn (pratikte milisaniye)
+
+
+async def test_smalltalk_skips_history_rewrite() -> None:
+    llm, model = llm_with()
+    request = AssistantRequest(
+        question="teşekkürler",
+        owner_id=OWNER_A,
+        history=[
+            HistoryTurn(role="user", content="Bu ay ne kadar harcadım?"),
+            HistoryTurn(role="assistant", content="14.250,00 TL"),
+        ],
+    )
+    answer = await answer_question(request, llm=llm, today=TODAY)
+    assert "Rica ederim" in answer.answer and model.calls == []
+
+
+def test_refusal_message_offers_example_questions() -> None:
+    assert "Örneğin" in REFUSAL_MESSAGE

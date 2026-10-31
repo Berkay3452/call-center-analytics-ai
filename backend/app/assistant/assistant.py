@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.assistant.answer import history_answer, numeric_answer
 from app.assistant.llm import AssistantLLM
-from app.assistant.planner import plan_question
+from app.assistant.planner import EXAMPLE_QUESTIONS, plan_question, smalltalk_reply
 from app.assistant.retrieval import search_boat_notes
 from app.assistant.rewrite import standalone_question
 from app.schemas.assistant import AssistantAnswer, AssistantRequest, QuestionType
@@ -21,7 +21,8 @@ log = structlog.get_logger(__name__)
 
 REFUSAL_MESSAGE = (
     "Ben Miço Usta'nın tekne asistanıyım; teknenizin bakım geçmişi, giderleriniz ve "
-    "aboneliğiniz hakkında yardımcı olabilirim. Bu konuda size yardımcı olamıyorum."
+    "aboneliğiniz hakkında yardımcı olabilirim. Bu konuda size yardımcı olamıyorum. "
+    f"{EXAMPLE_QUESTIONS}"
 )
 
 
@@ -39,6 +40,11 @@ async def answer_question(
     """
     llm = llm or AssistantLLM()
     today = today or date.today()
+
+    # Selam / teşekkür / "sen kimsin": LLM ve arama olmadan anında (#161).
+    if (reply := smalltalk_reply(request.question)) is not None:
+        log.info("assistant.smalltalk")
+        return AssistantAnswer(answer=reply, question_type=QuestionType.KAPSAM_DISI)
 
     question = await standalone_question(request.question, request.history, llm)
     plan = await plan_question(question, llm)
