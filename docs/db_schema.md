@@ -432,7 +432,7 @@ Sohbet mesajları ve kaynak referansları.
 | `session_id` | `UUID` | ✅ | — | `chat_sessions(id)` FK |
 | `role` | `TEXT` | ✅ | — | Mesaj rolü. CHECK: `user`, `assistant` |
 | `content` | `TEXT` | ✅ | — | Mesaj içeriği |
-| `question_type` | `TEXT` | — | — | Soru tipi (yalnızca assistant). CHECK: `gecmis_oneri`, `sayisal`, `kapsam_disi` |
+| `question_type` | `TEXT` | — | — | Soru tipi (yalnızca assistant). CHECK: `gecmis_oneri`, `sayisal`, `genel_sohbet`, `kapsam_disi` |
 | `sources` | `JSONB` | — | `'[]'` | Kaynak referansları (SourceRef dizisi) |
 | `found` | `BOOLEAN` | — | `true` | `false`: kayıtlarda bilgi bulunamadı |
 | `created_at` | `TIMESTAMPTZ` | ✅ | `now()` | Mesaj zamanı |
@@ -441,7 +441,7 @@ Sohbet mesajları ve kaynak referansları.
 - `PK (id)`
 - `FK (session_id) REFERENCES chat_sessions(id) ON DELETE CASCADE`
 - `CHECK (role IN ('user', 'assistant'))`
-- `CHECK (question_type IS NULL OR question_type IN ('gecmis_oneri', 'sayisal', 'kapsam_disi'))`
+- `CHECK (question_type IS NULL OR question_type IN ('gecmis_oneri', 'sayisal', 'genel_sohbet', 'kapsam_disi'))`
 
 ---
 
@@ -711,7 +711,7 @@ Kaynak: `backend/app/domain/enums.py`; tanımlar ve kurallar `docs/enums.md` (#7
 | `SwitchboardOutcome` | `randevu_olusturuldu`, `usta_yonlendirildi`, `kayit_olusturuldu`, `bilgi_verildi`, `geri_aranacak`, `iptal` |
 | `Speaker` | `customer`, `rep` |
 | `ChatRole` | `user`, `assistant` |
-| `QuestionType` | `gecmis_oneri`, `sayisal`, `kapsam_disi` |
+| `QuestionType` | `gecmis_oneri`, `sayisal`, `genel_sohbet`, `kapsam_disi` |
 | `AgentName` | `call_classifier`, `crm_extraction`, `sales_analyzer`, `summarizer` |
 | `AgentStatus` | `ok`, `failed`, `skipped` |
 | `AgentErrorKind` | `validation`, `runtime`, `timeout` |

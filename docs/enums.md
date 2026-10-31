@@ -122,7 +122,7 @@ Miço Usta'nın iş akışı (Usta paneli ve Admin > Servis Emirleri).
 |---|---|---|
 | Analiz durumu | `tamam`, `kismi`, `basarisiz` | `app/schemas/analysis.py` |
 | Agent durumu / hata türü | `ok`, `failed`, `skipped` / `validation`, `runtime`, `timeout` | `app/agents/base.py` |
-| Miço AI soru tipi | `gecmis_oneri`, `sayisal`, `kapsam_disi` | `app/schemas/assistant.py` |
+| Miço AI soru tipi | `gecmis_oneri`, `sayisal`, `genel_sohbet`, `kapsam_disi` | `app/schemas/assistant.py` |
 | Miço AI kaynak türü | `service_record`, `boat_note`, `expense`, `subscription` | `app/schemas/assistant.py` |
 
 ---

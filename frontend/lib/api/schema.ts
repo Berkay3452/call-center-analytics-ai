@@ -351,7 +351,7 @@ export interface components {
         /** @enum {string} */
         Speaker: "customer" | "rep";
         /** @enum {string} */
-        QuestionType: "gecmis_oneri" | "sayisal" | "kapsam_disi";
+        QuestionType: "gecmis_oneri" | "sayisal" | "genel_sohbet" | "kapsam_disi";
         /** @enum {string} */
         SourceKind: "service_record" | "boat_note" | "expense" | "subscription";
         ErrorBody: {

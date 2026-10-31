@@ -8,12 +8,13 @@
 import calendar
 from datetime import date
 
+from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.assistant import tools
 from app.assistant.formatting import MONTHS, format_date, format_try
 from app.assistant.grounding import NOT_FOUND_MESSAGE, AnswerDraft, ground_draft
-from app.assistant.llm import AssistantLLM, load_prompt
+from app.assistant.llm import AssistantLLM, AssistantLLMError, load_prompt
 from app.assistant.planner import Plan
 from app.assistant.retrieval import Passage
 from app.schemas.assistant import AssistantAnswer, AssistantTool, QuestionType
@@ -108,13 +109,61 @@ def _upcoming_line(item: tools.UpcomingItem) -> str:
     return f"- {boat}{item.what} ({when}; {item.reason})"
 
 
+class GeneralReply(BaseModel):
+    """Genel (kayıtsız) cevap; LLM'den bu şemayla JSON beklenir."""
+
+    answer: str = Field(max_length=2000, description="Kullanıcıya gösterilecek cevap metni.")
+
+
+NOT_IN_RECORDS_PREFIX = "Kayıtlarınızda bu konuda bir bilgi bulamadım. Genel olarak şöyle:"
+EMPTY_GENERAL_MESSAGE = (
+    "Bu soruya şu an cevap veremiyorum. Teknenizin kayıtlarıyla ilgili soru sorabilirsiniz."
+)
+
+
+async def general_answer(question: str, llm: AssistantLLM) -> AssistantAnswer:
+    """Kayıt gerektirmeyen sorular: doğrudan LLM cevabı, kaynak kartı yok (#177)."""
+    reply = await llm.ask(
+        "fast", load_prompt("general"), f"## Tekne sahibinin sorusu\n{question}", GeneralReply
+    )
+    text = reply.answer.strip() or EMPTY_GENERAL_MESSAGE
+    return AssistantAnswer(answer=text, question_type=QuestionType.GENEL_SOHBET)
+
+
+async def not_found_with_general_info(
+    question: str, llm: AssistantLLM, qt: QuestionType
+) -> AssistantAnswer:
+    """Kayıt gerektiren ama kayıtta bulunamayan soru: "bulamadım" + ayrı genel bilgi.
+
+    Kaynak kartı yoktur (genel bilgi kayda dayanmaz), `found=False` kalır. LLM cevap veremezse
+    eski "bulamadım" mesajına düşer; bu ek adımın hatası kullanıcıya yansımaz.
+    """
+    try:
+        reply = await llm.ask(
+            "fast",
+            load_prompt("general_fallback"),
+            f"## Tekne sahibinin sorusu\n{question}",
+            GeneralReply,
+            max_fix_attempts=0,
+        )
+    except AssistantLLMError:
+        return not_found(qt)
+    text = reply.answer.strip()
+    if not text:
+        return not_found(qt)
+    return not_found(qt, f"{NOT_IN_RECORDS_PREFIX}\n\n{text}")
+
+
 async def history_answer(
     question: str, passages: list[Passage], llm: AssistantLLM
 ) -> AssistantAnswer:
-    """Bulunan kayıtlardan kaynaklı cevap üretir ve kaynak kontrolünden geçirir."""
+    """Bulunan kayıtlardan kaynaklı cevap üretir ve kaynak kontrolünden geçirir.
+
+    Kayıt yoksa ya da hiçbir ifade kaynakla doğrulanamazsa "bulamadım" + genel bilgi döner.
+    """
     qt = QuestionType.GECMIS_ONERI
     if not passages:
-        return not_found(qt)
+        return await not_found_with_general_info(question, llm, qt)
     records = "\n".join(f"[{p.source.record_id}] ({p.source.title}) {p.text}" for p in passages)
     draft = await llm.ask(
         "smart",
@@ -124,6 +173,6 @@ async def history_answer(
     )
     grounded = ground_draft(draft, passages)
     if grounded is None:
-        return not_found(qt)
+        return await not_found_with_general_info(question, llm, qt)
     text, sources = grounded
     return AssistantAnswer(answer=text, question_type=qt, sources=sources)

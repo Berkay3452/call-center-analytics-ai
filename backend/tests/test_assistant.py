@@ -9,10 +9,10 @@ import pytest
 from pydantic import ValidationError
 
 from app.assistant import tools
-from app.assistant.answer import format_date, format_try
+from app.assistant.answer import NOT_IN_RECORDS_PREFIX, format_date, format_try
 from app.assistant.assistant import REFUSAL_MESSAGE, answer_question
 from app.assistant.grounding import NOT_FOUND_MESSAGE, AnswerDraft, Claim, ground_draft
-from app.assistant.llm import AssistantLLM, AssistantLLMError
+from app.assistant.llm import AssistantLLM, AssistantLLMError, load_prompt
 from app.assistant.planner import Plan, plan_by_rules, plan_question, smalltalk_reply
 from app.assistant.retrieval import Passage
 from app.schemas.assistant import (
@@ -105,14 +105,14 @@ def test_rules_leave_unclear_questions_to_llm(question: str) -> None:
 async def test_planner_uses_llm_for_history_and_out_of_scope() -> None:
     llm, model = llm_with(
         '{"question_type": "gecmis_oneri", "tool": null, "period": "tumu"}',
-        '{"question_type": "kapsam_disi", "tool": null, "period": "tumu"}',
+        '{"question_type": "genel_sohbet", "tool": null, "period": "tumu"}',
     )
 
     history = await plan_question("Yakıt filtresi ne zaman değişti?", llm)
     off_topic = await plan_question("Yarın İstanbul'da hava nasıl olacak?", llm)
 
     assert history.question_type == QuestionType.GECMIS_ONERI
-    assert off_topic.question_type == QuestionType.KAPSAM_DISI
+    assert off_topic.question_type == QuestionType.GENEL_SOHBET
     assert len(model.calls) == 2
 
 
@@ -367,7 +367,8 @@ async def test_history_question_with_no_matching_record_skips_answer_llm() -> No
     answer = await answer_question(ask("Jeneratör garantisi var mı?"), llm=llm, today=TODAY)
 
     assert not answer.found
-    assert len(model.calls) == 1  # yalnızca planlayıcı; kayıt yoksa cevap üretici çağrılmaz
+    # planlayıcı + genel bilgi tamamlayıcısı; kayıt yoksa kaynaklı cevap üretici çağrılmaz
+    assert len(model.calls) == 2 and "[note-" not in model.last_user
 
 
 async def test_history_question_cannot_see_other_owners_notes() -> None:
@@ -379,7 +380,8 @@ async def test_history_question_cannot_see_other_owners_notes() -> None:
     )
 
     assert not answer.found and answer.sources == []
-    assert len(model.calls) == 1
+    assert len(model.calls) == 2  # ikincisi kayıt içermeyen genel bilgi isteği
+    assert "note-201" not in model.last_user and "Enjektör" in model.last_user
 
 
 async def test_out_of_scope_question_gets_polite_refusal() -> None:
@@ -494,3 +496,83 @@ async def test_smalltalk_skips_history_rewrite() -> None:
 
 def test_refusal_message_offers_example_questions() -> None:
     assert "Örneğin" in REFUSAL_MESSAGE
+
+
+# --- Kapsam genişletme: genel sohbet ve "kayıtta yok, genel olarak" (#177) ---
+
+
+async def test_general_question_gets_direct_llm_answer_without_sources() -> None:
+    llm, model = llm_with(
+        '{"question_type": "genel_sohbet", "tool": null}',
+        '{"answer": "Kış bakımı; motoru kışa hazırlamak, suyu boşaltmak ve tekneyi örtmektir."}',
+    )
+
+    answer = await answer_question(ask("Kış bakımı nedir?"), llm=llm, today=TODAY)
+
+    assert answer.question_type == QuestionType.GENEL_SOHBET and answer.found
+    assert answer.answer.startswith("Kış bakımı;") and answer.sources == []
+    assert len(model.calls) == 2  # planlayıcı + genel cevap; arama yok
+    # Genel cevaba kullanıcının kayıtları verilmez.
+    assert "[note-" not in model.last_user and "exp-" not in model.last_user
+
+
+async def test_general_answer_empty_text_falls_back_to_polite_message() -> None:
+    llm, _ = llm_with('{"question_type": "genel_sohbet", "tool": null}', '{"answer": "  "}')
+
+    answer = await answer_question(ask("Yarın hava nasıl?"), llm=llm, today=TODAY)
+
+    assert answer.question_type == QuestionType.GENEL_SOHBET and answer.answer
+
+
+async def test_not_found_in_records_adds_separate_general_info() -> None:
+    llm, model = llm_with(
+        '{"question_type": "gecmis_oneri", "tool": null}',
+        '{"answer": "Jeneratör garantileri genellikle 1-2 yıl sürer."}',
+    )
+
+    answer = await answer_question(ask("Jeneratör garantisi var mı?"), llm=llm, today=TODAY)
+
+    assert not answer.found and answer.sources == []
+    assert answer.answer.startswith(NOT_IN_RECORDS_PREFIX)
+    assert answer.answer.endswith("Jeneratör garantileri genellikle 1-2 yıl sürer.")
+    assert answer.question_type == QuestionType.GECMIS_ONERI
+    assert len(model.calls) == 2
+
+
+async def test_not_found_with_failing_general_llm_keeps_old_message() -> None:
+    llm, _ = llm_with(
+        '{"question_type": "gecmis_oneri", "tool": null}',
+        AssistantLLMError("kota"),
+    )
+
+    answer = await answer_question(ask("Jeneratör garantisi var mı?"), llm=llm, today=TODAY)
+
+    assert not answer.found and answer.answer == NOT_FOUND_MESSAGE
+
+
+async def test_grounded_answer_stays_exactly_as_before_and_has_no_general_part() -> None:
+    draft = json.dumps(
+        {"claims": [{"text": "Usta, altı ay sonra kontrol önermiş.", "source_ids": ["note-101"]}]},
+        ensure_ascii=False,
+    )
+    llm, model = llm_with('{"question_type": "gecmis_oneri", "tool": null}', draft)
+
+    answer = await answer_question(ask("Yakıt filtresi için usta ne önermişti?"), llm=llm)
+
+    assert answer.found and answer.answer == "Usta, altı ay sonra kontrol önermiş."
+    assert [s.record_id for s in answer.sources] == ["note-101"]
+    assert len(model.calls) == 2  # planlayıcı + kaynaklı cevap; genel bilgi eklenmez
+
+
+async def test_numeric_question_never_goes_to_general_llm() -> None:
+    llm, model = llm_with()
+
+    answer = await answer_question(ask("Kaç bakım hakkım kaldı?", OWNER_B), llm=llm, today=TODAY)
+
+    assert not answer.found and answer.question_type == QuestionType.SAYISAL
+    assert model.calls == []
+
+
+def test_planner_prompt_defines_general_chat_class() -> None:
+    prompt = load_prompt("planner")
+    assert "genel_sohbet" in prompt and "kapsam_disi" in prompt
