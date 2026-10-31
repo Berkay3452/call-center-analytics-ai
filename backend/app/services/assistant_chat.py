@@ -19,7 +19,7 @@ from datetime import UTC, datetime
 from uuid import UUID, uuid4
 
 import structlog
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sse_starlette.sse import ServerSentEvent
 
@@ -176,6 +176,26 @@ async def get_session_detail(
         session=_to_session_out(chat_session),
         messages=[_to_message_out(m) for m in messages],
     )
+
+
+async def delete_chat_session(db: AsyncSession, owner_uuid: UUID, session_id: UUID) -> None:
+    """Oturumu siler; mesajlar veritabanında CASCADE ile silinir. Başkasının oturumu ise 404."""
+    await _verify_customer_exists(db, owner_uuid)
+    result = await db.execute(
+        delete(ChatSession)
+        .where(ChatSession.id == session_id, ChatSession.owner_id == owner_uuid)
+        .returning(ChatSession.id)
+    )
+    if result.first() is None:
+        raise NotFoundError("Sohbet oturumu bulunamadı.")
+    await db.commit()
+
+
+async def delete_all_chat_sessions(db: AsyncSession, owner_uuid: UUID) -> None:
+    """Kullanıcının tüm sohbet oturumlarını siler (yalnızca kendi oturumları)."""
+    await _verify_customer_exists(db, owner_uuid)
+    await db.execute(delete(ChatSession).where(ChatSession.owner_id == owner_uuid))
+    await db.commit()
 
 
 async def list_chat_sessions(

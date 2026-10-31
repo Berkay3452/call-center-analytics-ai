@@ -51,8 +51,12 @@ Admin/tekne sahibi rol ayrımını .NET uygulaması yapar. Tekne sahibi uçları
 | `POST /assistant/chat` | Tekne sahibi | `ChatQuestion` | SSE akışı (`token` -> `sources` -> `done`) | #28 |
 | `GET /chat/sessions` | Tekne sahibi | — | `ChatSessionOut` listesi (yeniden eskiye) | #28 |
 | `GET /chat/sessions/{session_id}` | Tekne sahibi | — | `ChatSessionDetail` | #28 |
+| `DELETE /chat/sessions/{session_id}` | Tekne sahibi | — | 204 (oturum ve mesajları silinir; başkasının oturumu 404) | #176 |
+| `DELETE /chat/sessions` | Tekne sahibi | — | 204 (kullanıcının tüm oturumları silinir) | #176 |
 | `GET /assistant/sessions` | Tekne sahibi | — | `ChatSessionOut` listesi | #28 |
 | `GET /assistant/sessions/{id}` | Tekne sahibi | — | `ChatSessionDetail` | #28 |
+| `DELETE /assistant/sessions/{id}` | Tekne sahibi | — | 204 (`DELETE /chat/sessions/{session_id}` ile aynı) | #176 |
+| `DELETE /assistant/sessions` | Tekne sahibi | — | 204 (`DELETE /chat/sessions` ile aynı) | #176 |
 
 Başka kullanıcının sohbet oturumu istenirse 404 döner (varlığı da sızdırılmaz).
 

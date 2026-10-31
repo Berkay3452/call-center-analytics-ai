@@ -136,3 +136,47 @@ async def test_openapi_schema_contains_assistant_and_chat_endpoints(test_app: Fa
 
     assert "/api/v1/chat/sessions" in paths
     assert "get" in paths["/api/v1/chat/sessions"]
+
+
+async def test_delete_session_endpoints_require_auth(test_client: AsyncClient) -> None:
+    """Oturum silme uçları kimlik doğrulama gerektirir (#176)."""
+    sid = "11111111-1111-4111-8111-111111111111"
+    for path in (
+        f"/api/v1/assistant/sessions/{sid}",
+        "/api/v1/assistant/sessions",
+        f"/api/v1/chat/sessions/{sid}",
+        "/api/v1/chat/sessions",
+    ):
+        r1 = await test_client.delete(path, headers={"X-User-Id": VALID_USER_ID})
+        assert r1.status_code == 401, path
+        r2 = await test_client.delete(path, headers={"X-Service-Key": TEST_SERVICE_KEY})
+        assert r2.status_code == 400, path
+
+
+async def test_openapi_schema_contains_session_delete_endpoints(test_app: FastAPI) -> None:
+    paths = test_app.openapi()["paths"]
+    for path in (
+        "/api/v1/assistant/sessions/{id}",
+        "/api/v1/assistant/sessions",
+        "/api/v1/chat/sessions/{session_id}",
+        "/api/v1/chat/sessions",
+    ):
+        assert "delete" in paths[path], path
+
+
+def test_frontend_openapi_chat_operations_exist_in_backend(test_app: FastAPI) -> None:
+    """`frontend/openapi.json` içindeki sohbet işlemleri backend'de de bulunmalı (#176)."""
+    import json
+    from pathlib import Path
+
+    spec = json.loads(
+        (Path(__file__).resolve().parents[2] / "frontend" / "openapi.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    app_paths = test_app.openapi()["paths"]
+    for path, methods in spec["paths"].items():
+        if not path.startswith("/chat/"):
+            continue
+        for method in methods:
+            assert method in app_paths.get(f"/api/v1{path}", {}), (method, path)

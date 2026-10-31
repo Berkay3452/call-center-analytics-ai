@@ -799,6 +799,26 @@
             }
           }
         }
+      },
+      "delete": {
+        "summary": "Kullanıcının tüm sohbet oturumlarını sil",
+        "operationId": "deleteAllChatSessions",
+        "parameters": [
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Silindi"
+          }
+        }
       }
     },
     "/chat/sessions/{session_id}": {
@@ -835,6 +855,45 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "Oturum bulunamadı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Sohbet oturumunu sil (yalnızca sahibi)",
+        "operationId": "deleteChatSession",
+        "parameters": [
+          {
+            "name": "X-User-Id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "session_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Silindi"
           },
           "404": {
             "description": "Oturum bulunamadı",

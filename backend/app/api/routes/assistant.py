@@ -4,12 +4,13 @@ Uçlar:
 - `POST /api/v1/assistant/chat`: Asistan ile akışlı sohbet (SSE: token -> sources -> done)
 - `GET /api/v1/assistant/sessions/{id}`: Belirtilen oturumun mesaj geçmişi (yalnızca sahibi)
 - `GET /api/v1/assistant/sessions`: Kullanıcının tüm oturumları
+- `DELETE /api/v1/assistant/sessions/{id}` ve `DELETE /api/v1/assistant/sessions`: sil (#176)
 - OpenAPI/Docs uyumluluğu için `/chat/...` uçları.
 """
 
 from uuid import UUID
 
-from fastapi import APIRouter, Request, status
+from fastapi import APIRouter, Request, Response, status
 from sse_starlette.sse import EventSourceResponse
 
 from app.api.deps import OwnerIdDep, SessionDep
@@ -70,6 +71,33 @@ async def list_assistant_sessions(
     return await assistant_chat.list_chat_sessions(db, UUID(owner_id))
 
 
+@router.delete(
+    "/assistant/sessions/{id}",
+    summary="Asistan sohbet oturumunu sil (yalnızca sahibi)",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def delete_assistant_session(
+    id: UUID,
+    owner_id: OwnerIdDep,
+    db: SessionDep,
+) -> Response:
+    await assistant_chat.delete_chat_session(db, UUID(owner_id), id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.delete(
+    "/assistant/sessions",
+    summary="Kullanıcının tüm sohbet oturumlarını sil",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def delete_all_assistant_sessions(
+    owner_id: OwnerIdDep,
+    db: SessionDep,
+) -> Response:
+    await assistant_chat.delete_all_chat_sessions(db, UUID(owner_id))
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
 # --- docs/api.md ve frontend/openapi.json Uyumlu Uçlar ---
 
 
@@ -128,3 +156,30 @@ async def list_chat_sessions(
     db: SessionDep,
 ) -> list[ChatSessionOut]:
     return await assistant_chat.list_chat_sessions(db, UUID(owner_id))
+
+
+@router.delete(
+    "/chat/sessions/{session_id}",
+    summary="Sohbet oturumunu sil (yalnızca sahibi)",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def delete_chat_session(
+    session_id: UUID,
+    owner_id: OwnerIdDep,
+    db: SessionDep,
+) -> Response:
+    await assistant_chat.delete_chat_session(db, UUID(owner_id), session_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.delete(
+    "/chat/sessions",
+    summary="Kullanıcının tüm sohbet oturumlarını sil",
+    status_code=status.HTTP_204_NO_CONTENT,
+)
+async def delete_all_chat_sessions(
+    owner_id: OwnerIdDep,
+    db: SessionDep,
+) -> Response:
+    await assistant_chat.delete_all_chat_sessions(db, UUID(owner_id))
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
