@@ -120,7 +120,9 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
     await page.goto("/admin/crm");
 
     // CRM öneri kartlarını bekle
-    const suggestionCards = page.locator("div.rounded-xl.border");
+    const suggestionCards = page
+      .locator("div.rounded-xl.border")
+      .filter({ has: page.getByRole("button", { name: /Düzenle/i }) });
     await expect(suggestionCards.first()).toBeVisible();
 
     // İlk karttaki aksiyon butonlarının varlığını kontrol et
