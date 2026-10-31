@@ -11,6 +11,7 @@ import type {
   CallAccepted,
   CallCreate,
   CallDetail,
+  CallMatchIn,
   CallListItem,
   CallState,
   CallStatus,
@@ -57,6 +58,8 @@ interface MockAnalysisProgress {
   startedAt: number;
   analysisVersion: number;
 }
+const MOCK_UNMATCHED_CALL_ID = "22222222-2222-4222-8222-222222222222";
+const mockMatchedCalls = new Set<string>();
 const mockReanalyzeMap = new Map<string, MockAnalysisProgress>();
 
 interface MockCrmReviewProgress {
@@ -604,6 +607,17 @@ async function handleMockRequest<T>(
     return mockCallStatus as unknown as T;
   }
 
+  // PUT /calls/:id/match (elle müşteri/tekne eşleştirme, #119)
+  if (method === "PUT" && /^\/calls\/[^/]+\/match$/.test(path)) {
+    const id = path.split("/")[2];
+    mockMatchedCalls.add(id);
+    return {
+      ...mockCallDetail,
+      id,
+      match_method: "elle",
+    } as unknown as T;
+  }
+
   // 6. GET /calls/:id (Tekil çağrı detayı)
   if (method === "GET" && /^\/calls\/[^/]+$/.test(path)) {
     const id = path.split("/")[2];
@@ -639,10 +653,11 @@ async function handleMockRequest<T>(
     (/^\/crm\/[^/]+\/approve$/.test(path) || /^\/crm\/suggestions\/[^/]+\/approve$/.test(path))
   ) {
     const parts = path.split("/");
-    const id = parts[1] === "suggestions" ? parts[2] : parts[1];
+    const id = parts[2] === "suggestions" ? parts[3] : parts[2];
 
     // 409 Conflict test senaryosu
-    if (id === "mock-conflict-409") {
+    // Mock: 2222… çağrısı elle eşleştirilene kadar eşleşmemiş sayılır
+    if (id === "mock-conflict-409" || (id === MOCK_UNMATCHED_CALL_ID && !mockMatchedCalls.has(id))) {
       throw new ApiError({
         code: "CONFLICT",
         message: "Müşteri veya tekne kaydı sistemde eşleşmediği için servis emri oluşturulamadı.",
@@ -757,7 +772,7 @@ async function handleMockRequest<T>(
     (/^\/crm\/[^/]+\/reject$/.test(path) || /^\/crm\/suggestions\/[^/]+\/reject$/.test(path))
   ) {
     const parts = path.split("/");
-    const id = parts[1] === "suggestions" ? parts[2] : parts[1];
+    const id = parts[2] === "suggestions" ? parts[3] : parts[2];
 
     let payload: Record<string, unknown> = {};
     try {
@@ -802,7 +817,7 @@ async function handleMockRequest<T>(
     (/^\/crm\/[^/]+$/.test(path) || /^\/crm\/suggestions\/[^/]+$/.test(path))
   ) {
     const parts = path.split("/");
-    const id = parts[1] === "suggestions" ? parts[2] : parts[1];
+    const id = parts[2] === "suggestions" ? parts[3] : parts[2];
 
     let payload: Record<string, unknown> = {};
     try {
@@ -1736,6 +1751,19 @@ export async function streamAssistantChat(
   }
 }
 
+
+/**
+ * PUT /calls/{call_id}/match - Çağrıyı müşteri ve (isteğe bağlı) tekneye elle eşleştir (#119)
+ */
+export async function matchCall(
+  callId: string,
+  payload: CallMatchIn,
+): Promise<CallDetail> {
+  return apiFetch<CallDetail>(`/calls/${callId}/match`, {
+    method: "PUT",
+    body: JSON.stringify(payload),
+  });
+}
 
 /**
  * POST /crm/{call_id}/approve - CRM önerisini onayla (isteğe bağlı 7 alan düzenlemesi ile) (#106 / #113)

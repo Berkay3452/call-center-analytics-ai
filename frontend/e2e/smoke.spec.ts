@@ -114,52 +114,71 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
   // ──────────────────────────────────────────────────────────────────────────
   // Senaryo 4: CRM Akışı (#113 - Onay, Düzenleme ve Ret Butonları)
   // ──────────────────────────────────────────────────────────────────────────
-  test("Senaryo 4 (CRM Akışı): Onay, Düzenle ve Reddet butonları ve modal etkileşimi çalışır", async ({
+  test("Senaryo 4 (CRM Akışı): sekmeler, Düzenle/Reddet pencereleri, onay ve elle eşleştirme çalışır", async ({
     page,
   }) => {
     await page.goto("/admin/crm");
 
-    // CRM öneri kartlarını bekle
-    const suggestionCards = page
-      .locator("div.rounded-xl.border")
-      .filter({ has: page.getByRole("button", { name: /Düzenle/i }) });
-    await expect(suggestionCards.first()).toBeVisible();
+    // Durum sekmeleri: Bekliyor / Onaylandı / Reddedildi (varsayılan Bekliyor)
+    const tabs = page.getByRole("navigation", { name: "Öneri durumu" });
+    await expect(tabs.getByRole("link", { name: /Bekliyor/ })).toHaveAttribute("aria-current", "page");
+    await expect(tabs.getByRole("link", { name: /Onaylandı/ })).toBeVisible();
+    await expect(tabs.getByRole("link", { name: /Reddedildi/ })).toBeVisible();
 
-    // İlk karttaki aksiyon butonlarının varlığını kontrol et
-    const firstCard = suggestionCards.first();
-    const editButton = firstCard.getByRole("button", { name: /Düzenle/i });
-    const rejectButton = firstCard.getByRole("button", { name: /Reddet/i });
-    const approveButton = firstCard.getByRole("button", { name: /Onayla/i });
+    const firstCard = page.locator("div.rounded-xl.border").filter({ hasText: "Burak Çelik" }).first();
+    await expect(firstCard).toBeVisible();
+    const editButton = firstCard.getByRole("button", { name: "Düzenle" });
+    const rejectButton = firstCard.getByRole("button", { name: "Reddet" });
+    await expect(firstCard.getByRole("button", { name: "Onayla ve Servis Emri Oluştur" })).toBeVisible();
 
-    await expect(editButton).toBeVisible();
-    await expect(approveButton).toBeVisible();
-
-    // 1. Düzenle modalı açma ve kapatma etkileşimi
+    // Düzenle penceresi: Escape ile kapanır
     await editButton.click();
-    const editModal = page.getByRole("dialog");
-    await expect(editModal).toBeVisible();
-    await expect(
-      page.getByRole("heading", { name: /CRM Öneri Alanlarını Düzenle/i }),
-    ).toBeVisible();
-
-    // Escape ile modal kapatma (Focus trap & keyboard navigation kontrolü)
+    const dialog = page.getByRole("dialog");
+    await expect(page.getByRole("heading", { name: "Öneri alanlarını düzenle" })).toBeVisible();
     await page.keyboard.press("Escape");
-    await expect(editModal).not.toBeVisible();
+    await expect(dialog).not.toBeVisible();
 
-    // 2. Reddet modalı açma ve kapatma etkileşimi
-    if (await rejectButton.isVisible()) {
-      await rejectButton.click();
-      const rejectModal = page.getByRole("dialog");
-      await expect(rejectModal).toBeVisible();
-      await expect(
-        page.getByRole("heading", { name: /CRM Önerisini Reddet/i }),
-      ).toBeVisible();
+    // Reddet penceresi: Vazgeç ile kapanır
+    await rejectButton.click();
+    await expect(page.getByRole("heading", { name: "Öneriyi reddet" })).toBeVisible();
+    await dialog.getByRole("button", { name: "Vazgeç" }).click();
+    await expect(dialog).not.toBeVisible();
 
-      // Vazgeç butonu ile kapatma
-      const cancelButton = rejectModal.getByRole("button", { name: /Vazgeç/i });
-      await cancelButton.click();
-      await expect(rejectModal).not.toBeVisible();
-    }
+    // Onayla: durum bilgisi ve servis emrine bağlantı görünür, "Tekrar Onayla" yok
+    await firstCard.getByRole("button", { name: "Onayla ve Servis Emri Oluştur" }).click();
+    await expect(firstCard.getByText("Onaylandı, servis emri açıldı.")).toBeVisible();
+    await expect(firstCard.getByRole("link", { name: "Servis emrini aç" })).toBeVisible();
+    await expect(firstCard.getByRole("button", { name: /Tekrar Onayla/ })).toHaveCount(0);
+  });
+
+  test("Senaryo 4b (CRM): eşleşmemiş çağrı onayı anlaşılır uyarı verir, elle eşleştirince onaylanır", async ({
+    page,
+  }) => {
+    await page.goto("/admin/crm");
+    // Mock: bu çağrı elle eşleştirilene kadar müşteriyle eşleşmemiş sayılır
+    const card = page.locator("div.rounded-xl.border", {
+      has: page.locator('a[href="/admin/calls/22222222-2222-4222-8222-222222222222"]'),
+    });
+    await card.getByRole("button", { name: "Onayla ve Servis Emri Oluştur" }).click();
+
+    const alert = card.getByRole("alert");
+    await expect(alert).toContainText("henüz bir müşteri veya tekneyle eşleşmediği");
+    await expect(alert).not.toContainText("409");
+
+    // Geçersiz numara anlaşılır hata verir
+    await alert.getByRole("button", { name: "Elle eşleştir" }).click();
+    const dialog = page.getByRole("dialog", { name: "Çağrıyı elle eşleştir" });
+    await dialog.getByLabel("Müşteri numarası").fill("abc");
+    await dialog.getByRole("button", { name: "Eşleştir" }).click();
+    await expect(dialog.getByRole("alert")).toContainText("geçerli bir kimlik");
+
+    await dialog.getByLabel("Müşteri numarası").fill("123e4567-e89b-12d3-a456-426614174000");
+    await dialog.getByRole("button", { name: "Eşleştir" }).click();
+    await expect(dialog).not.toBeVisible();
+    await expect(card.getByText("Çağrı müşteriye bağlandı")).toBeVisible();
+
+    await card.getByRole("button", { name: "Onayla ve Servis Emri Oluştur" }).click();
+    await expect(card.getByText("Onaylandı, servis emri açıldı.")).toBeVisible();
   });
 
   // ──────────────────────────────────────────────────────────────────────────
