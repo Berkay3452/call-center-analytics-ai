@@ -52,8 +52,12 @@ Speaker = Literal["customer", "rep"]
 class CallFilters(BaseModel):
     """`GET /calls` ve `GET /crm` sorgu parametreleri. Hepsi isteğe bağlıdır."""
 
-    date_from: date | None = Field(default=None, description="Bu günden itibaren (dahil).")
-    date_to: date | None = Field(default=None, description="Bu güne kadar (dahil).")
+    date_from: date | None = Field(
+        default=None, description="Bu günden itibaren (dahil, Europe/Istanbul)."
+    )
+    date_to: date | None = Field(
+        default=None, description="Bu güne kadar (dahil, Europe/Istanbul)."
+    )
     call_type: CallType | None = None
     urgency: Urgency | None = None
     request_category: RequestCategory | None = None
@@ -79,8 +83,12 @@ class CallFilters(BaseModel):
 class PeriodFilter(BaseModel):
     """`GET /analytics/summary` sorgu parametreleri; boşsa son 30 gün."""
 
-    date_from: date | None = None
-    date_to: date | None = None
+    date_from: date | None = Field(
+        default=None, description="Bu günden itibaren (dahil, Europe/Istanbul)."
+    )
+    date_to: date | None = Field(
+        default=None, description="Bu güne kadar (dahil, Europe/Istanbul)."
+    )
     marina: str | None = Field(default=None, description="Marina adına göre tam eşleşme filtresi.")
 
     @model_validator(mode="after")
@@ -398,10 +406,10 @@ class ServiceOrderFilters(BaseModel):
         default=None, description="Servis emri durumu filtresi."
     )
     date_from: date | None = Field(
-        default=None, description="Bu tarihten itibaren (oluşturulma tarihi, dahil)."
+        default=None, description="Bu tarihten itibaren (dahil, Europe/Istanbul)."
     )
     date_to: date | None = Field(
-        default=None, description="Bu tarihe kadar (oluşturulma tarihi, dahil)."
+        default=None, description="Bu tarihe kadar (dahil, Europe/Istanbul)."
     )
     marina: str | None = Field(default=None, description="Marina adına göre tam eşleşme filtresi.")
     q: str | None = Field(

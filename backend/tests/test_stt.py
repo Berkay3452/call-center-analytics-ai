@@ -422,7 +422,7 @@ def test_split_at_pauses_keeps_short_gaps_together() -> None:
 
 def test_whisper_model_is_loaded_once_per_process(monkeypatch: pytest.MonkeyPatch) -> None:
     """#163: model görev başına değil süreç başına bir kez yüklenir"""
-    import faster_whisper
+    faster_whisper = pytest.importorskip("faster_whisper")
 
     from app.stt import providers
 
