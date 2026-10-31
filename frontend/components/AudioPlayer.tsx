@@ -202,9 +202,10 @@ export function AudioPlayer({
           <button
             type="button"
             onClick={() => handleSkip(-5)}
+            disabled={currentTime <= 0}
             title="5 saniye geri"
             aria-label="5 saniye geri"
-            className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+            className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors disabled:opacity-40 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
           >
             <span className="text-xs font-bold font-mono">-5s</span>
           </button>
@@ -233,9 +234,10 @@ export function AudioPlayer({
           <button
             type="button"
             onClick={() => handleSkip(5)}
+            disabled={duration <= 0 || currentTime >= duration}
             title="5 saniye ileri"
             aria-label="5 saniye ileri"
-            className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+            className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors disabled:opacity-40 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
           >
             <span className="text-xs font-bold font-mono">+5s</span>
           </button>
@@ -259,7 +261,7 @@ export function AudioPlayer({
             onClick={toggleMute}
             title={isMuted ? "Sesi Aç" : "Sesi Kapat"}
             aria-label={isMuted ? "Sesi Aç" : "Sesi Kapat"}
-            className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
+            className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors disabled:opacity-40 disabled:pointer-events-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
           >
             {isMuted ? (
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">

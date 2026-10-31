@@ -27,6 +27,8 @@ export interface ChatSidebarProps {
   activeSessionId: string | null;
   onSelectSession: (sessionId: string) => void;
   onNewChat: () => void;
+  /** Zaten boş bir sohbetteyken "Yeni sohbet" işlevsizdir. */
+  newChatDisabled?: boolean;
   /** Tek oturumu siler (onay kenar çubuğunda alınır). */
   onDeleteSession: (sessionId: string) => Promise<void>;
   /** Tüm oturumları siler (onay kenar çubuğunda alınır). */
@@ -43,6 +45,7 @@ export function ChatSidebar({
   activeSessionId,
   onSelectSession,
   onNewChat,
+  newChatDisabled = false,
   onDeleteSession,
   onDeleteAll,
   isOpen,
@@ -84,6 +87,7 @@ export function ChatSidebar({
         <Button
           className="w-full"
           aria-label="Yeni sohbet başlat"
+          disabled={newChatDisabled}
           onClick={() => {
             onNewChat();
             onClose();

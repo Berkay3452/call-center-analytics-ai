@@ -429,6 +429,8 @@ export function CrmSuggestionCard({
 
         {reviewStatus !== "onaylandi" && (
           <div className="flex flex-wrap items-center gap-2">
+            {/* Eşleşme uyarısında aynı eylem uyarı kutusunda sunulur; iki kez gösterilmez */}
+            {!isConflict && (
             <button
               ref={matchTriggerRef}
               type="button"
@@ -441,6 +443,7 @@ export function CrmSuggestionCard({
             >
               Elle eşleştir
             </button>
+            )}
             <button
               ref={editTriggerRef}
               type="button"
