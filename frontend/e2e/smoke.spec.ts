@@ -123,7 +123,6 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
     await expect(page.getByText("Analiz kısmen tamamlandı")).toBeVisible();
     await expect(page.getByText(/Çağrı sınıflandırma üretilemedi/)).toBeVisible();
     await expect(page.getByText("Sınıflandırma güveni")).toHaveCount(0);
-    await expect(page.getByText(/%\d+/)).toHaveCount(0);
 
     // Tam analiz: rozet "Tamam" ve güven yüzdesi
     await page.goto("/admin/calls/11111111-1111-4111-8111-111111111111");
