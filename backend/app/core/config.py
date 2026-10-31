@@ -35,7 +35,7 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:3000"
 
     # --- Veritabanı (Supabase PostgreSQL + pgvector) ---
-    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:5433/call_center"
+    database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:15432/call_center"
     db_pool_size: int = 5
     db_max_overflow: int = 10
     db_echo: bool = False

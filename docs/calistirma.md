@@ -177,8 +177,8 @@ docker compose -f infra/docker-compose.yml down -v     # durdur ve veritabanın�
 | Belirti | Neden / çözüm |
 |---|---|
 | `docker compose` bulunamıyor / "daemon is not running" | Docker Desktop açık değil. Aç, "Engine running" olana kadar bekle |
-| `connection refused` 5433 | Postgres henüz hazır değil veya compose çalışmıyor: `docker compose -f infra/docker-compose.yml ps` |
-| Port 5433 veya 6379 dolu | Başka bir Postgres/Redis çalışıyor. Onu durdur veya compose'daki portu ve `.env`'deki adresi birlikte değiştir |
+| `connection refused` 15432 | Postgres henüz hazır değil veya compose çalışmıyor: `docker compose -f infra/docker-compose.yml ps` |
+| Port 15432 veya 6379 dolu | Başka bir Postgres/Redis çalışıyor. Onu durdur veya compose'daki portu ve `.env`'deki adresi birlikte değiştir |
 | Docker: `ports are not available ... 6379 ... forbidden by its access permissions` (Windows) | Windows 6379'u sistem için ayırmış (`netsh interface ipv4 show excludedportrange protocol=tcp`). `backend/.env` içinde `REDIS_URL=redis://localhost:6400/0` yaz; `scripts.dev` Redis'i o portta açar. Elle başlatırken `REDIS_PORT=6400 docker compose ...` |
 | API 401 `unauthorized` | `X-Service-Key` yok ya da `.env`'deki `SERVICE_API_KEY` ile aynı değil. Frontend için `SERVICE_KEY` da aynı olmalı |
 | `alembic` "relation already exists" | Eski veritabanı kalmış: bölüm 6'daki `down -v` ile sıfırla |

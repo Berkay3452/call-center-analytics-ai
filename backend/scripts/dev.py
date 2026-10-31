@@ -238,7 +238,7 @@ def start_infrastructure(docker: str, *, rag: bool) -> None:
     if run(compose_command(docker, rag=rag), env={"REDIS_PORT": str(redis_port())}) != 0:
         fail("`docker compose up` başarısız.")
     if not wait_until(db_ready, timeout=90):
-        fail("PostgreSQL hazır olmadı (localhost:5433).")
+        fail("PostgreSQL hazır olmadı (localhost:15432).")
     info("PostgreSQL hazır.")
     if not wait_until(redis_ok, timeout=60):
         fail(
