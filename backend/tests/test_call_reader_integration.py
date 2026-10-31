@@ -7,7 +7,7 @@ filtreleme (tarih, aciliyet, kategori, durum, serbest metin) ve sayfalama davran
 
 import os
 from collections.abc import AsyncIterator
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 from uuid import UUID
 
 import pytest
@@ -227,3 +227,48 @@ async def test_list_calls_and_crm_marina_filter(
         assert crm.total == 6
         assert len(crm.items) == 6
         assert all(r.location == "Tuzla Marina" for r in crm.items)
+
+
+async def test_list_calls_and_kpi_istanbul_timezone_midnight_boundary(
+    conn: AsyncConnection, factory: async_sessionmaker[AsyncSession]
+) -> None:
+    """00:30 çağrısı (UTC 21:30 önceki gün) liste ve KPI'da aynı günde yer alır (#156)."""
+    from app.schemas.api import PeriodFilter
+    from app.services.analytics_service import get_kpi_summary
+
+    # 2025-05-10 21:30 UTC == 2025-05-11 00:30 Europe/Istanbul
+    call_dt_utc = datetime(2025, 5, 10, 21, 30, tzinfo=UTC)
+
+    await conn.execute(
+        text(
+            "INSERT INTO calls (started_at, duration_s, answer_delay_s, state, marina) "
+            "VALUES (:t, 120, 10, 'tamam', 'Tuzla Marina')"
+        ),
+        {"t": call_dt_utc},
+    )
+
+    async with factory() as session:
+        # 1. 2025-05-11 günü için hem liste filtresi hem KPI çağrıyı görmelidir
+        kpi_may11 = await get_kpi_summary(
+            session,
+            PeriodFilter(date_from=date(2025, 5, 11), date_to=date(2025, 5, 11)),
+        )
+        calls_may11 = await list_calls(
+            session,
+            CallFilters(date_from=date(2025, 5, 11), date_to=date(2025, 5, 11)),
+        )
+        assert kpi_may11.total_calls == 1
+        assert calls_may11.total == 1
+        assert calls_may11.items[0].started_at == call_dt_utc
+
+        # 2. 2025-05-10 günü için hem liste filtresi hem KPI çağrıyı DIŞARIDA bırakmalıdır
+        kpi_may10 = await get_kpi_summary(
+            session,
+            PeriodFilter(date_from=date(2025, 5, 10), date_to=date(2025, 5, 10)),
+        )
+        calls_may10 = await list_calls(
+            session,
+            CallFilters(date_from=date(2025, 5, 10), date_to=date(2025, 5, 10)),
+        )
+        assert kpi_may10.total_calls == 0
+        assert calls_may10.total == 0

@@ -8,9 +8,10 @@ Kurallar:
 """
 
 from collections.abc import Sequence
-from datetime import UTC, datetime, time
+from datetime import datetime, time
 from typing import Any
 from uuid import UUID
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import BinaryExpression, ColumnElement, func, or_, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -31,6 +32,8 @@ from app.schemas.api import (
 from app.schemas.common import Page
 from app.services.analysis_store import get_latest_analysis
 from app.services.masking import mask_text
+
+ISTANBUL_TZ = ZoneInfo("Europe/Istanbul")
 
 
 def _latest_analysis_subquery() -> Any:
@@ -61,11 +64,11 @@ def _build_filter_conditions(
     conditions: list[ColumnElement[bool] | BinaryExpression[Any]] = []
 
     if filters.date_from:
-        start_dt = datetime.combine(filters.date_from, time.min, tzinfo=UTC)
+        start_dt = datetime.combine(filters.date_from, time.min, tzinfo=ISTANBUL_TZ)
         conditions.append(Call.started_at >= start_dt)
 
     if filters.date_to:
-        end_dt = datetime.combine(filters.date_to, time.max, tzinfo=UTC)
+        end_dt = datetime.combine(filters.date_to, time.max, tzinfo=ISTANBUL_TZ)
         conditions.append(Call.started_at <= end_dt)
 
     if filters.state:

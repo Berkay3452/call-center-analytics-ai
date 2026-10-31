@@ -68,7 +68,7 @@ Başka kullanıcının sohbet oturumu istenirse 404 döner (varlığı da sızd�
 - `CallMatchIn`: çağrıyı müşteri ve tekneye elle eşleştirme istek gövdesi (`customer_id`, isteğe bağlı `boat_id`) (#119).
 - **Müşteri ve tekne eşleştirme (#119):** Analiz bitince otomatik çalışır. Önce normalize telefon numarası ile `customers.phone` üzerinden kesin eşleşme aranır ve tekneler taranır. Telefon yoksa müşteri adı + tekne adı (normalize edilmiş) üzerinden eşleşme aranır; birden fazla aday varsa belirsiz sayılıp yanlış bağlamamak için boş bırakılır (`yok`). Eşleşmeyen veya yanlış bağlanan çağrılar `PUT /calls/{id}/match` ile elle bağlanabilir (`elle`).
 - `AnalysisOut`: bir analiz sürümü. Agent çıktıları `CallClassification`, `CrmExtraction`, `SalesAnalysis`, `CallSummary`; agent kayıtları `AgentRun`. Başarısız agent'ın alanı `null`, nedeni `errors`'ta.
-- `CallFilters`: `date_from`, `date_to`, `call_type`, `urgency`, `request_category`, `state`, `status`, `marina` (tam eşleşme), `q` (müşteri/tekne/marina adında arama), `page`, `page_size`.
+- `CallFilters`: `date_from`, `date_to` (tarih sınırları Europe/Istanbul saatiyle gün başı/sonu olarak değerlendirilir, #156), `call_type`, `urgency`, `request_category`, `state`, `status`, `marina` (tam eşleşme), `q` (müşteri/tekne/marina adında arama), `page`, `page_size`.
 
 ### Çağrı durumu (`CallState`)
 | Değer | Anlamı |
@@ -107,7 +107,7 @@ Arayüz `GET /calls/{id}/status` ile durumu 2–3 saniyede bir sorar; `tamam`, `
 
 ### KPI
 - `KpiSummary`: dönem, toplam/analiz edilen çağrı, çağrı tiplerine göre sayılar, `converted_sales` ve `conversion_rate`, `lost_by_reason`, `top_problems` ve `busiest_marinas` (`CountItem`), `by_category`, `by_urgency`, `daily_calls` (`DailyCount`; boş gün 0), `avg_answer_delay_s`.
-- `PeriodFilter`: `date_from`, `date_to`, `marina` (tam eşleşme); boşsa son 30 gün. Sayılar her çağrının **en son** analiz sürümünden hesaplanır; LLM kullanılmaz.
+- `PeriodFilter`: `date_from`, `date_to` (tarih sınırları Europe/Istanbul saatiyle gün başı/sonu olarak değerlendirilir, #156), `marina` (tam eşleşme); boşsa son 30 gün. Sayılar her çağrının **en son** analiz sürümünden hesaplanır; LLM kullanılmaz.
 
 ### Miço AI sohbeti
 - `ChatQuestion`: `question` ve isteğe bağlı `session_id` (boşsa yeni oturum, başlık ilk sorudan).
