@@ -69,7 +69,7 @@ export function ServiceOrderDetailModal({
       {/* Modal gövdesi */}
       <div
         ref={modalContainerRef}
-        className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white border border-slate-200 p-6 shadow-2xl z-10 transition-all"
+        className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white border border-slate-200 p-6 shadow-lg z-10 transition-all"
       >
         {/* Kapat butonu */}
         <button

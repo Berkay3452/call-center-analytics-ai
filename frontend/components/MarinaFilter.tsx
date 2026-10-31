@@ -45,7 +45,7 @@ export function MarinaFilter({ selectedMarina, className = "" }: MarinaFilterPro
         aria-label="Marina seç"
         className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-sm focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 disabled:opacity-50 transition-colors"
       >
-        <option value="all">⚓ Tüm Marinalar</option>
+        <option value="all">Tüm Marinalar</option>
         {MARINA_OPTIONS.map((m) => (
           <option key={m} value={m}>
             {m}

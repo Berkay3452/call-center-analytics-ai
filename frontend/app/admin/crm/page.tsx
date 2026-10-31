@@ -210,7 +210,6 @@ async function CrmContent({
         <EmptyState
           title="Filtrelere uyan CRM önerisi bulunamadı"
           description="Arama teriminizi veya filtre seçimlerinizi değiştirerek tekrar deneyebilirsiniz."
-          icon="🔍"
           isFiltered={true}
         />
       );
@@ -220,7 +219,6 @@ async function CrmContent({
       <EmptyState
         title="CRM Önerisi Bulunamadı"
         description="Henüz bekleyen bir CRM önerisi bulunmuyor."
-        icon="⚓"
         isFiltered={false}
       />
     );

@@ -214,7 +214,6 @@ async function CallsListContent({
         <EmptyState
           title="Filtrelere uyan çağrı bulunamadı"
           description="Arama kriterlerinizi değiştirerek veya filtreleri temizleyerek tekrar deneyebilirsiniz."
-          icon="🔍"
           isFiltered={true}
         />
       );
@@ -224,7 +223,6 @@ async function CallsListContent({
       <EmptyState
         title="Çağrı Bulunamadı"
         description="Henüz sisteme kaydedilmiş bir çağrı bulunmuyor."
-        icon="⚓"
         isFiltered={false}
       />
     );

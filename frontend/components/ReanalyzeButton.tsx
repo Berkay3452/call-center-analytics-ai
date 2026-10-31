@@ -200,7 +200,6 @@ export function ReanalyzeButton({
           title="Çağrıyı yeniden analize gönder"
           aria-label="Çağrıyı yeniden analiz et"
         >
-          <span className="text-sm" aria-hidden="true">🔄</span>
           <span>Yeniden Analiz Et</span>
         </button>
       ) : (
@@ -216,7 +215,6 @@ export function ReanalyzeButton({
           title="Kısmi analizi tekrar tamamlat"
           aria-label="Kısmi analizi şimdi yeniden analiz et"
         >
-          <span aria-hidden="true">⚡</span>
           <span>Şimdi Yeniden Analiz Et</span>
         </button>
       )}
@@ -231,14 +229,13 @@ export function ReanalyzeButton({
         >
           <div
             ref={modalContainerRef}
-            className="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl transition-all"
+            className="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-lg transition-all"
           >
             {/* 1. Aşama: Onay Diyaloğu */}
             {modalStage === "confirm" && (
               <div>
                 <div className="flex items-center gap-3 mb-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-100 text-sky-700">
-                    <span className="text-xl" aria-hidden="true">🔄</span>
                   </div>
                   <div>
                     <h2
@@ -306,7 +303,7 @@ export function ReanalyzeButton({
                     )}
                     {analysisState === "kismi" && (
                       <div className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-100 text-amber-700 font-bold text-sm">
-                        ⚠️
+                        
                       </div>
                     )}
                     {analysisState === "basarisiz" && (

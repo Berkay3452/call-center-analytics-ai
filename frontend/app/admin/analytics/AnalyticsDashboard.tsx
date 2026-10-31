@@ -814,7 +814,7 @@ export default function AnalyticsDashboard() {
             </div>
 
             {/* Hızlı Erişim & Aksiyon Kartı */}
-            <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-slate-900 to-slate-800 p-6 text-white shadow-sm flex flex-col justify-between">
+            <div className="rounded-xl border border-gray-200 bg-brand-800 p-6 text-white shadow-sm flex flex-col justify-between">
               <div>
                 <span className="inline-flex rounded-full bg-sky-500/20 px-3 py-1 text-xs font-semibold text-sky-300 mb-3">
                   Operasyonel Hızlı Erişim

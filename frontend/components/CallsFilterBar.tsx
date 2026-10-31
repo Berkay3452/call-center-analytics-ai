@@ -14,10 +14,10 @@ import {
 
 const STATE_OPTIONS: { value: string; label: string }[] = [
   { value: "beklemede", label: "⏳ Sırada (Beklemede)" },
-  { value: "yaziya_cevriliyor", label: "🎙️ Yazıya Çevriliyor" },
-  { value: "isleniyor", label: "⚙️ İşleniyor" },
+  { value: "yaziya_cevriliyor", label: "Yazıya Çevriliyor" },
+  { value: "isleniyor", label: "İşleniyor" },
   { value: "tamam", label: "✓ Tamamlandı" },
-  { value: "kismi", label: "⚠ Kısmi" },
+  { value: "kismi", label: "Kısmi" },
   { value: "basarisiz", label: "✕ Başarısız / Hata" },
 ];
 
@@ -137,12 +137,6 @@ export function CallsFilterBar({
     >
       {/* 1. Satır: Arama Kutusu ve Yükleme Göstergesi */}
       <div className="relative flex items-center">
-        <span
-          className="absolute left-3.5 text-slate-400 pointer-events-none select-none text-sm"
-          aria-hidden="true"
-        >
-          🔍
-        </span>
         <label htmlFor="calls-filter-search-input" className="sr-only">
           Arama kutusu
         </label>
@@ -185,7 +179,7 @@ export function CallsFilterBar({
             aria-label="Marina filtresi"
             className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
           >
-            <option value="all">⚓ Tüm Marinalar</option>
+            <option value="all">Tüm Marinalar</option>
             {MARINA_OPTIONS.map((m) => (
               <option key={m} value={m}>
                 {m}
@@ -207,7 +201,7 @@ export function CallsFilterBar({
             aria-label="Aciliyet seviyesi"
             className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
           >
-            <option value="all">🚨 Aciliyet (Tümü)</option>
+            <option value="all">Aciliyet (Tümü)</option>
             {(Object.keys(URGENCY_LABELS) as Urgency[]).map((u) => (
               <option key={u} value={u}>
                 {URGENCY_LABELS[u]}
@@ -230,7 +224,7 @@ export function CallsFilterBar({
               aria-label="Çağrı tipi"
               className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
             >
-              <option value="all">📞 Çağrı Tipi (Tümü)</option>
+              <option value="all">Çağrı Tipi (Tümü)</option>
               {(Object.keys(CALL_TYPE_LABELS) as CallType[]).map((t) => (
                 <option key={t} value={t}>
                   {CALL_TYPE_LABELS[t]}
@@ -253,7 +247,7 @@ export function CallsFilterBar({
             aria-label="Talep kategorisi"
             className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
           >
-            <option value="all">🔧 Kategori (Tümü)</option>
+            <option value="all">Kategori (Tümü)</option>
             {(Object.keys(REQUEST_CATEGORY_LABELS) as RequestCategory[]).map((c) => (
               <option key={c} value={c}>
                 {REQUEST_CATEGORY_LABELS[c]}
@@ -276,7 +270,7 @@ export function CallsFilterBar({
               aria-label="Analiz durumu"
               className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
             >
-              <option value="all">📊 Durum (Tümü)</option>
+              <option value="all">Durum (Tümü)</option>
               {STATE_OPTIONS.map((s) => (
                 <option key={s.value} value={s.value}>
                   {s.label}
@@ -300,7 +294,7 @@ export function CallsFilterBar({
               aria-label="İnceleme durumu"
               className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
             >
-              <option value="all">📋 İnceleme (Tümü)</option>
+              <option value="all">İnceleme (Tümü)</option>
               <option value="bekliyor">⏳ Bekliyor</option>
               <option value="onaylandi">✓ Onaylandı</option>
               <option value="reddedildi">✕ Reddedildi</option>

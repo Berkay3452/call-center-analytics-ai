@@ -547,7 +547,7 @@ function CallUploadContent() {
 
       {/* Analiz İzleme Paneli */}
       {isSubmitting && (
-        <div className="rounded-2xl border border-sky-200 bg-white p-6 shadow-md">
+        <div className="rounded-2xl border border-sky-200 bg-white p-6 shadow-sm">
           {/* Başlık satırı */}
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-3">
@@ -710,7 +710,7 @@ function CallUploadContent() {
       {!isSubmitting && (
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Sekme seçimi */}
-          <div className="flex rounded-xl bg-gray-100 p-1.5 shadow-inner border border-gray-200">
+          <div className="flex rounded-xl bg-gray-100 p-1.5 border border-gray-200">
             <button
               type="button"
               onClick={() => setMode("audio")}

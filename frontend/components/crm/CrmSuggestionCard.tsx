@@ -543,7 +543,7 @@ export function CrmSuggestionCard({
             role="dialog"
             aria-modal="true"
             aria-labelledby="edit-modal-title"
-            className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto"
+            className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-lg max-h-[90vh] overflow-y-auto"
           >
             <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
               <div>
@@ -755,7 +755,7 @@ export function CrmSuggestionCard({
             role="dialog"
             aria-modal="true"
             aria-labelledby="reject-modal-title"
-            className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl"
+            className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-lg"
           >
             <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
               <h3 id="reject-modal-title" className="text-base font-bold text-slate-900">

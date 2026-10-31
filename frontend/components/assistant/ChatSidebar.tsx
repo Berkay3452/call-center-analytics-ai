@@ -259,7 +259,7 @@ export function ChatSidebar({
             aria-hidden="true"
           />
           {/* Panel */}
-          <aside ref={drawerRef} className="relative z-50 flex w-72 max-w-[85vw] flex-col border-r border-slate-200 bg-white shadow-2xl">
+          <aside ref={drawerRef} className="relative z-50 flex w-72 max-w-[85vw] flex-col border-r border-slate-200 bg-white shadow-lg">
             {sidebarContent}
           </aside>
         </div>

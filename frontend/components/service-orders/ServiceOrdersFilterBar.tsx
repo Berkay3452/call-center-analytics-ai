@@ -74,12 +74,6 @@ export function ServiceOrdersFilterBar({
       >
         {/* Arama Alanı */}
         <div className="relative flex-1">
-          <span
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 select-none text-xs"
-            aria-hidden="true"
-          >
-            🔍
-          </span>
           <label htmlFor="so-filter-q" className="sr-only">
             Servis emri arama
           </label>

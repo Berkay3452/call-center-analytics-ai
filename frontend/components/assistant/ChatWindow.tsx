@@ -33,7 +33,7 @@ export function ChatWindow({
       role="log"
       aria-live="polite"
       aria-label="Asistan Sohbet Geçmişi"
-      className={`flex-1 overflow-y-auto rounded-2xl border border-slate-200 bg-linear-to-b from-slate-50/50 to-white p-4 sm:p-6 space-y-5 shadow-inner ${className}`}
+      className={`flex-1 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 space-y-5 ${className}`}
     >
       {messages.map((msg) => {
         const isUser = msg.role === "user";

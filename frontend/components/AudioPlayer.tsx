@@ -94,7 +94,7 @@ export function AudioPlayer({
       >
         <div className="flex flex-col items-center justify-center gap-2 text-slate-500">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200/80 text-lg" aria-hidden="true">
-            🎙️
+            
           </div>
           <div>
             <p className="text-sm font-semibold text-slate-700">
@@ -278,7 +278,7 @@ export function AudioPlayer({
       {/* Hata Uyarısı (Dosya bulunamazsa vs.) */}
       {audioError && (
         <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-2.5 text-xs text-amber-800">
-          ⚠️ {audioError}
+          {audioError}
         </div>
       )}
     </div>

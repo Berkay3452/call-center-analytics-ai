@@ -186,7 +186,6 @@ async function ServiceOrdersListContent({
         <EmptyState
           title="Filtrelere uyan servis emri bulunamadı"
           description="Arama kriterlerinizi değiştirerek veya filtreleri temizleyerek tekrar deneyebilirsiniz."
-          icon="🔍"
           isFiltered={true}
         />
       );
@@ -197,7 +196,6 @@ async function ServiceOrdersListContent({
       <EmptyState
         title="Henüz onaylanmış öneri yok"
         description="CRM önerileri sayfasında yapay zekâ tarafından çıkarılan servis kayıtlarını onaylayarak burada servis emrine dönüştürebilirsiniz."
-        icon="📋"
         isFiltered={false}
         actionLabel="CRM Önerilerine Git"
         actionHref="/admin/crm"

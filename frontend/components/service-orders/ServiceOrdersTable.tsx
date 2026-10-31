@@ -118,7 +118,7 @@ export function ServiceOrdersTable({
                     </div>
                     {order.marina && (
                       <div className="text-[11px] text-slate-500">
-                        📍 {order.marina}
+                        {order.marina}
                       </div>
                     )}
                   </td>
@@ -153,7 +153,6 @@ export function ServiceOrdersTable({
                         onClick={(e) => e.stopPropagation()}
                         className="inline-flex items-center gap-1.5 rounded-lg bg-sky-50 border border-sky-200 px-2.5 py-1 text-[11px] font-semibold text-sky-700 hover:bg-sky-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                       >
-                        <span aria-hidden="true">📞</span>
                         <span>Çağrı Detayı</span>
                       </Link>
                     ) : (
@@ -172,7 +171,7 @@ export function ServiceOrdersTable({
                       className="inline-flex items-center gap-1 rounded-lg bg-slate-100 hover:bg-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                     >
                       <span>İncele</span>
-                      <span aria-hidden="true">➔</span>
+                      
                     </button>
                   </td>
                 </tr>
