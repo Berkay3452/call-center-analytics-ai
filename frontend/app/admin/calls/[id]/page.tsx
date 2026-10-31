@@ -48,9 +48,9 @@ export async function generateMetadata({ params }: Props) {
 }
 
 const SALES_OUTCOME_BADGE: Record<SalesOutcomeType, string> = {
-  satisa_donustu: "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800",
-  kaybedildi: "bg-red-50 dark:bg-red-950/60 text-red-700 dark:text-red-300 border-red-300 dark:border-red-800",
-  beklemede: "bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-800",
+  satisa_donustu: "bg-emerald-50 text-emerald-700 border-emerald-300",
+  kaybedildi: "bg-red-50 text-red-700 border-red-300",
+  beklemede: "bg-amber-50 text-amber-700 border-amber-300",
 };
 
 /**
@@ -88,16 +88,16 @@ async function CallDetailContent({ params }: Props) {
   } catch (err) {
     if (isApiError(err) && err.status === 404) notFound();
     return (
-      <div className="rounded-xl border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/40 p-6 shadow-sm">
-        <h2 className="text-base font-bold text-red-900 dark:text-red-200">Çağrı Detayı Yüklenemedi</h2>
-        <p className="mt-1 text-sm text-red-700 dark:text-red-300">
+      <div className="rounded-xl border border-red-200 bg-red-50 p-6 shadow-sm">
+        <h2 className="text-base font-bold text-red-900">Çağrı Detayı Yüklenemedi</h2>
+        <p className="mt-1 text-sm text-red-700">
           {err instanceof Error
             ? err.message
             : "Sunucuya bağlanılamadı. Ağ bağlantınızı veya backend durumunu kontrol edin."}
         </p>
         <Link
           href="/admin/calls"
-          className="mt-4 inline-block text-xs font-semibold text-sky-700 dark:text-sky-400 hover:underline px-2 py-1 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+          className="mt-4 inline-block text-xs font-semibold text-sky-700 hover:underline px-2 py-1 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
         >
           ← Çağrı listesine dön
         </Link>
@@ -201,39 +201,39 @@ async function CallDetailContent({ params }: Props) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <Link
           href="/admin/calls"
-          className="text-sm font-medium text-sky-700 dark:text-sky-400 hover:underline px-2 py-1 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+          className="text-sm font-medium text-sky-700 hover:underline px-2 py-1 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
         >
           ← Çağrı listesine dön
         </Link>
 
         <div className="flex flex-wrap items-center gap-2">
           {inProgress && (
-            <span className="inline-flex items-center rounded-md bg-sky-50 dark:bg-sky-950/60 px-2.5 py-1 text-xs font-semibold text-sky-800 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+            <span className="inline-flex items-center rounded-md bg-sky-50 px-2.5 py-1 text-xs font-semibold text-sky-800 border border-sky-200">
               ⏳ Analiz sürüyor
             </span>
           )}
           {!inProgress && analysisStatus === "kismi" && (
-            <span className="inline-flex items-center rounded-md bg-amber-50 dark:bg-amber-950/60 px-2.5 py-1 text-xs font-semibold text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+            <span className="inline-flex items-center rounded-md bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-800 border border-amber-200">
               ⚠️ Kısmi Analiz
             </span>
           )}
           {!inProgress && analysisStatus === "basarisiz" && (
-            <span className="inline-flex items-center rounded-md bg-red-50 dark:bg-red-950/60 px-2.5 py-1 text-xs font-semibold text-red-800 dark:text-red-300 border border-red-200 dark:border-red-800">
+            <span className="inline-flex items-center rounded-md bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-800 border border-red-200">
               ✕ Analiz Başarısız
             </span>
           )}
           {!inProgress && analysisStatus === "tamam" && (
-            <span className="inline-flex items-center rounded-md bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 text-xs font-semibold text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+            <span className="inline-flex items-center rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800 border border-emerald-200">
               ✓ Analiz Tamamlandı
             </span>
           )}
           {urgency === "acil" && (
-            <span className="inline-flex items-center rounded-md bg-red-100 dark:bg-red-950/60 px-2.5 py-1 text-xs font-bold text-red-700 dark:text-red-300 border border-red-300 dark:border-red-900 animate-pulse">
+            <span className="inline-flex items-center rounded-md bg-red-100 px-2.5 py-1 text-xs font-bold text-red-700 border border-red-300 animate-pulse">
               🚨 ACİL SERVİS
             </span>
           )}
           {callType && (
-            <span className="inline-flex rounded-md bg-gray-100 dark:bg-slate-800 px-2.5 py-1 text-xs font-medium text-gray-700 dark:text-slate-300 border border-transparent dark:border-slate-700">
+            <span className="inline-flex rounded-md bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-700 border border-transparent">
               {labelOf(CALL_TYPE_LABELS, callType as CallType)}
             </span>
           )}
@@ -244,21 +244,21 @@ async function CallDetailContent({ params }: Props) {
 
       {/* Kısmi Analiz & Hata Durumu Uyarısı */}
       {isPartial && !inProgress && (
-        <div className="rounded-xl border border-amber-300 dark:border-amber-900/70 bg-amber-50/90 dark:bg-amber-950/40 p-4 shadow-sm">
+        <div className="rounded-xl border border-amber-300 bg-amber-50/90 p-4 shadow-sm">
           <div className="flex items-start gap-3">
             <span className="text-xl" aria-hidden="true">⚠️</span>
             <div className="flex-1">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <h3 className="text-sm font-bold text-amber-900 dark:text-amber-200">
+                <h3 className="text-sm font-bold text-amber-900">
                   Kısmi Analiz — Bazı Alanlar Üretilemedi
                 </h3>
                 <ReanalyzeButton callId={call.id} currentState={call.state} variant="banner" />
               </div>
-              <p className="mt-0.5 text-xs text-amber-800 dark:text-amber-300">
+              <p className="mt-0.5 text-xs text-amber-800">
                 Bu görüşmenin analizinde bazı bölümler üretilemedi; diğer bölümlerin sonuçları geçerlidir.
               </p>
               {errorEntries.length > 0 ? (
-                <ul className="mt-2.5 space-y-1 rounded-lg bg-amber-100/70 dark:bg-amber-900/30 p-2.5 text-xs text-amber-950 dark:text-amber-200 border border-amber-200 dark:border-amber-800">
+                <ul className="mt-2.5 space-y-1 rounded-lg bg-amber-100/70 p-2.5 text-xs text-amber-950 border border-amber-200">
                   {errorEntries.map((e, idx) => (
                     <li key={idx} className="flex items-baseline gap-1.5" title={e.detail}>
                       <span className="font-bold">• {e.section}:</span>
@@ -267,7 +267,7 @@ async function CallDetailContent({ params }: Props) {
                   ))}
                 </ul>
               ) : (
-                <p className="mt-1 text-xs text-amber-700 dark:text-amber-400 italic">
+                <p className="mt-1 text-xs text-amber-700 italic">
                   Eksik alan uyarısı: Bazı analiz parametreleri tespit edilemediğinden kısmi kayıt oluşturuldu.
                 </p>
               )}
@@ -277,22 +277,22 @@ async function CallDetailContent({ params }: Props) {
       )}
 
       {/* Başlık ve Temel Bilgiler */}
-      <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-xl font-bold text-gray-900 dark:text-slate-100">
+            <h1 className="text-xl font-bold text-gray-900">
               {call.customer_name ?? "İsimsiz Müşteri"} — {call.boat_name || "Tekne Bilgisi Yok"}
             </h1>
-            <p className="mt-1 text-xs text-gray-500 dark:text-slate-400">
+            <p className="mt-1 text-xs text-gray-500">
               {call.customer_phone ?? "Telefon Yok"} • {call.boat_model || "Model Belirtilmedi"} • {call.marina ?? "Marina Belirtilmedi"} •{" "}
               {new Date(call.started_at).toLocaleString("tr-TR", { timeZone: "Europe/Istanbul" })}
             </p>
           </div>
           {/* Gerçek Analiz Güveni */}
           {confidencePercent !== null && (
-            <div className="flex items-center gap-2 rounded-lg bg-emerald-50 dark:bg-emerald-950/50 px-3 py-1.5 border border-emerald-200 dark:border-emerald-800">
-              <span className="text-xs text-emerald-800 dark:text-emerald-300 font-medium">Analiz Güveni:</span>
-              <span className="text-sm font-bold text-emerald-700 dark:text-emerald-400">
+            <div className="flex items-center gap-2 rounded-lg bg-emerald-50 px-3 py-1.5 border border-emerald-200">
+              <span className="text-xs text-emerald-800 font-medium">Analiz Güveni:</span>
+              <span className="text-sm font-bold text-emerald-700">
                 %{confidencePercent}
               </span>
             </div>
@@ -313,12 +313,12 @@ async function CallDetailContent({ params }: Props) {
           />
 
           {/* Transkript Konuşma Balonları */}
-          <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-600 dark:text-slate-400">
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-gray-600">
                 Konuşma Transkripti (Ayrıştırılmış)
               </h2>
-              <span className="text-xs text-gray-500 dark:text-slate-400">
+              <span className="text-xs text-gray-500">
                 {segments.length} segment
               </span>
             </div>
@@ -333,13 +333,13 @@ async function CallDetailContent({ params }: Props) {
                     <div
                       className={`max-w-[85%] rounded-2xl p-3 text-sm shadow-sm ${
                         seg.isCustomer
-                          ? "bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 rounded-tl-sm border border-slate-200 dark:border-slate-700"
-                          : "bg-sky-700 dark:bg-sky-700 text-white rounded-tr-sm"
+                          ? "bg-slate-100 text-slate-800 rounded-tl-sm border border-slate-200"
+                          : "bg-sky-700 text-white rounded-tr-sm"
                       }`}
                     >
                       <div
                         className={`mb-1 flex items-center justify-between gap-3 text-[11px] font-bold ${
-                          seg.isCustomer ? "text-slate-600 dark:text-slate-300" : "text-sky-100"
+                          seg.isCustomer ? "text-slate-600" : "text-sky-100"
                         }`}
                       >
                         <span>
@@ -357,7 +357,7 @@ async function CallDetailContent({ params }: Props) {
                 ))}
               </div>
             ) : (
-              <div className="rounded-lg bg-gray-50 dark:bg-slate-800/60 p-6 text-center text-sm text-gray-500 dark:text-slate-400">
+              <div className="rounded-lg bg-gray-50 p-6 text-center text-sm text-gray-500">
                 Ses kaydı transkripti henüz oluşturulmadı (cevapsız çağrı veya işleniyor).
               </div>
             )}
@@ -365,11 +365,11 @@ async function CallDetailContent({ params }: Props) {
 
           {/* AI Görüşme Özeti */}
           <PlaceholderCard title="AI Görüşme Özeti & Önemli Noktalar">
-            <p className="text-sm text-gray-800 dark:text-slate-200 leading-relaxed">
+            <p className="text-sm text-gray-800 leading-relaxed">
               {summary?.summary ?? (inProgress ? "Özet hazırlanıyor..." : "Bu görüşme için özet üretilemedi.")}
             </p>
             {summary?.key_points && summary.key_points.length > 0 && (
-              <ul className="mt-3 list-inside list-disc space-y-1 text-xs text-gray-600 dark:text-slate-400">
+              <ul className="mt-3 list-inside list-disc space-y-1 text-xs text-gray-600">
                 {summary.key_points.map((point, i) => (
                   <li key={i}>{point}</li>
                 ))}
@@ -378,20 +378,20 @@ async function CallDetailContent({ params }: Props) {
           </PlaceholderCard>
 
           {/* Satış Analizi Kartı */}
-          <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 dark:border-slate-800 pb-3 mb-4">
+          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-200 pb-3 mb-4">
               <div>
-                <h2 className="text-base font-bold text-gray-900 dark:text-slate-100">
+                <h2 className="text-base font-bold text-gray-900">
                   Satış Analizi
                 </h2>
-                <p className="text-xs text-gray-500 dark:text-slate-400">
+                <p className="text-xs text-gray-500">
                   Yapay zekâ destekli satış dönüşüm ve kayıp analizi
                 </p>
               </div>
 
               {sales?.outcome && (
                 <span
-                  className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold ${SALES_OUTCOME_BADGE[sales.outcome] || "bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300"}`}
+                  className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold ${SALES_OUTCOME_BADGE[sales.outcome] || "bg-gray-100 text-gray-700"}`}
                 >
                   {sales.outcome === "satisa_donustu" && "✓ "}
                   {sales.outcome === "kaybedildi" && "✕ "}
@@ -404,22 +404,22 @@ async function CallDetailContent({ params }: Props) {
             {sales ? (
               <div className="space-y-3.5">
                 {/* Sonuç Özeti */}
-                <div className="rounded-lg bg-slate-50 dark:bg-slate-800/70 border border-slate-100 dark:border-slate-700 p-3">
-                  <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                <div className="rounded-lg bg-slate-50 border border-slate-100 p-3">
+                  <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">
                     Satış Durumu
                   </span>
-                  <p className="mt-0.5 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  <p className="mt-0.5 text-sm font-semibold text-slate-900">
                     {labelOf(SALES_OUTCOME_LABELS, sales.outcome)}
                   </p>
                 </div>
 
                 {/* Kayıp Nedeni */}
                 {(sales.outcome === "kaybedildi" || sales.loss_reason) && (
-                  <div className="rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 p-3">
-                    <span className="block text-[11px] font-bold uppercase tracking-wider text-red-700 dark:text-red-300">
+                  <div className="rounded-lg bg-red-50 border border-red-200 p-3">
+                    <span className="block text-[11px] font-bold uppercase tracking-wider text-red-700">
                       Kayıp Nedeni
                     </span>
-                    <p className="mt-0.5 text-sm font-bold text-red-900 dark:text-red-200">
+                    <p className="mt-0.5 text-sm font-bold text-red-900">
                       {labelOf(LOSS_REASON_LABELS, sales.loss_reason as LossReason | null | undefined)}
                     </p>
                   </div>
@@ -427,11 +427,11 @@ async function CallDetailContent({ params }: Props) {
 
                 {/* Dayanak / Alıntılar */}
                 {sales.evidence && (
-                  <div className="rounded-lg bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200/80 dark:border-amber-900/60 p-3">
-                    <span className="block text-[11px] font-bold uppercase tracking-wider text-amber-800 dark:text-amber-300 mb-1">
+                  <div className="rounded-lg bg-amber-50/70 border border-amber-200/80 p-3">
+                    <span className="block text-[11px] font-bold uppercase tracking-wider text-amber-800 mb-1">
                       📌 Satış Analizi Dayanağı &amp; Alıntılar
                     </span>
-                    <p className="text-xs text-amber-950 dark:text-amber-200 leading-relaxed italic">
+                    <p className="text-xs text-amber-950 leading-relaxed italic">
                       &ldquo;{sales.evidence}&rdquo;
                     </p>
                   </div>
@@ -439,16 +439,16 @@ async function CallDetailContent({ params }: Props) {
 
                 {/* Satış Analiz Güveni */}
                 {sales.confidence != null && (
-                  <div className="flex items-center justify-between text-xs text-gray-500 dark:text-slate-400 pt-2 border-t border-gray-100 dark:border-slate-800">
+                  <div className="flex items-center justify-between text-xs text-gray-500 pt-2 border-t border-gray-100">
                     <span>Satış Analizi Güveni:</span>
-                    <span className="font-semibold text-emerald-700 dark:text-emerald-400">
+                    <span className="font-semibold text-emerald-700">
                       %{Math.round(sales.confidence <= 1 ? sales.confidence * 100 : sales.confidence)}
                     </span>
                   </div>
                 )}
               </div>
             ) : (
-              <div className="rounded-lg bg-gray-50 dark:bg-slate-800/60 p-4 text-center text-xs text-gray-500 dark:text-slate-400">
+              <div className="rounded-lg bg-gray-50 p-4 text-center text-xs text-gray-500">
                 Bu çağrı için henüz satış analizi oluşturulmadı.
               </div>
             )}

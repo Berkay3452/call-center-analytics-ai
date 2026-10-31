@@ -339,7 +339,7 @@ export default function AssistantPage() {
   // ─────────────────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex h-[calc(100vh-13rem)] min-h-[32rem] max-w-6xl mx-auto overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm bg-white dark:bg-slate-900">
+    <div className="flex h-[calc(100vh-13rem)] min-h-[32rem] max-w-6xl mx-auto overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-white">
       {/* ── Sol: Oturum Kenar Çubuğu ─────────────────────────────────────── */}
       <ChatSidebar
         sessions={sessions}
@@ -356,7 +356,7 @@ export default function AssistantPage() {
       <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
         {/* Üst Asistan Bilgi Başlığı */}
         <header
-          className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 px-4 py-3 flex-shrink-0"
+          className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-3 flex-shrink-0"
           role="banner"
         >
           <div className="flex items-center gap-2.5">
@@ -364,7 +364,7 @@ export default function AssistantPage() {
             <button
               type="button"
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden rounded-lg p-1.5 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+              className="lg:hidden rounded-lg p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
               aria-label="Sohbet geçmişini aç"
               aria-expanded={sidebarOpen}
               aria-controls="chat-sidebar"
@@ -389,16 +389,16 @@ export default function AssistantPage() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-base font-bold text-slate-900 dark:text-slate-100 leading-tight">
+                <h1 className="text-base font-bold text-slate-900 leading-tight">
                   Miço Usta AI Tekne Asistanı
                 </h1>
-                <span className="hidden sm:inline rounded-full bg-sky-100 dark:bg-sky-950/50 px-2 py-0.5 text-[10px] font-semibold text-sky-800 dark:text-sky-300 border border-sky-200 dark:border-sky-800">
+                <span className="hidden sm:inline rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-semibold text-sky-800 border border-sky-200">
                   v1.0 (Akışlı)
                 </span>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 leading-tight">
+              <p className="text-xs text-slate-500 leading-tight">
                 Kayıtlı Tekne:{" "}
-                <strong className="font-semibold text-slate-800 dark:text-slate-200">
+                <strong className="font-semibold text-slate-800">
                   Poyraz (Motoryat 42)
                 </strong>{" "}
                 • Kalamış Marina
@@ -407,7 +407,7 @@ export default function AssistantPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+            <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true" />
               Çevrimiçi &amp; Servis Kayıtları Aktif
             </span>
@@ -415,7 +415,7 @@ export default function AssistantPage() {
               type="button"
               onClick={handleClearChat}
               disabled={isLoading || messages.length <= 1}
-              className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-600 dark:text-slate-300 transition-colors hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100 disabled:opacity-40 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+              className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900 disabled:opacity-40 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
               title="Yeni sohbet başlat"
             >
               Temizle
@@ -434,7 +434,7 @@ export default function AssistantPage() {
         </div>
 
         {/* Önerilen Sorular + Giriş kutusu */}
-        <div className="flex-shrink-0 border-t border-slate-200 dark:border-slate-800 px-3 pt-2 pb-3 space-y-2 bg-white dark:bg-slate-900">
+        <div className="flex-shrink-0 border-t border-slate-200 px-3 pt-2 pb-3 space-y-2 bg-white">
           <SuggestedPrompts
             onSelectPrompt={(prompt) => void sendMessage(prompt)}
             disabled={isLoading}

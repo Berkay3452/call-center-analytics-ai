@@ -40,10 +40,10 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 // Aciliyet bar renkleri ve rozetleri
 const URGENCY_STYLES: Record<Urgency, { bar: string; badge: string; text: string }> = {
-  acil: { bar: "bg-red-500", badge: "bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-300 border-red-200 dark:border-red-900", text: "text-red-700 dark:text-red-400" },
-  yuksek: { bar: "bg-amber-500", badge: "bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-900", text: "text-amber-700 dark:text-amber-400" },
-  normal: { bar: "bg-sky-500", badge: "bg-sky-100 dark:bg-sky-950/60 text-sky-700 dark:text-sky-300 border-sky-200 dark:border-sky-800", text: "text-sky-700 dark:text-sky-400" },
-  dusuk: { bar: "bg-slate-400 dark:bg-slate-600", badge: "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700", text: "text-slate-700 dark:text-slate-400" },
+  acil: { bar: "bg-red-500", badge: "bg-red-100 text-red-700 border-red-200", text: "text-red-700" },
+  yuksek: { bar: "bg-amber-500", badge: "bg-amber-100 text-amber-700 border-amber-200", text: "text-amber-700" },
+  normal: { bar: "bg-sky-500", badge: "bg-sky-100 text-sky-700 border-sky-200", text: "text-sky-700" },
+  dusuk: { bar: "bg-slate-400", badge: "bg-slate-100 text-slate-700 border-slate-200", text: "text-slate-700" },
 };
 
 // Satış kaybı bar renkleri
@@ -191,10 +191,10 @@ export default function AnalyticsDashboard() {
   return (
     <div className="space-y-6">
       {/* Üst Filtre Barı */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-gray-200 dark:border-slate-800 pb-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-gray-200 pb-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-slate-100">Çağrı Analitiği Dashboard</h1>
-          <p className="text-xs text-gray-500 dark:text-slate-400">
+          <h1 className="text-2xl font-bold text-gray-900">Çağrı Analitiği Dashboard</h1>
+          <p className="text-xs text-gray-500">
             Tüm marinalar, sesli görüşme analizleri ve operasyonel KPI göstergeleri
           </p>
         </div>
@@ -212,7 +212,7 @@ export default function AnalyticsDashboard() {
               disabled={isLoading}
               title="Marina bazlı filtreleme"
               aria-label="Marina filtresi"
-              className="rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-slate-200 shadow-sm focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50"
+              className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-sm focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 disabled:opacity-50"
             >
               <option value="all">⚓ Tüm Marinalar</option>
               {MARINA_OPTIONS.map((m) => (
@@ -233,7 +233,7 @@ export default function AnalyticsDashboard() {
             onChange={(e) => handleDateRangeChange(e.target.value)}
             disabled={isLoading}
             aria-label="Tarih aralığı"
-            className="rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-slate-200 shadow-sm focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50"
+            className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-sm focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 disabled:opacity-50"
           >
             {DATE_RANGE_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -249,7 +249,7 @@ export default function AnalyticsDashboard() {
             disabled={isLoading}
             title="Verileri Yenile"
             aria-label="Verileri Yenile"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-slate-200 shadow-sm hover:bg-gray-50 dark:hover:bg-slate-700 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 disabled:opacity-50"
           >
             <span className={isLoading ? "animate-spin" : ""}>🔄</span>
             <span className="hidden sm:inline">Yenile</span>
@@ -259,17 +259,17 @@ export default function AnalyticsDashboard() {
 
       {/* Hata Durumu (Error State) */}
       {error && !isLoading && (
-        <div className="rounded-xl border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/40 p-6 shadow-sm">
+        <div className="rounded-xl border border-red-200 bg-red-50 p-6 shadow-sm">
           <div className="flex items-start gap-4">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/60 text-xl text-red-700 dark:text-red-400">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 text-xl text-red-700">
               ⚠️
             </div>
             <div className="flex-1">
-              <h3 className="text-sm font-bold text-red-900 dark:text-red-200">
+              <h3 className="text-sm font-bold text-red-900">
                 Veriler Alınırken Bir Hata Oluştu
               </h3>
-              <p className="mt-1 text-xs text-red-700 dark:text-red-300">{error.message}</p>
-              <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px] text-red-700 dark:text-red-400">
+              <p className="mt-1 text-xs text-red-700">{error.message}</p>
+              <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px] text-red-700">
                 {error.code && (
                   <span>
                     Hata Kodu: <code className="font-mono font-bold">{error.code}</code>
@@ -284,7 +284,7 @@ export default function AnalyticsDashboard() {
               <button
                 type="button"
                 onClick={handleRefresh}
-                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-xs font-bold text-white shadow hover:bg-red-700 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-xs font-bold text-white shadow hover:bg-red-700 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
               >
                 🔄 Yeniden Dene
               </button>
@@ -301,23 +301,23 @@ export default function AnalyticsDashboard() {
             {Array.from({ length: 7 }).map((_, i) => (
               <div
                 key={i}
-                className="h-24 animate-pulse rounded-xl border border-gray-200 dark:border-slate-800 bg-gray-100 dark:bg-slate-900 p-4"
+                className="h-24 animate-pulse rounded-xl border border-gray-200 bg-gray-100 p-4"
               >
-                <div className="h-3 w-16 rounded bg-gray-200 dark:bg-slate-800 mb-3" />
-                <div className="h-7 w-12 rounded bg-gray-200 dark:bg-slate-700" />
+                <div className="h-3 w-16 rounded bg-gray-200 mb-3" />
+                <div className="h-7 w-12 rounded bg-gray-200" />
               </div>
             ))}
           </div>
 
           {/* Skeleton Günlük Trend Grafiği */}
-          <div className="h-48 animate-pulse rounded-xl border border-gray-200 dark:border-slate-800 bg-gray-100 dark:bg-slate-900 p-5">
-            <div className="h-4 w-44 rounded bg-gray-200 dark:bg-slate-700 mb-2" />
-            <div className="h-3 w-28 rounded bg-gray-200 dark:bg-slate-800 mb-6" />
+          <div className="h-48 animate-pulse rounded-xl border border-gray-200 bg-gray-100 p-5">
+            <div className="h-4 w-44 rounded bg-gray-200 mb-2" />
+            <div className="h-3 w-28 rounded bg-gray-200 mb-6" />
             <div className="flex h-28 items-end gap-3">
               {Array.from({ length: 7 }).map((_, i) => (
                 <div
                   key={i}
-                  className="flex-1 rounded-t-md bg-gray-200 dark:bg-slate-800"
+                  className="flex-1 rounded-t-md bg-gray-200"
                   style={{ height: `${30 + (i * 12) % 60}%` }}
                 />
               ))}
@@ -329,14 +329,14 @@ export default function AnalyticsDashboard() {
             {Array.from({ length: 3 }).map((_, i) => (
               <div
                 key={i}
-                className="h-64 animate-pulse rounded-xl border border-gray-200 dark:border-slate-800 bg-gray-100 dark:bg-slate-900 p-5 space-y-4"
+                className="h-64 animate-pulse rounded-xl border border-gray-200 bg-gray-100 p-5 space-y-4"
               >
-                <div className="h-4 w-36 rounded bg-gray-200 dark:bg-slate-700" />
-                <div className="h-3 w-48 rounded bg-gray-200 dark:bg-slate-800" />
+                <div className="h-4 w-36 rounded bg-gray-200" />
+                <div className="h-3 w-48 rounded bg-gray-200" />
                 <div className="space-y-3 pt-2">
-                  <div className="h-4 w-full rounded bg-gray-200 dark:bg-slate-800" />
-                  <div className="h-4 w-full rounded bg-gray-200 dark:bg-slate-800" />
-                  <div className="h-4 w-full rounded bg-gray-200 dark:bg-slate-800" />
+                  <div className="h-4 w-full rounded bg-gray-200" />
+                  <div className="h-4 w-full rounded bg-gray-200" />
+                  <div className="h-4 w-full rounded bg-gray-200" />
                 </div>
               </div>
             ))}
@@ -346,14 +346,14 @@ export default function AnalyticsDashboard() {
 
       {/* Boş Durum (Empty State) */}
       {!isLoading && !error && data && data.total_calls === 0 && (
-        <div className="rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-12 text-center shadow-sm">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-sky-50 dark:bg-sky-950/60 text-3xl">
+        <div className="rounded-2xl border border-gray-200 bg-white p-12 text-center shadow-sm">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-sky-50 text-3xl">
             📊
           </div>
-          <h2 className="mt-4 text-base font-bold text-gray-900 dark:text-slate-100">
+          <h2 className="mt-4 text-base font-bold text-gray-900">
             Henüz çağrı verisi bulunmuyor
           </h2>
-          <p className="mx-auto mt-2 max-w-md text-xs text-gray-500 dark:text-slate-400">
+          <p className="mx-auto mt-2 max-w-md text-xs text-gray-500">
             Seçili tarih aralığında ({data.period_start} — {data.period_end}) sisteme kayıtlı veya
             analizi tamamlanmış çağrı kaydı yer almamaktadır.
           </p>
@@ -361,13 +361,13 @@ export default function AnalyticsDashboard() {
             <button
               type="button"
               onClick={() => handleDateRangeChange("365")}
-              className="rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2 text-xs font-semibold text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+              className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
             >
               Son 1 Yıllık Verileri Gör
             </button>
             <Link
               href="/admin/calls/upload"
-              className="inline-flex items-center gap-2 rounded-lg bg-sky-700 px-4 py-2 text-xs font-bold text-white shadow hover:bg-sky-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+              className="inline-flex items-center gap-2 rounded-lg bg-sky-700 px-4 py-2 text-xs font-bold text-white shadow hover:bg-sky-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
             >
               <span>🎙️</span>
               <span>+ Yeni Çağrı Yükle</span>
@@ -382,119 +382,119 @@ export default function AnalyticsDashboard() {
           {/* Üst KPI Kartları Izgarası (7 Kart) */}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-7">
             {/* 1. Gelen Çağrı (total_calls) */}
-            <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500 dark:text-slate-400">
+            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
                 Gelen Çağrı
               </p>
-              <p className="mt-1 text-2xl font-black text-gray-900 dark:text-slate-100">
+              <p className="mt-1 text-2xl font-black text-gray-900">
                 {data.total_calls.toLocaleString("tr-TR")}
-                <span className="ml-1 text-xs font-normal text-gray-500 dark:text-slate-400">adet</span>
+                <span className="ml-1 text-xs font-normal text-gray-500">adet</span>
               </p>
-              <p className="mt-1 text-[11px] text-gray-500 dark:text-slate-400">
+              <p className="mt-1 text-[11px] text-gray-500">
                 {data.analyzed_calls} analiz edildi
               </p>
             </div>
 
             {/* 2. Yeni Müşteri (new_customers) */}
-            <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500 dark:text-slate-400">
+            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
                 Yeni Müşteri
               </p>
-              <p className="mt-1 text-2xl font-black text-sky-700 dark:text-sky-400">
+              <p className="mt-1 text-2xl font-black text-sky-700">
                 {data.new_customers.toLocaleString("tr-TR")}
-                <span className="ml-1 text-xs font-normal text-gray-500 dark:text-slate-400">tekne</span>
+                <span className="ml-1 text-xs font-normal text-gray-500">tekne</span>
               </p>
-              <p className="mt-1 text-[11px] font-semibold text-sky-700 dark:text-sky-400">
+              <p className="mt-1 text-[11px] font-semibold text-sky-700">
                 İlk kez arayanlar
               </p>
             </div>
 
             {/* 3. Servis Talebi (service_requests) */}
-            <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500 dark:text-slate-400">
+            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
                 Servis Talebi
               </p>
-              <p className="mt-1 text-2xl font-black text-indigo-700 dark:text-indigo-400">
+              <p className="mt-1 text-2xl font-black text-indigo-700">
                 {data.service_requests.toLocaleString("tr-TR")}
-                <span className="ml-1 text-xs font-normal text-gray-500 dark:text-slate-400">adet</span>
+                <span className="ml-1 text-xs font-normal text-gray-500">adet</span>
               </p>
-              <p className="mt-1 text-[11px] text-gray-500 dark:text-slate-400">
+              <p className="mt-1 text-[11px] text-gray-500">
                 Bakım &amp; Onarım
               </p>
             </div>
 
             {/* 4. Teklif Talebi (quote_requests) */}
-            <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500 dark:text-slate-400">
+            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
                 Teklif Talebi
               </p>
-              <p className="mt-1 text-2xl font-black text-purple-700 dark:text-purple-400">
+              <p className="mt-1 text-2xl font-black text-purple-700">
                 {data.quote_requests.toLocaleString("tr-TR")}
-                <span className="ml-1 text-xs font-normal text-gray-500 dark:text-slate-400">adet</span>
+                <span className="ml-1 text-xs font-normal text-gray-500">adet</span>
               </p>
-              <p className="mt-1 text-[11px] text-gray-500 dark:text-slate-400">
+              <p className="mt-1 text-[11px] text-gray-500">
                 Fiyat &amp; Proje
               </p>
             </div>
 
             {/* 5. Acil Servis (urgent_requests - 🚨 Kırmızı Vurgu) */}
-            <div className="rounded-xl border border-red-300 dark:border-red-900/60 bg-red-50/70 dark:bg-red-950/40 p-4 shadow-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-red-800 dark:text-red-300">
+            <div className="rounded-xl border border-red-300 bg-red-50/70 p-4 shadow-sm">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-red-800">
                 🚨 Acil Servis
               </p>
-              <p className="mt-1 text-2xl font-black text-red-700 dark:text-red-400">
+              <p className="mt-1 text-2xl font-black text-red-700">
                 {data.urgent_requests.toLocaleString("tr-TR")}
-                <span className="ml-1 text-xs font-normal text-red-700 dark:text-red-400">adet</span>
+                <span className="ml-1 text-xs font-normal text-red-700">adet</span>
               </p>
-              <p className="mt-1 text-[11px] font-bold text-red-700 dark:text-red-400">
+              <p className="mt-1 text-[11px] font-bold text-red-700">
                 Acil müdahale
               </p>
             </div>
 
             {/* 6. Satışa Dönüş Oranı (converted_sales / conversion_rate - ✓ Yeşil Vurgu) */}
-            <div className="rounded-xl border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50/50 dark:bg-emerald-950/40 p-4 shadow-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500 dark:text-slate-400">
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 shadow-sm">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
                 Satışa Dönüşen
               </p>
-              <p className="mt-1 text-2xl font-black text-emerald-700 dark:text-emerald-400">
+              <p className="mt-1 text-2xl font-black text-emerald-700">
                 {data.conversion_rate != null
                   ? `%${Math.round(data.conversion_rate * 100)}`
                   : EMPTY_LABEL}
               </p>
-              <p className="mt-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400">
+              <p className="mt-1 text-[11px] font-semibold text-emerald-700">
                 {data.converted_sales} başarılı satış
               </p>
             </div>
 
             {/* 7. Ort. Cevap Süresi (avg_answer_delay_s) */}
-            <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500 dark:text-slate-400">
+            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
                 Ort. Yanıt Süresi
               </p>
-              <p className="mt-1 text-2xl font-black text-amber-700 dark:text-amber-400">
+              <p className="mt-1 text-2xl font-black text-amber-700">
                 {data.avg_answer_delay_s != null
                   ? `${Math.round(data.avg_answer_delay_s)}`
                   : EMPTY_LABEL}
                 {data.avg_answer_delay_s != null && (
-                  <span className="ml-1 text-xs font-normal text-gray-500 dark:text-slate-400">sn</span>
+                  <span className="ml-1 text-xs font-normal text-gray-500">sn</span>
                 )}
               </p>
-              <p className="mt-1 text-[11px] text-gray-500 dark:text-slate-400">
+              <p className="mt-1 text-[11px] text-gray-500">
                 Santral bekleme
               </p>
             </div>
           </div>
 
           {/* Günlük Çağrı Trendi Grafiği (daily_calls - boş günler için 0 gösterimi) */}
-          <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
             <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between mb-4">
               <div>
-                <h2 className="text-sm font-bold text-gray-900 dark:text-slate-100">Günlük Çağrı Sayısı Trendi</h2>
-                <p className="text-xs text-gray-500 dark:text-slate-400">
+                <h2 className="text-sm font-bold text-gray-900">Günlük Çağrı Sayısı Trendi</h2>
+                <p className="text-xs text-gray-500">
                   Dönem: {data.period_start} — {data.period_end}
                 </p>
               </div>
-              <div className="flex items-center gap-4 text-[11px] text-gray-500 dark:text-slate-400">
+              <div className="flex items-center gap-4 text-[11px] text-gray-500">
                 <div className="flex items-center gap-1.5">
                   <span className="h-3 w-3 rounded bg-sky-700 inline-block" />
                   <span>En Yüksek Gün</span>
@@ -507,7 +507,7 @@ export default function AnalyticsDashboard() {
             </div>
 
             {dailyCalls.length === 0 ? (
-              <div className="h-36 flex items-center justify-center text-xs text-gray-500 dark:text-slate-400">
+              <div className="h-36 flex items-center justify-center text-xs text-gray-500">
                 Bu tarih aralığında günlük çağrı grafiği verisi bulunamadı.
               </div>
             ) : (
@@ -515,7 +515,7 @@ export default function AnalyticsDashboard() {
                 role="region"
                 aria-label="Günlük çağrı sayısı grafiği (yatay kaydırılabilir)"
                 tabIndex={0}
-                className="flex items-end gap-2 sm:gap-3 h-44 pt-6 pb-2 border-b border-gray-100 dark:border-slate-800 overflow-x-auto"
+                className="flex items-end gap-2 sm:gap-3 h-44 pt-6 pb-2 border-b border-gray-100 overflow-x-auto"
               >
                 {dailyCalls.map((day) => {
                   const isZero = day.count === 0;
@@ -534,10 +534,10 @@ export default function AnalyticsDashboard() {
                       <span
                         className={`text-[10px] font-bold transition-transform group-hover:scale-110 ${
                           isZero
-                            ? "text-gray-500 dark:text-slate-400 font-normal"
+                            ? "text-gray-500 font-normal"
                             : isMax
-                            ? "text-sky-700 dark:text-sky-400 font-extrabold"
-                            : "text-gray-600 dark:text-slate-300"
+                            ? "text-sky-700 font-extrabold"
+                            : "text-gray-600"
                         }`}
                       >
                         {day.count}
@@ -549,9 +549,9 @@ export default function AnalyticsDashboard() {
                           style={{ height: `${heightPct}%` }}
                           className={`w-full rounded-t-md transition-all group-hover:opacity-90 ${
                             isZero
-                              ? "bg-gray-200 dark:bg-slate-800"
+                              ? "bg-gray-200"
                               : isMax
-                              ? "bg-sky-700 shadow-sm ring-2 ring-sky-300 dark:ring-sky-700"
+                              ? "bg-sky-700 shadow-sm ring-2 ring-sky-300"
                               : "bg-sky-400"
                           }`}
                           title={`${day.day}: ${day.count} çağrı`}
@@ -562,10 +562,10 @@ export default function AnalyticsDashboard() {
                       <span
                         className={`text-[9px] sm:text-[10px] font-medium text-center truncate max-w-full ${
                           isZero
-                            ? "text-gray-500 dark:text-slate-400"
+                            ? "text-gray-500"
                             : isMax
-                            ? "text-sky-900 dark:text-sky-300 font-bold"
-                            : "text-gray-500 dark:text-slate-400"
+                            ? "text-sky-900 font-bold"
+                            : "text-gray-500"
                         }`}
                       >
                         {formatDayLabel(day.day)}
@@ -580,19 +580,19 @@ export default function AnalyticsDashboard() {
           {/* 3 Temel Dağılım Grafiği */}
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {/* 1. Arıza & Talep Kategori Dağılımı (by_category) */}
-            <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
               <div className="flex items-center justify-between mb-1">
-                <h2 className="text-sm font-bold text-gray-900 dark:text-slate-100">Arıza &amp; Talep Kategorisi</h2>
-                <span className="text-[11px] font-semibold text-gray-500 dark:text-slate-400">
+                <h2 className="text-sm font-bold text-gray-900">Arıza &amp; Talep Kategorisi</h2>
+                <span className="text-[11px] font-semibold text-gray-500">
                   {totalCategoryCalls} çağrı
                 </span>
               </div>
-              <p className="text-xs text-gray-500 dark:text-slate-400 mb-4">
+              <p className="text-xs text-gray-500 mb-4">
                 Talep kategorisine göre dağılım
               </p>
 
               {categoryEntries.length === 0 ? (
-                <p className="text-xs text-gray-500 dark:text-slate-400 py-6 text-center">Kategori verisi bulunmuyor</p>
+                <p className="text-xs text-gray-500 py-6 text-center">Kategori verisi bulunmuyor</p>
               ) : (
                 <div className="space-y-3">
                   {categoryEntries
@@ -607,14 +607,14 @@ export default function AnalyticsDashboard() {
                       return (
                         <div key={category} className="space-y-1">
                           <div className="flex justify-between text-xs">
-                            <span className="font-semibold text-gray-700 dark:text-slate-300 truncate max-w-[70%]">
+                            <span className="font-semibold text-gray-700 truncate max-w-[70%]">
                               {label}
                             </span>
-                            <span className="font-bold text-gray-900 dark:text-slate-100">
-                              %{pct} <span className="font-normal text-gray-500 dark:text-slate-400">({count})</span>
+                            <span className="font-bold text-gray-900">
+                              %{pct} <span className="font-normal text-gray-500">({count})</span>
                             </span>
                           </div>
-                          <div className="h-2 w-full rounded-full bg-gray-100 dark:bg-slate-800 overflow-hidden">
+                          <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
                             <div
                               style={{ width: `${pct}%` }}
                               className={`h-full rounded-full ${barColor} transition-all`}
@@ -628,19 +628,19 @@ export default function AnalyticsDashboard() {
             </div>
 
             {/* 2. Aciliyet Seviyesi Dağılımı (by_urgency) & En Yoğun Marinalar (busiest_marinas) */}
-            <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
               <div className="flex items-center justify-between mb-1">
-                <h2 className="text-sm font-bold text-gray-900 dark:text-slate-100">Aciliyet Dağılımı &amp; Marinalar</h2>
-                <span className="text-[11px] font-semibold text-gray-500 dark:text-slate-400">
+                <h2 className="text-sm font-bold text-gray-900">Aciliyet Dağılımı &amp; Marinalar</h2>
+                <span className="text-[11px] font-semibold text-gray-500">
                   {totalUrgencyCalls} analiz
                 </span>
               </div>
-              <p className="text-xs text-gray-500 dark:text-slate-400 mb-4">
+              <p className="text-xs text-gray-500 mb-4">
                 Aciliyet seviyeleri ve en yoğun lokasyonlar
               </p>
 
               {/* Aciliyet Dağılımı Çubukları */}
-              <div className="space-y-2.5 pb-4 border-b border-gray-100 dark:border-slate-800">
+              <div className="space-y-2.5 pb-4 border-b border-gray-100">
                 {urgencyEntries
                   .sort((a, b) => {
                     const order: Record<Urgency, number> = { acil: 0, yuksek: 1, normal: 2, dusuk: 3 };
@@ -660,11 +660,11 @@ export default function AnalyticsDashboard() {
                             {urgency === "acil" && "🚨"}
                             {label}
                           </span>
-                          <span className="font-bold text-gray-900 dark:text-slate-100">
-                            %{pct} <span className="font-normal text-gray-500 dark:text-slate-400">({count})</span>
+                          <span className="font-bold text-gray-900">
+                            %{pct} <span className="font-normal text-gray-500">({count})</span>
                           </span>
                         </div>
-                        <div className="h-2 w-full rounded-full bg-gray-100 dark:bg-slate-800 overflow-hidden">
+                        <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
                           <div
                             style={{ width: `${pct}%` }}
                             className={`h-full rounded-full ${style.bar} transition-all`}
@@ -677,9 +677,9 @@ export default function AnalyticsDashboard() {
 
               {/* En Yoğun Marinalar Özeti (busiest_marinas) */}
               <div className="pt-3">
-                <h3 className="text-xs font-bold text-gray-800 dark:text-slate-200 mb-2">En Yoğun Marinalar</h3>
+                <h3 className="text-xs font-bold text-gray-800 mb-2">En Yoğun Marinalar</h3>
                 {marinas.length === 0 ? (
-                  <p className="text-[11px] text-gray-500 dark:text-slate-400">Marina verisi bulunmuyor</p>
+                  <p className="text-[11px] text-gray-500">Marina verisi bulunmuyor</p>
                 ) : (
                   <div className="space-y-1.5">
                     {marinas.slice(0, 3).map((m) => {
@@ -689,11 +689,11 @@ export default function AnalyticsDashboard() {
                       return (
                         <div
                           key={m.name}
-                          className="flex items-center justify-between text-xs py-1 border-b border-gray-50 dark:border-slate-800/60 last:border-none"
+                          className="flex items-center justify-between text-xs py-1 border-b border-gray-50 last:border-none"
                         >
-                          <span className="font-medium text-gray-700 dark:text-slate-300">⚓ {m.name || EMPTY_LABEL}</span>
-                          <span className="font-bold text-sky-700 dark:text-sky-400">
-                            {m.count} çağrı <span className="font-normal text-gray-500 dark:text-slate-400">(%{mPct})</span>
+                          <span className="font-medium text-gray-700">⚓ {m.name || EMPTY_LABEL}</span>
+                          <span className="font-bold text-sky-700">
+                            {m.count} çağrı <span className="font-normal text-gray-500">(%{mPct})</span>
                           </span>
                         </div>
                       );
@@ -704,21 +704,21 @@ export default function AnalyticsDashboard() {
             </div>
 
             {/* 3. Satış Kaçırma Sebepleri (lost_by_reason) */}
-            <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
+            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
               <div className="flex items-center justify-between mb-1">
-                <h2 className="text-sm font-bold text-gray-900 dark:text-slate-100">Satış Kaçırma Sebepleri</h2>
-                <span className="text-[11px] font-semibold text-gray-500 dark:text-slate-400">
+                <h2 className="text-sm font-bold text-gray-900">Satış Kaçırma Sebepleri</h2>
+                <span className="text-[11px] font-semibold text-gray-500">
                   {totalLossCount} kayıp
                 </span>
               </div>
-              <p className="text-xs text-gray-500 dark:text-slate-400 mb-4">
+              <p className="text-xs text-gray-500 mb-4">
                 Kaybedilen satışların nedenleri
               </p>
 
               {lossEntries.length === 0 ? (
                 <div className="py-8 text-center">
                   <span className="text-2xl">🎉</span>
-                  <p className="mt-2 text-xs font-medium text-gray-600 dark:text-slate-400">
+                  <p className="mt-2 text-xs font-medium text-gray-600">
                     Kayıp satış kaydı bulunmamaktadır.
                   </p>
                 </div>
@@ -736,14 +736,14 @@ export default function AnalyticsDashboard() {
                       return (
                         <div key={reason} className="space-y-1">
                           <div className="flex justify-between text-xs">
-                            <span className="font-semibold text-gray-700 dark:text-slate-300 truncate max-w-[70%]">
+                            <span className="font-semibold text-gray-700 truncate max-w-[70%]">
                               {label}
                             </span>
-                            <span className="font-bold text-gray-900 dark:text-slate-100">
-                              %{pct} <span className="font-normal text-gray-500 dark:text-slate-400">({count})</span>
+                            <span className="font-bold text-gray-900">
+                              %{pct} <span className="font-normal text-gray-500">({count})</span>
                             </span>
                           </div>
-                          <div className="h-2 w-full rounded-full bg-gray-100 dark:bg-slate-800 overflow-hidden">
+                          <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
                             <div
                               style={{ width: `${pct}%` }}
                               className={`h-full rounded-full ${color} transition-all`}
@@ -757,7 +757,7 @@ export default function AnalyticsDashboard() {
 
               {/* Aksiyon İpucu Kutusu */}
               {topLossReason && totalLossCount > 0 && (
-                <div className="mt-4 rounded-lg bg-amber-50 dark:bg-amber-950/40 p-2.5 border border-amber-200 dark:border-amber-900/60 text-[11px] text-amber-900 dark:text-amber-200">
+                <div className="mt-4 rounded-lg bg-amber-50 p-2.5 border border-amber-200 text-[11px] text-amber-900">
                   💡 <strong>Aksiyon Önerisi:</strong>{" "}
                   {topLossReason === "fiyat" &&
                     "Fiyat itirazı olan tekliflerde standart kış bakım paketleri ve alternatif ödeme planları önerin."}
@@ -783,30 +783,30 @@ export default function AnalyticsDashboard() {
           {/* En Sık Bildirilen Arızalar (top_problems) & Hızlı Aksiyon */}
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             {/* Sık Karşılaşılan Arızalar (top_problems) */}
-            <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm">
-              <h2 className="text-sm font-bold text-gray-900 dark:text-slate-100 mb-1">
+            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+              <h2 className="text-sm font-bold text-gray-900 mb-1">
                 En Sık Bildirilen Tekne Arızaları
               </h2>
-              <p className="text-xs text-gray-500 dark:text-slate-400 mb-4">
+              <p className="text-xs text-gray-500 mb-4">
                 Konuşma transkriptlerinden çıkarılan problem ifadeleri
               </p>
 
               {(data.top_problems ?? []).length === 0 ? (
-                <p className="text-xs text-gray-500 dark:text-slate-400">Kayıtlı arıza tanımı bulunmuyor.</p>
+                <p className="text-xs text-gray-500">Kayıtlı arıza tanımı bulunmuyor.</p>
               ) : (
                 <div className="space-y-2">
                   {data.top_problems.map((prob, idx) => (
                     <div
                       key={prob.name}
-                      className="flex items-center justify-between rounded-lg bg-gray-50 dark:bg-slate-800/80 px-3 py-2 text-xs"
+                      className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 text-xs"
                     >
                       <div className="flex items-center gap-2">
-                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-sky-100 dark:bg-sky-950/80 text-[10px] font-bold text-sky-700 dark:text-sky-300">
+                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-sky-100 text-[10px] font-bold text-sky-700">
                           {idx + 1}
                         </span>
-                        <span className="font-semibold text-gray-800 dark:text-slate-200">{prob.name || EMPTY_LABEL}</span>
+                        <span className="font-semibold text-gray-800">{prob.name || EMPTY_LABEL}</span>
                       </div>
-                      <span className="font-bold text-sky-700 dark:text-sky-400">{prob.count} vaka</span>
+                      <span className="font-bold text-sky-700">{prob.count} vaka</span>
                     </div>
                   ))}
                 </div>
@@ -814,7 +814,7 @@ export default function AnalyticsDashboard() {
             </div>
 
             {/* Hızlı Erişim & Aksiyon Kartı */}
-            <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-950 dark:to-slate-900 p-6 text-white shadow-sm flex flex-col justify-between">
+            <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-slate-900 to-slate-800 p-6 text-white shadow-sm flex flex-col justify-between">
               <div>
                 <span className="inline-flex rounded-full bg-sky-500/20 px-3 py-1 text-xs font-semibold text-sky-300 mb-3">
                   Operasyonel Hızlı Erişim
@@ -831,7 +831,7 @@ export default function AnalyticsDashboard() {
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
                   href="/admin/calls"
-                  className="rounded-xl bg-white dark:bg-slate-800 px-4 py-2 text-xs font-bold text-slate-900 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                  className="rounded-xl bg-white px-4 py-2 text-xs font-bold text-slate-900 hover:bg-slate-100 transition-colors"
                 >
                   📞 Çağrı Listesine Git →
                 </Link>

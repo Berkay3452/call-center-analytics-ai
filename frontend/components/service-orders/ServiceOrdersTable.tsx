@@ -36,10 +36,10 @@ export function ServiceOrdersTable({
 
   return (
     <>
-      <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs">
+      <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-xs">
         <table className="w-full text-left text-xs border-collapse">
           <thead>
-            <tr className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/75 dark:bg-slate-800/60 text-slate-600 dark:text-slate-300 font-bold uppercase tracking-wider">
+            <tr className="border-b border-slate-200 bg-slate-50/75 text-slate-600 font-bold uppercase tracking-wider">
               <th scope="col" className="px-4 py-3.5 whitespace-nowrap">
                 Kod
               </th>
@@ -66,7 +66,7 @@ export function ServiceOrdersTable({
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
+          <tbody className="divide-y divide-slate-100">
             {orders.map((order) => {
               const code = formatOrderCode(order.id);
               const categoryLabel = labelOf(
@@ -77,18 +77,18 @@ export function ServiceOrdersTable({
               return (
                 <tr
                   key={order.id}
-                  className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors group cursor-pointer"
+                  className="hover:bg-slate-50/80 transition-colors group cursor-pointer"
                   onClick={() => handleOpenDetail(order.id)}
                 >
                   {/* Kod */}
-                  <td className="px-4 py-3 font-mono font-bold text-sky-700 dark:text-sky-400 whitespace-nowrap">
+                  <td className="px-4 py-3 font-mono font-bold text-sky-700 whitespace-nowrap">
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleOpenDetail(order.id);
                       }}
-                      className="hover:underline focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 rounded"
+                      className="hover:underline focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 rounded"
                     >
                       {code}
                     </button>
@@ -96,11 +96,11 @@ export function ServiceOrdersTable({
 
                   {/* Müşteri */}
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="font-semibold text-slate-900 dark:text-slate-100">
+                    <div className="font-semibold text-slate-900">
                       {order.customer_name}
                     </div>
                     {order.customer_phone && (
-                      <div className="text-[11px] font-mono text-slate-500 dark:text-slate-400">
+                      <div className="text-[11px] font-mono text-slate-500">
                         {order.customer_phone}
                       </div>
                     )}
@@ -108,16 +108,16 @@ export function ServiceOrdersTable({
 
                   {/* Tekne & Marina */}
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <div className="font-medium text-slate-800 dark:text-slate-200">
+                    <div className="font-medium text-slate-800">
                       {order.boat_name}
                       {order.boat_model && (
-                        <span className="text-slate-500 dark:text-slate-400 text-[11px] ml-1">
+                        <span className="text-slate-500 text-[11px] ml-1">
                           ({order.boat_model})
                         </span>
                       )}
                     </div>
                     {order.marina && (
-                      <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                      <div className="text-[11px] text-slate-500">
                         📍 {order.marina}
                       </div>
                     )}
@@ -125,7 +125,7 @@ export function ServiceOrdersTable({
 
                   {/* Kategori */}
                   <td className="px-4 py-3 whitespace-nowrap">
-                    <span className="inline-flex items-center rounded-md bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[11px] font-medium text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                    <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-700 border border-slate-200">
                       {categoryLabel}
                     </span>
                   </td>
@@ -133,7 +133,7 @@ export function ServiceOrdersTable({
                   {/* Açıklama */}
                   <td className="px-4 py-3 max-w-xs">
                     <p
-                      className="truncate text-slate-600 dark:text-slate-300"
+                      className="truncate text-slate-600"
                       title={order.description || ""}
                     >
                       {order.description || "—"}
@@ -151,13 +151,13 @@ export function ServiceOrdersTable({
                       <Link
                         href={`/admin/calls/${order.source_call_id}`}
                         onClick={(e) => e.stopPropagation()}
-                        className="inline-flex items-center gap-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/60 border border-sky-200 dark:border-sky-800/80 px-2.5 py-1 text-[11px] font-semibold text-sky-700 dark:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-900/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                        className="inline-flex items-center gap-1.5 rounded-lg bg-sky-50 border border-sky-200 px-2.5 py-1 text-[11px] font-semibold text-sky-700 hover:bg-sky-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                       >
                         <span aria-hidden="true">📞</span>
                         <span>Çağrı Detayı</span>
                       </Link>
                     ) : (
-                      <span className="text-slate-400 dark:text-slate-500">—</span>
+                      <span className="text-slate-400">—</span>
                     )}
                   </td>
 
@@ -169,7 +169,7 @@ export function ServiceOrdersTable({
                         e.stopPropagation();
                         handleOpenDetail(order.id);
                       }}
-                      className="inline-flex items-center gap-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                      className="inline-flex items-center gap-1 rounded-lg bg-slate-100 hover:bg-slate-200 px-2.5 py-1 text-xs font-semibold text-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                     >
                       <span>İncele</span>
                       <span aria-hidden="true">➔</span>

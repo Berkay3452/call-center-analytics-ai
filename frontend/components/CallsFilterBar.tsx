@@ -133,12 +133,12 @@ export function CallsFilterBar({
 
   return (
     <div
-      className={`rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4 shadow-xs space-y-3.5 transition-colors ${className}`}
+      className={`rounded-2xl border border-slate-200 bg-white p-4 shadow-xs space-y-3.5 transition-colors ${className}`}
     >
       {/* 1. Satır: Arama Kutusu ve Yükleme Göstergesi */}
       <div className="relative flex items-center">
         <span
-          className="absolute left-3.5 text-slate-400 dark:text-slate-500 pointer-events-none select-none text-sm"
+          className="absolute left-3.5 text-slate-400 pointer-events-none select-none text-sm"
           aria-hidden="true"
         >
           🔍
@@ -153,7 +153,7 @@ export function CallsFilterBar({
           onChange={(e) => setSearchVal(e.target.value)}
           placeholder={placeholder}
           aria-label="Arama kutusu"
-          className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-800/80 pl-10 pr-10 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 shadow-xs focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 transition-colors"
+          className="w-full rounded-xl border border-slate-300 bg-slate-50/70 pl-10 pr-10 py-2.5 text-sm text-slate-900 placeholder-slate-400 shadow-xs focus:bg-white focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
         />
         {searchVal && (
           <button
@@ -163,7 +163,7 @@ export function CallsFilterBar({
               applyFilterChanges({ q: null });
             }}
             aria-label="Aramayı temizle"
-            className="absolute right-3.5 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+            className="absolute right-3.5 text-xs text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
           >
             ✕
           </button>
@@ -183,7 +183,7 @@ export function CallsFilterBar({
             onChange={(e) => applyFilterChanges({ marina: e.target.value })}
             disabled={isPending}
             aria-label="Marina filtresi"
-            className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 transition-colors"
+            className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
           >
             <option value="all">⚓ Tüm Marinalar</option>
             {MARINA_OPTIONS.map((m) => (
@@ -205,7 +205,7 @@ export function CallsFilterBar({
             onChange={(e) => applyFilterChanges({ urgency: e.target.value })}
             disabled={isPending}
             aria-label="Aciliyet seviyesi"
-            className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 transition-colors"
+            className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
           >
             <option value="all">🚨 Aciliyet (Tümü)</option>
             {(Object.keys(URGENCY_LABELS) as Urgency[]).map((u) => (
@@ -228,7 +228,7 @@ export function CallsFilterBar({
               onChange={(e) => applyFilterChanges({ call_type: e.target.value })}
               disabled={isPending}
               aria-label="Çağrı tipi"
-              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 transition-colors"
+              className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
             >
               <option value="all">📞 Çağrı Tipi (Tümü)</option>
               {(Object.keys(CALL_TYPE_LABELS) as CallType[]).map((t) => (
@@ -251,7 +251,7 @@ export function CallsFilterBar({
             onChange={(e) => applyFilterChanges({ request_category: e.target.value })}
             disabled={isPending}
             aria-label="Talep kategorisi"
-            className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 transition-colors"
+            className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
           >
             <option value="all">🔧 Kategori (Tümü)</option>
             {(Object.keys(REQUEST_CATEGORY_LABELS) as RequestCategory[]).map((c) => (
@@ -274,7 +274,7 @@ export function CallsFilterBar({
               onChange={(e) => applyFilterChanges({ state: e.target.value })}
               disabled={isPending}
               aria-label="Analiz durumu"
-              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 transition-colors"
+              className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
             >
               <option value="all">📊 Durum (Tümü)</option>
               {STATE_OPTIONS.map((s) => (
@@ -298,7 +298,7 @@ export function CallsFilterBar({
               onChange={(e) => applyFilterChanges({ status: e.target.value })}
               disabled={isPending}
               aria-label="İnceleme durumu"
-              className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 transition-colors"
+              className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
             >
               <option value="all">📋 İnceleme (Tümü)</option>
               <option value="bekliyor">⏳ Bekliyor</option>
@@ -321,7 +321,7 @@ export function CallsFilterBar({
             disabled={isPending}
             title="Başlangıç tarihi (dahil)"
             aria-label="Başlangıç tarihi"
-            className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 transition-colors"
+            className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
           />
         </div>
 
@@ -338,7 +338,7 @@ export function CallsFilterBar({
             disabled={isPending}
             title="Bitiş tarihi (dahil)"
             aria-label="Bitiş tarihi"
-            className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 transition-colors"
+            className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
           />
         </div>
       </div>
@@ -347,7 +347,7 @@ export function CallsFilterBar({
       <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
         <div className="flex items-center gap-2">
           {isPending && (
-            <span className="inline-flex items-center gap-1.5 text-xs text-sky-600 dark:text-sky-400 animate-pulse font-medium">
+            <span className="inline-flex items-center gap-1.5 text-xs text-sky-600 animate-pulse font-medium">
               <span>⏳</span> Filtreler uygulanıyor...
             </span>
           )}
@@ -358,7 +358,7 @@ export function CallsFilterBar({
             type="button"
             onClick={handleReset}
             disabled={isPending}
-            className="inline-flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-lg text-slate-600 hover:text-red-700 dark:text-slate-400 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 border border-slate-200 dark:border-slate-700 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+            className="inline-flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-lg text-slate-600 hover:text-red-700 hover:bg-red-50 border border-slate-200 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
           >
             <span>✕</span> Filtreleri Temizle
           </button>

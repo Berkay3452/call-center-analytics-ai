@@ -37,15 +37,15 @@ export function EmptyState({
 
   return (
     <div
-      className={`rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-12 text-center shadow-xs transition-colors ${className}`}
+      className={`rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center shadow-xs transition-colors ${className}`}
     >
-      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 dark:bg-slate-800 text-3xl select-none" aria-hidden="true">
+      <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-3xl select-none" aria-hidden="true">
         {icon}
       </div>
-      <h3 className="mt-4 text-base font-bold text-slate-900 dark:text-slate-100">
+      <h3 className="mt-4 text-base font-bold text-slate-900">
         {title}
       </h3>
-      <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto leading-relaxed">
+      <p className="mt-1.5 text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
         {description}
       </p>
 
@@ -54,7 +54,7 @@ export function EmptyState({
         <div className="mt-5">
           <Link
             href={actionHref}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-sky-700 dark:bg-sky-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-sky-800 dark:hover:bg-sky-700 active:scale-[0.98] transition-all focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-sky-700 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-sky-800 active:scale-[0.98] transition-all focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
           >
             <span>{actionLabel}</span>
             <span aria-hidden="true">➔</span>
@@ -67,7 +67,7 @@ export function EmptyState({
           <button
             type="button"
             onClick={onAction}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-sky-700 dark:bg-sky-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-sky-800 dark:hover:bg-sky-700 active:scale-[0.98] transition-all focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-sky-700 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-sky-800 active:scale-[0.98] transition-all focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
           >
             <span>{actionLabel}</span>
           </button>
@@ -81,7 +81,7 @@ export function EmptyState({
             type="button"
             onClick={handleReset}
             disabled={isPending}
-            className="inline-flex items-center gap-1.5 rounded-xl bg-sky-700 dark:bg-sky-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-sky-800 dark:hover:bg-sky-700 active:scale-[0.98] transition-all focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-sky-700 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-sky-800 active:scale-[0.98] transition-all focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
           >
             <span aria-hidden="true">✕</span>
             <span>Filtreleri Sıfırla</span>

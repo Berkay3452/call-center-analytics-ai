@@ -26,7 +26,7 @@ export function ServiceOrderStatusBadge({
 }: ServiceOrderStatusBadgeProps) {
   const badgeCls =
     SERVICE_ORDER_STATUS_BADGE[status] ??
-    "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700";
+    "bg-slate-100 text-slate-700 border-slate-200";
   const label = SERVICE_ORDER_STATUS_LABELS[status] ?? status;
   const icon = STATUS_ICONS[status] ?? "•";
 

@@ -66,7 +66,7 @@ export function ServiceOrdersFilterBar({
 
   return (
     <div
-      className={`rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-3 shadow-xs ${className}`}
+      className={`rounded-xl border border-slate-200 bg-white p-3 shadow-xs ${className}`}
     >
       <form
         onSubmit={handleSearchSubmit}
@@ -90,7 +90,7 @@ export function ServiceOrdersFilterBar({
             onChange={(e) => setSearchVal(e.target.value)}
             placeholder={placeholder}
             aria-label="Servis emri ara"
-            className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 pl-8 pr-3 py-1.5 text-xs text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+            className="w-full rounded-lg border border-slate-200 bg-slate-50 pl-8 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
           />
         </div>
 
@@ -104,7 +104,7 @@ export function ServiceOrdersFilterBar({
             value={urlMarina}
             onChange={(e) => updateParam("marina", e.target.value)}
             aria-label="Marina filtresi"
-            className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 px-2.5 py-1.5 text-xs text-slate-700 dark:text-slate-200 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs text-slate-700 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
           >
             <option value="">Tüm Marinalar</option>
             {MARINA_OPTIONS.map((m) => (
@@ -120,7 +120,7 @@ export function ServiceOrdersFilterBar({
           <button
             type="submit"
             disabled={isPending}
-            className="rounded-lg bg-sky-700 dark:bg-sky-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-sky-800 dark:hover:bg-sky-700 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50"
+            className="rounded-lg bg-sky-700 px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-sky-800 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 disabled:opacity-50"
           >
             {isPending ? "..." : "Ara"}
           </button>
@@ -131,7 +131,7 @@ export function ServiceOrdersFilterBar({
               onClick={handleReset}
               disabled={isPending}
               aria-label="Filtreleri temizle"
-              className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+              className="rounded-lg border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
             >
               Temizle
             </button>
