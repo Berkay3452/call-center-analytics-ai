@@ -3,7 +3,7 @@ import AnalyticsDashboard from "./AnalyticsDashboard";
 import { AnalyticsDashboardSkeleton } from "@/components/skeletons";
 
 
-export const metadata = { title: "Çağrı Analitiği Dashboard | Miço Usta" };
+export const metadata = { title: "Çağrı Analitiği | Miço Usta" };
 
 export default function AnalyticsPage() {
   return (

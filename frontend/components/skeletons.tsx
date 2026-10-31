@@ -173,48 +173,35 @@ export function CrmSuggestionsSkeleton() {
  */
 export function AnalyticsDashboardSkeleton() {
   return (
-    <div className="space-y-6 animate-pulse">
-      {/* 7 KPI Kartı */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
-        {Array.from({ length: 7 }).map((_, i) => (
-          <div
-            key={i}
-            className="h-24 rounded-xl border border-gray-200 bg-gray-100 p-4"
-          >
-            <div className="h-3 w-16 rounded bg-gray-200 mb-3" />
-            <div className="h-7 w-12 rounded bg-gray-200" />
+    <div className="space-y-6 animate-pulse" aria-busy="true" aria-label="Analitik verileri yükleniyor">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="h-28 rounded-xl border border-slate-200 bg-white p-4">
+            <div className="mb-3 h-3 w-20 rounded bg-slate-200" />
+            <div className="h-8 w-14 rounded bg-slate-200" />
           </div>
         ))}
       </div>
-
-      {/* Günlük Trend Grafiği */}
-      <div className="h-48 rounded-xl border border-gray-200 bg-gray-100 p-5">
-        <div className="h-4 w-44 rounded bg-gray-200 mb-2" />
-        <div className="h-3 w-28 rounded bg-gray-200 mb-6" />
+      <div className="h-56 rounded-xl border border-slate-200 bg-white p-5">
+        <div className="mb-6 h-4 w-44 rounded bg-slate-200" />
         <div className="flex h-28 items-end gap-3">
           {Array.from({ length: 7 }).map((_, i) => (
             <div
               key={i}
-              className="flex-1 rounded-t-md bg-gray-200"
-              style={{ height: `${30 + (i * 12) % 60}%` }}
+              className="flex-1 rounded-t bg-slate-200"
+              style={{ height: `${30 + ((i * 12) % 60)}%` }}
             />
           ))}
         </div>
       </div>
-
-      {/* 3 Dağılım Kartı */}
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         {Array.from({ length: 3 }).map((_, i) => (
-          <div
-            key={i}
-            className="h-64 rounded-xl border border-gray-200 bg-gray-100 p-5 space-y-4"
-          >
-            <div className="h-4 w-36 rounded bg-gray-200" />
-            <div className="h-3 w-48 rounded bg-gray-200" />
-            <div className="space-y-3 pt-2">
-              <div className="h-4 w-full rounded bg-gray-200" />
-              <div className="h-4 w-full rounded bg-gray-200" />
-              <div className="h-4 w-full rounded bg-gray-200" />
+          <div key={i} className="h-56 space-y-4 rounded-xl border border-slate-200 bg-white p-5">
+            <div className="h-4 w-36 rounded bg-slate-200" />
+            <div className="space-y-4 pt-2">
+              <div className="h-3 w-full rounded bg-slate-200" />
+              <div className="h-3 w-full rounded bg-slate-200" />
+              <div className="h-3 w-full rounded bg-slate-200" />
             </div>
           </div>
         ))}
