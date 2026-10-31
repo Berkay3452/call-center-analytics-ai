@@ -21,7 +21,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: call_center
     ports:
-      - "5433:5432" # makinede kurulu başka bir Postgres ile çakışmasın diye 5433
+      - "${POSTGRES_PORT:-15432}:5432" # Windows 5433-6032 aralığını ayırabiliyor (netsh interface ipv4 show excludedportrange protocol=tcp); 15432 güvenli
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
