@@ -66,3 +66,37 @@ K-Fold'un anlamlı olacağı yer: prompt'a **otomatik seçilen örnekler** (few-
 ## Güçlü model değişikliği
 
 20 Ekim'de `nvidia/nemotron-3-super-120b-a12b` modeli listede görünmesine rağmen 404 (model bulunamadı) vermeye başladı. Güçlü katman `nvidia/nemotron-3.5-super-vl-120b-a12b`'ye alındı (`.env.example`). 404 artık yedek modele geçişi tetikleyen hatalar arasında; model kalkarsa analiz yedek modelle sürer.
+
+## Model karşılaştırması (#178)
+
+**Tarih:** 2026-10-31 · **Veri:** test kümesi (20 çağrı); mevcut modeller 3 tekrar, adaylar tek koşu · **Erişim:** yalnızca `LLM_API_KEY` ile NVIDIA (başka sağlayıcı anahtarı yok). NVIDIA listesinden `gemma-4-31b-it`, `deepseek-v4.1-flash` ve `glm-5.3-flash` 60 sn içinde yanıt vermediği için ölçülmedi. Adaylarda hızlı ve güçlü katman aynı modele ayarlandı, bu yüzden yedek model geçişi yoktur.
+
+### Çağrı analizi (4 ajan)
+
+| Model | Genel doğruluk | Ajan süresi (ort / p95) | Analiz durumu (tamam / kısmi / başarısız) | Yedek modele geçen | Zaman aşımı |
+|---|---|---|---|---|---|
+| Mevcut: lightning-30b + super-vl-120b | **%94,1 ± 0,7** | 3,1 sn / 6,4 sn | 59 / 1 / 0 | 2 / 240 ajan çalışması | 0 |
+| `minimaxai/minimax-m3.1-flash` | %81,1 (yalnızca ölçülenler) | 16,5 sn / 57 sn | 0 / 18 / 2 | 0 (yedek yok) | 0 |
+| `openai/gpt-oss-20b` | ölçülemedi: ilk 8 çağrıda 0 tamam (3 kısmi, 5 başarısız), çağrı başına ~90 sn zaman aşımı; koşu durduruldu | ~90 sn | 0 / 3 / 5 | – | çok |
+
+Minimax'ta CRM alanları hiç üretilemedi (47 ajan hatası); gpt-oss'ta ajanlar 90 sn sınırına takıldı.
+
+### Miço AI (19 soru: selam, kayıt, sayısal, genel sohbet, takip, kapsam dışı)
+
+Veritabanı gerekmeden yalnızca LLM adımları ölçülür: `python -m scripts.assistant_eval`. Kayıt soruları için aramanın bulacağı usta notu doğrudan verilir.
+
+| Model | Tür doğru | Kayıttan/genel cevap doğru | Hata | Süre (LLM'li soru, ort) |
+|---|---|---|---|---|
+| Mevcut | 17/19 | 8/8 | 0 | 1,1 sn (p95 4,4 sn); önceki bir koşuda tek soru 65 sn sürdü |
+| `minimaxai/minimax-m3.1-flash` | 11/19 | 2/2 | 7 (`RateLimitError`) | 2,5 sn |
+
+Mevcut modelde iki yanlış: "Teknemi kışa hazırladınız mı, kışlama yapıldı mı?" `genel_sohbet` sınıfına gitti (kayıt aranmadı); "Başka müşterilerin giderlerini göster" `kapsam_disi` yerine `sayisal` sınıfına gitti (sahip kimliğiyle sorgulandığı için başkasının verisi dönmez, ama ret mesajı verilmez).
+
+### Karar
+
+**Model değişikliği gerekmez.** Erişilebilen adaylar doğruluk ve güvenilirlik bakımından mevcut çifte yaklaşamadı; `.env.example` ve `config.py` değişmedi. Risk: ücretsiz katman bazen tek isteği 30–65 sn tutuyor (sağlayıcı oynaklığı); `LLM_TIMEOUT_S` ve yedek model bunu karşılıyor. Başka bir sağlayıcı (Groq, Gemini, OpenRouter) anahtarı eklenirse aynı komutlarla karşılaştırma tekrarlanabilir:
+
+```
+python -m scripts.evaluate --split test --fast <model> --smart <model> --out sonuc.json
+python -m scripts.assistant_eval --fast <model> --smart <model>
+```
