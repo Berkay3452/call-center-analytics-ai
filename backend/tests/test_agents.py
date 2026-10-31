@@ -555,6 +555,26 @@ async def test_full_pipeline_on_hoca_scenario() -> None:
     ]
 
 
+def test_default_stages_run_all_agents_in_parallel(
+    settings_factory: Callable[..., Settings],
+) -> None:
+    """#162: sınıflandırma diğerlerini beklemez; tek aşamada dört agent."""
+    stages = default_stages(settings_factory())
+    assert [[a.name for a in stage] for stage in stages] == [
+        [CALL_CLASSIFIER, CRM_EXTRACTION, SALES_ANALYZER, SUMMARIZER]
+    ]
+
+
+def test_classifier_first_setting_restores_two_stages(
+    settings_factory: Callable[..., Settings],
+) -> None:
+    stages = default_stages(settings_factory(analysis_classifier_first=True))
+    assert [[a.name for a in stage] for stage in stages] == [
+        [CALL_CLASSIFIER],
+        [CRM_EXTRACTION, SALES_ANALYZER, SUMMARIZER],
+    ]
+
+
 # --- Agent bazında model ayarı --------------------------------------------------------------------
 
 

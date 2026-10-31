@@ -11,6 +11,8 @@ bulut deposu (GCS) ile çalışır (#121).
 
 from __future__ import annotations
 
+import time
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import BinaryIO
 from uuid import UUID
@@ -187,6 +189,8 @@ async def run_transcription(
             await set_state(session, call_id, "basarisiz", "Çağrının ses kaydı yok.")
             return "basarisiz"
         audio_key = call.audio_path
+        # Yüklemeden STT görevinin başlamasına kadar geçen süre = kuyrukta bekleme (#162).
+        queue_wait_s = round((datetime.now(UTC) - call.created_at).total_seconds(), 1)
         names = [call.customer_name]
         known_duration = call.duration_s
         await set_state(session, call_id, "yaziya_cevriliyor")
@@ -214,6 +218,7 @@ async def run_transcription(
             await set_state(session, call_id, "basarisiz", f"{type(exc).__name__}: {exc}"[:500])
         return "basarisiz"
 
+    save_started = time.perf_counter()
     async with session_factory() as session, session.begin():
         await store_segments(session, call_id, result.to_segments(), names=names)
         if known_duration is None and result.duration_sec:
@@ -227,5 +232,7 @@ async def run_transcription(
         turns=len(result.turns),
         model=result.model,
         processing_s=round(result.processing_s, 1),
+        queue_wait_s=queue_wait_s,
+        save_s=round(time.perf_counter() - save_started, 2),
     )
     return "beklemede"
