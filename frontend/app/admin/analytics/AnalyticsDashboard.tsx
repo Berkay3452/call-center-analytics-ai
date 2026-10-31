@@ -6,6 +6,18 @@ import { getKpiSummary } from "@/lib/api/client";
 import { isApiError } from "@/lib/api/errors";
 import type { KpiSummary } from "@/lib/api/types";
 import {
+  Button,
+  buttonClasses,
+  Card,
+  CardHeader,
+  PageHeader,
+  ProgressBar,
+  Select,
+  StatCard,
+  type Tone,
+} from "@/components/ui";
+import { AnalyticsDashboardSkeleton } from "@/components/skeletons";
+import {
   EMPTY_LABEL,
   labelOf,
   LOSS_REASON_LABELS,
@@ -13,48 +25,16 @@ import {
   MARINA_OPTIONS,
   REQUEST_CATEGORY_LABELS,
   RequestCategory,
-  URGENCY_LABELS,
-  Urgency,
 } from "@/lib/types";
 
 // Tarih aralığı opsiyonları (Sentetik seed verileri 5-13 Ekim 2026 arasındadır)
 const DATE_RANGE_OPTIONS = [
-  { value: "30", label: "Son 30 Gün (Varsayılan)" },
-  { value: "oct2026", label: "Ekim 2026 (Demo Seed Dönemi)" },
-  { value: "7", label: "Son 7 Gün" },
-  { value: "90", label: "Son 3 Ay (Sezon)" },
-  { value: "365", label: "Son 1 Yıl" },
+  { value: "30", label: "Son 30 gün" },
+  { value: "oct2026", label: "Ekim 2026 (demo verisi)" },
+  { value: "7", label: "Son 7 gün" },
+  { value: "90", label: "Son 3 ay" },
+  { value: "365", label: "Son 1 yıl" },
 ];
-
-// Kategori bar renkleri
-const CATEGORY_COLORS: Record<string, string> = {
-  makine: "bg-sky-700",
-  mekanik_hidrolik: "bg-sky-400",
-  elektrik_elektronik: "bg-blue-600",
-  su_sihhi_tesisat: "bg-cyan-500",
-  iklimlendirme: "bg-teal-500",
-  tekne_guvenligi: "bg-indigo-500",
-  temizlik_bakim: "bg-slate-500",
-  diger: "bg-gray-400",
-};
-
-// Aciliyet bar renkleri ve rozetleri
-const URGENCY_STYLES: Record<Urgency, { bar: string; badge: string; text: string }> = {
-  acil: { bar: "bg-red-500", badge: "bg-red-100 text-red-700 border-red-200", text: "text-red-700" },
-  yuksek: { bar: "bg-amber-500", badge: "bg-amber-100 text-amber-700 border-amber-200", text: "text-amber-700" },
-  normal: { bar: "bg-sky-500", badge: "bg-sky-100 text-sky-700 border-sky-200", text: "text-sky-700" },
-  dusuk: { bar: "bg-slate-400", badge: "bg-slate-100 text-slate-700 border-slate-200", text: "text-slate-700" },
-};
-
-// Satış kaybı bar renkleri
-const LOSS_COLORS: Record<string, string> = {
-  fiyat: "bg-red-500",
-  gec_donus: "bg-amber-500",
-  rakip: "bg-emerald-500",
-  takvim: "bg-indigo-500",
-  guven: "bg-purple-500",
-  diger: "bg-gray-400",
-};
 
 /** Belirtilen aralık anahtarına göre ISO tarih aralığı (date_from, date_to) üretir. */
 function getDateRange(rangeKey: string): { date_from?: string; date_to?: string } {
@@ -79,17 +59,51 @@ function getDateRange(rangeKey: string): { date_from?: string; date_to?: string 
   };
 }
 
-/** Tarih dizesini Türkçe gün ve ay formatına dönüştürür (örn: "06 Eki, Pzt"). */
+/** Tarih dizesini Türkçe gün ve ay formatına dönüştürür (örn: "06 Eki"). */
 function formatDayLabel(dateStr: string): string {
-  try {
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return dateStr;
-    const day = d.toLocaleDateString("tr-TR", { day: "2-digit", month: "short" });
-    const weekday = d.toLocaleDateString("tr-TR", { weekday: "short" });
-    return `${day} ${weekday}`;
-  } catch {
-    return dateStr;
+  const d = new Date(dateStr);
+  if (isNaN(d.getTime())) return dateStr;
+  return d.toLocaleDateString("tr-TR", { day: "2-digit", month: "short" });
+}
+
+interface DistributionRow {
+  key: string;
+  label: string;
+  count: number;
+}
+
+/** Yatay ilerleme çubuklu dağılım listesi: etiket, yüzde ve adet. */
+function DistributionList({
+  rows,
+  tone,
+  emptyText,
+}: {
+  rows: DistributionRow[];
+  tone: Tone;
+  emptyText: string;
+}) {
+  const total = rows.reduce((acc, r) => acc + r.count, 0);
+  if (rows.length === 0 || total === 0) {
+    return <p className="py-6 text-center text-sm text-slate-500">{emptyText}</p>;
   }
+  return (
+    <ul className="space-y-3">
+      {rows.map((row) => {
+        const pct = Math.round((row.count / total) * 100);
+        return (
+          <li key={row.key} className="space-y-1">
+            <div className="flex justify-between gap-2 text-sm">
+              <span className="truncate text-slate-700">{row.label}</span>
+              <span className="shrink-0 font-semibold text-brand-800">
+                {row.count} <span className="font-normal text-slate-500">(%{pct})</span>
+              </span>
+            </div>
+            <ProgressBar value={row.count} max={total} tone={tone} label={`${row.label}: %${pct}`} />
+          </li>
+        );
+      })}
+    </ul>
+  );
 }
 
 export default function AnalyticsDashboard() {
@@ -161,413 +175,229 @@ export default function AnalyticsDashboard() {
     };
   }, [dateRange, selectedMarina, reloadKey]);
 
-  // Günlük çağrı grafiği için maksimum değer (0 ise 1 kabul et)
   const dailyCalls = data?.daily_calls ?? [];
   const maxDailyCount = Math.max(...dailyCalls.map((d) => d.count), 1);
 
-  // Kategori dağılımı toplamı
-  const categoryEntries = Object.entries(data?.by_category ?? {}) as [RequestCategory, number][];
-  const totalCategoryCalls = categoryEntries.reduce((acc, [, val]) => acc + val, 0);
+  const categoryRows: DistributionRow[] = (
+    Object.entries(data?.by_category ?? {}) as [RequestCategory, number][]
+  )
+    .map(([key, count]) => ({ key, label: labelOf(REQUEST_CATEGORY_LABELS, key), count }))
+    .sort((a, b) => b.count - a.count);
 
-  // Aciliyet dağılımı
-  const urgencyEntries = Object.entries(data?.by_urgency ?? {}) as [Urgency, number][];
-  const totalUrgencyCalls = urgencyEntries.reduce((acc, [, val]) => acc + val, 0);
+  const marinaRows: DistributionRow[] = (data?.busiest_marinas ?? []).map((m) => ({
+    key: m.name,
+    label: m.name || EMPTY_LABEL,
+    count: m.count,
+  }));
 
-  // Satış kaybı dağılımı
-  const lossEntries = Object.entries(data?.lost_by_reason ?? {}) as [LossReason, number][];
-  const totalLossCount = lossEntries.reduce((acc, [, val]) => acc + val, 0);
+  const lossRows: DistributionRow[] = (
+    Object.entries(data?.lost_by_reason ?? {}) as [LossReason, number][]
+  )
+    .filter(([, count]) => count > 0)
+    .map(([key, count]) => ({ key, label: labelOf(LOSS_REASON_LABELS, key), count }))
+    .sort((a, b) => b.count - a.count);
+  const totalLost = lossRows.reduce((acc, r) => acc + r.count, 0);
 
-  // Marinalar (En yoğun marinalar)
-  const marinas = data?.busiest_marinas ?? [];
-  const totalMarinaCalls = marinas.reduce((acc, m) => acc + m.count, 0);
-
-  // En sık rastlanan kayıp nedeni ve aksiyon önerisi (yalnızca sayısı 0'dan büyük olanlar)
-  const nonZeroLossEntries = lossEntries.filter(([, count]) => count > 0);
-  const topLossEntry = nonZeroLossEntries.length > 0
-    ? [...nonZeroLossEntries].sort((a, b) => b[1] - a[1])[0]
-    : null;
-  const topLossReason = topLossEntry ? topLossEntry[0] : null;
+  const fmt = (n: number) => n.toLocaleString("tr-TR");
 
   return (
-    <div className="space-y-6">
-      {/* Üst Filtre Barı */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-gray-200 pb-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Çağrı Analitiği Dashboard</h1>
-          <p className="text-xs text-gray-500">
-            Tüm marinalar, sesli görüşme analizleri ve operasyonel KPI göstergeleri
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Marina Seçimi */}
-          <div className="relative">
+    <div>
+      <PageHeader
+        title="Çağrı Analitiği"
+        description="Sesli görüşme analizlerinden çıkan operasyonel göstergeler"
+        actions={
+          <>
             <label htmlFor="analytics-marina-select" className="sr-only">
               Marina filtresi
             </label>
-            <select
+            <Select
               id="analytics-marina-select"
               value={selectedMarina}
               onChange={(e) => handleMarinaChange(e.target.value)}
               disabled={isLoading}
-              title="Marina bazlı filtreleme"
               aria-label="Marina filtresi"
-              className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-sm focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 disabled:opacity-50"
+              className="w-auto"
             >
-              <option value="all">⚓ Tüm Marinalar</option>
+              <option value="all">Tüm marinalar</option>
               {MARINA_OPTIONS.map((m) => (
                 <option key={m} value={m}>
                   {m}
                 </option>
               ))}
-            </select>
-          </div>
-
-          {/* Tarih Filtresi (date_from & date_to API sorgusu) */}
-          <label htmlFor="analytics-date-range-select" className="sr-only">
-            Tarih aralığı
-          </label>
-          <select
-            id="analytics-date-range-select"
-            value={dateRange}
-            onChange={(e) => handleDateRangeChange(e.target.value)}
-            disabled={isLoading}
-            aria-label="Tarih aralığı"
-            className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-sm focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 disabled:opacity-50"
-          >
-            {DATE_RANGE_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
-
-          {/* Yenile Butonu */}
-          <button
-            type="button"
-            onClick={handleRefresh}
-            disabled={isLoading}
-            title="Verileri Yenile"
-            aria-label="Verileri Yenile"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 disabled:opacity-50"
-          >
-            <span className={isLoading ? "animate-spin" : ""}>🔄</span>
-            <span className="hidden sm:inline">Yenile</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Hata Durumu (Error State) */}
-      {error && !isLoading && (
-        <div className="rounded-xl border border-red-200 bg-red-50 p-6 shadow-sm">
-          <div className="flex items-start gap-4">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-red-100 text-xl text-red-700">
-              ⚠️
-            </div>
-            <div className="flex-1">
-              <h3 className="text-sm font-bold text-red-900">
-                Veriler Alınırken Bir Hata Oluştu
-              </h3>
-              <p className="mt-1 text-xs text-red-700">{error.message}</p>
-              <div className="mt-2 flex flex-wrap items-center gap-3 text-[11px] text-red-700">
-                {error.code && (
-                  <span>
-                    Hata Kodu: <code className="font-mono font-bold">{error.code}</code>
-                  </span>
-                )}
-                {error.requestId && (
-                  <span>
-                    İstek ID: <code className="font-mono">{error.requestId}</code>
-                  </span>
-                )}
-              </div>
-              <button
-                type="button"
-                onClick={handleRefresh}
-                className="mt-4 inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-xs font-bold text-white shadow hover:bg-red-700 active:scale-95 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
-              >
-                🔄 Yeniden Dene
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Yükleniyor Durumu (Loading Skeleton) */}
-      {isLoading && (
-        <div className="space-y-6">
-          {/* Skeleton KPI Kartları */}
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-7">
-            {Array.from({ length: 7 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-24 animate-pulse rounded-xl border border-gray-200 bg-gray-100 p-4"
-              >
-                <div className="h-3 w-16 rounded bg-gray-200 mb-3" />
-                <div className="h-7 w-12 rounded bg-gray-200" />
-              </div>
-            ))}
-          </div>
-
-          {/* Skeleton Günlük Trend Grafiği */}
-          <div className="h-48 animate-pulse rounded-xl border border-gray-200 bg-gray-100 p-5">
-            <div className="h-4 w-44 rounded bg-gray-200 mb-2" />
-            <div className="h-3 w-28 rounded bg-gray-200 mb-6" />
-            <div className="flex h-28 items-end gap-3">
-              {Array.from({ length: 7 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="flex-1 rounded-t-md bg-gray-200"
-                  style={{ height: `${30 + (i * 12) % 60}%` }}
-                />
+            </Select>
+            <label htmlFor="analytics-date-range-select" className="sr-only">
+              Tarih aralığı
+            </label>
+            <Select
+              id="analytics-date-range-select"
+              value={dateRange}
+              onChange={(e) => handleDateRangeChange(e.target.value)}
+              disabled={isLoading}
+              aria-label="Tarih aralığı"
+              className="w-auto"
+            >
+              {DATE_RANGE_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
               ))}
-            </div>
-          </div>
+            </Select>
+            <Button
+              variant="secondary"
+              onClick={handleRefresh}
+              disabled={isLoading}
+              aria-label="Verileri yenile"
+            >
+              Yenile
+            </Button>
+          </>
+        }
+      />
 
-          {/* Skeleton 3 Kolon */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-64 animate-pulse rounded-xl border border-gray-200 bg-gray-100 p-5 space-y-4"
-              >
-                <div className="h-4 w-36 rounded bg-gray-200" />
-                <div className="h-3 w-48 rounded bg-gray-200" />
-                <div className="space-y-3 pt-2">
-                  <div className="h-4 w-full rounded bg-gray-200" />
-                  <div className="h-4 w-full rounded bg-gray-200" />
-                  <div className="h-4 w-full rounded bg-gray-200" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+      {isLoading && <AnalyticsDashboardSkeleton />}
+
+      {error && !isLoading && (
+        <Card className="border-red-200 bg-red-50" role="alert">
+          <h2 className="text-base font-semibold text-red-900">Veriler alınırken bir hata oluştu</h2>
+          <p className="mt-1 text-sm text-red-700">{error.message}</p>
+          {(error.code || error.requestId) && (
+            <p className="mt-2 text-xs text-red-700">
+              {error.code && (
+                <>
+                  Hata kodu: <code className="font-mono">{error.code}</code>
+                </>
+              )}
+              {error.requestId && (
+                <>
+                  {" "}
+                  · İstek ID: <code className="font-mono">{error.requestId}</code>
+                </>
+              )}
+            </p>
+          )}
+          <Button variant="danger" className="mt-4" onClick={handleRefresh}>
+            Yeniden dene
+          </Button>
+        </Card>
       )}
 
-      {/* Boş Durum (Empty State) */}
       {!isLoading && !error && data && data.total_calls === 0 && (
-        <div className="rounded-2xl border border-gray-200 bg-white p-12 text-center shadow-sm">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-sky-50 text-3xl">
-            📊
-          </div>
-          <h2 className="mt-4 text-base font-bold text-gray-900">
-            Henüz çağrı verisi bulunmuyor
-          </h2>
-          <p className="mx-auto mt-2 max-w-md text-xs text-gray-500">
-            Seçili tarih aralığında ({data.period_start} — {data.period_end}) sisteme kayıtlı veya
-            analizi tamamlanmış çağrı kaydı yer almamaktadır.
+        <Card className="p-12 text-center">
+          <h2 className="text-base font-semibold text-brand-800">Henüz çağrı verisi bulunmuyor</h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-slate-500">
+            Seçili tarih aralığında ({data.period_start} — {data.period_end}) kayıtlı veya analizi
+            tamamlanmış çağrı yok.
           </p>
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
-            <button
-              type="button"
-              onClick={() => handleDateRangeChange("365")}
-              className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-            >
-              Son 1 Yıllık Verileri Gör
-            </button>
-            <Link
-              href="/admin/calls/upload"
-              className="inline-flex items-center gap-2 rounded-lg bg-sky-700 px-4 py-2 text-xs font-bold text-white shadow hover:bg-sky-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-            >
-              <span>🎙️</span>
-              <span>+ Yeni Çağrı Yükle</span>
+            <Button variant="secondary" onClick={() => handleDateRangeChange("365")}>
+              Son 1 yılı göster
+            </Button>
+            <Link href="/admin/calls/upload" className={buttonClasses("primary")}>
+              Yeni çağrı yükle
             </Link>
           </div>
-        </div>
+        </Card>
       )}
 
-      {/* Veri Görselleştirme (Gerçek KPI'lar) */}
       {!isLoading && !error && data && data.total_calls > 0 && (
         <div className="space-y-6">
-          {/* Üst KPI Kartları Izgarası (7 Kart) */}
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-7">
-            {/* 1. Gelen Çağrı (total_calls) */}
-            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
-                Gelen Çağrı
-              </p>
-              <p className="mt-1 text-2xl font-black text-gray-900">
-                {data.total_calls.toLocaleString("tr-TR")}
-                <span className="ml-1 text-xs font-normal text-gray-500">adet</span>
-              </p>
-              <p className="mt-1 text-[11px] text-gray-500">
-                {data.analyzed_calls} analiz edildi
-              </p>
-            </div>
-
-            {/* 2. Yeni Müşteri (new_customers) */}
-            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
-                Yeni Müşteri
-              </p>
-              <p className="mt-1 text-2xl font-black text-sky-700">
-                {data.new_customers.toLocaleString("tr-TR")}
-                <span className="ml-1 text-xs font-normal text-gray-500">tekne</span>
-              </p>
-              <p className="mt-1 text-[11px] font-semibold text-sky-700">
-                İlk kez arayanlar
-              </p>
-            </div>
-
-            {/* 3. Servis Talebi (service_requests) */}
-            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
-                Servis Talebi
-              </p>
-              <p className="mt-1 text-2xl font-black text-indigo-700">
-                {data.service_requests.toLocaleString("tr-TR")}
-                <span className="ml-1 text-xs font-normal text-gray-500">adet</span>
-              </p>
-              <p className="mt-1 text-[11px] text-gray-500">
-                Bakım &amp; Onarım
-              </p>
-            </div>
-
-            {/* 4. Teklif Talebi (quote_requests) */}
-            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
-                Teklif Talebi
-              </p>
-              <p className="mt-1 text-2xl font-black text-purple-700">
-                {data.quote_requests.toLocaleString("tr-TR")}
-                <span className="ml-1 text-xs font-normal text-gray-500">adet</span>
-              </p>
-              <p className="mt-1 text-[11px] text-gray-500">
-                Fiyat &amp; Proje
-              </p>
-            </div>
-
-            {/* 5. Acil Servis (urgent_requests - 🚨 Kırmızı Vurgu) */}
-            <div className="rounded-xl border border-red-300 bg-red-50/70 p-4 shadow-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-red-800">
-                🚨 Acil Servis
-              </p>
-              <p className="mt-1 text-2xl font-black text-red-700">
-                {data.urgent_requests.toLocaleString("tr-TR")}
-                <span className="ml-1 text-xs font-normal text-red-700">adet</span>
-              </p>
-              <p className="mt-1 text-[11px] font-bold text-red-700">
-                Acil müdahale
-              </p>
-            </div>
-
-            {/* 6. Satışa Dönüş Oranı (converted_sales / conversion_rate - ✓ Yeşil Vurgu) */}
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 shadow-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
-                Satışa Dönüşen
-              </p>
-              <p className="mt-1 text-2xl font-black text-emerald-700">
-                {data.conversion_rate != null
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            <StatCard
+              label="Gelen Çağrı"
+              value={fmt(data.total_calls)}
+              unit="adet"
+              hint={`${data.analyzed_calls} analiz edildi`}
+            />
+            <StatCard
+              label="Yeni Müşteri"
+              value={fmt(data.new_customers)}
+              unit="tekne"
+              hint="İlk kez arayanlar"
+              tone="brand"
+            />
+            <StatCard
+              label="Servis Talebi"
+              value={fmt(data.service_requests)}
+              unit="adet"
+              hint="Bakım ve onarım"
+              tone="brand"
+            />
+            <StatCard
+              label="Teklif Talebi"
+              value={fmt(data.quote_requests)}
+              unit="adet"
+              hint="Fiyat ve proje"
+              tone="brand"
+            />
+            <StatCard
+              label="Acil Servis"
+              value={fmt(data.urgent_requests)}
+              unit="adet"
+              hint="Acil müdahale"
+              tone="danger"
+            />
+            <StatCard
+              label="Satışa Dönüşen"
+              value={
+                data.conversion_rate != null
                   ? `%${Math.round(data.conversion_rate * 100)}`
-                  : EMPTY_LABEL}
-              </p>
-              <p className="mt-1 text-[11px] font-semibold text-emerald-700">
-                {data.converted_sales} başarılı satış
-              </p>
-            </div>
-
-            {/* 7. Ort. Cevap Süresi (avg_answer_delay_s) */}
-            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-500">
-                Ort. Yanıt Süresi
-              </p>
-              <p className="mt-1 text-2xl font-black text-amber-700">
-                {data.avg_answer_delay_s != null
-                  ? `${Math.round(data.avg_answer_delay_s)}`
-                  : EMPTY_LABEL}
-                {data.avg_answer_delay_s != null && (
-                  <span className="ml-1 text-xs font-normal text-gray-500">sn</span>
-                )}
-              </p>
-              <p className="mt-1 text-[11px] text-gray-500">
-                Santral bekleme
-              </p>
-            </div>
+                  : EMPTY_LABEL
+              }
+              hint={`${data.converted_sales} başarılı satış`}
+              tone="success"
+            />
+            <StatCard
+              label="Kaybedilen Satış"
+              value={fmt(totalLost)}
+              unit="adet"
+              hint="Nedenleri aşağıda"
+              tone="accent"
+            />
+            <StatCard
+              label="Ort. Yanıt Süresi"
+              value={
+                data.avg_answer_delay_s != null ? `${Math.round(data.avg_answer_delay_s)}` : EMPTY_LABEL
+              }
+              unit={data.avg_answer_delay_s != null ? "sn" : undefined}
+              hint="Santral bekleme"
+            />
           </div>
 
-          {/* Günlük Çağrı Trendi Grafiği (daily_calls - boş günler için 0 gösterimi) */}
-          <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between mb-4">
-              <div>
-                <h2 className="text-sm font-bold text-gray-900">Günlük Çağrı Sayısı Trendi</h2>
-                <p className="text-xs text-gray-500">
-                  Dönem: {data.period_start} — {data.period_end}
-                </p>
-              </div>
-              <div className="flex items-center gap-4 text-[11px] text-gray-500">
-                <div className="flex items-center gap-1.5">
-                  <span className="h-3 w-3 rounded bg-sky-700 inline-block" />
-                  <span>En Yüksek Gün</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="h-3 w-3 rounded bg-sky-400 inline-block" />
-                  <span>Günlük Çağrı</span>
-                </div>
-              </div>
-            </div>
-
+          <Card>
+            <CardHeader
+              title="Günlük Çağrı Sayısı Trendi"
+              description={`Dönem: ${data.period_start} — ${data.period_end}`}
+            />
             {dailyCalls.length === 0 ? (
-              <div className="h-36 flex items-center justify-center text-xs text-gray-500">
-                Bu tarih aralığında günlük çağrı grafiği verisi bulunamadı.
-              </div>
+              <p className="py-10 text-center text-sm text-slate-500">
+                Bu tarih aralığında günlük çağrı verisi bulunamadı.
+              </p>
             ) : (
               <div
                 role="region"
                 aria-label="Günlük çağrı sayısı grafiği (yatay kaydırılabilir)"
                 tabIndex={0}
-                className="flex items-end gap-2 sm:gap-3 h-44 pt-6 pb-2 border-b border-gray-100 overflow-x-auto"
+                className="flex h-44 items-end gap-2 overflow-x-auto border-b border-slate-100 pb-2 pt-4"
               >
                 {dailyCalls.map((day) => {
-                  const isZero = day.count === 0;
-                  // 0 olan günler için en az 4px taban çizgisi, diğerleri oransal
-                  const heightPct = isZero
-                    ? 4
-                    : Math.max(Math.round((day.count / maxDailyCount) * 100), 8);
-                  const isMax = day.count === maxDailyCount && day.count > 0;
-
+                  const heightPct =
+                    day.count === 0
+                      ? 3
+                      : Math.max(Math.round((day.count / maxDailyCount) * 100), 8);
                   return (
                     <div
                       key={day.day}
-                      className="flex min-w-[2.5rem] flex-1 flex-col items-center gap-1.5 group"
+                      className="flex h-full min-w-[2.5rem] flex-1 flex-col items-center justify-end gap-1"
                     >
-                      {/* Sayı etiketi (boş günler için 0 gösterimi) */}
-                      <span
-                        className={`text-[10px] font-bold transition-transform group-hover:scale-110 ${
-                          isZero
-                            ? "text-gray-500 font-normal"
-                            : isMax
-                            ? "text-sky-700 font-extrabold"
-                            : "text-gray-600"
-                        }`}
-                      >
-                        {day.count}
-                      </span>
-
-                      {/* Bar */}
-                      <div className="w-full flex items-end h-28">
+                      <span className="text-xs font-semibold text-brand-800">{day.count}</span>
+                      <div className="flex w-full flex-1 items-end">
                         <div
                           style={{ height: `${heightPct}%` }}
-                          className={`w-full rounded-t-md transition-all group-hover:opacity-90 ${
-                            isZero
-                              ? "bg-gray-200"
-                              : isMax
-                              ? "bg-sky-700 shadow-sm ring-2 ring-sky-300"
-                              : "bg-sky-400"
-                          }`}
+                          className={`w-full rounded-t ${day.count === 0 ? "bg-slate-200" : "bg-brand-600"}`}
                           title={`${day.day}: ${day.count} çağrı`}
                         />
                       </div>
-
-                      {/* Tarih / Gün Etiketi */}
-                      <span
-                        className={`text-[9px] sm:text-[10px] font-medium text-center truncate max-w-full ${
-                          isZero
-                            ? "text-gray-500"
-                            : isMax
-                            ? "text-sky-900 font-bold"
-                            : "text-gray-500"
-                        }`}
-                      >
+                      <span className="max-w-full truncate text-[11px] text-slate-500">
                         {formatDayLabel(day.day)}
                       </span>
                     </div>
@@ -575,274 +405,32 @@ export default function AnalyticsDashboard() {
                 })}
               </div>
             )}
-          </div>
+          </Card>
 
-          {/* 3 Temel Dağılım Grafiği */}
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {/* 1. Arıza & Talep Kategori Dağılımı (by_category) */}
-            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-              <div className="flex items-center justify-between mb-1">
-                <h2 className="text-sm font-bold text-gray-900">Arıza &amp; Talep Kategorisi</h2>
-                <span className="text-[11px] font-semibold text-gray-500">
-                  {totalCategoryCalls} çağrı
-                </span>
-              </div>
-              <p className="text-xs text-gray-500 mb-4">
-                Talep kategorisine göre dağılım
-              </p>
-
-              {categoryEntries.length === 0 ? (
-                <p className="text-xs text-gray-500 py-6 text-center">Kategori verisi bulunmuyor</p>
-              ) : (
-                <div className="space-y-3">
-                  {categoryEntries
-                    .sort((a, b) => b[1] - a[1])
-                    .map(([category, count]) => {
-                      const pct = totalCategoryCalls > 0
-                        ? Math.round((count / totalCategoryCalls) * 100)
-                        : 0;
-                      const label = labelOf(REQUEST_CATEGORY_LABELS, category);
-                      const barColor = CATEGORY_COLORS[category] ?? "bg-sky-500";
-
-                      return (
-                        <div key={category} className="space-y-1">
-                          <div className="flex justify-between text-xs">
-                            <span className="font-semibold text-gray-700 truncate max-w-[70%]">
-                              {label}
-                            </span>
-                            <span className="font-bold text-gray-900">
-                              %{pct} <span className="font-normal text-gray-500">({count})</span>
-                            </span>
-                          </div>
-                          <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
-                            <div
-                              style={{ width: `${pct}%` }}
-                              className={`h-full rounded-full ${barColor} transition-all`}
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
-                </div>
-              )}
-            </div>
-
-            {/* 2. Aciliyet Seviyesi Dağılımı (by_urgency) & En Yoğun Marinalar (busiest_marinas) */}
-            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-              <div className="flex items-center justify-between mb-1">
-                <h2 className="text-sm font-bold text-gray-900">Aciliyet Dağılımı &amp; Marinalar</h2>
-                <span className="text-[11px] font-semibold text-gray-500">
-                  {totalUrgencyCalls} analiz
-                </span>
-              </div>
-              <p className="text-xs text-gray-500 mb-4">
-                Aciliyet seviyeleri ve en yoğun lokasyonlar
-              </p>
-
-              {/* Aciliyet Dağılımı Çubukları */}
-              <div className="space-y-2.5 pb-4 border-b border-gray-100">
-                {urgencyEntries
-                  .sort((a, b) => {
-                    const order: Record<Urgency, number> = { acil: 0, yuksek: 1, normal: 2, dusuk: 3 };
-                    return (order[a[0]] ?? 99) - (order[b[0]] ?? 99);
-                  })
-                  .map(([urgency, count]) => {
-                    const pct = totalUrgencyCalls > 0
-                      ? Math.round((count / totalUrgencyCalls) * 100)
-                      : 0;
-                    const label = labelOf(URGENCY_LABELS, urgency);
-                    const style = URGENCY_STYLES[urgency] ?? URGENCY_STYLES.normal;
-
-                    return (
-                      <div key={urgency} className="space-y-1">
-                        <div className="flex justify-between items-center text-xs">
-                          <span className={`inline-flex items-center gap-1 font-semibold ${style.text}`}>
-                            {urgency === "acil" && "🚨"}
-                            {label}
-                          </span>
-                          <span className="font-bold text-gray-900">
-                            %{pct} <span className="font-normal text-gray-500">({count})</span>
-                          </span>
-                        </div>
-                        <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
-                          <div
-                            style={{ width: `${pct}%` }}
-                            className={`h-full rounded-full ${style.bar} transition-all`}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-              </div>
-
-              {/* En Yoğun Marinalar Özeti (busiest_marinas) */}
-              <div className="pt-3">
-                <h3 className="text-xs font-bold text-gray-800 mb-2">En Yoğun Marinalar</h3>
-                {marinas.length === 0 ? (
-                  <p className="text-[11px] text-gray-500">Marina verisi bulunmuyor</p>
-                ) : (
-                  <div className="space-y-1.5">
-                    {marinas.slice(0, 3).map((m) => {
-                      const mPct = totalMarinaCalls > 0
-                        ? Math.round((m.count / totalMarinaCalls) * 100)
-                        : 0;
-                      return (
-                        <div
-                          key={m.name}
-                          className="flex items-center justify-between text-xs py-1 border-b border-gray-50 last:border-none"
-                        >
-                          <span className="font-medium text-gray-700">⚓ {m.name || EMPTY_LABEL}</span>
-                          <span className="font-bold text-sky-700">
-                            {m.count} çağrı <span className="font-normal text-gray-500">(%{mPct})</span>
-                          </span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* 3. Satış Kaçırma Sebepleri (lost_by_reason) */}
-            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-              <div className="flex items-center justify-between mb-1">
-                <h2 className="text-sm font-bold text-gray-900">Satış Kaçırma Sebepleri</h2>
-                <span className="text-[11px] font-semibold text-gray-500">
-                  {totalLossCount} kayıp
-                </span>
-              </div>
-              <p className="text-xs text-gray-500 mb-4">
-                Kaybedilen satışların nedenleri
-              </p>
-
-              {lossEntries.length === 0 ? (
-                <div className="py-8 text-center">
-                  <span className="text-2xl">🎉</span>
-                  <p className="mt-2 text-xs font-medium text-gray-600">
-                    Kayıp satış kaydı bulunmamaktadır.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {lossEntries
-                    .sort((a, b) => b[1] - a[1])
-                    .map(([reason, count]) => {
-                      const pct = totalLossCount > 0
-                        ? Math.round((count / totalLossCount) * 100)
-                        : 0;
-                      const label = labelOf(LOSS_REASON_LABELS, reason);
-                      const color = LOSS_COLORS[reason] ?? "bg-gray-400";
-
-                      return (
-                        <div key={reason} className="space-y-1">
-                          <div className="flex justify-between text-xs">
-                            <span className="font-semibold text-gray-700 truncate max-w-[70%]">
-                              {label}
-                            </span>
-                            <span className="font-bold text-gray-900">
-                              %{pct} <span className="font-normal text-gray-500">({count})</span>
-                            </span>
-                          </div>
-                          <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
-                            <div
-                              style={{ width: `${pct}%` }}
-                              className={`h-full rounded-full ${color} transition-all`}
-                            />
-                          </div>
-                        </div>
-                      );
-                    })}
-                </div>
-              )}
-
-              {/* Aksiyon İpucu Kutusu */}
-              {topLossReason && totalLossCount > 0 && (
-                <div className="mt-4 rounded-lg bg-amber-50 p-2.5 border border-amber-200 text-[11px] text-amber-900">
-                  💡 <strong>Aksiyon Önerisi:</strong>{" "}
-                  {topLossReason === "fiyat" &&
-                    "Fiyat itirazı olan tekliflerde standart kış bakım paketleri ve alternatif ödeme planları önerin."}
-                  {topLossReason === "takvim" &&
-                    "Kapasite yetersizliği nedeniyle kaybedilen talepler için anlaşmalı servis ortaklıkları değerlendirilebilir."}
-                  {topLossReason === "gec_donus" &&
-                    "Cevap süresini kısaltmak için acil çağrı bildirimlerini devreye alın."}
-                  {topLossReason === "rakip" &&
-                    "Rakip tekliflerle kaybedilen işler için garanti ve orijinal parça avantajlarını vurgulayın."}
-                  {topLossReason === "guven" &&
-                    "Müşteri referansları ve yetkili servis sertifikalarını tekliflere ekleyin."}
-                  {topLossReason !== "fiyat" &&
-                    topLossReason !== "takvim" &&
-                    topLossReason !== "gec_donus" &&
-                    topLossReason !== "rakip" &&
-                    topLossReason !== "guven" &&
-                    "Kaybedilen taleplerin nedenlerini analiz ederek servis süreçlerini gözden geçirin."}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* En Sık Bildirilen Arızalar (top_problems) & Hızlı Aksiyon */}
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-            {/* Sık Karşılaşılan Arızalar (top_problems) */}
-            <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-              <h2 className="text-sm font-bold text-gray-900 mb-1">
-                En Sık Bildirilen Tekne Arızaları
-              </h2>
-              <p className="text-xs text-gray-500 mb-4">
-                Konuşma transkriptlerinden çıkarılan problem ifadeleri
-              </p>
-
-              {(data.top_problems ?? []).length === 0 ? (
-                <p className="text-xs text-gray-500">Kayıtlı arıza tanımı bulunmuyor.</p>
-              ) : (
-                <div className="space-y-2">
-                  {data.top_problems.map((prob, idx) => (
-                    <div
-                      key={prob.name}
-                      className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 text-xs"
-                    >
-                      <div className="flex items-center gap-2">
-                        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-sky-100 text-[10px] font-bold text-sky-700">
-                          {idx + 1}
-                        </span>
-                        <span className="font-semibold text-gray-800">{prob.name || EMPTY_LABEL}</span>
-                      </div>
-                      <span className="font-bold text-sky-700">{prob.count} vaka</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Hızlı Erişim & Aksiyon Kartı */}
-            <div className="rounded-xl border border-gray-200 bg-brand-800 p-6 text-white shadow-sm flex flex-col justify-between">
-              <div>
-                <span className="inline-flex rounded-full bg-sky-500/20 px-3 py-1 text-xs font-semibold text-sky-300 mb-3">
-                  Operasyonel Hızlı Erişim
-                </span>
-                <h3 className="text-base font-bold text-white mb-2">
-                  Çağrı Transkriptleri ve CRM Önerileri
-                </h3>
-                <p className="text-xs text-slate-300 leading-relaxed">
-                  Görüşme metinlerini incelemek, 7 temel alanlı CRM çıkarımlarını kontrol etmek
-                  veya yeni ses kaydı yükleyip anında analize göndermek için ilgili sekmelere geçin.
-                </p>
-              </div>
-
-              <div className="mt-6 flex flex-wrap gap-3">
-                <Link
-                  href="/admin/calls"
-                  className="rounded-xl bg-white px-4 py-2 text-xs font-bold text-slate-900 hover:bg-slate-100 transition-colors"
-                >
-                  📞 Çağrı Listesine Git →
-                </Link>
-                <Link
-                  href="/admin/calls/upload"
-                  className="rounded-xl bg-sky-700 px-4 py-2 text-xs font-bold text-white hover:bg-sky-500 transition-colors"
-                >
-                  🎙️ Yeni Çağrı Yükle
-                </Link>
-              </div>
-            </div>
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            <Card>
+              <CardHeader title="Talep Kategorisi" description="Arıza ve talep türüne göre dağılım" />
+              <DistributionList rows={categoryRows} tone="brand" emptyText="Kategori verisi bulunmuyor" />
+            </Card>
+            <Card>
+              <CardHeader title="En Yoğun Marinalar" description="Çağrı sayısına göre ilk marinalar" />
+              <DistributionList
+                rows={marinaRows.slice(0, 5)}
+                tone="brand"
+                emptyText="Marina verisi bulunmuyor"
+              />
+            </Card>
+            <Card>
+              <CardHeader
+                title="Satış Kaçırma Sebepleri"
+                description={`Kaybedilen ${totalLost} satışın nedenleri`}
+              />
+              <DistributionList
+                rows={lossRows}
+                tone="accent"
+                emptyText="Kayıp satış kaydı bulunmuyor"
+              />
+            </Card>
           </div>
         </div>
       )}
