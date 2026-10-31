@@ -232,6 +232,26 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
     await expect(nav.getByRole("link", { name: "Miço AI" })).toBeVisible();
   });
   // ──────────────────────────────────────────────────────────────────────────
+  // Senaryo 8: Çağrı Yükle (#171) — metin yükleme baştan sona, otomatik detaya geçiş
+  // ──────────────────────────────────────────────────────────────────────────
+  test("Senaryo 8 (Çağrı Yükle): metin yüklenir, adımlar görünür, tamamlanınca detaya geçilir", async ({
+    page,
+  }) => {
+    test.skip(
+      process.env.NEXT_PUBLIC_USE_MOCKS === "false",
+      "Mock akışı gerektirir: NEXT_PUBLIC_USE_MOCKS=true ile koşun.",
+    );
+
+    await page.goto("/admin/calls/upload");
+    await page.getByRole("tab", { name: "Metin / transkript" }).click();
+    await page.getByRole("button", { name: "Örnek metin doldur" }).click();
+    await page.getByRole("button", { name: "Analizi başlat" }).click();
+
+    await expect(page.getByRole("list", { name: "Analiz adımları" })).toBeVisible();
+    await expect(page).toHaveURL(/\/admin\/calls\/mock-text-/, { timeout: 30000 });
+  });
+
+  // ──────────────────────────────────────────────────────────────────────────
   // Senaryo 7: Miço AI gerçek cevap (yalnızca gerçek backend; mock modunda atlanır)
   // ──────────────────────────────────────────────────────────────────────────
   test("Senaryo 7 (Miço AI gerçek cevap): sayısal soru kaynak kartıyla cevaplanır", async ({
