@@ -364,6 +364,7 @@ export default function AssistantPage() {
         activeSessionId={activeSessionId}
         onSelectSession={(id) => void handleSelectSession(id)}
         onNewChat={handleNewChat}
+        newChatDisabled={isFreshChat && !activeSessionId}
         onDeleteSession={handleDeleteSession}
         onDeleteAll={handleDeleteAll}
         isOpen={sidebarOpen}

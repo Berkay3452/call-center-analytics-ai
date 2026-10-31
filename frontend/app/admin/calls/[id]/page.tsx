@@ -231,7 +231,10 @@ async function CallDetailContent({ params }: Props) {
             <Badge tone={analysisBadge.tone}>{analysisBadge.text}</Badge>
             {urgency === "acil" && <Badge tone="danger">Acil servis</Badge>}
             {callType && <Badge>{labelOf(CALL_TYPE_LABELS, callType as CallType)}</Badge>}
-            <ReanalyzeButton callId={call.id} currentState={call.state} variant="header" />
+            {/* Kısmi/başarısız analizde aynı eylem uyarı kutusunda sunulur; iki kez gösterilmez */}
+            {!(isPartial && !inProgress) && (
+              <ReanalyzeButton callId={call.id} currentState={call.state} variant="header" />
+            )}
           </div>
         </div>
         {confidencePercent !== null && (
