@@ -1,77 +1,41 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useState } from "react";
 import { useFocusTrap } from "@/lib/use-focus-trap";
 import type { ChatSessionOut } from "@/lib/api/types";
+import { Button, cn } from "@/components/ui";
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Helper: göreceli tarih formatı (örn. "2 gün önce")
-// ──────────────────────────────────────────────────────────────────────────────
 function formatRelativeDate(isoDate: string): string {
-  try {
-    const date = new Date(isoDate);
-    const now = Date.now();
-    const diffMs = now - date.getTime();
-    const diffSec = Math.floor(diffMs / 1000);
-    const diffMin = Math.floor(diffSec / 60);
-    const diffHour = Math.floor(diffMin / 60);
-    const diffDay = Math.floor(diffHour / 24);
+  const date = new Date(isoDate);
+  if (Number.isNaN(date.getTime())) return "";
+  const diffMin = Math.floor((Date.now() - date.getTime()) / 60000);
+  const diffHour = Math.floor(diffMin / 60);
+  const diffDay = Math.floor(diffHour / 24);
 
-    if (diffSec < 60) return "Az önce";
-    if (diffMin < 60) return `${diffMin} dk önce`;
-    if (diffHour < 24) return `${diffHour} sa önce`;
-    if (diffDay === 1) return "Dün";
-    if (diffDay < 7) return `${diffDay} gün önce`;
-    return date.toLocaleDateString("tr-TR", { day: "numeric", month: "short" });
-  } catch {
-    return "";
-  }
+  if (diffMin < 1) return "Az önce";
+  if (diffMin < 60) return `${diffMin} dk önce`;
+  if (diffHour < 24) return `${diffHour} sa önce`;
+  if (diffDay === 1) return "Dün";
+  if (diffDay < 7) return `${diffDay} gün önce`;
+  return date.toLocaleDateString("tr-TR", { day: "numeric", month: "short" });
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// Loading skeleton (3 ghost cards)
-// ──────────────────────────────────────────────────────────────────────────────
-function SessionSkeleton() {
-  return (
-    <div className="space-y-2 px-2 pt-1" aria-hidden="true">
-      {[1, 2, 3].map((i) => (
-        <div
-          key={i}
-          className="rounded-xl border border-slate-200 bg-slate-100 px-3 py-3 animate-pulse"
-        >
-          <div className="h-3.5 w-3/4 rounded bg-slate-300 mb-2" />
-          <div className="h-3 w-1/3 rounded bg-slate-200" />
-        </div>
-      ))}
-    </div>
-  );
-}
-
-// ──────────────────────────────────────────────────────────────────────────────
-// Props
-// ──────────────────────────────────────────────────────────────────────────────
 export interface ChatSidebarProps {
-  /** Sunucudan gelen oturum listesi */
   sessions: ChatSessionOut[];
-  /** Liste yüklenirken true */
   isLoading: boolean;
-  /** Yükleme hatası varsa mesaj */
   error: string | null;
-  /** Seçili oturumun kimliği (vurgu için) */
   activeSessionId: string | null;
-  /** Oturum seçildiğinde çağrılır */
   onSelectSession: (sessionId: string) => void;
-  /** "Yeni Sohbet" butonu tıklandığında çağrılır */
   onNewChat: () => void;
+  /** Tek oturumu siler (onay kenar çubuğunda alınır). */
+  onDeleteSession: (sessionId: string) => Promise<void>;
+  /** Tüm oturumları siler (onay kenar çubuğunda alınır). */
+  onDeleteAll: () => Promise<void>;
   /** Mobil: kenar çubuğu açık mı? */
   isOpen: boolean;
-  /** Mobil: kenar çubuğunu kapat */
   onClose: () => void;
 }
 
-// ──────────────────────────────────────────────────────────────────────────────
-// ChatSidebar
-// ──────────────────────────────────────────────────────────────────────────────
 export function ChatSidebar({
   sessions,
   isLoading,
@@ -79,124 +43,99 @@ export function ChatSidebar({
   activeSessionId,
   onSelectSession,
   onNewChat,
+  onDeleteSession,
+  onDeleteAll,
   isOpen,
   onClose,
 }: ChatSidebarProps) {
-  const sidebarRef = useRef<HTMLElement>(null);
-  const drawerRef = useFocusTrap<HTMLElement>({
-    isOpen,
-    onClose,
-  });
+  const drawerRef = useFocusTrap<HTMLElement>({ isOpen, onClose });
+  /** Silme onayı bekleyen oturum kimliği ya da tümü için "all". */
+  const [confirming, setConfirming] = useState<string | "all" | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
-  // Mobil: backdrop tıklamasıyla kapat
-  function handleBackdropClick(e: React.MouseEvent) {
-    if (e.target === e.currentTarget) onClose();
+  async function runDelete(action: () => Promise<void>) {
+    setBusy(true);
+    setDeleteError(null);
+    try {
+      await action();
+      setConfirming(null);
+    } catch (err) {
+      setDeleteError(
+        err instanceof Error && err.message ? err.message : "Silinemedi. Lütfen tekrar deneyin.",
+      );
+    } finally {
+      setBusy(false);
+    }
   }
 
-  // ── İçerik ──────────────────────────────────────────────────────────────────
-  const sidebarContent = (
-    <nav
-      ref={sidebarRef}
-      aria-label="Sohbet geçmişi"
-      className="flex h-full flex-col"
-    >
-      {/* Başlık + Kapat butonu (yalnızca mobilde görünür) */}
-      <div className="flex items-center justify-between px-3 pt-3 pb-2 lg:pt-2">
+  const content = (
+    <nav aria-label="Sohbet geçmişi" className="flex h-full flex-col">
+      <div className="flex items-center justify-between px-3 pb-2 pt-3">
         <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
           Geçmiş Sohbetler
         </span>
-        <button
-          type="button"
-          onClick={onClose}
-          className="lg:hidden rounded-lg p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-          aria-label="Kenar çubuğunu kapat"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="h-4 w-4"
-            aria-hidden="true"
-          >
-            <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
-          </svg>
-        </button>
+        <Button variant="ghost" size="sm" className="lg:hidden" onClick={onClose} aria-label="Kenar çubuğunu kapat">
+          ✕
+        </Button>
       </div>
 
-      {/* + Yeni Sohbet */}
-      <div className="px-2 pb-2">
-        <button
-          type="button"
+      <div className="px-3 pb-3">
+        <Button
+          className="w-full"
+          aria-label="Yeni sohbet başlat"
           onClick={() => {
             onNewChat();
             onClose();
           }}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-sky-300 bg-sky-50 px-3 py-2.5 text-sm font-semibold text-sky-700 transition-colors hover:bg-sky-100 hover:border-sky-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-          aria-label="Yeni sohbet başlat"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            className="h-4 w-4 flex-shrink-0"
-            aria-hidden="true"
-          >
-            <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
-          </svg>
-          Yeni Sohbet
-        </button>
+          Yeni sohbet
+        </Button>
       </div>
 
-      <hr className="border-slate-200 mx-2" />
-
-      {/* Liste alanı */}
-      <div className="flex-1 overflow-y-auto py-2 ">
-        {isLoading && <SessionSkeleton />}
+      <div className="flex-1 overflow-y-auto border-t border-slate-100 px-2 py-2">
+        {isLoading && <p className="px-2 py-3 text-xs text-slate-500">Yükleniyor…</p>}
 
         {!isLoading && error && (
-          <div className="px-3 py-4 text-center text-xs text-red-500">
-            <p className="font-medium">Sohbet geçmişi yüklenemedi.</p>
-            <p className="mt-0.5 text-slate-500">{error}</p>
-          </div>
+          <p role="alert" className="px-2 py-3 text-xs text-red-600">
+            Sohbet geçmişi yüklenemedi. {error}
+          </p>
         )}
 
         {!isLoading && !error && sessions.length === 0 && (
-          <div className="px-3 py-6 text-center">
-            <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="h-5 w-5 text-slate-400"
-                aria-hidden="true"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M2 10c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8-8-3.582-8-8Zm8.75-3.25a.75.75 0 0 0-1.5 0V10c0 .414.336.75.75.75h2.5a.75.75 0 0 0 0-1.5h-1.75V6.75Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            <p className="text-xs font-medium text-slate-600">
-              Henüz kaydedilmiş sohbet yok
-            </p>
-            <p className="mt-1 text-xs text-slate-400">
-              Yeni bir sohbet başlatın.
-            </p>
-          </div>
+          <p className="px-2 py-6 text-center text-xs text-slate-500">Henüz kayıtlı sohbet yok.</p>
         )}
 
         {!isLoading && !error && sessions.length > 0 && (
-          <ul role="list" className="space-y-1 px-2">
+          <ul className="space-y-1">
             {sessions.map((session, idx) => {
               const isActive = session.id === activeSessionId;
-              const title =
-                session.title?.trim() ||
-                `Sohbet #${sessions.length - idx}`;
-              const relDate = formatRelativeDate(session.updated_at);
+              const title = session.title?.trim() || `Sohbet #${sessions.length - idx}`;
+
+              if (confirming === session.id) {
+                return (
+                  <li key={session.id} className="rounded-lg border border-red-200 bg-red-50 p-2.5">
+                    <p className="text-sm font-medium text-red-800">Bu sohbeti sil?</p>
+                    <p className="mt-0.5 truncate text-xs text-red-700">{title}</p>
+                    <div className="mt-2 flex gap-2">
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        disabled={busy}
+                        onClick={() => void runDelete(() => onDeleteSession(session.id))}
+                      >
+                        {busy ? "Siliniyor…" : "Sil"}
+                      </Button>
+                      <Button variant="secondary" size="sm" disabled={busy} onClick={() => setConfirming(null)}>
+                        Vazgeç
+                      </Button>
+                    </div>
+                  </li>
+                );
+              }
 
               return (
-                <li key={session.id}>
+                <li key={session.id} className="group flex items-center gap-1">
                   <button
                     type="button"
                     onClick={() => {
@@ -204,63 +143,94 @@ export function ChatSidebar({
                       onClose();
                     }}
                     aria-current={isActive ? "page" : undefined}
-                    className={[
-                      "w-full rounded-xl border px-3 py-2.5 text-left transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2",
-                      isActive
-                        ? "border-sky-300 bg-sky-50 text-sky-900"
-                        : "border-transparent hover:border-slate-200 hover:bg-slate-50 text-slate-700",
-                    ].join(" ")}
-                  >
-                    <p className="truncate text-sm font-medium leading-tight">
-                      {title}
-                    </p>
-                    {relDate && (
-                      <p
-                        className={[
-                          "mt-0.5 text-xs",
-                          isActive
-                            ? "text-sky-600"
-                            : "text-slate-400",
-                        ].join(" ")}
-                      >
-                        {relDate}
-                      </p>
+                    className={cn(
+                      "min-w-0 flex-1 rounded-lg px-3 py-2 text-left transition-colors",
+                      isActive ? "bg-brand-50 text-brand-800" : "text-slate-700 hover:bg-slate-50",
                     )}
+                  >
+                    <span className="block truncate text-sm font-medium">{title}</span>
+                    <span className="block text-xs text-slate-500">{formatRelativeDate(session.updated_at)}</span>
                   </button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    aria-label={`Sohbeti sil: ${title}`}
+                    onClick={() => {
+                      setDeleteError(null);
+                      setConfirming(session.id);
+                    }}
+                  >
+                    Sil
+                  </Button>
                 </li>
               );
             })}
           </ul>
         )}
       </div>
+
+      {sessions.length > 0 && (
+        <div className="border-t border-slate-100 p-3">
+          {confirming === "all" ? (
+            <div className="rounded-lg border border-red-200 bg-red-50 p-2.5">
+              <p className="text-sm font-medium text-red-800">Tüm sohbetler silinsin mi?</p>
+              <p className="mt-0.5 text-xs text-red-700">Bu işlem geri alınamaz.</p>
+              <div className="mt-2 flex gap-2">
+                <Button variant="danger" size="sm" disabled={busy} onClick={() => void runDelete(onDeleteAll)}>
+                  {busy ? "Siliniyor…" : "Hepsini sil"}
+                </Button>
+                <Button variant="secondary" size="sm" disabled={busy} onClick={() => setConfirming(null)}>
+                  Vazgeç
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <Button
+              variant="secondary"
+              size="sm"
+              className="w-full"
+              onClick={() => {
+                setDeleteError(null);
+                setConfirming("all");
+              }}
+            >
+              Tümünü temizle
+            </Button>
+          )}
+          {deleteError && (
+            <p role="alert" className="mt-2 text-xs text-red-600">
+              {deleteError}
+            </p>
+          )}
+        </div>
+      )}
     </nav>
   );
 
   return (
     <>
-      {/* ── Masaüstü: sabit sol panel ──────────────────────────────────────── */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-64 xl:w-72 flex-shrink-0 border-r border-slate-200 bg-white rounded-l-2xl overflow-hidden">
-        {sidebarContent}
+      {/* Masaüstü: sabit sol panel */}
+      <aside className="hidden w-64 shrink-0 flex-col border-r border-slate-200 bg-white lg:flex xl:w-72">
+        {content}
       </aside>
 
-      {/* ── Mobil: overlay çekmece ─────────────────────────────────────────── */}
+      {/* Mobil: çekmece */}
       {isOpen && (
-        /* Backdrop */
         <div
-          className="lg:hidden fixed inset-0 z-40 flex"
-          aria-modal="true"
+          className="fixed inset-0 z-40 flex lg:hidden"
           role="dialog"
+          aria-modal="true"
           aria-label="Sohbet geçmişi"
-          onClick={handleBackdropClick}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) onClose();
+          }}
         >
-          {/* Karartma */}
-          <div
-            className="fixed inset-0 bg-slate-900/50 "
-            aria-hidden="true"
-          />
-          {/* Panel */}
-          <aside ref={drawerRef} className="relative z-50 flex w-72 max-w-[85vw] flex-col border-r border-slate-200 bg-white shadow-lg">
-            {sidebarContent}
+          <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
+          <aside
+            ref={drawerRef}
+            className="relative z-50 flex w-72 max-w-[85vw] flex-col border-r border-slate-200 bg-white"
+          >
+            {content}
           </aside>
         </div>
       )}

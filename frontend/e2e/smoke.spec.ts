@@ -248,13 +248,49 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
     if (await existingSession.isVisible()) {
       await existingSession.click();
 
-      // Kaynak kartının (CitationCard) yüklendiğini doğrula
+      // Kaynaklar varsayılan kapalıdır; açınca kart görünür
+      await page.getByText(/^Kaynaklar \(\d+\)$/).first().click();
       const citationCard = page.getByRole("region", { name: /Kaynak:/i }).first();
       await expect(citationCard).toBeVisible();
       await expect(
         citationCard.getByText("Servis Kaydı", { exact: true }),
       ).toBeVisible();
     }
+  });
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // Senaryo 5b: Miço AI — hazır sorular ve sohbet silme (#175, #176)
+  // ──────────────────────────────────────────────────────────────────────────
+  test("Senaryo 5b (Miço AI): hazır soru kartları ilk ekranda, tek sohbet ve tümü onayla silinir", async ({
+    page,
+  }) => {
+    await page.goto("/owner/assistant");
+    const sidebar = page.getByRole("navigation", { name: "Sohbet geçmişi" });
+
+    // İlk ekranda hazır soru kartları görünür, "Temizle" düğmesi yoktur
+    await expect(page.getByRole("group", { name: "Hazır soru önerileri" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Temizle", exact: true })).toHaveCount(0);
+
+    // Tek sohbet: onay sorusu → Vazgeç listeyi değiştirmez
+    const items = sidebar.locator("ul > li");
+    await expect(items.first()).toBeVisible();
+    const before = await items.count();
+    expect(before).toBeGreaterThan(1);
+    await sidebar.getByRole("button", { name: /^Sohbeti sil:/ }).first().click();
+    await expect(sidebar.getByText("Bu sohbeti sil?")).toBeVisible();
+    await sidebar.getByRole("button", { name: "Vazgeç" }).click();
+    await expect(items).toHaveCount(before);
+
+    // Onaylayınca listeden kalkar
+    await sidebar.getByRole("button", { name: /^Sohbeti sil:/ }).first().click();
+    await sidebar.getByRole("button", { name: "Sil", exact: true }).click();
+    await expect(items).toHaveCount(before - 1);
+
+    // Tümünü temizle: onay sonrası liste boşalır
+    await sidebar.getByRole("button", { name: "Tümünü temizle" }).click();
+    await expect(sidebar.getByText("Tüm sohbetler silinsin mi?")).toBeVisible();
+    await sidebar.getByRole("button", { name: "Hepsini sil" }).click();
+    await expect(sidebar.getByText("Henüz kayıtlı sohbet yok.")).toBeVisible();
   });
 
   // ──────────────────────────────────────────────────────────────────────────
