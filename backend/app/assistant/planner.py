@@ -1,4 +1,4 @@
-"""Sorgu planlayıcı: soruyu sınıflar (gecmis_oneri / sayisal / kapsam_disi) ve aracı seçer.
+"""Sorgu planlayıcı: soruyu sınıflar (gecmis_oneri, sayisal, genel_sohbet, kapsam_disi)
 
 Üç katmanlıdır:
 0. Sohbet cümleleri (selam, teşekkür, "sen kimsin"): `smalltalk_reply` ile LLM'siz hazır cevap.

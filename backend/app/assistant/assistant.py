@@ -10,7 +10,7 @@ from datetime import date
 import structlog
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.assistant.answer import history_answer, numeric_answer
+from app.assistant.answer import general_answer, history_answer, numeric_answer
 from app.assistant.llm import AssistantLLM
 from app.assistant.planner import EXAMPLE_QUESTIONS, plan_question, smalltalk_reply
 from app.assistant.retrieval import search_boat_notes
@@ -44,7 +44,7 @@ async def answer_question(
     # Selam / teşekkür / "sen kimsin": LLM ve arama olmadan anında (#161).
     if (reply := smalltalk_reply(request.question)) is not None:
         log.info("assistant.smalltalk")
-        return AssistantAnswer(answer=reply, question_type=QuestionType.KAPSAM_DISI)
+        return AssistantAnswer(answer=reply, question_type=QuestionType.GENEL_SOHBET)
 
     question = await standalone_question(request.question, request.history, llm)
     plan = await plan_question(question, llm)
@@ -53,6 +53,8 @@ async def answer_question(
     if plan.question_type == QuestionType.KAPSAM_DISI:
         # Ret, "bulamadım" durumu değildir (found=True): arayüz düz mesajı gösterir.
         return AssistantAnswer(answer=REFUSAL_MESSAGE, question_type=plan.question_type)
+    if plan.question_type == QuestionType.GENEL_SOHBET:
+        return await general_answer(question, llm)
     if plan.question_type == QuestionType.SAYISAL:
         return await numeric_answer(plan, request.owner_id, today, session=session)
     passages = await search_boat_notes(request.owner_id, question, session=session)

@@ -1318,6 +1318,7 @@
         "enum": [
           "gecmis_oneri",
           "sayisal",
+          "genel_sohbet",
           "kapsam_disi"
         ]
       },

@@ -41,7 +41,7 @@ export type SwitchboardOutcome =
   | "geri_aranacak"
   | "iptal";
 
-export type QuestionType = "gecmis_oneri" | "sayisal" | "kapsam_disi";
+export type QuestionType = "gecmis_oneri" | "sayisal" | "genel_sohbet" | "kapsam_disi";
 
 export type SourceKind = "service_record" | "boat_note" | "expense" | "subscription";
 

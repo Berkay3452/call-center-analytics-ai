@@ -16,7 +16,8 @@ class QuestionType(StrEnum):
 
     GECMIS_ONERI = "gecmis_oneri"  # bakım geçmişi ve öneri: tekne karnesi araması
     SAYISAL = "sayisal"  # gider toplamı, kalan hak, son bakım tarihi: hazır araçlar
-    KAPSAM_DISI = "kapsam_disi"  # asistanın işi olmayan sorular: nazik ret
+    GENEL_SOHBET = "genel_sohbet"  # kayıtla ilgisiz sorular, selam: doğrudan LLM cevabı (#177)
+    KAPSAM_DISI = "kapsam_disi"  # başkasının verisi gibi yetki dışı istekler: nazik ret
 
 
 class AssistantTool(StrEnum):
