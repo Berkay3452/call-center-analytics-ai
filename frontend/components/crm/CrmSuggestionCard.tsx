@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, type ReactNode } from "react";
 import Link from "next/link";
-import { useFocusTrap } from "@/lib/use-focus-trap";
 import { useRouter } from "next/navigation";
-import { approveCrmRecord, rejectCrmRecord } from "@/lib/api/client";
+import { useFocusTrap } from "@/lib/use-focus-trap";
+import { approveCrmRecord, matchCall, rejectCrmRecord } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
 import {
   EMPTY_LABEL,
@@ -22,6 +22,17 @@ import {
   type NextAction,
 } from "@/lib/types";
 import type { CrmApproveIn } from "@/lib/api/types";
+import {
+  Badge,
+  Button,
+  Card,
+  Field,
+  Input,
+  Select,
+  Textarea,
+  buttonClasses,
+  type Tone,
+} from "@/components/ui";
 
 interface CrmSuggestionCardProps {
   suggestion: CrmSuggestion;
@@ -29,33 +40,76 @@ interface CrmSuggestionCardProps {
   onStatusChange?: (callId: string, newStatus: CrmReviewStatus, serviceOrderId?: string | null) => void;
 }
 
-const URGENCY_BADGE: Record<Urgency, string> = {
-  acil: "bg-red-100 text-red-700 border-red-300 font-bold",
-  yuksek: "bg-orange-100 text-orange-700 border-orange-200",
-  normal: "bg-blue-50 text-blue-700 border-blue-200",
-  dusuk: "bg-gray-100 text-gray-600 border-gray-200",
+const URGENCY_TONE: Record<Urgency, Tone> = {
+  acil: "danger",
+  yuksek: "accent",
+  normal: "brand",
+  dusuk: "neutral",
 };
 
-const STATUS_BADGE: Record<CrmReviewStatus, { bg: string; text: string; border: string; icon: string }> = {
-  bekliyor: {
-    bg: "bg-amber-50",
-    text: "text-amber-800",
-    border: "border-amber-300",
-    icon: "⏳",
-  },
-  onaylandi: {
-    bg: "bg-emerald-50",
-    text: "text-emerald-800",
-    border: "border-emerald-300",
-    icon: "✓",
-  },
-  reddedildi: {
-    bg: "bg-red-50",
-    text: "text-red-800",
-    border: "border-red-300",
-    icon: "✕",
-  },
+const STATUS_TONE: Record<CrmReviewStatus, Tone> = {
+  bekliyor: "warning",
+  onaylandi: "success",
+  reddedildi: "danger",
 };
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+const CONFLICT_MESSAGE =
+  "Bu çağrı henüz bir müşteri veya tekneyle eşleşmediği için servis emri açılamadı. “Elle eşleştir” ile müşteriyi bağlayıp tekrar onaylayabilirsiniz.";
+
+/** Hata nesnesini kullanıcıya gösterilecek anlaşılır Türkçe metne çevirir. */
+function describeError(err: unknown, fallback: string): string {
+  if (err instanceof ApiError) {
+    if (err.status === 409) return CONFLICT_MESSAGE;
+    if (err.status === 404) return "Kayıt bulunamadı. Sayfayı yenileyip tekrar deneyin.";
+    if (err.status === 400) return "Girilen bilgiler geçerli değil. Alanları kontrol edip tekrar deneyin.";
+    if (err.status && err.status >= 500) return "Sunucu şu an yanıt veremiyor. Biraz sonra tekrar deneyin.";
+  }
+  return fallback;
+}
+
+function Modal({
+  title,
+  titleId,
+  description,
+  onClose,
+  triggerRef,
+  children,
+}: {
+  title: string;
+  titleId: string;
+  description?: string;
+  onClose: () => void;
+  triggerRef: React.RefObject<HTMLButtonElement | null>;
+  children: ReactNode;
+}) {
+  const ref = useFocusTrap<HTMLDivElement>({ isOpen: true, onClose, returnFocusRef: triggerRef });
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div
+        ref={ref}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-slate-200 bg-white p-6"
+      >
+        <div className="mb-4 flex items-start justify-between gap-3 border-b border-slate-100 pb-3">
+          <div>
+            <h3 id={titleId} className="text-base font-semibold text-brand-800">
+              {title}
+            </h3>
+            {description && <p className="mt-0.5 text-xs text-slate-500">{description}</p>}
+          </div>
+          <Button variant="ghost" size="sm" onClick={onClose} aria-label="Kapat">
+            ✕
+          </Button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
 
 export function CrmSuggestionCard({
   suggestion,
@@ -83,47 +137,36 @@ export function CrmSuggestionCard({
     nextAction: suggestion.nextAction,
   });
 
-  // Modal ve form state'leri
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
+  const [isMatchModalOpen, setIsMatchModalOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
+  const [matchForm, setMatchForm] = useState({ customerId: "", boatId: "" });
+  const [matchError, setMatchError] = useState<string | null>(null);
+  const [matchDone, setMatchDone] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
-  const router = useRouter();
-  const [is409Error, setIs409Error] = useState(false);
+  const [isConflict, setIsConflict] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
-  // Modal tetikleyici buton referansları ve focus trap
   const editTriggerRef = useRef<HTMLButtonElement | null>(null);
   const rejectTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const matchTriggerRef = useRef<HTMLButtonElement | null>(null);
 
-  const editModalRef = useFocusTrap<HTMLDivElement>({
-    isOpen: isEditModalOpen,
-    onClose: () => setIsEditModalOpen(false),
-    returnFocusRef: editTriggerRef,
-  });
-
-  const rejectModalRef = useFocusTrap<HTMLDivElement>({
-    isOpen: isRejectModalOpen,
-    onClose: () => setIsRejectModalOpen(false),
-    returnFocusRef: rejectTriggerRef,
-  });
-
-  // Düzenleme formunun iç state'i
   const [editFormData, setEditFormData] = useState({
-    request_category: currentValues.requestCategory ?? "",
-    location: currentValues.location ?? "",
-    problem: currentValues.problem ?? "",
-    service_mode: currentValues.serviceMode ?? "",
-    urgency: currentValues.urgency ?? "",
-    potential_job: currentValues.potentialJob ?? "",
-    next_action: currentValues.nextAction ?? "",
+    request_category: "",
+    location: "",
+    problem: "",
+    service_mode: "",
+    urgency: "",
+    potential_job: "",
+    next_action: "",
     note: "",
   });
 
-  // Düzenleme modalını açarken mevcut değerlerle doldur
   const openEditModal = () => {
     setActionError(null);
-    setIs409Error(false);
+    setIsConflict(false);
     setEditFormData({
       request_category: currentValues.requestCategory ?? "",
       location: currentValues.location ?? "",
@@ -137,20 +180,15 @@ export function CrmSuggestionCard({
     setIsEditModalOpen(true);
   };
 
-  // Onaylama işlemi (isteğe bağlı diff ile)
-  const handleApprove = async (diff?: Partial<CrmApproveIn>, note?: string) => {
-    if (isSubmitting) return;
+  // Onaylama işlemi (isteğe bağlı diff ile). Başarılıysa true döner.
+  const handleApprove = async (diff?: Partial<CrmApproveIn>, note?: string): Promise<boolean> => {
+    if (isSubmitting) return false;
     setIsSubmitting(true);
     setActionError(null);
-    setIs409Error(false);
+    setIsConflict(false);
 
     try {
-      const payload: CrmApproveIn = {
-        ...diff,
-        note: note || undefined,
-      };
-
-      const res = await approveCrmRecord(suggestion.callId, payload);
+      const res = await approveCrmRecord(suggestion.callId, { ...diff, note: note || undefined });
       setReviewStatus(res.status);
       const newOrderId = res.service_order_id ? String(res.service_order_id) : null;
       setServiceOrderId(newOrderId);
@@ -159,20 +197,12 @@ export function CrmSuggestionCard({
       }
       setIsEditModalOpen(false);
       onStatusChange?.(suggestion.callId, res.status, newOrderId);
-      router.refresh(); // başlıktaki bekleyen sayısı ve durum sekmeleri güncellensin
+      router.refresh(); // sekme sayıları ve liste güncellensin
+      return true;
     } catch (err: unknown) {
-      if (err instanceof ApiError && err.status === 409) {
-        setIs409Error(true);
-        setActionError(
-          "Müşteri veya tekne kaydı sistemde eşleşmediği için servis emri oluşturulamadı. Lütfen önce çağrı detayından müşteri/tekne kaydını doğrulayın veya eşleştirin.",
-        );
-      } else {
-        setActionError(
-          err instanceof Error
-            ? err.message
-            : "Onaylama işlemi sırasında beklenmeyen bir hata oluştu.",
-        );
-      }
+      setIsConflict(err instanceof ApiError && err.status === 409);
+      setActionError(describeError(err, "Onaylama sırasında bir sorun oluştu. Lütfen tekrar deneyin."));
+      return false;
     } finally {
       setIsSubmitting(false);
     }
@@ -182,7 +212,6 @@ export function CrmSuggestionCard({
   const handleSaveAndApprove = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Sadece değişen alanların diff'ini hesapla
     const diff: Partial<CrmApproveIn> = {};
     if (editFormData.request_category !== (currentValues.requestCategory ?? "")) {
       diff.request_category = (editFormData.request_category as RequestCategory) || undefined;
@@ -206,27 +235,27 @@ export function CrmSuggestionCard({
       diff.next_action = (editFormData.next_action as NextAction) || undefined;
     }
 
-    // Arayüz state'ini de güncelle
-    setCurrentValues({
-      requestCategory: (editFormData.request_category as RequestCategory) || null,
-      location: editFormData.location || null,
-      problem: editFormData.problem || null,
-      serviceMode: (editFormData.service_mode as ServiceMode) || null,
-      urgency: (editFormData.urgency as Urgency) || null,
-      potentialJob: editFormData.potential_job || null,
-      nextAction: (editFormData.next_action as NextAction) || null,
-    });
-
-    await handleApprove(diff, editFormData.note);
+    const ok = await handleApprove(diff, editFormData.note);
+    // Değerleri yalnızca kayıt başarılıysa ekranda güncelle
+    if (ok) {
+      setCurrentValues({
+        requestCategory: (editFormData.request_category as RequestCategory) || null,
+        location: editFormData.location || null,
+        problem: editFormData.problem || null,
+        serviceMode: (editFormData.service_mode as ServiceMode) || null,
+        urgency: (editFormData.urgency as Urgency) || null,
+        potentialJob: editFormData.potential_job || null,
+        nextAction: (editFormData.next_action as NextAction) || null,
+      });
+    }
   };
 
-  // Reddetme işlemi
   const handleReject = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
     setIsSubmitting(true);
     setActionError(null);
-    setIs409Error(false);
+    setIsConflict(false);
 
     try {
       const res = await rejectCrmRecord(suggestion.callId, {
@@ -237,592 +266,405 @@ export function CrmSuggestionCard({
       onStatusChange?.(suggestion.callId, res.status, null);
       router.refresh();
     } catch (err: unknown) {
-      setActionError(
-        err instanceof Error
-          ? err.message
-          : "Reddetme işlemi sırasında beklenmeyen bir hata oluştu.",
-      );
+      setActionError(describeError(err, "Reddetme sırasında bir sorun oluştu. Lütfen tekrar deneyin."));
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const statusStyle = STATUS_BADGE[reviewStatus];
-  const isEdited = (fieldKey: string) => Boolean(editedFields && editedFields[fieldKey]);
+  const handleMatch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isSubmitting) return;
+    const customerId = matchForm.customerId.trim();
+    const boatId = matchForm.boatId.trim();
+    if (!UUID_RE.test(customerId)) {
+      setMatchError("Müşteri numarası geçerli bir kimlik (UUID) olmalı. Örnek: 123e4567-e89b-12d3-a456-426614174000");
+      return;
+    }
+    if (boatId && !UUID_RE.test(boatId)) {
+      setMatchError("Tekne numarası geçerli bir kimlik (UUID) olmalı ya da boş bırakılmalı.");
+      return;
+    }
+    setIsSubmitting(true);
+    setMatchError(null);
+    try {
+      await matchCall(suggestion.callId, { customer_id: customerId, boat_id: boatId || null });
+      setMatchDone(true);
+      setIsMatchModalOpen(false);
+      setActionError(null);
+      setIsConflict(false);
+      router.refresh();
+    } catch (err: unknown) {
+      if (err instanceof ApiError && err.status === 400) {
+        setMatchError("Seçilen tekne bu müşteriye ait değil. Tekne numarasını kontrol edin.");
+      } else if (err instanceof ApiError && err.status === 404) {
+        setMatchError("Bu numaraya sahip müşteri veya tekne bulunamadı.");
+      } else {
+        setMatchError(describeError(err, "Eşleştirme sırasında bir sorun oluştu. Lütfen tekrar deneyin."));
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const isEdited = (key: string) => Boolean(editedFields[key]);
+
+  const fields: { key: string; label: string; value: string }[] = [
+    { key: "request_category", label: "Talep", value: labelOf(REQUEST_CATEGORY_LABELS, currentValues.requestCategory) },
+    { key: "location", label: "Marina", value: currentValues.location ?? EMPTY_LABEL },
+    { key: "service_mode", label: "Hizmet biçimi", value: labelOf(SERVICE_MODE_LABELS, currentValues.serviceMode) },
+    { key: "potential_job", label: "Olası iş", value: currentValues.potentialJob ?? EMPTY_LABEL },
+    { key: "next_action", label: "Sonraki adım", value: labelOf(NEXT_ACTION_LABELS, currentValues.nextAction) },
+  ];
+
+  const evidence = suggestion.evidence ? Object.entries(suggestion.evidence) : [];
 
   return (
-    <div
-      className={`rounded-xl border border-slate-200 bg-white shadow-xs transition-all ${
-        variant === "detail" ? "p-5" : "p-5 hover:border-sky-300"
-      }`}
-    >
-      {/* Üst Başlık & Durum Rozeti */}
-      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-base font-bold text-slate-900">
-              {suggestion.caller}
-            </h2>
+    <Card className="space-y-4">
+      {/* Başlık: müşteri · tekne, durum ve aciliyet */}
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h2 className="text-base font-semibold text-brand-800">
+            {suggestion.caller}
             {suggestion.boatName && (
-              <span className="text-xs font-medium text-slate-500">
-                • {suggestion.boatName}
-              </span>
+              <span className="font-normal text-slate-500"> · {suggestion.boatName}</span>
             )}
-          </div>
-          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
-            <span>📍 {currentValues.location ?? EMPTY_LABEL}</span>
-            <span>•</span>
-            <span>Çağrı ID: {suggestion.callId}</span>
-          </div>
+          </h2>
+          <p className="mt-0.5 text-sm text-slate-700">
+            {currentValues.problem ?? "Sorun tanımı çıkarılamadı"}
+            {isEdited("problem") && <span className="ml-2 text-xs text-slate-500">(düzenlendi)</span>}
+          </p>
         </div>
-
-        {/* Durum Rozeti ve Aciliyet */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* İnceleme Durumu Rozeti (#113) */}
-          <span
-            className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border}`}
-          >
-            <span>{statusStyle.icon}</span>
-            <span>{labelOf(CRM_REVIEW_STATUS_LABELS, reviewStatus)}</span>
-          </span>
-
-          {/* Aciliyet Rozeti */}
           {currentValues.urgency && (
-            <span
-              className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${
-                URGENCY_BADGE[currentValues.urgency]
-              }`}
-            >
-              {currentValues.urgency === "acil" && <span className="mr-1">🚨</span>}
+            <Badge tone={URGENCY_TONE[currentValues.urgency]}>
               {labelOf(URGENCY_LABELS, currentValues.urgency)}
-            </span>
+            </Badge>
           )}
-
-          {variant === "list" && (
-            <Link
-              href={`/admin/calls/${suggestion.callId}`}
-              className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100 transition-colors"
-            >
-              Çağrı Detayı →
-            </Link>
-          )}
+          <Badge tone={STATUS_TONE[reviewStatus]}>{labelOf(CRM_REVIEW_STATUS_LABELS, reviewStatus)}</Badge>
         </div>
       </div>
 
-      {/* Servis Emri Bilgisi (Onaylandıysa) */}
-      {serviceOrderId && (
-        <div className="mt-4 flex items-center justify-between rounded-lg bg-emerald-50 p-3 border border-emerald-200 text-xs">
-          <div className="flex items-center gap-2 text-emerald-800 font-semibold">
-            <span>📋</span>
-            <span>Servis Emri Oluşturuldu:</span>
-            <Link
-              href="/admin/service-orders"
-              className="font-mono font-bold text-emerald-900 underline hover:text-emerald-700"
-              title="Servis Emirleri Sayfasına Git"
-            >
-              {serviceOrderId} ➔
-            </Link>
+      {/* Okunur etiketli alanlar */}
+      <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm sm:grid-cols-3">
+        {fields.map((f) => (
+          <div key={f.key}>
+            <dt className="text-xs text-slate-500">
+              {f.label}
+              {isEdited(f.key) && " (düzenlendi)"}
+            </dt>
+            <dd className="font-medium text-slate-800">{f.value}</dd>
           </div>
-          <span className="rounded bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 uppercase tracking-wider">
-            Aktif Servis Emri
-          </span>
-        </div>
+        ))}
+      </dl>
+
+      {evidence.length > 0 && (
+        <details className="text-sm">
+          <summary className="cursor-pointer text-xs font-medium text-brand-700">
+            Konuşmadan alıntılar ({evidence.length})
+          </summary>
+          <ul className="mt-2 space-y-1 text-slate-600">
+            {evidence.map(([key, val]) => (
+              <li key={key}>
+                <span className="font-medium text-slate-700">{key}:</span> &ldquo;{val}&rdquo;
+              </li>
+            ))}
+          </ul>
+        </details>
       )}
 
-      {/* Hata Uyarısı (409 veya diğerleri) */}
-      {actionError && (
+      {matchDone && (
+        <p role="status" className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
+          Çağrı müşteriye bağlandı. Şimdi tekrar onaylayabilirsiniz.
+        </p>
+      )}
+
+      {actionError && !isEditModalOpen && !isRejectModalOpen && (
         <div
-          className={`mt-4 rounded-lg p-3 text-xs border ${
-            is409Error
-              ? "bg-amber-50 border-amber-300 text-amber-800"
-              : "bg-red-50 border-red-200 text-red-800"
+          role="alert"
+          className={`rounded-lg border p-3 text-sm ${
+            isConflict ? "border-amber-200 bg-amber-50 text-amber-800" : "border-red-200 bg-red-50 text-red-700"
           }`}
         >
-          <div className="flex items-start gap-2">
-            <span className="font-bold flex-shrink-0">{is409Error ? "⚠️" : "✕"}</span>
-            <div className="flex-1">
-              <p className="font-semibold">{is409Error ? "Eşleşme Uyarısı (409):" : "Hata Oluştu:"}</p>
-              <p className="mt-0.5">{actionError}</p>
-            </div>
-          </div>
+          <p>{actionError}</p>
+          {isConflict && (
+            <Button
+              variant="secondary"
+              size="sm"
+              className="mt-2"
+              onClick={() => {
+                setMatchError(null);
+                setIsMatchModalOpen(true);
+              }}
+            >
+              Elle eşleştir
+            </Button>
+          )}
         </div>
       )}
 
-      {/* 7 CRM Alanı Izgara Görünümü */}
-      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {/* 1. Kategori */}
-        <div className="rounded-lg bg-slate-50 border border-slate-100 p-3">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-              1. Müşteri Talebi (Kategori)
-            </span>
-            {isEdited("request_category") && (
-              <span className="rounded bg-amber-100 px-1.5 py-0.2 text-[9px] font-bold text-amber-800 border border-amber-300">
-                düzenlendi
-              </span>
-            )}
-          </div>
-          <p className="mt-0.5 text-xs font-semibold text-slate-800">
-            {labelOf(REQUEST_CATEGORY_LABELS, currentValues.requestCategory)}
-          </p>
+      {/* Eylemler: duruma göre */}
+      <div className="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-4">
+        <div className="flex flex-wrap items-center gap-2 text-sm text-slate-600">
+          {reviewStatus === "onaylandi" && (
+            <>
+              <span>Onaylandı, servis emri açıldı.</span>
+              {serviceOrderId && (
+                <Link
+                  href={`/admin/service-orders/${serviceOrderId}`}
+                  className={buttonClasses("secondary", "sm")}
+                >
+                  Servis emrini aç
+                </Link>
+              )}
+            </>
+          )}
+          {reviewStatus === "reddedildi" && <span>Bu öneri reddedildi.</span>}
+          {variant === "list" && (
+            <Link href={`/admin/calls/${suggestion.callId}`} className="text-brand-700 underline">
+              Çağrıyı gör
+            </Link>
+          )}
         </div>
 
-        {/* 2. Lokasyon */}
-        <div className="rounded-lg bg-slate-50 border border-slate-100 p-3">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-              2. Lokasyon / Marina
-            </span>
-            {isEdited("location") && (
-              <span className="rounded bg-amber-100 px-1.5 py-0.2 text-[9px] font-bold text-amber-800 border border-amber-300">
-                düzenlendi
-              </span>
+        {reviewStatus !== "onaylandi" && (
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              ref={matchTriggerRef}
+              type="button"
+              disabled={isSubmitting}
+              onClick={() => {
+                setMatchError(null);
+                setIsMatchModalOpen(true);
+              }}
+              className={buttonClasses("ghost", "sm")}
+            >
+              Elle eşleştir
+            </button>
+            <button
+              ref={editTriggerRef}
+              type="button"
+              onClick={openEditModal}
+              disabled={isSubmitting}
+              className={buttonClasses("secondary", "sm")}
+            >
+              Düzenle
+            </button>
+            {reviewStatus === "bekliyor" && (
+              <button
+                ref={rejectTriggerRef}
+                type="button"
+                onClick={() => {
+                  setActionError(null);
+                  setIsRejectModalOpen(true);
+                }}
+                disabled={isSubmitting}
+                className={buttonClasses("danger", "sm")}
+              >
+                Reddet
+              </button>
             )}
+            <Button size="sm" disabled={isSubmitting} onClick={() => handleApprove()}>
+              {isSubmitting ? "Onaylanıyor…" : "Onayla ve Servis Emri Oluştur"}
+            </Button>
           </div>
-          <p className="mt-0.5 text-xs font-semibold text-slate-800">
-            {currentValues.location ?? EMPTY_LABEL}
-          </p>
-        </div>
-
-        {/* 3. Problem Tanımı */}
-        <div className="rounded-lg bg-slate-50 border border-slate-100 p-3">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-              3. Problem Tanımı
-            </span>
-            {isEdited("problem") && (
-              <span className="rounded bg-amber-100 px-1.5 py-0.2 text-[9px] font-bold text-amber-800 border border-amber-300">
-                düzenlendi
-              </span>
-            )}
-          </div>
-          <p className="mt-0.5 text-xs font-semibold text-slate-800 line-clamp-2">
-            {currentValues.problem ?? EMPTY_LABEL}
-          </p>
-        </div>
-
-        {/* 4. Hizmet Biçimi */}
-        <div className="rounded-lg bg-slate-50 border border-slate-100 p-3">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-              4. Hizmet Biçimi
-            </span>
-            {isEdited("service_mode") && (
-              <span className="rounded bg-amber-100 px-1.5 py-0.2 text-[9px] font-bold text-amber-800 border border-amber-300">
-                düzenlendi
-              </span>
-            )}
-          </div>
-          <p className="mt-0.5 text-xs font-semibold text-slate-800">
-            {labelOf(SERVICE_MODE_LABELS, currentValues.serviceMode)}
-          </p>
-        </div>
-
-        {/* 6. Potansiyel İş */}
-        <div className="rounded-lg bg-slate-50 border border-slate-100 p-3">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-              6. Potansiyel İş
-            </span>
-            {isEdited("potential_job") && (
-              <span className="rounded bg-amber-100 px-1.5 py-0.2 text-[9px] font-bold text-amber-800 border border-amber-300">
-                düzenlendi
-              </span>
-            )}
-          </div>
-          <p className="mt-0.5 text-xs font-semibold text-slate-800">
-            {currentValues.potentialJob ?? EMPTY_LABEL}
-          </p>
-        </div>
-
-        {/* 7. Sonraki Aksiyon */}
-        <div className="rounded-lg bg-sky-50 border border-sky-100 p-3">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-sky-700">
-              7. Sonraki Aksiyon / Servis Emri
-            </span>
-            {isEdited("next_action") && (
-              <span className="rounded bg-amber-100 px-1.5 py-0.2 text-[9px] font-bold text-amber-800 border border-amber-300">
-                düzenlendi
-              </span>
-            )}
-          </div>
-          <p className="mt-0.5 text-xs font-bold text-sky-900">
-            {labelOf(NEXT_ACTION_LABELS, currentValues.nextAction)}
-          </p>
-        </div>
-      </div>
-
-      {/* Kanıt Alıntıları */}
-      {suggestion.evidence && Object.keys(suggestion.evidence).length > 0 && (
-        <div className="mt-4 rounded-lg bg-amber-50/50 p-3 border border-amber-200/60 text-xs">
-          <span className="block text-[11px] font-semibold text-amber-800 uppercase mb-1">
-            🔍 Konuşmadan Kanıt Alıntıları
-          </span>
-          <div className="space-y-1 text-amber-900">
-            {Object.entries(suggestion.evidence).map(([key, val]) => (
-              <div key={key}>
-                <span className="font-semibold text-amber-700">{key}:</span> &ldquo;{val}&rdquo;
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Aksiyon Butonları (Onayla, Düzenle, Reddet) */}
-      <div className="mt-5 flex flex-wrap items-center justify-end gap-2 border-t border-slate-100 pt-4">
-        {/* Düzenle Butonu */}
-        <button
-          ref={editTriggerRef}
-          type="button"
-          onClick={openEditModal}
-          disabled={isSubmitting}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-        >
-          <span>✏️</span>
-          <span>Düzenle</span>
-        </button>
-
-        {/* Reddet Butonu */}
-        {reviewStatus !== "reddedildi" && (
-          <button
-            ref={rejectTriggerRef}
-            type="button"
-            onClick={() => {
-              setActionError(null);
-              setIsRejectModalOpen(true);
-            }}
-            disabled={isSubmitting}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3.5 py-2 text-xs font-semibold text-red-700 hover:bg-red-100 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            <span>✕</span>
-            <span>Reddet</span>
-          </button>
-        )}
-
-        {/* Onayla Butonu */}
-        {reviewStatus !== "onaylandi" ? (
-          <button
-            type="button"
-            onClick={() => handleApprove()}
-            disabled={isSubmitting}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xs"
-          >
-            {isSubmitting ? (
-              <>
-                <div className="h-3 w-3 rounded-full border-2 border-white border-t-transparent animate-spin" />
-                <span>Onaylanıyor...</span>
-              </>
-            ) : (
-              <>
-                <span>✓</span>
-                <span>Onayla ve Servis Emri Oluştur</span>
-              </>
-            )}
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={() => handleApprove()}
-            disabled={isSubmitting}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-300 bg-emerald-50 px-3.5 py-2 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
-          >
-            <span>✓</span>
-            <span>Tekrar Onayla (Güncelle)</span>
-          </button>
         )}
       </div>
 
-      {/* ------------------------------------------------------------- */}
-      {/* 1. DÜZENLEME MODALI                                           */}
-      {/* ------------------------------------------------------------- */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60  p-4">
-          <div
-            ref={editModalRef}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="edit-modal-title"
-            className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-lg max-h-[90vh] overflow-y-auto"
-          >
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
-              <div>
-                <h3 id="edit-modal-title" className="text-base font-bold text-slate-900">
-                  CRM Öneri Alanlarını Düzenle
-                </h3>
-                <p className="text-xs text-slate-500">
-                  Değiştirilen alanlar kaydedildiğinde &quot;düzenlendi&quot; olarak işaretlenecek ve onaylanacaktır.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setIsEditModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 text-lg font-bold p-1 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-                aria-label="Kapat"
-              >
-                ✕
-              </button>
-            </div>
-
-            {actionError && (
-              <div className="mb-4 rounded-lg bg-red-50 border border-red-200 p-3 text-xs text-red-700">
-                {actionError}
-              </div>
-            )}
-
-            <form onSubmit={handleSaveAndApprove} className="space-y-4">
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {/* 1. Kategori */}
-                <div>
-                  <label htmlFor="crm-edit-category" className="block text-xs font-semibold text-slate-700 mb-1">
-                    1. Müşteri Talebi (Kategori)
-                  </label>
-                  <select
-                    id="crm-edit-category"
-                    value={editFormData.request_category}
-                    onChange={(e) => setEditFormData({ ...editFormData, request_category: e.target.value })}
-                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-                  >
-                    <option value="">Seçiniz</option>
-                    {Object.entries(REQUEST_CATEGORY_LABELS).map(([k, label]) => (
-                      <option key={k} value={k}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* 2. Lokasyon / Marina */}
-                <div>
-                  <label htmlFor="crm-edit-location" className="block text-xs font-semibold text-slate-700 mb-1">
-                    2. Lokasyon / Marina
-                  </label>
-                  <input
-                    id="crm-edit-location"
-                    type="text"
-                    value={editFormData.location}
-                    onChange={(e) => setEditFormData({ ...editFormData, location: e.target.value })}
-                    placeholder="Örn: Tuzla Marina"
-                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-                  />
-                </div>
-
-                {/* 3. Problem Tanımı */}
-                <div className="sm:col-span-2">
-                  <label htmlFor="crm-edit-problem" className="block text-xs font-semibold text-slate-700 mb-1">
-                    3. Problem Tanımı
-                  </label>
-                  <textarea
-                    id="crm-edit-problem"
-                    rows={3}
-                    value={editFormData.problem}
-                    onChange={(e) => setEditFormData({ ...editFormData, problem: e.target.value })}
-                    placeholder="Arıza veya müşteri şikayeti tanımı..."
-                    className="w-full rounded-lg border border-slate-300 bg-white p-2.5 text-xs text-slate-900 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-                  />
-                </div>
-
-                {/* 4. Hizmet Biçimi */}
-                <div>
-                  <label htmlFor="crm-edit-service-mode" className="block text-xs font-semibold text-slate-700 mb-1">
-                    4. Hizmet Biçimi
-                  </label>
-                  <select
-                    id="crm-edit-service-mode"
-                    value={editFormData.service_mode}
-                    onChange={(e) => setEditFormData({ ...editFormData, service_mode: e.target.value })}
-                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-                  >
-                    <option value="">Seçiniz</option>
-                    {Object.entries(SERVICE_MODE_LABELS).map(([k, label]) => (
-                      <option key={k} value={k}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* 5. Aciliyet */}
-                <div>
-                  <label htmlFor="crm-edit-urgency" className="block text-xs font-semibold text-slate-700 mb-1">
-                    5. Aciliyet Seviyesi
-                  </label>
-                  <select
-                    id="crm-edit-urgency"
-                    value={editFormData.urgency}
-                    onChange={(e) => setEditFormData({ ...editFormData, urgency: e.target.value })}
-                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-                  >
-                    <option value="">Seçiniz</option>
-                    {Object.entries(URGENCY_LABELS).map(([k, label]) => (
-                      <option key={k} value={k}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* 6. Potansiyel İş */}
-                <div>
-                  <label htmlFor="crm-edit-potential-job" className="block text-xs font-semibold text-slate-700 mb-1">
-                    6. Potansiyel İş
-                  </label>
-                  <input
-                    id="crm-edit-potential-job"
-                    type="text"
-                    value={editFormData.potential_job}
-                    onChange={(e) => setEditFormData({ ...editFormData, potential_job: e.target.value })}
-                    placeholder="Örn: Motor arıza tespiti ve bakımı"
-                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-                  />
-                </div>
-
-                {/* 7. Sonraki Aksiyon */}
-                <div>
-                  <label htmlFor="crm-edit-next-action" className="block text-xs font-semibold text-slate-700 mb-1">
-                    7. Önerilen Sonraki Aksiyon
-                  </label>
-                  <select
-                    id="crm-edit-next-action"
-                    value={editFormData.next_action}
-                    onChange={(e) => setEditFormData({ ...editFormData, next_action: e.target.value })}
-                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-                  >
-                    <option value="">Seçiniz</option>
-                    {Object.entries(NEXT_ACTION_LABELS).map(([k, label]) => (
-                      <option key={k} value={k}>
-                        {label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Onay Notu */}
-                <div className="sm:col-span-2">
-                  <label htmlFor="crm-edit-note" className="block text-xs font-semibold text-slate-700 mb-1">
-                    İsteğe Bağlı Onay Notu
-                  </label>
-                  <input
-                    id="crm-edit-note"
-                    type="text"
-                    value={editFormData.note}
-                    onChange={(e) => setEditFormData({ ...editFormData, note: e.target.value })}
-                    placeholder="Örn: Müşteri acil usta istediği için öncelik verildi."
-                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-                  />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setIsEditModalOpen(false)}
-                  disabled={isSubmitting}
-                  className="rounded-lg border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
+        <Modal
+          title="Öneri alanlarını düzenle"
+          titleId="edit-modal-title"
+          description="Kaydettiğinizde değişen alanlar “düzenlendi” diye işaretlenir ve öneri onaylanır."
+          onClose={() => setIsEditModalOpen(false)}
+          triggerRef={editTriggerRef}
+        >
+          {actionError && (
+            <p role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+              {actionError}
+            </p>
+          )}
+          <form onSubmit={handleSaveAndApprove} className="space-y-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Field id="crm-edit-category" label="Müşteri talebi">
+                <Select
+                  id="crm-edit-category"
+                  value={editFormData.request_category}
+                  onChange={(e) => setEditFormData({ ...editFormData, request_category: e.target.value })}
                 >
-                  İptal
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-5 py-2 text-xs font-bold text-white hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-50 transition-all shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <div className="h-3 w-3 rounded-full border-2 border-white border-t-transparent animate-spin" />
-                      <span>Kaydediliyor...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>✓</span>
-                      <span>Değişiklikleri Kaydet &amp; Onayla</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ------------------------------------------------------------- */}
-      {/* 2. REDDETME MODALI                                            */}
-      {/* ------------------------------------------------------------- */}
-      {isRejectModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60  p-4">
-          <div
-            ref={rejectModalRef}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="reject-modal-title"
-            className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-lg"
-          >
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
-              <h3 id="reject-modal-title" className="text-base font-bold text-slate-900">
-                CRM Önerisini Reddet
-              </h3>
-              <button
-                type="button"
-                onClick={() => setIsRejectModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 text-lg font-bold p-1 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-                aria-label="Kapat"
-              >
-                ✕
-              </button>
-            </div>
-
-            {actionError && (
-              <div className="mb-4 rounded-lg bg-red-50 border border-red-200 p-3 text-xs text-red-700">
-                {actionError}
-              </div>
-            )}
-
-            <form onSubmit={handleReject} className="space-y-4">
-              <div>
-                <label htmlFor="crm-reject-reason" className="block text-xs font-semibold text-slate-700 mb-1">
-                  Red Gerekçesi veya Not <span className="text-slate-400 font-normal">(İsteğe Bağlı)</span>
-                </label>
-                <textarea
-                  id="crm-reject-reason"
-                  rows={3}
-                  value={rejectReason}
-                  onChange={(e) => setRejectReason(e.target.value)}
-                  placeholder="Örn: Tekne sahibi başka bir servis ile anlaştı / bilgi amaçlı arama..."
-                  className="w-full rounded-lg border border-slate-300 bg-white p-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-red-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+                  <option value="">Seçiniz</option>
+                  {Object.entries(REQUEST_CATEGORY_LABELS).map(([k, label]) => (
+                    <option key={k} value={k}>
+                      {label}
+                    </option>
+                  ))}
+                </Select>
+              </Field>
+              <Field id="crm-edit-location" label="Marina">
+                <Input
+                  id="crm-edit-location"
+                  value={editFormData.location}
+                  onChange={(e) => setEditFormData({ ...editFormData, location: e.target.value })}
+                  placeholder="Örn: Tuzla Marina"
                 />
-              </div>
-
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setIsRejectModalOpen(false)}
-                  disabled={isSubmitting}
-                  className="rounded-lg border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
+              </Field>
+              <Field id="crm-edit-problem" label="Sorun tanımı" className="sm:col-span-2">
+                <Textarea
+                  id="crm-edit-problem"
+                  rows={3}
+                  value={editFormData.problem}
+                  onChange={(e) => setEditFormData({ ...editFormData, problem: e.target.value })}
+                  placeholder="Arıza veya müşteri şikayeti"
+                />
+              </Field>
+              <Field id="crm-edit-service-mode" label="Hizmet biçimi">
+                <Select
+                  id="crm-edit-service-mode"
+                  value={editFormData.service_mode}
+                  onChange={(e) => setEditFormData({ ...editFormData, service_mode: e.target.value })}
                 >
-                  Vazgeç
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-4 py-2 text-xs font-bold text-white hover:bg-red-700 active:scale-[0.98] disabled:opacity-50 transition-all shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+                  <option value="">Seçiniz</option>
+                  {Object.entries(SERVICE_MODE_LABELS).map(([k, label]) => (
+                    <option key={k} value={k}>
+                      {label}
+                    </option>
+                  ))}
+                </Select>
+              </Field>
+              <Field id="crm-edit-urgency" label="Aciliyet">
+                <Select
+                  id="crm-edit-urgency"
+                  value={editFormData.urgency}
+                  onChange={(e) => setEditFormData({ ...editFormData, urgency: e.target.value })}
                 >
-                  {isSubmitting ? (
-                    <>
-                      <div className="h-3 w-3 rounded-full border-2 border-white border-t-transparent animate-spin" />
-                      <span>Reddediliyor...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>✕</span>
-                      <span>Reddetmeyi Onayla</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+                  <option value="">Seçiniz</option>
+                  {Object.entries(URGENCY_LABELS).map(([k, label]) => (
+                    <option key={k} value={k}>
+                      {label}
+                    </option>
+                  ))}
+                </Select>
+              </Field>
+              <Field id="crm-edit-potential-job" label="Olası iş">
+                <Input
+                  id="crm-edit-potential-job"
+                  value={editFormData.potential_job}
+                  onChange={(e) => setEditFormData({ ...editFormData, potential_job: e.target.value })}
+                  placeholder="Örn: Motor arıza tespiti ve bakımı"
+                />
+              </Field>
+              <Field id="crm-edit-next-action" label="Sonraki adım">
+                <Select
+                  id="crm-edit-next-action"
+                  value={editFormData.next_action}
+                  onChange={(e) => setEditFormData({ ...editFormData, next_action: e.target.value })}
+                >
+                  <option value="">Seçiniz</option>
+                  {Object.entries(NEXT_ACTION_LABELS).map(([k, label]) => (
+                    <option key={k} value={k}>
+                      {label}
+                    </option>
+                  ))}
+                </Select>
+              </Field>
+              <Field id="crm-edit-note" label="Onay notu (isteğe bağlı)" className="sm:col-span-2">
+                <Input
+                  id="crm-edit-note"
+                  value={editFormData.note}
+                  onChange={(e) => setEditFormData({ ...editFormData, note: e.target.value })}
+                  placeholder="Örn: Müşteri acil usta istedi."
+                />
+              </Field>
+            </div>
+            <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
+              <Button variant="secondary" onClick={() => setIsEditModalOpen(false)} disabled={isSubmitting}>
+                İptal
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Kaydediliyor…" : "Kaydet ve Onayla"}
+              </Button>
+            </div>
+          </form>
+        </Modal>
       )}
-    </div>
+
+      {isRejectModalOpen && (
+        <Modal
+          title="Öneriyi reddet"
+          titleId="reject-modal-title"
+          onClose={() => setIsRejectModalOpen(false)}
+          triggerRef={rejectTriggerRef}
+        >
+          {actionError && (
+            <p role="alert" className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+              {actionError}
+            </p>
+          )}
+          <form onSubmit={handleReject} className="space-y-4">
+            <Field id="crm-reject-reason" label="Red gerekçesi (isteğe bağlı)">
+              <Textarea
+                id="crm-reject-reason"
+                rows={3}
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                placeholder="Örn: Bilgi amaçlı arama."
+              />
+            </Field>
+            <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
+              <Button variant="secondary" onClick={() => setIsRejectModalOpen(false)} disabled={isSubmitting}>
+                Vazgeç
+              </Button>
+              <Button type="submit" variant="danger" disabled={isSubmitting}>
+                {isSubmitting ? "Reddediliyor…" : "Reddet"}
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
+
+      {isMatchModalOpen && (
+        <Modal
+          title="Çağrıyı elle eşleştir"
+          titleId="match-modal-title"
+          description="Çağrıyı kayıtlı bir müşteriye (ve istenirse teknesine) bağlar. Eşleşince servis emri açılabilir."
+          onClose={() => setIsMatchModalOpen(false)}
+          triggerRef={matchTriggerRef}
+        >
+          <form onSubmit={handleMatch} className="space-y-4">
+            <Field
+              id="crm-match-customer"
+              label="Müşteri numarası"
+              hint="Müşteri kaydındaki kimlik (UUID)."
+              error={matchError}
+            >
+              <Input
+                id="crm-match-customer"
+                value={matchForm.customerId}
+                onChange={(e) => setMatchForm({ ...matchForm, customerId: e.target.value })}
+                placeholder="123e4567-e89b-12d3-a456-426614174000"
+                autoComplete="off"
+                required
+              />
+            </Field>
+            <Field id="crm-match-boat" label="Tekne numarası (isteğe bağlı)" hint="Boşsa yalnızca müşteri bağlanır.">
+              <Input
+                id="crm-match-boat"
+                value={matchForm.boatId}
+                onChange={(e) => setMatchForm({ ...matchForm, boatId: e.target.value })}
+                autoComplete="off"
+              />
+            </Field>
+            <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
+              <Button variant="secondary" onClick={() => setIsMatchModalOpen(false)} disabled={isSubmitting}>
+                Vazgeç
+              </Button>
+              <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "Eşleştiriliyor…" : "Eşleştir"}
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
+    </Card>
   );
 }

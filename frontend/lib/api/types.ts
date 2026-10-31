@@ -51,6 +51,7 @@ export type CallListItem = Schema["CallListItem"];
 export type TranscriptSegmentOut = Schema["TranscriptSegmentOut"];
 export type TranscriptOut = Schema["TranscriptOut"];
 export type CallDetail = Schema["CallDetail"];
+export type CallMatchIn = Schema["CallMatchIn"];
 export type SegmentIn = Schema["SegmentIn"];
 export type CallCreate = Schema["CallCreate"];
 export type CallAccepted = Schema["CallAccepted"];

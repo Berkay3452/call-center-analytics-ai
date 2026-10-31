@@ -7,11 +7,24 @@ import { CrmSuggestionsSkeleton } from "@/components/skeletons";
 import { CallsFilterBar } from "@/components/CallsFilterBar";
 import { Pagination } from "@/components/Pagination";
 import { EmptyState } from "@/components/EmptyState";
+import { PageHeader } from "@/components/ui";
 import { CrmSuggestionCard } from "@/components/crm";
 import type { CallQueryFilters } from "@/lib/api/client";
 import { clampPageSize, lastPageIfOutOfRange, listUrl } from "@/lib/list-query";
 
-export const metadata = { title: "CRM Kayıt Önerileri | Miço Usta" };
+export const metadata = { title: "CRM Önerileri | Miço Usta" };
+
+type TabStatus = "bekliyor" | "onaylandi" | "reddedildi";
+const TABS: { status: TabStatus; label: string }[] = [
+  { status: "bekliyor", label: "Bekliyor" },
+  { status: "onaylandi", label: "Onaylandı" },
+  { status: "reddedildi", label: "Reddedildi" },
+];
+const EMPTY_TEXT: Record<TabStatus, string> = {
+  bekliyor: "Bekleyen öneri yok. Yeni çağrılar analiz edildikçe burada görünür.",
+  onaylandi: "Henüz onaylanmış öneri yok.",
+  reddedildi: "Henüz reddedilmiş öneri yok.",
+};
 
 interface CrmPageProps {
   searchParams?: Promise<{
@@ -39,7 +52,7 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
     call_type: params?.call_type?.trim() || undefined,
     request_category: params?.request_category?.trim() || undefined,
     state: params?.state?.trim() || undefined,
-    status: params?.status?.trim() || undefined,
+    status: TABS.some((t) => t.status === params?.status) ? params?.status : "bekliyor",
     marina: params?.marina?.trim() || undefined,
     date_from: params?.date_from?.trim() || undefined,
     date_to: params?.date_to?.trim() || undefined,
@@ -49,110 +62,62 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
     queryFilters.q ||
       queryFilters.urgency ||
       queryFilters.request_category ||
-      queryFilters.status ||
       queryFilters.marina ||
       queryFilters.date_from ||
       queryFilters.date_to,
   );
 
-  // Bekleyen öneri sayısını bağımsız dinamik sorguyla al (#113)
-  let pendingCount: number | null = null;
-  try {
-    const pendingRes = await fetchCrmSuggestions({ status: "bekliyor", page_size: 1 });
-    pendingCount = pendingRes.total;
-  } catch {
-    // Servis kapalıysa fallback
-  }
+  // Sekme sayıları (durum başına toplam kayıt)
+  const counts: Record<TabStatus, number | null> = { bekliyor: null, onaylandi: null, reddedildi: null };
+  await Promise.all(
+    TABS.map(async (tab) => {
+      try {
+        counts[tab.status] = (await fetchCrmSuggestions({ status: tab.status, page_size: 1 })).total;
+      } catch {
+        // Servis kapalıysa sayı gösterilmez
+      }
+    }),
+  );
 
   const suspenseKey = JSON.stringify(queryFilters);
+  const activeStatus = queryFilters.status as TabStatus;
 
-  // Hızlı durum sekmeleri için URL oluşturucu
-  const getStatusTabUrl = (tabStatus?: string) => {
-    const nextFilters: CallQueryFilters = {
-      ...queryFilters,
-      status: tabStatus,
-      page: 1,
-    };
-    return listUrl("/admin/crm", nextFilters, 1);
-  };
-
-  const activeStatus = queryFilters.status ?? "all";
+  const getStatusTabUrl = (tabStatus: TabStatus) =>
+    listUrl("/admin/crm", { ...queryFilters, status: tabStatus, page: 1 }, 1);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2.5">
-            <span>CRM Kayıt ve Servis Emri Önerileri</span>
-            {pendingCount !== null && (
-              <span className="inline-flex items-center rounded-full bg-amber-100 border border-amber-300 px-3 py-0.5 text-xs font-bold text-amber-800">
-                ⏳ {pendingCount} Bekleyen Öneri
-              </span>
-            )}
-          </h1>
-          <p className="text-sm text-slate-500">
-            Çağrılardan yapay zekâ tarafından otomatik çıkarılan 7 alanlı servis kayıtları
-          </p>
-        </div>
-      </div>
+    <div>
+      <PageHeader
+        title="CRM Önerileri"
+        description="Çağrılardan çıkarılan servis kayıtlarını inceleyin; onaylarsanız servis emri açılır."
+      />
 
-      {/* Hızlı CRM Durum Sekmeleri (#113) */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-3">
-        <Link
-          href={getStatusTabUrl(undefined)}
-          className={`rounded-lg px-3.5 py-1.5 text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 ${
-            activeStatus === "all"
-              ? "bg-slate-900 text-white shadow-xs"
-              : "text-slate-600 hover:bg-slate-100"
-          }`}
-        >
-          Tüm Kayıtlar
-        </Link>
-        <Link
-          href={getStatusTabUrl("bekliyor")}
-          className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 ${
-            activeStatus === "bekliyor"
-              ? "bg-amber-600 text-white shadow-xs"
-              : "text-amber-800 bg-amber-50 border border-amber-200 hover:bg-amber-100"
-          }`}
-        >
-          <span>⏳</span>
-          <span>Bekliyor</span>
-          {pendingCount !== null && (
-            <span className="ml-1 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-900">
-              {pendingCount}
-            </span>
-          )}
-        </Link>
-        <Link
-          href={getStatusTabUrl("onaylandi")}
-          className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 ${
-            activeStatus === "onaylandi"
-              ? "bg-emerald-600 text-white shadow-xs"
-              : "text-emerald-800 bg-emerald-50 border border-emerald-200 hover:bg-emerald-100"
-          }`}
-        >
-          <span>✓</span>
-          <span>Onaylandı</span>
-        </Link>
-        <Link
-          href={getStatusTabUrl("reddedildi")}
-          className={`inline-flex items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 ${
-            activeStatus === "reddedildi"
-              ? "bg-red-600 text-white shadow-xs"
-              : "text-red-800 bg-red-50 border border-red-200 hover:bg-red-100"
-          }`}
-        >
-          <span>✕</span>
-          <span>Reddedildi</span>
-        </Link>
-      </div>
+      <nav aria-label="Öneri durumu" className="mb-4 flex flex-wrap gap-1 border-b border-slate-200 pb-3">
+        {TABS.map((tab) => {
+          const active = activeStatus === tab.status;
+          return (
+            <Link
+              key={tab.status}
+              href={getStatusTabUrl(tab.status)}
+              aria-current={active ? "page" : undefined}
+              className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
+                active
+                  ? "bg-brand-700 text-white"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+              }`}
+            >
+              {tab.label}
+              {counts[tab.status] !== null && <span className="ml-1.5 opacity-80">({counts[tab.status]})</span>}
+            </Link>
+          );
+        })}
+      </nav>
 
       {/* Arama ve Filtre Kontrolleri (#108, #113) */}
       <CallsFilterBar
         showCallType={false}
         showState={false}
-        showStatus={true}
+        showStatus={false}
         placeholder="Müşteri, tekne veya problem ara..."
       />
 
@@ -193,56 +158,43 @@ async function CrmContent({
 
   if (errorMsg) {
     return (
-      <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-center shadow-xs">
-        <p className="text-sm font-semibold text-amber-800">
-          ⚠️ CRM kayıtları alınamadı: {errorMsg}
-        </p>
+      <div role="alert" className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-center">
+        <p className="text-sm font-medium text-amber-800">CRM önerileri alınamadı: {errorMsg}</p>
         <p className="mt-1 text-xs text-amber-700">
-          Servise ulaşılamıyor. Lütfen biraz sonra tekrar deneyin; sorun sürerse sistem yöneticinize başvurun.
+          Servise ulaşılamıyor. Biraz sonra tekrar deneyin; sorun sürerse sistem yöneticinize başvurun.
         </p>
       </div>
     );
   }
 
   if (suggestions.length === 0) {
-    if (hasActiveFilters) {
-      return (
-        <EmptyState
-          title="Filtrelere uyan CRM önerisi bulunamadı"
-          description="Arama teriminizi veya filtre seçimlerinizi değiştirerek tekrar deneyebilirsiniz."
-          isFiltered={true}
-        />
-      );
-    }
-
-    return (
+    return hasActiveFilters ? (
       <EmptyState
-        title="CRM Önerisi Bulunamadı"
-        description="Henüz bekleyen bir CRM önerisi bulunmuyor."
+        title="Filtrelere uyan öneri bulunamadı"
+        description="Arama terimini veya filtreleri değiştirip tekrar deneyin."
+        isFiltered={true}
+      />
+    ) : (
+      <EmptyState
+        title="Öneri yok"
+        description={EMPTY_TEXT[filters.status as TabStatus]}
         isFiltered={false}
       />
     );
   }
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-slate-500 font-medium">
-          Sayfa {page} / {Math.max(1, Math.ceil(total / pageSize))}
-        </span>
-        <span className="rounded-lg bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-800 border border-sky-200">
-          {total} Toplam Öneri
-        </span>
-      </div>
+    <div className="space-y-4">
+      <p className="text-sm text-slate-500">
+        {total} öneri · Sayfa {page} / {Math.max(1, Math.ceil(total / pageSize))}
+      </p>
 
-      {/* İnteraktif Kart Listesi (#113: Onayla, Reddet, Düzenle) */}
-      <div className="grid grid-cols-1 gap-5">
+      <div className="grid grid-cols-1 gap-4">
         {suggestions.map((s) => (
           <CrmSuggestionCard key={s.callId} suggestion={s} variant="list" />
         ))}
       </div>
 
-      {/* Sayfalama Kontrolleri (#108) */}
       <Pagination page={page} pageSize={pageSize} total={total} />
     </div>
   );
