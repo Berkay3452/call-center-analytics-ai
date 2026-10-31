@@ -1,6 +1,7 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, type ReactNode } from "react";
 import type { ChatMessage } from "@/lib/types";
 import type { StreamStage } from "@/lib/api/types";
+import { Button } from "@/components/ui";
 import { CitationList } from "./CitationList";
 import { StatusIndicator } from "./StatusIndicator";
 
@@ -9,7 +10,14 @@ interface ChatWindowProps {
   currentStage?: StreamStage | "yaziyor" | null;
   isLoading?: boolean;
   onRetry?: () => void;
+  /** Mesaj listesinin altında gösterilir (ör. ilk ekrandaki hazır sorular). */
+  footer?: ReactNode;
   className?: string;
+}
+
+function formatTime(iso?: string): string {
+  if (!iso) return "";
+  return new Date(iso).toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" });
 }
 
 export function ChatWindow({
@@ -17,9 +25,9 @@ export function ChatWindow({
   currentStage,
   isLoading = false,
   onRetry,
+  footer,
   className = "",
 }: ChatWindowProps) {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
 
   // Otomatik aşağı kaydırma
@@ -29,180 +37,86 @@ export function ChatWindow({
 
   return (
     <div
-      ref={scrollContainerRef}
       role="log"
       aria-live="polite"
       aria-label="Asistan Sohbet Geçmişi"
-      className={`flex-1 overflow-y-auto rounded-2xl border border-slate-200 bg-white p-4 sm:p-6 space-y-5 ${className}`}
+      className={`h-full space-y-4 overflow-y-auto p-4 sm:p-6 ${className}`}
     >
       {messages.map((msg) => {
         const isUser = msg.role === "user";
-        const isNotFound = msg.found === false || msg.content.includes("Bu konuda kayıtlarda bilgi bulamadım");
+        const isNotFound =
+          msg.found === false || msg.content.includes("Bu konuda kayıtlarda bilgi bulamadım");
         const hasCitations =
           !isUser &&
           !isNotFound &&
           !msg.isStreaming &&
           Array.isArray(msg.citations) &&
           msg.citations.length > 0;
-        const hasError = !!msg.error;
+        const error = msg.error;
+        const isConfigError =
+          !!error &&
+          (error.isApiKeyError ||
+            error.code === "LLM_NOT_CONFIGURED" ||
+            error.message.includes("LLM_API_KEY"));
 
         return (
-          <div
-            key={msg.id}
-            className={`flex items-start gap-3 ${isUser ? "justify-end" : "justify-start"}`}
-          >
-            {/* Asistan Avatarı */}
-            {!isUser && (
-              <div
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-sky-900 text-white shadow-xs"
-                aria-hidden="true"
-              >
-                <span className="text-sm">⚓</span>
-              </div>
-            )}
-
-            {/* Mesaj Balonu */}
+          <div key={msg.id} className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
             <div
-              className={`relative max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-3 text-sm shadow-2xs transition-all ${
+              className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm sm:max-w-[75%] ${
                 isUser
-                  ? "bg-sky-700 text-white rounded-tr-xs"
-                  : hasError
-                  ? "bg-rose-50/90 text-rose-950 border border-rose-200 rounded-tl-xs"
-                  : isNotFound
-                  ? "bg-amber-50/80 text-slate-800 border border-amber-200/80 rounded-tl-xs"
-                  : "bg-white text-slate-900 border border-slate-200/90 rounded-tl-xs"
+                  ? "rounded-br-sm bg-brand-700 text-white"
+                  : "rounded-bl-sm border border-slate-200 bg-white text-slate-900"
               }`}
             >
-              {/* Asistan Başlığı */}
-              {!isUser && (
-                <div className="mb-1 flex items-center justify-between gap-2 border-b border-slate-100 pb-1">
-                  <span className="text-xs font-bold text-sky-950 flex items-center gap-1.5">
-                    Miço Usta AI
-                    {msg.isStreaming && (
-                      <span className="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                    )}
-                  </span>
-                  {msg.timestamp && (
-                    <span className="text-[10px] text-slate-500">
-                      {new Date(msg.timestamp).toLocaleTimeString("tr-TR", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </span>
-                  )}
-                </div>
-              )}
-
-              {/* Mesaj İçeriği */}
-              <div className="leading-relaxed whitespace-pre-wrap break-words">
+              <p className="whitespace-pre-wrap break-words leading-relaxed">
                 {msg.content}
                 {msg.isStreaming && (
                   <span
-                    className="inline-block w-1.5 h-4 ml-1 bg-sky-700 animate-pulse align-middle"
+                    className="ml-1 inline-block h-4 w-1.5 animate-pulse bg-brand-600 align-middle"
                     aria-hidden="true"
                   />
                 )}
-              </div>
+              </p>
 
-              {/* "Bulamadım" Özel Durumu */}
               {isNotFound && !msg.isStreaming && (
-                <div className="mt-2.5 flex items-center gap-2 rounded-lg bg-amber-100/70 p-2 text-xs text-amber-900">
-                  <span className="text-sm" aria-hidden="true">🔍</span>
-                  <span className="text-[11px] leading-snug">
-                    Veritabanı ve servis kayıtlarında eşleşen belge bulunamadı. Kaynak kartları gizlendi.
-                  </span>
-                </div>
+                <p className="mt-2 text-xs text-slate-500">
+                  Servis kayıtlarında eşleşen belge bulunamadı.
+                </p>
               )}
 
-              {/* Doğrulanan Kaynaklar (Citations) */}
               {hasCitations && <CitationList citations={msg.citations} />}
 
-              {/* Hata Durumu & API Key Koruması */}
-              {hasError && msg.error && (
-                <div className="mt-3 rounded-xl border border-rose-300 bg-rose-100/80 p-3 text-xs text-rose-950">
-                  <div className="flex items-start gap-2">
-                    <span className="text-base text-rose-600" aria-hidden="true">⚠️</span>
-                    <div className="flex-1 space-y-1">
-                      <p className="font-semibold text-rose-900">
-                        {msg.error.isApiKeyError ||
-                        msg.error.code === "LLM_NOT_CONFIGURED" ||
-                        msg.error.message.includes("LLM_API_KEY")
-                          ? "AI Servisi Yapılandırma Uyarısı"
-                          : "Yanıt Alınırken Hata Oluştu"}
-                      </p>
-                      <p className="text-[11px] text-rose-800 leading-snug">
-                        {msg.error.isApiKeyError ||
-                        msg.error.code === "LLM_NOT_CONFIGURED" ||
-                        msg.error.message.includes("LLM_API_KEY")
-                          ? "Backend AI modeli için geçerli bir LLM_API_KEY tanımlanmamış. Sistem yöneticinizle görüşün veya backend yapılandırmasını kontrol edin."
-                          : msg.error.message}
-                      </p>
-                      {msg.error.requestId && (
-                        <p className="text-[10px] text-rose-600 font-mono">
-                          İstek ID: {msg.error.requestId}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
+              {error && (
+                <div role="alert" className="mt-2 space-y-2 text-xs text-red-700">
+                  <p>
+                    {isConfigError
+                      ? "Yapay zekâ servisi yapılandırılmamış. Sistem yöneticinize başvurun."
+                      : error.message}
+                  </p>
+                  {error.requestId && (
+                    <p className="font-mono text-[10px] text-slate-500">İstek no: {error.requestId}</p>
+                  )}
                   {onRetry && (
-                    <div className="mt-2.5 flex justify-end">
-                      <button
-                        type="button"
-                        onClick={onRetry}
-                        className="inline-flex items-center gap-1.5 rounded-lg bg-rose-700 px-3 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-rose-800 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
-                      >
-                        <svg
-                          className="w-3.5 h-3.5"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                          aria-hidden="true"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                          />
-                        </svg>
-                        Yeniden Dene
-                      </button>
-                    </div>
+                    <Button variant="secondary" size="sm" onClick={onRetry}>
+                      Yeniden dene
+                    </Button>
                   )}
                 </div>
               )}
 
-              {/* Kullanıcı Mesajı Zaman Damgası */}
-              {isUser && msg.timestamp && (
-                <div className="mt-1 text-right text-[10px] text-sky-200">
-                  {new Date(msg.timestamp).toLocaleTimeString("tr-TR", {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </div>
+              {msg.timestamp && (
+                <p className={`mt-1 text-[10px] ${isUser ? "text-right text-white/70" : "text-slate-400"}`}>
+                  {formatTime(msg.timestamp)}
+                </p>
               )}
             </div>
-
-            {/* Kullanıcı Avatarı */}
-            {isUser && (
-              <div
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-slate-700 text-white shadow-xs"
-                aria-hidden="true"
-              >
-                <span className="text-xs font-bold">K</span>
-              </div>
-            )}
           </div>
         );
       })}
 
-      {/* Akış Durumu Bildirimi */}
-      {isLoading && currentStage && (
-        <div className="flex items-center justify-start gap-3 pl-11">
-          <StatusIndicator stage={currentStage} />
-        </div>
-      )}
+      {isLoading && currentStage && <StatusIndicator stage={currentStage} />}
+
+      {footer}
 
       <div ref={bottomRef} className="h-1" />
     </div>

@@ -7,9 +7,12 @@ import {
   streamAssistantChat,
   getChatSessions,
   getChatSessionDetail,
+  deleteChatSession,
+  deleteAllChatSessions,
   DEFAULT_OWNER_ID,
 } from "@/lib/api/client";
 import { isApiError } from "@/lib/api/errors";
+import { Button } from "@/components/ui";
 import {
   ChatWindow,
   ChatInput,
@@ -329,8 +332,20 @@ export default function AssistantPage() {
     }
   }, [lastQuestion, sendMessage]);
 
-  // ── "Temizle" = yeni sohbet ile aynı ─────────────────────────────────────
-  const handleClearChat = useCallback(() => {
+  // ── Sohbet silme (#176) ──────────────────────────────────────────────────
+  const handleDeleteSession = useCallback(
+    async (sessionId: string) => {
+      await deleteChatSession(sessionId, DEFAULT_OWNER_ID);
+      setSessions((prev) => prev.filter((x) => x.id !== sessionId));
+      // Açık sohbet silindiyse boş sohbete dön
+      if (sessionIdRef.current === sessionId) handleNewChat();
+    },
+    [handleNewChat],
+  );
+
+  const handleDeleteAll = useCallback(async () => {
+    await deleteAllChatSessions(DEFAULT_OWNER_ID);
+    setSessions([]);
     handleNewChat();
   }, [handleNewChat]);
 
@@ -338,9 +353,10 @@ export default function AssistantPage() {
   // Render
   // ─────────────────────────────────────────────────────────────────────────
 
+  const isFreshChat = messages.length <= 1;
+
   return (
-    <div className="flex h-[calc(100vh-13rem)] min-h-[32rem] max-w-6xl mx-auto overflow-hidden rounded-2xl border border-slate-200 shadow-sm bg-white">
-      {/* ── Sol: Oturum Kenar Çubuğu ─────────────────────────────────────── */}
+    <div className="mx-auto flex h-[calc(100vh-13rem)] min-h-[32rem] max-w-6xl overflow-hidden rounded-xl border border-slate-200 bg-white">
       <ChatSidebar
         sessions={sessions}
         isLoading={sessionsLoading}
@@ -348,97 +364,58 @@ export default function AssistantPage() {
         activeSessionId={activeSessionId}
         onSelectSession={(id) => void handleSelectSession(id)}
         onNewChat={handleNewChat}
+        onDeleteSession={handleDeleteSession}
+        onDeleteAll={handleDeleteAll}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
 
-      {/* ── Sağ: Ana sohbet alanı ────────────────────────────────────────── */}
-      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-        {/* Üst Asistan Bilgi Başlığı */}
-        <header
-          className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 bg-white px-4 py-3 flex-shrink-0"
-          role="banner"
-        >
-          <div className="flex items-center gap-2.5">
-            {/* Mobil: menü butonu */}
-            <button
-              type="button"
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+        <header className="flex flex-shrink-0 items-center justify-between gap-3 border-b border-slate-200 px-4 py-3">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="lg:hidden"
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden rounded-lg p-1.5 text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
               aria-label="Sohbet geçmişini aç"
               aria-expanded={sidebarOpen}
               aria-controls="chat-sidebar"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="h-5 w-5"
-                aria-hidden="true"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M2 4.75A.75.75 0 0 1 2.75 4h14.5a.75.75 0 0 1 0 1.5H2.75A.75.75 0 0 1 2 4.75Zm0 10.5a.75.75 0 0 1 .75-.75h14.5a.75.75 0 0 1 0 1.5H2.75a.75.75 0 0 1-.75-.75ZM2 10a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 2 10Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </button>
-
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-900 text-white shadow-xs flex-shrink-0">
-              <span className="text-lg" aria-hidden="true">⚓</span>
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-base font-bold text-slate-900 leading-tight">
-                  Miço Usta AI Tekne Asistanı
-                </h1>
-                <span className="hidden sm:inline rounded-full bg-sky-100 px-2 py-0.5 text-[10px] font-semibold text-sky-800 border border-sky-200">
-                  v1.0 (Akışlı)
-                </span>
-              </div>
-              <p className="text-xs text-slate-500 leading-tight">
-                Kayıtlı Tekne:{" "}
-                <strong className="font-semibold text-slate-800">
-                  Poyraz (Motoryat 42)
-                </strong>{" "}
-                • Kalamış Marina
-              </p>
+              Geçmiş
+            </Button>
+            <div className="min-w-0">
+              <h1 className="truncate text-base font-semibold text-brand-800">Miço AI</h1>
+              <p className="truncate text-xs text-slate-500">Poyraz (Motoryat 42) · Kalamış Marina</p>
             </div>
           </div>
-
-          <div className="flex items-center gap-2">
-            <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700 border border-emerald-200">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" aria-hidden="true" />
-              Çevrimiçi &amp; Servis Kayıtları Aktif
-            </span>
-            <button
-              type="button"
-              onClick={handleClearChat}
-              disabled={isLoading || messages.length <= 1}
-              className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900 disabled:opacity-40 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-              title="Yeni sohbet başlat"
-            >
-              Temizle
-            </button>
-          </div>
+          <Button
+            variant="secondary"
+            size="sm"
+            className="lg:hidden"
+            onClick={handleNewChat}
+            disabled={isLoading || isFreshChat}
+            title="Mevcut sohbet geçmişte kalır, boş bir sohbet açılır"
+          >
+            Yeni sohbet
+          </Button>
         </header>
 
-        {/* Mesaj Penceresi */}
-        <div className="flex-1 overflow-hidden">
+        <div className="min-h-0 flex-1 bg-slate-50">
           <ChatWindow
             messages={messages}
             currentStage={currentStage}
             isLoading={isLoading}
             onRetry={handleRetry}
+            footer={
+              isFreshChat && !isLoading ? (
+                <SuggestedPrompts onSelectPrompt={(prompt) => void sendMessage(prompt)} />
+              ) : null
+            }
           />
         </div>
 
-        {/* Önerilen Sorular + Giriş kutusu */}
-        <div className="flex-shrink-0 border-t border-slate-200 px-3 pt-2 pb-3 space-y-2 bg-white">
-          <SuggestedPrompts
-            onSelectPrompt={(prompt) => void sendMessage(prompt)}
-            disabled={isLoading}
-          />
+        <div className="flex-shrink-0 border-t border-slate-200 bg-white p-3">
           <ChatInput
             onSendMessage={(content) => void sendMessage(content)}
             disabled={isLoading}

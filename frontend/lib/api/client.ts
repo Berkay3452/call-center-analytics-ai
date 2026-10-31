@@ -60,6 +60,12 @@ interface MockAnalysisProgress {
 }
 const MOCK_UNMATCHED_CALL_ID = "22222222-2222-4222-8222-222222222222";
 const mockMatchedCalls = new Set<string>();
+const MOCK_CHAT_SESSION_IDS = [
+  "5e8c2a40-3f1b-4d6e-9a7c-0b1d2e3f4a5b",
+  "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+  "f1e2d3c4-b5a6-4f7e-8d9c-0b1a2f3e4d5c",
+];
+const mockDeletedChatSessions = new Set<string>();
 const mockReanalyzeMap = new Map<string, MockAnalysisProgress>();
 
 interface MockCrmReviewProgress {
@@ -444,6 +450,9 @@ export async function apiFetch<T>(
       status: res.status,
     });
   }
+
+  // 204 No Content (ör. sohbet silme): gövde yok
+  if (res.status === 204) return undefined as T;
 
   return (await res.json()) as T;
 }
@@ -934,6 +943,16 @@ async function handleMockRequest<T>(
     return mockChatReply as unknown as T;
   }
 
+  // DELETE /chat/sessions (tümü) ve DELETE /chat/sessions/:id (#176)
+  if (method === "DELETE" && path === "/chat/sessions") {
+    for (const id of MOCK_CHAT_SESSION_IDS) mockDeletedChatSessions.add(id);
+    return undefined as T;
+  }
+  if (method === "DELETE" && /^\/chat\/sessions\/[^/]+$/.test(path)) {
+    mockDeletedChatSessions.add(path.split("/")[3]);
+    return undefined as T;
+  }
+
   // 10. GET /chat/sessions
   if (method === "GET" && path === "/chat/sessions") {
     const mockSessions: ChatSessionOut[] = [
@@ -956,7 +975,7 @@ async function handleMockRequest<T>(
         updated_at: "2026-10-08T11:16:10Z",
       },
     ];
-    return mockSessions as unknown as T;
+    return mockSessions.filter((x) => !mockDeletedChatSessions.has(x.id)) as unknown as T;
   }
 
   // 11. GET /chat/sessions/:id
@@ -1336,6 +1355,20 @@ export async function getChatSessions(
     method: "GET",
     userId,
   });
+}
+
+/**
+ * DELETE /chat/sessions/{session_id} - Tek sohbet oturumunu ve mesajlarını sil (#176)
+ */
+export async function deleteChatSession(sessionId: string, userId: string): Promise<void> {
+  await apiFetch<void>(`/chat/sessions/${sessionId}`, { method: "DELETE", userId });
+}
+
+/**
+ * DELETE /chat/sessions - Kullanıcının tüm sohbet oturumlarını sil (#176)
+ */
+export async function deleteAllChatSessions(userId: string): Promise<void> {
+  await apiFetch<void>("/chat/sessions", { method: "DELETE", userId });
 }
 
 /**

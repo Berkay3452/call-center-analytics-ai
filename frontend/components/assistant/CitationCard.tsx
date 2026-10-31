@@ -1,44 +1,20 @@
 import React from "react";
 import type { CitationCard as CitationCardType } from "@/lib/types";
+import { Badge } from "@/components/ui";
 
 interface CitationCardProps {
   citation: CitationCardType;
 }
 
-const KIND_LABELS: Record<string, { label: string; bg: string; text: string; border: string }> = {
-  service_record: {
-    label: "Servis Kaydı",
-    bg: "bg-sky-50",
-    text: "text-sky-700",
-    border: "border-sky-200",
-  },
-  boat_note: {
-    label: "Tekne Notu",
-    bg: "bg-indigo-50",
-    text: "text-indigo-700",
-    border: "border-indigo-200",
-  },
-  expense: {
-    label: "Harcama",
-    bg: "bg-emerald-50",
-    text: "text-emerald-700",
-    border: "border-emerald-200",
-  },
-  subscription: {
-    label: "Sözleşme / Marina",
-    bg: "bg-amber-50",
-    text: "text-amber-700",
-    border: "border-amber-200",
-  },
+const KIND_LABELS: Record<string, string> = {
+  service_record: "Servis Kaydı",
+  boat_note: "Tekne Notu",
+  expense: "Harcama",
+  subscription: "Sözleşme / Marina",
 };
 
 export function CitationCard({ citation }: CitationCardProps) {
-  const kindConfig = (citation.kind && KIND_LABELS[citation.kind]) || {
-    label: "Belge Kaydı",
-    bg: "bg-slate-100",
-    text: "text-slate-700",
-    border: "border-slate-200",
-  };
+  const kindLabel = (citation.kind && KIND_LABELS[citation.kind]) || "Belge Kaydı";
 
   // Tarih biçimlendirme
   let formattedDate = citation.date;
@@ -51,39 +27,30 @@ export function CitationCard({ citation }: CitationCardProps) {
 
   return (
     <div
-      className="group relative flex flex-col gap-1.5 rounded-lg border border-slate-200 bg-white/90 p-2.5 text-xs shadow-xs hover:border-sky-300 hover:shadow-xs transition-all"
+      className="flex flex-col gap-1 rounded-lg border border-slate-200 bg-slate-50 p-2.5 text-xs"
       role="region"
       aria-label={`Kaynak: ${citation.sourceTitle}`}
     >
-      <div className="flex items-center justify-between gap-2 flex-wrap">
-        <div className="flex items-center gap-1.5 min-w-0">
-          <span
-            className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wider border ${kindConfig.bg} ${kindConfig.text} ${kindConfig.border}`}
-          >
-            {kindConfig.label}
-          </span>
-          <span className="font-semibold text-slate-800 truncate" title={citation.sourceTitle}>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-1.5">
+          <Badge>{kindLabel}</Badge>
+          <span className="truncate font-medium text-slate-800" title={citation.sourceTitle}>
             {citation.sourceTitle}
           </span>
         </div>
-        {formattedDate && (
-          <span className="text-[11px] font-medium text-slate-500 shrink-0">
-            {formattedDate}
-          </span>
-        )}
+        {formattedDate && <span className="shrink-0 text-slate-500">{formattedDate}</span>}
       </div>
 
       {citation.excerpt && (
-        <blockquote className="mt-0.5 border-l-2 border-sky-300 pl-2 text-[11px] text-slate-600 italic leading-snug">
+        <blockquote className="border-l-2 border-slate-300 pl-2 text-slate-600">
           &ldquo;{citation.excerpt}&rdquo;
         </blockquote>
       )}
 
       {citation.callId && (
-        <div className="mt-1 flex items-center gap-1 text-[10px] text-slate-500">
-          <span>İlgili Çağrı:</span>
-          <span className="font-mono text-slate-600">{citation.callId}</span>
-        </div>
+        <p className="text-slate-500">
+          İlgili çağrı: <span className="font-mono">{citation.callId}</span>
+        </p>
       )}
     </div>
   );
