@@ -11,17 +11,20 @@ import {
   type RequestCategory,
   type Urgency,
 } from "@/lib/types";
+import { Button, Input, Select } from "@/components/ui";
 
 const STATE_OPTIONS: { value: string; label: string }[] = [
-  { value: "beklemede", label: "⏳ Sırada (Beklemede)" },
-  { value: "yaziya_cevriliyor", label: "Yazıya Çevriliyor" },
+  { value: "beklemede", label: "Sırada" },
+  { value: "yaziya_cevriliyor", label: "Yazıya çevriliyor" },
   { value: "isleniyor", label: "İşleniyor" },
-  { value: "tamam", label: "✓ Tamamlandı" },
+  { value: "tamam", label: "Tamamlandı" },
   { value: "kismi", label: "Kısmi" },
-  { value: "basarisiz", label: "✕ Başarısız / Hata" },
+  { value: "basarisiz", label: "Başarısız" },
 ];
 
 export interface CallsFilterBarProps {
+  /** Sade görünüm: yalnızca arama, marina, aciliyet ve durum (tarih ve kategori gizlenir). */
+  compact?: boolean;
   showCallType?: boolean;
   showState?: boolean;
   showStatus?: boolean;
@@ -30,6 +33,7 @@ export interface CallsFilterBarProps {
 }
 
 export function CallsFilterBar({
+  compact = false,
   showCallType = true,
   showState = true,
   showStatus = false,
@@ -131,183 +135,162 @@ export function CallsFilterBar({
     });
   };
 
+  const sel = "w-auto min-w-40";
+
   return (
-    <div
-      className={`rounded-2xl border border-slate-200 bg-white p-4 shadow-xs space-y-3.5 transition-colors ${className}`}
-    >
-      {/* 1. Satır: Arama Kutusu ve Yükleme Göstergesi */}
-      <div className="relative flex items-center">
+    <div className={`rounded-xl border border-slate-200 bg-white p-4 space-y-3 ${className}`}>
+      <div className="flex flex-wrap items-center gap-2">
         <label htmlFor="calls-filter-search-input" className="sr-only">
           Arama kutusu
         </label>
-        <input
-          id="calls-filter-search-input"
-          type="text"
-          value={searchVal}
-          onChange={(e) => setSearchVal(e.target.value)}
-          placeholder={placeholder}
-          aria-label="Arama kutusu"
-          className="w-full rounded-xl border border-slate-300 bg-slate-50/70 pl-10 pr-10 py-2.5 text-sm text-slate-900 placeholder-slate-400 shadow-xs focus:bg-white focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
-        />
-        {searchVal && (
-          <button
-            type="button"
-            onClick={() => {
-              setSearchVal("");
-              applyFilterChanges({ q: null });
-            }}
-            aria-label="Aramayı temizle"
-            className="absolute right-3.5 text-xs text-slate-400 hover:text-slate-600 p-1 rounded-full hover:bg-slate-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-          >
-            ✕
-          </button>
-        )}
-      </div>
-
-      {/* 2. Satır: Filtre Seçiciler */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-2.5 items-center">
-        {/* Marina Seçici */}
-        <div>
-          <label className="sr-only" htmlFor="filter-marina">
-            Marina
-          </label>
-          <select
-            id="filter-marina"
-            value={urlMarina || "all"}
-            onChange={(e) => applyFilterChanges({ marina: e.target.value })}
-            disabled={isPending}
-            aria-label="Marina filtresi"
-            className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
-          >
-            <option value="all">Tüm Marinalar</option>
-            {MARINA_OPTIONS.map((m) => (
-              <option key={m} value={m}>
-                {m}
-              </option>
-            ))}
-          </select>
+        <div className="relative min-w-60 flex-1">
+          <Input
+            id="calls-filter-search-input"
+            type="search"
+            value={searchVal}
+            onChange={(e) => setSearchVal(e.target.value)}
+            placeholder={placeholder}
+            aria-label="Arama kutusu"
+          />
         </div>
 
-        {/* Aciliyet Seçici */}
-        <div>
-          <label className="sr-only" htmlFor="filter-urgency">
-            Aciliyet
-          </label>
-          <select
-            id="filter-urgency"
-            value={urlUrgency || "all"}
-            onChange={(e) => applyFilterChanges({ urgency: e.target.value })}
-            disabled={isPending}
-            aria-label="Aciliyet seviyesi"
-            className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
-          >
-            <option value="all">Aciliyet (Tümü)</option>
-            {(Object.keys(URGENCY_LABELS) as Urgency[]).map((u) => (
-              <option key={u} value={u}>
-                {URGENCY_LABELS[u]}
-              </option>
-            ))}
-          </select>
-        </div>
+        <label className="sr-only" htmlFor="filter-marina">
+          Marina
+        </label>
+        <Select
+          id="filter-marina"
+          value={urlMarina || "all"}
+          onChange={(e) => applyFilterChanges({ marina: e.target.value })}
+          disabled={isPending}
+          aria-label="Marina filtresi"
+          className={sel}
+        >
+          <option value="all">Tüm marinalar</option>
+          {MARINA_OPTIONS.map((m) => (
+            <option key={m} value={m}>
+              {m}
+            </option>
+          ))}
+        </Select>
 
-        {/* Çağrı Tipi Seçici */}
-        {showCallType && (
-          <div>
-            <label className="sr-only" htmlFor="filter-call-type">
-              Çağrı Tipi
-            </label>
-            <select
-              id="filter-call-type"
-              value={urlCallType || "all"}
-              onChange={(e) => applyFilterChanges({ call_type: e.target.value })}
-              disabled={isPending}
-              aria-label="Çağrı tipi"
-              className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
-            >
-              <option value="all">Çağrı Tipi (Tümü)</option>
-              {(Object.keys(CALL_TYPE_LABELS) as CallType[]).map((t) => (
-                <option key={t} value={t}>
-                  {CALL_TYPE_LABELS[t]}
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
+        <label className="sr-only" htmlFor="filter-urgency">
+          Aciliyet
+        </label>
+        <Select
+          id="filter-urgency"
+          value={urlUrgency || "all"}
+          onChange={(e) => applyFilterChanges({ urgency: e.target.value })}
+          disabled={isPending}
+          aria-label="Aciliyet seviyesi"
+          className={sel}
+        >
+          <option value="all">Aciliyet (tümü)</option>
+          {(Object.keys(URGENCY_LABELS) as Urgency[]).map((u) => (
+            <option key={u} value={u}>
+              {URGENCY_LABELS[u]}
+            </option>
+          ))}
+        </Select>
 
-        {/* Talep Kategorisi Seçici */}
-        <div>
-          <label className="sr-only" htmlFor="filter-category">
-            Talep Kategorisi
-          </label>
-          <select
-            id="filter-category"
-            value={urlRequestCategory || "all"}
-            onChange={(e) => applyFilterChanges({ request_category: e.target.value })}
-            disabled={isPending}
-            aria-label="Talep kategorisi"
-            className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
-          >
-            <option value="all">Kategori (Tümü)</option>
-            {(Object.keys(REQUEST_CATEGORY_LABELS) as RequestCategory[]).map((c) => (
-              <option key={c} value={c}>
-                {REQUEST_CATEGORY_LABELS[c]}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Analiz Durumu Seçici */}
         {showState && (
-          <div>
+          <>
             <label className="sr-only" htmlFor="filter-state">
               Analiz Durumu
             </label>
-            <select
+            <Select
               id="filter-state"
               value={urlState || "all"}
               onChange={(e) => applyFilterChanges({ state: e.target.value })}
               disabled={isPending}
               aria-label="Analiz durumu"
-              className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
+              className={sel}
             >
-              <option value="all">Durum (Tümü)</option>
+              <option value="all">Durum (tümü)</option>
               {STATE_OPTIONS.map((s) => (
                 <option key={s.value} value={s.value}>
                   {s.label}
                 </option>
               ))}
-            </select>
-          </div>
+            </Select>
+          </>
         )}
 
-        {/* CRM İnceleme Durumu Seçici (#113) */}
-        {showStatus && (
-          <div>
-            <label className="sr-only" htmlFor="filter-status">
-              İnceleme Durumu
-            </label>
-            <select
-              id="filter-status"
-              value={urlStatus || "all"}
-              onChange={(e) => applyFilterChanges({ status: e.target.value })}
-              disabled={isPending}
-              aria-label="İnceleme durumu"
-              className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
-            >
-              <option value="all">İnceleme (Tümü)</option>
-              <option value="bekliyor">⏳ Bekliyor</option>
-              <option value="onaylandi">✓ Onaylandı</option>
-              <option value="reddedildi">✕ Reddedildi</option>
-            </select>
-          </div>
+        {hasActiveFilters && (
+          <Button variant="ghost" onClick={handleReset} disabled={isPending}>
+            Temizle
+          </Button>
         )}
+      </div>
 
-        {/* Başlangıç Tarihi */}
-        <div>
+      {!compact && (
+        <div className="flex flex-wrap items-center gap-2">
+          {showCallType && (
+            <>
+              <label className="sr-only" htmlFor="filter-call-type">
+                Çağrı Tipi
+              </label>
+              <Select
+                id="filter-call-type"
+                value={urlCallType || "all"}
+                onChange={(e) => applyFilterChanges({ call_type: e.target.value })}
+                disabled={isPending}
+                aria-label="Çağrı tipi"
+                className={sel}
+              >
+                <option value="all">Çağrı tipi (tümü)</option>
+                {(Object.keys(CALL_TYPE_LABELS) as CallType[]).map((t) => (
+                  <option key={t} value={t}>
+                    {CALL_TYPE_LABELS[t]}
+                  </option>
+                ))}
+              </Select>
+            </>
+          )}
+
+          <label className="sr-only" htmlFor="filter-category">
+            Talep Kategorisi
+          </label>
+          <Select
+            id="filter-category"
+            value={urlRequestCategory || "all"}
+            onChange={(e) => applyFilterChanges({ request_category: e.target.value })}
+            disabled={isPending}
+            aria-label="Talep kategorisi"
+            className={sel}
+          >
+            <option value="all">Kategori (tümü)</option>
+            {(Object.keys(REQUEST_CATEGORY_LABELS) as RequestCategory[]).map((c) => (
+              <option key={c} value={c}>
+                {REQUEST_CATEGORY_LABELS[c]}
+              </option>
+            ))}
+          </Select>
+
+          {showStatus && (
+            <>
+              <label className="sr-only" htmlFor="filter-status">
+                İnceleme Durumu
+              </label>
+              <Select
+                id="filter-status"
+                value={urlStatus || "all"}
+                onChange={(e) => applyFilterChanges({ status: e.target.value })}
+                disabled={isPending}
+                aria-label="İnceleme durumu"
+                className={sel}
+              >
+                <option value="all">İnceleme (tümü)</option>
+                <option value="bekliyor">Bekliyor</option>
+                <option value="onaylandi">Onaylandı</option>
+                <option value="reddedildi">Reddedildi</option>
+              </Select>
+            </>
+          )}
+
           <label className="sr-only" htmlFor="filter-date-from">
             Başlangıç Tarihi
           </label>
-          <input
+          <Input
             id="filter-date-from"
             type="date"
             value={urlDateFrom}
@@ -315,16 +298,12 @@ export function CallsFilterBar({
             disabled={isPending}
             title="Başlangıç tarihi (dahil)"
             aria-label="Başlangıç tarihi"
-            className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
+            className="w-auto"
           />
-        </div>
-
-        {/* Bitiş Tarihi */}
-        <div>
           <label className="sr-only" htmlFor="filter-date-to">
             Bitiş Tarihi
           </label>
-          <input
+          <Input
             id="filter-date-to"
             type="date"
             value={urlDateTo}
@@ -332,32 +311,10 @@ export function CallsFilterBar({
             disabled={isPending}
             title="Bitiş tarihi (dahil)"
             aria-label="Bitiş tarihi"
-            className="w-full rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 transition-colors"
+            className="w-auto"
           />
         </div>
-      </div>
-
-      {/* 3. Satır: Aktif Filtre İpuçları ve Temizle Butonu */}
-      <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-        <div className="flex items-center gap-2">
-          {isPending && (
-            <span className="inline-flex items-center gap-1.5 text-xs text-sky-600 animate-pulse font-medium">
-              <span>⏳</span> Filtreler uygulanıyor...
-            </span>
-          )}
-        </div>
-
-        {hasActiveFilters && (
-          <button
-            type="button"
-            onClick={handleReset}
-            disabled={isPending}
-            className="inline-flex items-center gap-1 px-3 py-1 text-xs font-semibold rounded-lg text-slate-600 hover:text-red-700 hover:bg-red-50 border border-slate-200 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
-          >
-            <span>✕</span> Filtreleri Temizle
-          </button>
-        )}
-      </div>
+      )}
     </div>
   );
 }

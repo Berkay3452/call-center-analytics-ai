@@ -196,7 +196,7 @@ export function ReanalyzeButton({
             setModalStage("confirm");
           }}
           disabled={isSubmitting}
-          className={`inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 active:scale-[0.98] transition-all shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 disabled:opacity-50 ${className}`}
+          className={`inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 active:scale-[0.98] transition-all shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:opacity-50 ${className}`}
           title="Çağrıyı yeniden analize gönder"
           aria-label="Çağrıyı yeniden analiz et"
         >
@@ -235,7 +235,7 @@ export function ReanalyzeButton({
             {modalStage === "confirm" && (
               <div>
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-100 text-sky-700">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-100 text-brand-700">
                   </div>
                   <div>
                     <h2
@@ -259,7 +259,7 @@ export function ReanalyzeButton({
                     type="button"
                     onClick={handleClose}
                     disabled={isSubmitting}
-                    className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
+                    className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
                   >
                     Vazgeç
                   </button>
@@ -267,7 +267,7 @@ export function ReanalyzeButton({
                     type="button"
                     onClick={handleStartReanalyze}
                     disabled={isSubmitting}
-                    className="inline-flex items-center gap-2 rounded-xl bg-sky-700 px-5 py-2 text-xs font-bold text-white shadow-xs hover:bg-sky-800 active:scale-[0.98] transition-all focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 disabled:opacity-50"
+                    className="inline-flex items-center gap-2 rounded-xl bg-brand-700 px-5 py-2 text-xs font-bold text-white shadow-xs hover:bg-brand-800 active:scale-[0.98] transition-all focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:opacity-50"
                   >
                     {isSubmitting ? (
                       <>
@@ -294,7 +294,7 @@ export function ReanalyzeButton({
                       <div className="h-4 w-4 rounded-full bg-indigo-500 animate-pulse" />
                     )}
                     {analysisState === "isleniyor" && (
-                      <div className="h-4 w-4 rounded-full bg-sky-500 animate-spin" />
+                      <div className="h-4 w-4 rounded-full bg-brand-500 animate-spin" />
                     )}
                     {analysisState === "tamam" && (
                       <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-100 text-emerald-600 font-bold text-sm">
@@ -333,7 +333,7 @@ export function ReanalyzeButton({
                         ? "bg-red-50 text-red-700 border border-red-200"
                         : analysisState === "kismi"
                         ? "bg-amber-50 text-amber-700 border border-amber-200"
-                        : "bg-sky-50 text-sky-700 border border-sky-200"
+                        : "bg-brand-50 text-brand-700 border border-brand-200"
                     }`}
                   >
                     {analysisState}
@@ -348,7 +348,7 @@ export function ReanalyzeButton({
                         ? "bg-emerald-500"
                         : analysisState === "basarisiz"
                         ? "bg-red-500"
-                        : "bg-sky-600"
+                        : "bg-brand-600"
                     }`}
                     style={{ width: `${progressPercent}%` }}
                   />
@@ -367,7 +367,7 @@ export function ReanalyzeButton({
                   <button
                     type="button"
                     onClick={handleClose}
-                    className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
+                    className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2"
                   >
                     {analysisState === "basarisiz" ? "Kapat" : "Arka Planda Sürdür"}
                   </button>
