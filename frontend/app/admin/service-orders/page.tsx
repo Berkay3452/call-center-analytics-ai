@@ -10,8 +10,9 @@ import {
 import { ServiceOrdersTableSkeleton } from "@/components/skeletons";
 import { Pagination } from "@/components/Pagination";
 import { EmptyState } from "@/components/EmptyState";
+import { PageHeader, buttonClasses } from "@/components/ui";
 import {
-  ServiceOrdersTable,
+  ServiceOrdersList,
   ServiceOrdersFilterBar,
 } from "@/components/service-orders";
 import { clampPageSize, lastPageIfOutOfRange, listUrl } from "@/lib/list-query";
@@ -30,13 +31,13 @@ interface ServiceOrdersPageProps {
   }>;
 }
 
-const STATUS_TABS: { value: string; label: string; icon: string }[] = [
-  { value: "all", label: "Tümü", icon: "📋" },
-  { value: "yeni_atandi", label: SERVICE_ORDER_STATUS_LABELS.yeni_atandi, icon: "📥" },
-  { value: "kesifte", label: SERVICE_ORDER_STATUS_LABELS.kesifte, icon: "🔍" },
-  { value: "onaylandi", label: SERVICE_ORDER_STATUS_LABELS.onaylandi, icon: "✅" },
-  { value: "devam_ediyor", label: SERVICE_ORDER_STATUS_LABELS.devam_ediyor, icon: "⚙️" },
-  { value: "tamamlandi", label: SERVICE_ORDER_STATUS_LABELS.tamamlandi, icon: "🎉" },
+const STATUS_TABS: { value: string; label: string }[] = [
+  { value: "all", label: "Tümü" },
+  { value: "yeni_atandi", label: SERVICE_ORDER_STATUS_LABELS.yeni_atandi },
+  { value: "kesifte", label: SERVICE_ORDER_STATUS_LABELS.kesifte },
+  { value: "onaylandi", label: SERVICE_ORDER_STATUS_LABELS.onaylandi },
+  { value: "devam_ediyor", label: SERVICE_ORDER_STATUS_LABELS.devam_ediyor },
+  { value: "tamamlandi", label: SERVICE_ORDER_STATUS_LABELS.tamamlandi },
 ];
 
 export default async function ServiceOrdersPage({
@@ -79,50 +80,36 @@ export default async function ServiceOrdersPage({
   const suspenseKey = JSON.stringify(queryFilters);
 
   return (
-    <div className="space-y-6">
-      {/* Başlık ve Açıklama */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2.5">
-            <span>Servis Emirleri</span>
-            <span className="inline-flex items-center rounded-full bg-sky-100 border border-sky-300 px-3 py-0.5 text-xs font-bold text-sky-800">
-              İş Akışı & Takip
-            </span>
-          </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            CRM önerilerinden onaylanıp servis sürecine aktarılan iş emirleri
-          </p>
-        </div>
+    <div>
+      <PageHeader
+        title="Servis Emirleri"
+        description="CRM önerilerinden onaylanıp servise aktarılan iş emirleri."
+        actions={
+          <Link href="/admin/crm" className={buttonClasses("secondary", "sm")}>
+            CRM önerilerine git
+          </Link>
+        }
+      />
 
-        <Link
-          href="/admin/crm"
-          className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 shadow-xs hover:bg-slate-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-        >
-          <span>💡</span>
-          <span>CRM Önerilerini Gör</span>
-        </Link>
-      </div>
-
-      {/* Durum Sekmeleri */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-3">
+      <nav aria-label="Servis emri durumu" className="mb-4 flex flex-wrap gap-1 border-b border-slate-200 pb-3">
         {STATUS_TABS.map((tab) => {
           const isActive = activeStatus === tab.value;
           return (
             <Link
               key={tab.value}
               href={getTabUrl(tab.value)}
-              className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 ${
+              aria-current={isActive ? "page" : undefined}
+              className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
                 isActive
-                  ? "bg-sky-700 text-white shadow-xs"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
+                  ? "bg-brand-700 text-white"
+                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               }`}
             >
-              <span>{tab.icon}</span>
-              <span>{tab.label}</span>
+              {tab.label}
             </Link>
           );
         })}
-      </div>
+      </nav>
 
       {/* Filtreleme Çubuğu */}
       <ServiceOrdersFilterBar />
@@ -158,12 +145,10 @@ async function ServiceOrdersListContent({
 
   if (errorMsg) {
     return (
-      <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center shadow-xs">
-        <p className="text-sm font-semibold text-red-800">
-          ⚠️ {errorMsg}
-        </p>
+      <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-6 text-center">
+        <p className="text-sm font-medium text-red-800">{errorMsg}</p>
         <p className="mt-1 text-xs text-red-700">
-          Servise ulaşılamıyor. Lütfen sayfayı yenileyin veya sistem yöneticinize danışın.
+          Servise ulaşılamıyor. Sayfayı yenileyin veya sistem yöneticinize danışın.
         </p>
       </div>
     );
@@ -205,17 +190,11 @@ async function ServiceOrdersListContent({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <span className="text-xs text-slate-500 font-medium">
-          Sayfa {page} / {Math.max(1, Math.ceil(total / pageSize))}
-        </span>
-        <span className="rounded-lg bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-800 border border-sky-200">
-          {total} Toplam Servis Emri
-        </span>
-      </div>
+      <p className="text-sm text-slate-500">
+        {total} servis emri · Sayfa {page} / {Math.max(1, Math.ceil(total / pageSize))}
+      </p>
 
-      {/* Tablo */}
-      <ServiceOrdersTable orders={items} />
+      <ServiceOrdersList orders={items} />
 
       {/* Sayfalama */}
       <Pagination page={page} pageSize={pageSize} total={total} />

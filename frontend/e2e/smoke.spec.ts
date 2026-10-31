@@ -182,6 +182,38 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
   });
 
   // ──────────────────────────────────────────────────────────────────────────
+  // Senaryo 4c: Servis Emirleri kart listesi (#173)
+  // ──────────────────────────────────────────────────────────────────────────
+  test("Senaryo 4c (Servis Emirleri): kartlar, durum sekmeleri, marina filtresi, kaynak çağrı ve durum ilerletme", async ({
+    page,
+  }) => {
+    await page.goto("/admin/service-orders");
+    const tabs = page.getByRole("navigation", { name: "Servis emri durumu" });
+    await expect(tabs.getByRole("link", { name: "Tümü" })).toHaveAttribute("aria-current", "page");
+
+    const cards = page.locator("ul > li").filter({ has: page.getByRole("button", { name: "Detay" }) });
+    const first = cards.first();
+    await expect(first.getByRole("heading")).toContainText("—");
+    await expect(first.getByRole("link", { name: "Kaynak çağrı" })).toHaveAttribute("href", /\/admin\/calls\//);
+
+    // Durum ilerletme: rozet değişir
+    const advance = first.getByRole("button", { name: /→/ });
+    await expect(advance).toBeVisible();
+    await advance.click();
+    await expect(first.getByRole("button", { name: /→|tamamlandı/ }).or(first.getByText("Servis emri tamamlandı"))).toBeVisible();
+
+    // Detay penceresi açılır ve Escape ile kapanır
+    await first.getByRole("button", { name: "Detay" }).click();
+    await expect(page.getByRole("dialog")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("dialog")).not.toBeVisible();
+
+    // Marina filtresi URL'e yazılır
+    await page.locator("#so-filter-marina").selectOption({ index: 1 });
+    await expect(page).toHaveURL(/marina=/);
+  });
+
+  // ──────────────────────────────────────────────────────────────────────────
   // Senaryo 5: Miço AI Asistanı (Kenar Çubuğu, Giriş Alanı ve Kaynak Kartları)
   // ──────────────────────────────────────────────────────────────────────────
   test("Senaryo 5 (Miço AI Asistanı): Sohbet kenar çubuğu, mesaj alanı ve kaynak kartları doğrulanır", async ({

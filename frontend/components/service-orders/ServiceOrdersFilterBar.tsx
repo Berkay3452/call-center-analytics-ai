@@ -3,6 +3,7 @@
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState, useTransition } from "react";
 import { MARINA_OPTIONS } from "@/lib/types";
+import { Button, Input, Select } from "@/components/ui";
 
 interface ServiceOrdersFilterBarProps {
   className?: string;
@@ -65,73 +66,47 @@ export function ServiceOrdersFilterBar({
   const hasFilters = Boolean(urlQ || urlMarina);
 
   return (
-    <div
-      className={`rounded-xl border border-slate-200 bg-white p-3 shadow-xs ${className}`}
+    <form
+      onSubmit={handleSearchSubmit}
+      className={`mb-4 flex flex-col items-stretch gap-3 sm:flex-row sm:items-center ${className}`}
     >
-      <form
-        onSubmit={handleSearchSubmit}
-        className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3"
+      <label htmlFor="so-filter-q" className="sr-only">
+        Servis emri ara
+      </label>
+      <Input
+        id="so-filter-q"
+        type="search"
+        value={searchVal}
+        onChange={(e) => setSearchVal(e.target.value)}
+        placeholder={placeholder}
+        className="flex-1"
+      />
+      <label htmlFor="so-filter-marina" className="sr-only">
+        Marina filtresi
+      </label>
+      <Select
+        id="so-filter-marina"
+        value={urlMarina}
+        onChange={(e) => updateParam("marina", e.target.value)}
+        className="sm:w-48"
       >
-        {/* Arama Alanı */}
-        <div className="relative flex-1">
-          <label htmlFor="so-filter-q" className="sr-only">
-            Servis emri arama
-          </label>
-          <input
-            id="so-filter-q"
-            type="text"
-            value={searchVal}
-            onChange={(e) => setSearchVal(e.target.value)}
-            placeholder={placeholder}
-            aria-label="Servis emri ara"
-            className="w-full rounded-lg border border-slate-200 bg-slate-50 pl-8 pr-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-          />
-        </div>
-
-        {/* Marina Filtresi */}
-        <div className="w-full sm:w-48">
-          <label htmlFor="so-filter-marina" className="sr-only">
-            Marina filtresi
-          </label>
-          <select
-            id="so-filter-marina"
-            value={urlMarina}
-            onChange={(e) => updateParam("marina", e.target.value)}
-            aria-label="Marina filtresi"
-            className="w-full rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs text-slate-700 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-          >
-            <option value="">Tüm Marinalar</option>
-            {MARINA_OPTIONS.map((m) => (
-              <option key={m} value={m}>
-                {m}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Ara & Temizle Butonları */}
-        <div className="flex items-center gap-2">
-          <button
-            type="submit"
-            disabled={isPending}
-            className="rounded-lg bg-sky-700 px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-sky-800 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 disabled:opacity-50"
-          >
-            {isPending ? "..." : "Ara"}
-          </button>
-
-          {hasFilters && (
-            <button
-              type="button"
-              onClick={handleReset}
-              disabled={isPending}
-              aria-label="Filtreleri temizle"
-              className="rounded-lg border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-            >
-              Temizle
-            </button>
-          )}
-        </div>
-      </form>
-    </div>
+        <option value="">Tüm marinalar</option>
+        {MARINA_OPTIONS.map((m) => (
+          <option key={m} value={m}>
+            {m}
+          </option>
+        ))}
+      </Select>
+      <div className="flex items-center gap-2">
+        <Button type="submit" disabled={isPending}>
+          {isPending ? "Aranıyor…" : "Ara"}
+        </Button>
+        {hasFilters && (
+          <Button variant="secondary" onClick={handleReset} disabled={isPending}>
+            Filtreleri temizle
+          </Button>
+        )}
+      </div>
+    </form>
   );
 }
