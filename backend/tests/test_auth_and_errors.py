@@ -1,6 +1,7 @@
 from collections.abc import Callable
 
 import httpx
+import pytest
 
 from app.core.config import Settings
 from app.main import create_app
@@ -107,3 +108,28 @@ async def test_user_id_must_be_uuid(client: httpx.AsyncClient) -> None:
         "/api/v1/me", headers={"X-Service-Key": TEST_SERVICE_KEY, "X-User-Id": "owner_001"}
     )
     assert resp_admin.status_code == 400
+
+
+async def test_unhandled_error_exposes_request_id(
+    settings_factory: Callable[..., Settings], capsys: pytest.CaptureFixture[str]
+) -> None:
+    """500 yanıtı (#164): istek kimliği gövdede, mesajda ve başlıkta olmalı; log satırında da."""
+    app = create_app(settings_factory())
+
+    @app.get("/_boom")
+    async def boom() -> None:
+        raise RuntimeError("patladı")
+
+    transport = httpx.ASGITransport(app=app, raise_app_exceptions=False)
+    async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
+        resp = await client.get("/_boom", headers={"x-request-id": "abc123"})
+    assert resp.status_code == 500
+    error = resp.json()["error"]
+    assert error["code"] == "internal_error"
+    assert error["request_id"] == "abc123"
+    assert "abc123" in error["message"]
+    assert resp.headers["x-request-id"] == "abc123"
+    assert "RuntimeError" not in resp.text  # iç hata ayrıntısı istemciye sızmaz
+    logged = capsys.readouterr()
+    assert "unhandled_error" in logged.out + logged.err
+    assert "abc123" in logged.out + logged.err

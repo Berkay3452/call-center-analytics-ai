@@ -12,6 +12,8 @@ from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from app.core.middleware import REQUEST_ID_HEADER
+
 logger = structlog.get_logger(__name__)
 
 
@@ -91,8 +93,24 @@ def register_exception_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(Exception)
     async def _unhandled(request: Request, exc: Exception) -> JSONResponse:
-        # Beklenmeyen hata: ayrıntı loga yazılır, istemciye iç bilgi sızdırılmaz.
-        logger.exception("unhandled_error", path=request.url.path)
-        return _error_response(
-            request, status.HTTP_500_INTERNAL_SERVER_ERROR, "internal_error", "Beklenmeyen hata."
+        # Beklenmeyen hata: ayrıntı loga yazılır, istemciye iç bilgi sızdırılmaz. Bu işleyici
+        # RequestContextMiddleware'in DIŞINDA çalışır (Starlette ServerErrorMiddleware): bağlam
+        # değişkenleri temizlenmiş olur, bu yüzden istek kimliği günlüğe ve yanıta elle eklenir.
+        request_id = getattr(request.state, "request_id", None)
+        logger.exception(
+            "unhandled_error",
+            path=request.url.path,
+            method=request.method,
+            request_id=request_id,
+            error_type=type(exc).__name__,
         )
+        response = _error_response(
+            request,
+            status.HTTP_500_INTERNAL_SERVER_ERROR,
+            "internal_error",
+            # Ekran görüntüsünden günlükte aranabilsin diye kimlik mesajın içinde de görünür.
+            f"Beklenmeyen hata. (Hata kodu: {request_id})" if request_id else "Beklenmeyen hata.",
+        )
+        if request_id:
+            response.headers[REQUEST_ID_HEADER] = request_id
+        return response
