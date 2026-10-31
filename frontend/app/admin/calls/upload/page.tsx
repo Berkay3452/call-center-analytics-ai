@@ -12,6 +12,19 @@ import {
 import { ApiError } from "@/lib/api/errors";
 import type { CallCreate, CallState, CallStatus } from "@/lib/api/types";
 import { MARINA_OPTIONS } from "@/lib/types";
+import {
+  Badge,
+  Button,
+  buttonClasses,
+  Card,
+  Field,
+  Input,
+  PageHeader,
+  ProgressBar,
+  Select,
+  Textarea,
+  type Tone,
+} from "@/components/ui";
 
 const ALLOWED_AUDIO_EXTENSIONS = [
   "wav",
@@ -40,23 +53,23 @@ const STATE_INFO: Record<
   },
   yaziya_cevriliyor: {
     percent: 50,
-    label: "Yazıya Çevriliyor (STT)",
+    label: "Yazıya çevriliyor",
     description: "Ses dosyası metne dönüştürülüyor...",
   },
   isleniyor: {
     percent: 78,
-    label: "Analiz Ediliyor (Agent)",
+    label: "Analiz",
     description:
-      "AI Agent'lar çağrıyı analiz ediyor (kategori, CRM, satış, özet)...",
+      "Çağrı analiz ediliyor: kategori, CRM alanları, satış ve özet çıkarılıyor...",
   },
   tamam: {
     percent: 100,
-    label: "Tamamlandı",
+    label: "Tamam",
     description: "Analiz başarıyla tamamlandı.",
   },
   kismi: {
     percent: 100,
-    label: "Kısmi Tamamlandı",
+    label: "Kısmi tamam",
     description: "Analiz kısmen tamamlandı. Bazı alanlar üretilemedi.",
   },
   basarisiz: {
@@ -87,7 +100,12 @@ interface ConflictInfo {
   callId: string;
 }
 
-/** Backend hata kodunu Türkçe mesaja çevirir */
+/** İstek kimliği varsa mesaja eklenir; destek ekibi kaydı bu kimlikle bulur. */
+function withRequestId(message: string, requestId: string | null | undefined): string {
+  return requestId ? `${message} (İstek kimliği: ${requestId})` : message;
+}
+
+/** Backend hata kodunu neden ve yapılacak işle birlikte Türkçe mesaja çevirir */
 function resolveServerError(err: unknown): {
   message: string;
   conflict?: ConflictInfo;
@@ -103,28 +121,43 @@ function resolveServerError(err: unknown): {
     }
     if (err.status === 413) {
       return {
-        message:
-          "Dosya boyutu sunucu sınırını aşıyor (maksimum 25 MB).",
+        message: withRequestId(
+          "Dosya sunucu sınırını (25 MB) aşıyor. Daha kısa bir kayıt seçin veya sesi sıkıştırıp tekrar yükleyin.",
+          err.requestId,
+        ),
       };
     }
     if (err.status === 415) {
       return {
-        message:
-          "Desteklenmeyen dosya formatı. Lütfen geçerli bir ses dosyası yükleyin.",
+        message: withRequestId(
+          "Bu dosya biçimi desteklenmiyor. WAV, MP3, M4A, OGG, FLAC, AAC veya WEBM biçiminde bir ses dosyası seçin.",
+          err.requestId,
+        ),
       };
     }
     if (err.status === 503) {
       return {
-        message:
-          "Analiz servisi veya kuyruk geçici olarak meşgul. Lütfen birazdan tekrar deneyin.",
+        message: withRequestId(
+          "Analiz servisi şu an meşgul. Birkaç dakika sonra tekrar deneyin.",
+          err.requestId,
+        ),
       };
     }
-    return { message: err.message };
+    return {
+      message: withRequestId(
+        `${err.message} Sorun sürerse istek kimliğini yöneticinize iletin.`,
+        err.requestId,
+      ),
+    };
   }
-  if (err instanceof Error) return { message: err.message };
+  if (err instanceof Error) {
+    return {
+      message: `${err.message} Sunucuya ulaşılamadıysa bağlantınızı kontrol edip tekrar deneyin.`,
+    };
+  }
   return {
     message:
-      "Analiz işlemi sırasında beklenmeyen bir hata meydana geldi.",
+      "Yükleme tamamlanamadı. Bağlantınızı kontrol edip tekrar deneyin; sorun sürerse yöneticinize haber verin.",
   };
 }
 
@@ -238,7 +271,7 @@ function CallUploadContent() {
             if (state === "basarisiz") {
               setBackendError(
                 res.error ??
-                  "Analiz tamamlanamadı. Backend hata detayı mevcut değil.",
+                  "Analiz tamamlanamadı. Ayrıntı alınamadı.",
               );
             }
             if (state === "tamam" && !cancelled.current) {
@@ -381,7 +414,12 @@ function CallUploadContent() {
       setProgressPercent(0);
       setStatusMessage("");
       setErrorMessage(message);
-      if (conflict) setConflictInfo(conflict);
+      if (conflict) {
+        setConflictInfo(conflict);
+        redirectTimerRef.current = setTimeout(() => {
+          if (!cancelled.current) router.push(`/admin/calls/${conflict.callId}`);
+        }, 1500);
+      }
     }
   };
 
@@ -432,325 +470,187 @@ function CallUploadContent() {
     router.replace("/admin/calls/upload");
   };
 
-  /** Yüklendi → STT → Agent → Tamamlandı adım göstergesi */
+  /** Yüklendi → Yazıya çevriliyor → Analiz → Tamam: tek şerit adım göstergesi */
   const renderPipelineSteps = () => {
-    const currentIdx = analysisState
-      ? PIPELINE_STEPS.indexOf(analysisState as CallState)
-      : -1;
+    const currentIdx = analysisState ? PIPELINE_STEPS.indexOf(analysisState) : -1;
     const isFailed = analysisState === "basarisiz";
 
     return (
-      <div className="flex items-start gap-0 mt-5 mb-3">
+      <ol className="mb-4 flex items-center gap-2 text-sm" aria-label="Analiz adımları">
         {PIPELINE_STEPS.map((step, idx) => {
-          const info = STATE_INFO[step];
           const isDone = !isFailed && currentIdx > idx;
           const isActive = !isFailed && currentIdx === idx;
-
           return (
-            <div key={step} className="flex items-center flex-1 min-w-0">
-              <div className="flex flex-col items-center flex-shrink-0 w-16">
-                <div
-                  className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-all duration-300 ${
-                    isDone
-                      ? "bg-emerald-500 text-white"
-                      : isActive && isFailed
-                      ? "bg-red-500 text-white"
-                      : isActive
-                      ? "bg-sky-600 text-white ring-2 ring-sky-300 animate-pulse"
-                      : isFailed
-                      ? "bg-gray-200 text-gray-400"
-                      : "bg-gray-200 text-gray-400"
-                  }`}
-                >
-                  {isDone ? "✓" : idx + 1}
-                </div>
-                <span
-                  className={`mt-1 text-[9px] font-medium text-center leading-tight ${
-                    isDone
-                      ? "text-emerald-600"
-                      : isActive
-                      ? "text-sky-700"
-                      : "text-gray-400"
-                  }`}
-                >
-                  {info.label}
-                </span>
-              </div>
-              {idx < PIPELINE_STEPS.length - 1 && (
-                <div
-                  className={`flex-1 h-0.5 mx-1 mb-4 transition-all duration-500 ${
-                    isDone ? "bg-emerald-400" : "bg-gray-200"
-                  }`}
-                />
-              )}
-            </div>
+            <li
+              key={step}
+              aria-current={isActive ? "step" : undefined}
+              className={`flex flex-1 items-center gap-2 rounded-lg border px-3 py-2 ${
+                isDone
+                  ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                  : isActive
+                    ? "border-brand-200 bg-brand-50 font-medium text-brand-800"
+                    : "border-slate-200 bg-white text-slate-500"
+              }`}
+            >
+              <span className="text-xs font-semibold">{isDone ? "✓" : idx + 1}</span>
+              <span className="truncate">{STATE_INFO[step].label}</span>
+            </li>
           );
         })}
-      </div>
+      </ol>
     );
   };
 
+  const stateTone: Tone =
+    analysisState === "tamam"
+      ? "success"
+      : analysisState === "basarisiz"
+        ? "danger"
+        : analysisState === "kismi"
+          ? "warning"
+          : "brand";
+
   return (
-    <div className="mx-auto max-w-4xl space-y-6 pb-12">
-      {/* Başlık */}
-      <div className="flex items-center justify-between">
-        <div>
-          <Link
-            href="/admin/calls"
-            className="inline-flex items-center text-sm font-medium text-sky-700 hover:text-sky-800 hover:underline mb-1"
-          >
-            ← Çağrı listesine dön
-          </Link>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-            Yeni Çağrı Yükleme &amp; Analiz
-          </h1>
-          <p className="text-sm text-gray-500">
-            Ses kaydı veya transkript metni yükleyin; Miço AI motoru CRM 7
-            temel alanı ve satış analizini çıkarsın.
-          </p>
-        </div>
-      </div>
+    <div className="mx-auto max-w-3xl space-y-6 pb-12">
+      <Link href="/admin/calls" className="inline-block text-sm font-medium text-brand-700 hover:underline">
+        ← Çağrı listesine dön
+      </Link>
+      <PageHeader
+        title="Çağrı Yükle"
+        description="Ses kaydı veya görüşme metni yükleyin; CRM alanları ve satış analizi otomatik çıkarılır."
+      />
 
-      {/* Bilgi bandı */}
-      <div className="rounded-lg bg-sky-50 border border-sky-200 px-4 py-2.5 text-xs text-sky-800 flex items-start gap-2">
-        <span className="mt-0.5 flex-shrink-0">ℹ️</span>
-        <span>
-          <strong>Ses yükleme:</strong> WAV, MP3, M4A, OGG, FLAC, AAC, WEBM —
-          maksimum 25 MB. Dosya seçildiğinde uzantı ve boyut istemci tarafında
-          otomatik kontrol edilir.
-        </span>
-      </div>
-
-      {/* 409 Conflict uyarısı */}
+      {/* Aynı ses ikinci kez yüklendi: mevcut çağrıya yönlendirilir */}
       {conflictInfo && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 p-5">
-          <div className="flex items-start gap-3">
-            <span className="text-xl flex-shrink-0">⚠️</span>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-amber-800 mb-1">
-                Bu ses kaydı daha önce yüklenmiş.
-              </p>
-              <p className="text-xs text-amber-700 mb-3">
-                Aynı ses dosyası sistemde zaten mevcut. Mevcut çağrının
-                detaylarını inceleyebilirsiniz.
-              </p>
-              <Link
-                href={`/admin/calls/${conflictInfo.callId}`}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-amber-600 px-4 py-2 text-xs font-bold text-white hover:bg-amber-700 transition-colors"
-              >
-                Mevcut Çağrıyı Görüntüle: /admin/calls/{conflictInfo.callId} →
-              </Link>
-            </div>
-          </div>
-        </div>
+        <Card className="border-amber-300 bg-amber-50" role="status">
+          <p className="text-sm font-semibold text-amber-900">Bu ses kaydı daha önce yüklenmiş.</p>
+          <p className="mt-1 text-sm text-amber-800">
+            Aynı dosya sistemde zaten var; mevcut çağrıya yönlendiriliyorsunuz.
+          </p>
+          <Link
+            href={`/admin/calls/${conflictInfo.callId}`}
+            className={buttonClasses("primary", "md", "mt-3")}
+          >
+            Mevcut çağrıyı aç
+          </Link>
+        </Card>
       )}
 
-      {/* Analiz İzleme Paneli */}
+      {/* Analiz izleme: tek şerit */}
       {isSubmitting && (
-        <div className="rounded-2xl border border-sky-200 bg-white p-6 shadow-sm">
-          {/* Başlık satırı */}
-          <div className="flex items-center justify-between mb-1">
-            <div className="flex items-center gap-3">
-              {(analysisState === "beklemede" ||
-                analysisState === "yaziya_cevriliyor" ||
-                analysisState === "isleniyor") && (
-                <div className="h-5 w-5 rounded-full border-2 border-sky-600 border-t-transparent animate-spin flex-shrink-0" />
-              )}
-              {analysisState === "tamam" && (
-                <span className="text-2xl flex-shrink-0">✅</span>
-              )}
-              {analysisState === "kismi" && (
-                <span className="text-2xl flex-shrink-0">⚠️</span>
-              )}
-              {analysisState === "basarisiz" && (
-                <span className="text-2xl flex-shrink-0">❌</span>
-              )}
-
-              <div>
-                <h3 className="text-base font-semibold text-gray-900">
-                  {analysisState === "beklemede" &&
-                    "1. Adım: Çağrı Sıraya Alındı"}
-                  {analysisState === "yaziya_cevriliyor" &&
-                    "2. Adım: Ses Metne Dönüştürülüyor (STT)"}
-                  {analysisState === "isleniyor" &&
-                    "3. Adım: AI Agent Analizleri Yürütülüyor"}
-                  {analysisState === "tamam" &&
-                    "Analiz Başarıyla Tamamlandı"}
-                  {analysisState === "kismi" && "Kısmi Analiz Tamamlandı"}
-                  {analysisState === "basarisiz" &&
-                    "Hata: Analiz Tamamlanamadı"}
-                </h3>
-                <p className="text-xs text-gray-500">
-                  {statusMessage}
-                </p>
-              </div>
+        <Card>
+          <div className="mb-4 flex items-start justify-between gap-3">
+            <div>
+              <h2 className="text-base font-semibold text-brand-800">
+                {analysisState === "tamam"
+                  ? "Analiz tamamlandı"
+                  : analysisState === "kismi"
+                    ? "Analiz kısmen tamamlandı"
+                    : analysisState === "basarisiz"
+                      ? "Analiz tamamlanamadı"
+                      : "Analiz sürüyor"}
+              </h2>
+              <p className="mt-0.5 text-sm text-slate-500">{statusMessage}</p>
             </div>
-
-            {/* Durum rozeti */}
-            <span
-              className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider flex-shrink-0 ${
-                analysisState === "tamam"
-                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                  : analysisState === "basarisiz"
-                  ? "bg-red-50 text-red-700 border border-red-200"
-                  : analysisState === "kismi"
-                  ? "bg-amber-50 text-amber-700 border border-amber-200"
-                  : "bg-sky-50 text-sky-700 border border-sky-200"
-              }`}
-            >
-              {analysisState}
-            </span>
+            {analysisState && (
+              <Badge tone={stateTone}>{STATE_INFO[analysisState].label}</Badge>
+            )}
           </div>
 
-          {/* Pipeline adım göstergesi */}
           {renderPipelineSteps()}
+          <ProgressBar
+            value={progressPercent}
+            tone={stateTone}
+            label="Analiz ilerlemesi"
+            className="mb-5"
+          />
 
-          {/* İlerleme çubuğu */}
-          <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden mb-5">
-            <div
-              className={`h-2.5 rounded-full transition-all duration-700 ${
-                analysisState === "tamam"
-                  ? "bg-emerald-500"
-                  : analysisState === "basarisiz"
-                  ? "bg-red-500"
-                  : analysisState === "kismi"
-                  ? "bg-amber-500"
-                  : "bg-sky-600"
-              }`}
-              style={{ width: `${progressPercent}%` }}
-            />
-          </div>
-
-          {/* tamam — başarı ve otomatik yönlendirme */}
           {analysisState === "tamam" && createdCallId && (
-            <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-4">
-              <p className="text-sm font-semibold text-emerald-800 mb-1">
-                🎉 Analiz Başarıyla Tamamlandı
-              </p>
-              <p className="text-xs text-emerald-700 mb-3">
+            <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+              <p className="text-sm text-emerald-800">
                 {redirectCancelled
                   ? "Otomatik yönlendirme iptal edildi."
-                  : `${AUTO_REDIRECT_MS / 1000} saniye içinde otomatik olarak çağrı detayına yönlendirileceksiniz.`}
+                  : `${AUTO_REDIRECT_MS / 1000} saniye içinde çağrı detayına yönlendirileceksiniz.`}
               </p>
-              <Link
-                href={`/admin/calls/${createdCallId}`}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-colors"
-              >
-                Sonucu Aç →
-              </Link>
-              {!redirectCancelled && (
-                <button
-                  type="button"
-                  onClick={cancelRedirect}
-                  className="ml-2 inline-flex items-center rounded-lg border border-emerald-600 px-4 py-2 text-xs font-semibold text-emerald-800 hover:bg-emerald-100 transition-colors"
-                >
-                  Burada kal
-                </button>
-              )}
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Link href={`/admin/calls/${createdCallId}`} className={buttonClasses("primary")}>
+                  Sonucu aç
+                </Link>
+                {!redirectCancelled && (
+                  <Button variant="secondary" onClick={cancelRedirect}>
+                    Burada kal
+                  </Button>
+                )}
+              </div>
             </div>
           )}
 
-          {/* kismi — uyarı */}
           {analysisState === "kismi" && createdCallId && (
-            <div className="rounded-xl bg-amber-50 border border-amber-200 p-4">
-              <p className="text-sm font-semibold text-amber-800 mb-1">
-                Analiz kısmen tamamlandı. Bazı alanlar üretilemedi.
-              </p>
-              <p className="text-xs text-amber-700 mb-3">
-                Mevcut sonuçları görmek ve eksik alanları incelemek için çağrı
-                detayına gidebilirsiniz.
+            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
+              <p className="text-sm text-amber-900">
+                Bazı alanlar üretilemedi. Eksikleri görmek için çağrı detayına gidin.
               </p>
               <Link
                 href={`/admin/calls/${createdCallId}`}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-amber-600 px-4 py-2 text-xs font-bold text-white hover:bg-amber-700 transition-colors"
+                className={buttonClasses("primary", "md", "mt-3")}
               >
-                Çağrı Detayına Git →
+                Çağrı detayına git
               </Link>
             </div>
           )}
 
-          {/* basarisiz — hata + backend detayı + yeniden dene */}
           {analysisState === "basarisiz" && (
-            <div className="rounded-xl bg-red-50 border border-red-200 p-4">
-              <p className="text-sm font-semibold text-red-800 mb-1">
-                Hata Oluştu
-              </p>
-              {errorMessage && (
-                <p className="text-xs text-red-700 mb-2">
-                  {errorMessage}
-                </p>
-              )}
+            <div className="rounded-lg border border-red-200 bg-red-50 p-4" role="alert">
+              {errorMessage && <p className="text-sm text-red-800">{errorMessage}</p>}
               {backendError && (
-                <p className="text-xs text-red-600 mb-3 font-mono bg-red-100 rounded p-2 whitespace-pre-wrap">
-                  Detay: {backendError}
+                <p className="mt-2 whitespace-pre-wrap rounded bg-red-100 p-2 font-mono text-xs text-red-700">
+                  Ayrıntı: {backendError}
                 </p>
               )}
-              {createdCallId && (
-                <button
-                  type="button"
-                  onClick={() => void handleReanalyze()}
-                  className="mr-2 inline-flex items-center gap-1.5 rounded-lg bg-sky-700 px-4 py-2 text-xs font-bold text-white hover:bg-sky-800 transition-colors"
-                >
-                  Aynı çağrıyı yeniden analiz et
-                </button>
-              )}
-              <button
-                type="button"
-                onClick={handleRetry}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-4 py-2 text-xs font-bold text-white hover:bg-red-700 transition-colors"
-              >
-                ← Yeni yükleme
-              </button>
+              <p className="mt-2 text-sm text-red-800">
+                Aynı çağrıyı yeniden analiz etmeyi deneyebilir veya yeni bir yükleme başlatabilirsiniz.
+                Sorun sürerse istek kimliğini yöneticinize iletin.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {createdCallId && (
+                  <Button onClick={() => void handleReanalyze()}>Yeniden analiz et</Button>
+                )}
+                <Button variant="secondary" onClick={handleRetry}>
+                  Yeni yükleme
+                </Button>
+              </div>
             </div>
           )}
-        </div>
+        </Card>
       )}
 
-      {/* Yükleme formu — sadece işlem yokken */}
+      {/* Yükleme formu — yalnızca işlem yokken */}
       {!isSubmitting && (
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Sekme seçimi */}
-          <div className="flex rounded-xl bg-gray-100 p-1.5 border border-gray-200">
-            <button
-              type="button"
-              onClick={() => setMode("audio")}
-              className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 ${
-                mode === "audio"
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              <span>🎙️</span>
-              <span>Ses Dosyası Yükle</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => setMode("transcript")}
-              className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 ${
-                mode === "transcript"
-                  ? "bg-white text-gray-900 shadow-sm"
-                  : "text-gray-600 hover:text-gray-900"
-              }`}
-            >
-              <span>📝</span>
-              <span>Metin / Transkript Yükle</span>
-            </button>
+          <div role="tablist" aria-label="Yükleme türü" className="flex gap-1 rounded-lg bg-slate-100 p-1">
+            {(
+              [
+                ["audio", "Ses dosyası"],
+                ["transcript", "Metin / transkript"],
+              ] as const
+            ).map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                role="tab"
+                aria-selected={mode === value}
+                onClick={() => setMode(value)}
+                className={`flex-1 rounded-md px-4 py-2 text-sm font-medium transition-colors ${
+                  mode === value ? "bg-white text-brand-800" : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
           </div>
 
-          {/* Ses Yükleme */}
           {mode === "audio" && (
-            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-              <h2 className="text-base font-semibold text-gray-900 mb-1">
-                Ses Dosyası Seçimi
-              </h2>
-              <p className="text-xs text-gray-500 mb-4">
-                Santralden veya kayıt cihazından indirilen ses dosyasını
-                yükleyin. Desteklenen formatlar:{" "}
-                <strong>WAV, MP3, M4A, OGG, FLAC, AAC, WEBM</strong> —
-                maksimum <strong>25 MB</strong>.
-              </p>
-
-              {/* Sürükle-bırak alanı */}
+            <Card>
               <div
                 role="button"
                 tabIndex={0}
@@ -765,12 +665,12 @@ function CallUploadContent() {
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className={`relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 text-center cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 ${
+                className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-12 text-center transition-colors ${
                   isDragging
-                    ? "border-sky-500 bg-sky-50/50"
+                    ? "border-brand-500 bg-brand-50"
                     : audioFile
-                    ? "border-emerald-400 bg-emerald-50/30"
-                    : "border-gray-300 hover:border-gray-400 bg-gray-50"
+                      ? "border-emerald-400 bg-emerald-50"
+                      : "border-slate-300 bg-slate-50 hover:border-slate-400"
                 }`}
               >
                 <input
@@ -786,207 +686,131 @@ function CallUploadContent() {
                     }
                   }}
                 />
-                <div className="text-4xl mb-3">{audioFile ? "🎵" : "☁️"}</div>
                 {audioFile ? (
-                  <div>
-                    <p className="text-sm font-semibold text-emerald-800">
-                      Seçilen Dosya: {audioFile.name}
+                  <>
+                    <p className="text-base font-semibold text-emerald-800">{audioFile.name}</p>
+                    <p className="mt-1 text-sm text-slate-500">
+                      {(audioFile.size / (1024 * 1024)).toFixed(2)} MB · değiştirmek için tıklayın
                     </p>
-                    <p className="text-xs text-gray-500 mt-0.5">
-                      Boyut: {(audioFile.size / (1024 * 1024)).toFixed(2)} MB •
-                      Değiştirmek için tıklayın
-                    </p>
-                  </div>
+                  </>
                 ) : (
-                  <div>
-                    <p className="text-sm font-medium text-gray-700">
+                  <>
+                    <p className="text-base font-medium text-brand-800">
                       Ses dosyasını buraya sürükleyin veya{" "}
-                      <span className="text-sky-700 font-bold underline">
-                        dosya seçin
-                      </span>
+                      <span className="underline">dosya seçin</span>
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="mt-1 text-sm text-slate-500">
                       WAV, MP3, M4A, OGG, FLAC, AAC, WEBM — en fazla 25 MB
                     </p>
-                  </div>
+                  </>
                 )}
               </div>
 
-              {/* İstemci doğrulama hatası */}
               {errorMessage && (
-                <div className="mt-3 flex items-start gap-2 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-xs text-red-700">
-                  <span className="flex-shrink-0 font-bold">❌</span>
-                  <span>{errorMessage}</span>
-                </div>
+                <p role="alert" className="mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  {errorMessage}
+                </p>
               )}
 
-              {/* Ses önizleme */}
               {audioUrl && (
-                <div className="mt-4 rounded-lg bg-gray-50 p-3 border border-gray-200 flex items-center justify-between gap-4">
-                  <span className="text-xs font-semibold text-gray-600 flex-shrink-0">
-                    Önizleme:
-                  </span>
-                  <audio controls src={audioUrl} className="h-8 flex-1 min-w-0" />
+                <div className="mt-4 flex items-center gap-4 rounded-lg border border-slate-200 bg-slate-50 p-3">
+                  <span className="shrink-0 text-sm font-medium text-slate-600">Önizleme</span>
+                  <audio controls src={audioUrl} className="h-8 min-w-0 flex-1" />
                 </div>
               )}
-            </div>
+            </Card>
           )}
 
-          {/* Transkript Yükleme */}
           {mode === "transcript" && (
-            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-1">
-                <h2 className="text-base font-semibold text-gray-900">
-                  Görüşme Metni / Transkript
-                </h2>
-                <button
-                  type="button"
-                  onClick={fillSampleData}
-                  className="text-xs font-semibold text-sky-700 hover:text-sky-800 hover:underline"
-                >
-                  + Örnek Tuzla Marina Transkripti Doldur
-                </button>
+            <Card>
+              <div className="mb-2 flex items-center justify-between gap-3">
+                <label htmlFor="upload-transcript" className="text-sm font-medium text-slate-700">
+                  Görüşme metni
+                </label>
+                <Button variant="ghost" size="sm" onClick={fillSampleData}>
+                  Örnek metin doldur
+                </Button>
               </div>
-              <p className="text-xs text-gray-500 mb-3">
-                Görüşmeyi satır satır &ldquo;Temsilci:&rdquo; ve
-                &ldquo;Müşteri:&rdquo; formatında girebilirsiniz.
-              </p>
-              <label htmlFor="upload-transcript" className="sr-only">
-                Görüşme metni veya transkript
-              </label>
-              <textarea
+              <Textarea
                 id="upload-transcript"
-                rows={8}
+                rows={10}
                 value={transcript}
                 onChange={(e) => setTranscript(e.target.value)}
                 placeholder={`Temsilci: Miço Usta, buyurun.\nMüşteri: Merhaba, Tuzla Marina'da teknem var. Motor devir almıyor...`}
-                className="w-full rounded-lg border border-gray-300 bg-white p-3 text-sm font-mono text-gray-900 placeholder:text-gray-400 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
+                className="font-mono"
               />
-              <div className="mt-2 flex justify-between text-xs text-gray-500">
-                <span>
-                  {transcript.split("\n").filter(Boolean).length} satır
-                </span>
-                <span>{transcript.length} karakter</span>
-              </div>
+              <p className="mt-2 text-xs text-slate-500">
+                Satırları &ldquo;Temsilci:&rdquo; ve &ldquo;Müşteri:&rdquo; ile başlatabilirsiniz ·{" "}
+                {transcript.split("\n").filter(Boolean).length} satır, {transcript.length} karakter
+              </p>
               {errorMessage && (
-                <div className="mt-3 flex items-start gap-2 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-xs text-red-700">
-                  <span className="flex-shrink-0 font-bold">❌</span>
-                  <span>{errorMessage}</span>
-                </div>
+                <p role="alert" className="mt-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                  {errorMessage}
+                </p>
               )}
-            </div>
+            </Card>
           )}
 
-          {/* İsteğe bağlı müşteri / tekne bilgileri */}
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm space-y-4">
-            <div>
-              <h2 className="text-base font-semibold text-gray-900 border-b border-gray-200 pb-2">
-                Çağrı &amp; Müşteri Bilgileri{" "}
-                <span className="text-xs font-normal text-gray-500">
-                  (İsteğe Bağlı)
-                </span>
-              </h2>
-              <p className="text-xs text-sky-700 mt-2 flex items-start gap-1">
-                <span className="flex-shrink-0 mt-0.5">💡</span>
-                <span>
-                  Boş bırakılırsa konuşma içeriğinden yapay zeka tarafından
-                  otomatik tespit edilir.
-                </span>
+          <details className="rounded-xl border border-slate-200 bg-white">
+            <summary className="cursor-pointer px-5 py-3 text-sm font-medium text-brand-800">
+              Müşteri bilgisi ekle (isteğe bağlı)
+            </summary>
+            <div className="space-y-4 border-t border-slate-100 p-5">
+              <p className="text-sm text-slate-500">
+                Boş bırakılırsa konuşma içeriğinden yapay zekâ tarafından otomatik tespit edilir.
               </p>
-            </div>
-
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <div>
-                <label htmlFor="upload-customer-name" className="block text-xs font-semibold uppercase text-gray-600 mb-1">
-                  Müşteri Adı Soyadı
-                </label>
-                <input
-                  id="upload-customer-name"
-                  type="text"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  placeholder="Örn: Burak Çelik"
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="upload-customer-phone" className="block text-xs font-semibold uppercase text-gray-600 mb-1">
-                  Müşteri Telefonu
-                </label>
-                <input
-                  id="upload-customer-phone"
-                  type="text"
-                  value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
-                  placeholder="Örn: +90 532 123 45 67"
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="upload-boat-name" className="block text-xs font-semibold uppercase text-gray-600 mb-1">
-                  Tekne Adı
-                </label>
-                <input
-                  id="upload-boat-name"
-                  type="text"
-                  value={boatName}
-                  onChange={(e) => setBoatName(e.target.value)}
-                  placeholder="Örn: Rüzgar"
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="upload-boat-model" className="block text-xs font-semibold uppercase text-gray-600 mb-1">
-                  Tekne Modeli
-                </label>
-                <input
-                  id="upload-boat-model"
-                  type="text"
-                  value={boatModel}
-                  onChange={(e) => setBoatModel(e.target.value)}
-                  placeholder="Örn: Jeanneau Merry Fisher 795"
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-                />
-              </div>
-
-              <div className="sm:col-span-2">
-                <label htmlFor="upload-marina" className="block text-xs font-semibold uppercase text-gray-600 mb-1">
-                  Marina / Lokasyon
-                </label>
-                <select
-                  id="upload-marina"
-                  value={marina}
-                  onChange={(e) => setMarina(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-                >
-                  <option value="">Seçiniz (isteğe bağlı)</option>
-                  {MARINA_OPTIONS.map((m) => (
-                    <option key={m} value={m}>
-                      {m}
-                    </option>
-                  ))}
-                </select>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <Field id="upload-customer-name" label="Müşteri adı soyadı">
+                  <Input
+                    id="upload-customer-name"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    placeholder="Örn: Burak Çelik"
+                  />
+                </Field>
+                <Field id="upload-customer-phone" label="Müşteri telefonu">
+                  <Input
+                    id="upload-customer-phone"
+                    value={customerPhone}
+                    onChange={(e) => setCustomerPhone(e.target.value)}
+                    placeholder="Örn: +90 532 123 45 67"
+                  />
+                </Field>
+                <Field id="upload-boat-name" label="Tekne adı">
+                  <Input
+                    id="upload-boat-name"
+                    value={boatName}
+                    onChange={(e) => setBoatName(e.target.value)}
+                    placeholder="Örn: Rüzgar"
+                  />
+                </Field>
+                <Field id="upload-boat-model" label="Tekne modeli">
+                  <Input
+                    id="upload-boat-model"
+                    value={boatModel}
+                    onChange={(e) => setBoatModel(e.target.value)}
+                    placeholder="Örn: Jeanneau Merry Fisher 795"
+                  />
+                </Field>
+                <Field id="upload-marina" label="Marina" className="sm:col-span-2">
+                  <Select id="upload-marina" value={marina} onChange={(e) => setMarina(e.target.value)}>
+                    <option value="">Seçiniz (isteğe bağlı)</option>
+                    {MARINA_OPTIONS.map((m) => (
+                      <option key={m} value={m}>
+                        {m}
+                      </option>
+                    ))}
+                  </Select>
+                </Field>
               </div>
             </div>
-          </div>
+          </details>
 
-          {/* Gönder */}
-          <div className="flex items-center justify-end gap-3 pt-2">
-            <Link
-              href="/admin/calls"
-              className="rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-            >
+          <div className="flex items-center justify-end gap-3">
+            <Link href="/admin/calls" className={buttonClasses("secondary")}>
               İptal
             </Link>
-            <button
-              type="submit"
-              className="rounded-xl px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-all bg-sky-700 hover:bg-sky-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
-            >
-              ⚡ Analizi Başlat
-            </button>
+            <Button type="submit">Analizi başlat</Button>
           </div>
         </form>
       )}
@@ -996,7 +820,7 @@ function CallUploadContent() {
 
 export default function CallUploadPage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-gray-400">Yükleniyor...</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-slate-500">Yükleniyor...</div>}>
       <CallUploadContent />
     </Suspense>
   );
