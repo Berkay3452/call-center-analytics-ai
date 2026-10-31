@@ -88,19 +88,19 @@ export function AudioPlayer({
   if (!hasAudio) {
     return (
       <div
-        className={`rounded-xl border border-dashed border-gray-200 dark:border-slate-800 bg-gray-50/80 dark:bg-slate-900/50 p-6 text-center shadow-xs transition-colors ${className}`}
+        className={`rounded-xl border border-dashed border-gray-200 bg-gray-50/80 p-6 text-center shadow-xs transition-colors ${className}`}
         role="region"
         aria-label="Ses Kaydı Durumu"
       >
-        <div className="flex flex-col items-center justify-center gap-2 text-slate-500 dark:text-slate-400">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200/80 dark:bg-slate-800 text-lg" aria-hidden="true">
-            🎙️
+        <div className="flex flex-col items-center justify-center gap-2 text-slate-500">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-200/80 text-lg" aria-hidden="true">
+            
           </div>
           <div>
-            <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+            <p className="text-sm font-semibold text-slate-700">
               Bu çağrı için ses kaydı yok
             </p>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-500 mt-0.5">
               Cevapsız çağrı, harici aktarım veya ses dosyası yüklenmemiş görüşme
             </p>
           </div>
@@ -114,7 +114,7 @@ export function AudioPlayer({
 
   return (
     <div
-      className={`rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm transition-colors ${className}`}
+      className={`rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-colors ${className}`}
       role="region"
       aria-label="Ses Kaydı Oynatıcı"
     >
@@ -159,27 +159,27 @@ export function AudioPlayer({
             )}
             <span
               className={`relative inline-flex rounded-full h-2 w-2 ${
-                isPlaying ? "bg-sky-500" : "bg-slate-400 dark:bg-slate-600"
+                isPlaying ? "bg-sky-500" : "bg-slate-400"
               }`}
             ></span>
           </span>
-          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-slate-600">
             Görüşme Ses Kaydı
           </h2>
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="font-mono text-xs font-semibold text-slate-700 dark:text-slate-300">
-            {formatTime(currentTime)} <span className="text-slate-400 dark:text-slate-500">/</span> {formatTime(duration)}
+          <span className="font-mono text-xs font-semibold text-slate-700">
+            {formatTime(currentTime)} <span className="text-slate-400">/</span> {formatTime(duration)}
           </span>
         </div>
       </div>
 
       {/* İlerleme Çubuğu (Seek Bar) */}
       <div className="relative mb-3 flex items-center">
-        <div className="relative w-full h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+        <div className="relative w-full h-2 rounded-full bg-slate-100 overflow-hidden">
           <div
-            className="h-full bg-sky-600 dark:bg-sky-500 transition-all duration-75"
+            className="h-full bg-sky-600 transition-all duration-75"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
@@ -191,7 +191,7 @@ export function AudioPlayer({
           value={currentTime}
           onChange={handleSeek}
           aria-label="Ses ilerleme çubuğu"
-          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 rounded-full"
+          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 rounded-full"
         />
       </div>
 
@@ -204,7 +204,7 @@ export function AudioPlayer({
             onClick={() => handleSkip(-5)}
             title="5 saniye geri"
             aria-label="5 saniye geri"
-            className="rounded-lg p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+            className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
           >
             <span className="text-xs font-bold font-mono">-5s</span>
           </button>
@@ -215,7 +215,7 @@ export function AudioPlayer({
             onClick={togglePlayPause}
             aria-label={isPlaying ? "Duraklat" : "Oynat"}
             title={isPlaying ? "Duraklat" : "Oynat"}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-600 text-white shadow-sm hover:bg-sky-700 active:scale-95 transition-all focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-600 text-white shadow-sm hover:bg-sky-700 active:scale-95 transition-all focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
           >
             {isPlaying ? (
               <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24" aria-hidden="true">
@@ -235,7 +235,7 @@ export function AudioPlayer({
             onClick={() => handleSkip(5)}
             title="5 saniye ileri"
             aria-label="5 saniye ileri"
-            className="rounded-lg p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+            className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
           >
             <span className="text-xs font-bold font-mono">+5s</span>
           </button>
@@ -248,7 +248,7 @@ export function AudioPlayer({
             onClick={cyclePlaybackRate}
             title="Oynatma Hızı"
             aria-label={`Oynatma hızı ${playbackRate}x`}
-            className="rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors border border-slate-200 dark:border-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+            className="rounded-lg px-2.5 py-1 text-xs font-semibold text-slate-600 hover:bg-slate-100 transition-colors border border-slate-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
           >
             {playbackRate}x
           </button>
@@ -259,7 +259,7 @@ export function AudioPlayer({
             onClick={toggleMute}
             title={isMuted ? "Sesi Aç" : "Sesi Kapat"}
             aria-label={isMuted ? "Sesi Aç" : "Sesi Kapat"}
-            className="rounded-lg p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+            className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
           >
             {isMuted ? (
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2" aria-hidden="true">
@@ -277,8 +277,8 @@ export function AudioPlayer({
 
       {/* Hata Uyarısı (Dosya bulunamazsa vs.) */}
       {audioError && (
-        <div className="mt-3 rounded-lg border border-amber-200 dark:border-amber-900/60 bg-amber-50 dark:bg-amber-950/40 p-2.5 text-xs text-amber-800 dark:text-amber-300">
-          ⚠️ {audioError}
+        <div className="mt-3 rounded-lg border border-amber-200 bg-amber-50 p-2.5 text-xs text-amber-800">
+          {audioError}
         </div>
       )}
     </div>

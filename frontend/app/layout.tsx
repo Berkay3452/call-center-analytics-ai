@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Inter, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import { RoleProvider } from "@/lib/role-context";
 import { AppShell } from "@/components/layout/AppShell";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin", "latin-ext"],
+});
+
+const serifHeading = Source_Serif_4({
+  variable: "--font-serif-heading",
+  subsets: ["latin", "latin-ext"],
 });
 
 const geistMono = Geist_Mono({
@@ -26,7 +31,7 @@ export default function RootLayout({
   return (
     <html lang="tr">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} ${serifHeading.variable} ${geistMono.variable} antialiased`}
       >
         <RoleProvider>
           <AppShell>{children}</AppShell>

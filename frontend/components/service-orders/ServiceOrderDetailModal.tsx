@@ -61,7 +61,7 @@ export function ServiceOrderDetailModal({
     >
       {/* Karartma arka planı */}
       <div
-        className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"
+        className="fixed inset-0 bg-slate-900/60  transition-opacity"
         onClick={onClose}
         aria-hidden="true"
       />
@@ -69,13 +69,13 @@ export function ServiceOrderDetailModal({
       {/* Modal gövdesi */}
       <div
         ref={modalContainerRef}
-        className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 shadow-2xl z-10 transition-all"
+        className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white border border-slate-200 p-6 shadow-lg z-10 transition-all"
       >
         {/* Kapat butonu */}
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+          className="absolute right-4 top-4 inline-flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
           aria-label="Kapat"
         >
           ✕
@@ -84,15 +84,15 @@ export function ServiceOrderDetailModal({
         {loading && <ServiceOrderDetailSkeleton />}
 
         {error && (
-          <div className="rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40 p-6 text-center space-y-3">
+          <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center space-y-3">
             <span className="text-3xl" aria-hidden="true">⚠️</span>
-            <p className="text-sm font-semibold text-red-800 dark:text-red-200">
+            <p className="text-sm font-semibold text-red-800">
               {error}
             </p>
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg bg-slate-800 px-4 py-1.5 text-xs font-bold text-white hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+              className="rounded-lg bg-slate-800 px-4 py-1.5 text-xs font-bold text-white hover:bg-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
             >
               Kapat
             </button>

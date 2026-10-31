@@ -1,25 +1,50 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:where(.dark, .dark *));
-
+/*
+ * Miço Usta tasarım temeli (#167)
+ * Açık zemin, lacivert ana renk, turuncu vurgu; yalnızca durum için yeşil/turuncu/kırmızı.
+ * Koyu tema yoktur. Ortak bileşenler: components/ui
+ */
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
-}
-
-.dark {
-  --background: #090d16;
-  --foreground: #f8fafc;
+  --background: #f6f7f9;
+  --foreground: #0d1b2a;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  /* Lacivert ana renk ölçeği (sky-* yerine brand-* kullanılır) */
+  --color-brand-50: #eef4fa;
+  --color-brand-100: #d9e6f2;
+  --color-brand-200: #b3cde4;
+  --color-brand-300: #86acd0;
+  --color-brand-400: #5587b6;
+  --color-brand-500: #2f679a;
+  --color-brand-600: #0f4575;
+  --color-brand-700: #0a3356;
+  --color-brand-800: #0a2540;
+  --color-brand-900: #071a2e;
+
+  /* Turuncu vurgu */
+  --color-accent-50: #fff4ec;
+  --color-accent-100: #ffe3d0;
+  --color-accent-400: #fb923c;
+  --color-accent-500: #f97316;
+  --color-accent-600: #ea580c;
+  --color-accent-700: #c2410c;
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-serif-heading), Georgia, "Times New Roman", serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  /* Köşe yarıçapı: kartlar rounded-xl, kontroller rounded-lg */
+  --radius-card: 0.75rem;
+  --radius-control: 0.5rem;
 }
 
-html, body {
+html,
+body {
   overflow-x: hidden;
   max-width: 100%;
 }
@@ -27,8 +52,13 @@ html, body {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  font-family: var(--font-sans);
+}
+
+/* Sayfa başlığı (h1) serif; kart başlıkları sade sans kalır */
+h1 {
+  font-family: var(--font-serif);
+  color: var(--color-brand-800);
 }
 
 /* --------------------------------------------------------------------------
@@ -46,45 +76,21 @@ textarea:focus-visible,
 [role="button"]:focus-visible,
 [tabindex]:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #0284c7;
-}
-
-.dark button:focus-visible,
-.dark a:focus-visible,
-.dark input:focus-visible,
-.dark select:focus-visible,
-.dark textarea:focus-visible,
-.dark [role="button"]:focus-visible,
-.dark [tabindex]:focus-visible {
-  box-shadow: 0 0 0 2px #0f172a, 0 0 0 4px #0ea5e9;
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px var(--color-brand-500);
 }
 
 /* --------------------------------------------------------------------------
- * WCAG AA Uyumlu Form Elemanları ve Kontrast İyileştirmeleri (Issue #90)
+ * WCAG AA Uyumlu Form Elemanları (Issue #90)
  * -------------------------------------------------------------------------- */
-input, select, textarea {
-  color: #0f172a;
+input,
+select,
+textarea {
+  color: #0d1b2a;
   background-color: #ffffff;
 }
 
-input::placeholder, textarea::placeholder {
+input::placeholder,
+textarea::placeholder {
   color: #64748b; /* slate-500: açık zeminde > 4.5:1 kontrast oranı */
   opacity: 1;
-}
-
-.dark input, .dark select, .dark textarea {
-  color: #f8fafc;
-  background-color: #1e293b; /* slate-800 */
-  border-color: #334155;     /* slate-700 */
-}
-
-.dark input::placeholder, .dark textarea::placeholder {
-  color: #94a3b8; /* slate-400: koyu zeminde > 4.5:1 kontrast oranı */
-  opacity: 1;
-}
-
-/* Seçili select kutularının koyu moddaki option menüleri */
-.dark option {
-  background-color: #1e293b;
-  color: #f8fafc;
 }

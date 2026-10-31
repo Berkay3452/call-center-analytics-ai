@@ -32,10 +32,10 @@ export function ServiceOrderWorkflowSteps({
     <div className={`w-full py-2 ${className}`}>
       <div className="relative flex items-center justify-between">
         {/* Arka plan çizgisi */}
-        <div className="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-1 bg-slate-200 dark:bg-slate-700/80 -z-0" />
+        <div className="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-1 bg-slate-200 -z-0" />
         {/* Tamamlanan ilerleme çizgisi */}
         <div
-          className="absolute left-6 top-1/2 -translate-y-1/2 h-1 bg-sky-600 dark:bg-sky-500 transition-all duration-300 -z-0"
+          className="absolute left-6 top-1/2 -translate-y-1/2 h-1 bg-sky-600 transition-all duration-300 -z-0"
           style={{
             width: `${Math.max(
               0,
@@ -53,10 +53,10 @@ export function ServiceOrderWorkflowSteps({
               <div
                 className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-all shadow-xs ${
                   isDone
-                    ? "bg-sky-600 dark:bg-sky-500 text-white"
+                    ? "bg-sky-600 text-white"
                     : isCurrent
-                      ? "bg-white dark:bg-slate-900 text-sky-600 dark:text-sky-400 border-2 border-sky-600 dark:border-sky-400 ring-4 ring-sky-100 dark:ring-sky-950/70"
-                      : "bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500 border border-slate-200 dark:border-slate-700"
+                      ? "bg-white text-sky-600 border-2 border-sky-600 ring-4 ring-sky-100"
+                      : "bg-slate-100 text-slate-400 border border-slate-200"
                 }`}
               >
                 {isDone ? (
@@ -69,17 +69,17 @@ export function ServiceOrderWorkflowSteps({
               <span
                 className={`mt-2 text-xs font-semibold whitespace-nowrap ${
                   isCurrent
-                    ? "text-sky-700 dark:text-sky-300 font-bold"
+                    ? "text-sky-700 font-bold"
                     : isDone
-                      ? "text-slate-700 dark:text-slate-300"
-                      : "text-slate-400 dark:text-slate-500"
+                      ? "text-slate-700"
+                      : "text-slate-400"
                 }`}
               >
                 {SERVICE_ORDER_STATUS_LABELS[step]}
               </span>
 
               {isCurrent && (
-                <span className="text-[10px] font-medium text-sky-600 dark:text-sky-400">
+                <span className="text-[10px] font-medium text-sky-600">
                   {step === "tamamlandi" && completedAt ? (
                     new Date(completedAt).toLocaleDateString("tr-TR")
                   ) : step === "yeni_atandi" && createdAt ? (

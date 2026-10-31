@@ -64,7 +64,7 @@ export function ServiceOrderStatusControl({
             type="button"
             disabled={isLoading}
             onClick={() => handleAdvanceStatus(nextStatus)}
-            className="inline-flex items-center gap-2 rounded-xl bg-sky-700 dark:bg-sky-600 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-sky-800 dark:hover:bg-sky-700 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+            className="inline-flex items-center gap-2 rounded-xl bg-sky-700 px-4 py-2 text-xs font-bold text-white shadow-xs hover:bg-sky-800 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
           >
             {isLoading ? (
               <span className="inline-block h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -76,7 +76,7 @@ export function ServiceOrderStatusControl({
             </span>
           </button>
         ) : (
-          <div className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-200 dark:border-emerald-800 px-3.5 py-1.5 text-xs font-bold text-emerald-800 dark:text-emerald-300">
+          <div className="inline-flex items-center gap-2 rounded-xl bg-emerald-50 border border-emerald-200 px-3.5 py-1.5 text-xs font-bold text-emerald-800">
             <span aria-hidden="true">✓</span>
             <span>Servis Emri Tamamlandı</span>
           </div>
@@ -85,7 +85,7 @@ export function ServiceOrderStatusControl({
         {/* Seçici ile doğrudan bir sonraki adıma geçiş */}
         {nextStatus && (
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-500 dark:text-slate-400">veya:</span>
+            <span className="text-xs text-slate-500">veya:</span>
             <label htmlFor={`so-status-select-${orderId}`} className="sr-only">
               Servis emri durumunu değiştir
             </label>
@@ -100,7 +100,7 @@ export function ServiceOrderStatusControl({
                   handleAdvanceStatus(val);
                 }
               }}
-              className="rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-200 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50"
+              className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 disabled:opacity-50"
             >
               <option value={status} disabled>
                 Mevcut: {SERVICE_ORDER_STATUS_LABELS[status]}
@@ -114,7 +114,7 @@ export function ServiceOrderStatusControl({
       </div>
 
       {error && (
-        <div className="rounded-lg bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-900 p-2.5 text-xs text-red-700 dark:text-red-300 flex items-start gap-2">
+        <div className="rounded-lg bg-red-50 border border-red-200 p-2.5 text-xs text-red-700 flex items-start gap-2">
           <span className="font-bold flex-shrink-0" aria-hidden="true">✕</span>
           <span>{error}</span>
         </div>

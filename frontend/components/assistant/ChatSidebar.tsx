@@ -37,10 +37,10 @@ function SessionSkeleton() {
       {[1, 2, 3].map((i) => (
         <div
           key={i}
-          className="rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-3 py-3 animate-pulse"
+          className="rounded-xl border border-slate-200 bg-slate-100 px-3 py-3 animate-pulse"
         >
-          <div className="h-3.5 w-3/4 rounded bg-slate-300 dark:bg-slate-600 mb-2" />
-          <div className="h-3 w-1/3 rounded bg-slate-200 dark:bg-slate-700" />
+          <div className="h-3.5 w-3/4 rounded bg-slate-300 mb-2" />
+          <div className="h-3 w-1/3 rounded bg-slate-200" />
         </div>
       ))}
     </div>
@@ -102,13 +102,13 @@ export function ChatSidebar({
     >
       {/* Başlık + Kapat butonu (yalnızca mobilde görünür) */}
       <div className="flex items-center justify-between px-3 pt-3 pb-2 lg:pt-2">
-        <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+        <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
           Geçmiş Sohbetler
         </span>
         <button
           type="button"
           onClick={onClose}
-          className="lg:hidden rounded-lg p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+          className="lg:hidden rounded-lg p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
           aria-label="Kenar çubuğunu kapat"
         >
           <svg
@@ -131,7 +131,7 @@ export function ChatSidebar({
             onNewChat();
             onClose();
           }}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-sky-300 dark:border-sky-700 bg-sky-50 dark:bg-sky-950/30 px-3 py-2.5 text-sm font-semibold text-sky-700 dark:text-sky-300 transition-colors hover:bg-sky-100 dark:hover:bg-sky-950/60 hover:border-sky-400 dark:hover:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-sky-300 bg-sky-50 px-3 py-2.5 text-sm font-semibold text-sky-700 transition-colors hover:bg-sky-100 hover:border-sky-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
           aria-label="Yeni sohbet başlat"
         >
           <svg
@@ -147,22 +147,22 @@ export function ChatSidebar({
         </button>
       </div>
 
-      <hr className="border-slate-200 dark:border-slate-700 mx-2" />
+      <hr className="border-slate-200 mx-2" />
 
       {/* Liste alanı */}
-      <div className="flex-1 overflow-y-auto py-2 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600">
+      <div className="flex-1 overflow-y-auto py-2 ">
         {isLoading && <SessionSkeleton />}
 
         {!isLoading && error && (
-          <div className="px-3 py-4 text-center text-xs text-red-500 dark:text-red-400">
+          <div className="px-3 py-4 text-center text-xs text-red-500">
             <p className="font-medium">Sohbet geçmişi yüklenemedi.</p>
-            <p className="mt-0.5 text-slate-500 dark:text-slate-400">{error}</p>
+            <p className="mt-0.5 text-slate-500">{error}</p>
           </div>
         )}
 
         {!isLoading && !error && sessions.length === 0 && (
           <div className="px-3 py-6 text-center">
-            <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
+            <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-slate-100">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 20 20"
@@ -177,10 +177,10 @@ export function ChatSidebar({
                 />
               </svg>
             </div>
-            <p className="text-xs font-medium text-slate-600 dark:text-slate-400">
+            <p className="text-xs font-medium text-slate-600">
               Henüz kaydedilmiş sohbet yok
             </p>
-            <p className="mt-1 text-xs text-slate-400 dark:text-slate-500">
+            <p className="mt-1 text-xs text-slate-400">
               Yeni bir sohbet başlatın.
             </p>
           </div>
@@ -205,10 +205,10 @@ export function ChatSidebar({
                     }}
                     aria-current={isActive ? "page" : undefined}
                     className={[
-                      "w-full rounded-xl border px-3 py-2.5 text-left transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900",
+                      "w-full rounded-xl border px-3 py-2.5 text-left transition-colors focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2",
                       isActive
-                        ? "border-sky-300 dark:border-sky-600 bg-sky-50 dark:bg-sky-950/50 text-sky-900 dark:text-sky-100"
-                        : "border-transparent hover:border-slate-200 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300",
+                        ? "border-sky-300 bg-sky-50 text-sky-900"
+                        : "border-transparent hover:border-slate-200 hover:bg-slate-50 text-slate-700",
                     ].join(" ")}
                   >
                     <p className="truncate text-sm font-medium leading-tight">
@@ -219,8 +219,8 @@ export function ChatSidebar({
                         className={[
                           "mt-0.5 text-xs",
                           isActive
-                            ? "text-sky-600 dark:text-sky-400"
-                            : "text-slate-400 dark:text-slate-500",
+                            ? "text-sky-600"
+                            : "text-slate-400",
                         ].join(" ")}
                       >
                         {relDate}
@@ -239,7 +239,7 @@ export function ChatSidebar({
   return (
     <>
       {/* ── Masaüstü: sabit sol panel ──────────────────────────────────────── */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-64 xl:w-72 flex-shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-l-2xl overflow-hidden">
+      <aside className="hidden lg:flex lg:flex-col lg:w-64 xl:w-72 flex-shrink-0 border-r border-slate-200 bg-white rounded-l-2xl overflow-hidden">
         {sidebarContent}
       </aside>
 
@@ -255,11 +255,11 @@ export function ChatSidebar({
         >
           {/* Karartma */}
           <div
-            className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm"
+            className="fixed inset-0 bg-slate-900/50 "
             aria-hidden="true"
           />
           {/* Panel */}
-          <aside ref={drawerRef} className="relative z-50 flex w-72 max-w-[85vw] flex-col border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl">
+          <aside ref={drawerRef} className="relative z-50 flex w-72 max-w-[85vw] flex-col border-r border-slate-200 bg-white shadow-lg">
             {sidebarContent}
           </aside>
         </div>

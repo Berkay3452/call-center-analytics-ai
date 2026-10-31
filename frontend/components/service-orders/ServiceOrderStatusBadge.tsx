@@ -8,34 +8,24 @@ import {
 interface ServiceOrderStatusBadgeProps {
   status: ServiceOrderStatus;
   className?: string;
+  /** Eski çağrılarla uyum için korunur; rozet artık emoji göstermez. */
   showIcon?: boolean;
 }
-
-const STATUS_ICONS: Record<ServiceOrderStatus, string> = {
-  yeni_atandi: "📥",
-  kesifte: "🔍",
-  onaylandi: "✅",
-  devam_ediyor: "⚙️",
-  tamamlandi: "🎉",
-};
 
 export function ServiceOrderStatusBadge({
   status,
   className = "",
-  showIcon = true,
 }: ServiceOrderStatusBadgeProps) {
   const badgeCls =
     SERVICE_ORDER_STATUS_BADGE[status] ??
-    "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700";
+    "bg-slate-100 text-slate-700 border-slate-200";
   const label = SERVICE_ORDER_STATUS_LABELS[status] ?? status;
-  const icon = STATUS_ICONS[status] ?? "•";
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors ${badgeCls} ${className}`}
+      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${badgeCls} ${className}`}
     >
-      {showIcon && <span className="text-[11px] leading-none select-none">{icon}</span>}
-      <span>{label}</span>
+      {label}
     </span>
   );
 }

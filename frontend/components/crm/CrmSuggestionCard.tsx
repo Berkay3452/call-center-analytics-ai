@@ -30,29 +30,29 @@ interface CrmSuggestionCardProps {
 }
 
 const URGENCY_BADGE: Record<Urgency, string> = {
-  acil: "bg-red-100 dark:bg-red-950/60 text-red-700 dark:text-red-300 border-red-300 dark:border-red-800 font-bold",
-  yuksek: "bg-orange-100 dark:bg-orange-950/60 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800",
-  normal: "bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800",
-  dusuk: "bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-slate-300 border-gray-200 dark:border-slate-700",
+  acil: "bg-red-100 text-red-700 border-red-300 font-bold",
+  yuksek: "bg-orange-100 text-orange-700 border-orange-200",
+  normal: "bg-blue-50 text-blue-700 border-blue-200",
+  dusuk: "bg-gray-100 text-gray-600 border-gray-200",
 };
 
 const STATUS_BADGE: Record<CrmReviewStatus, { bg: string; text: string; border: string; icon: string }> = {
   bekliyor: {
-    bg: "bg-amber-50 dark:bg-amber-950/60",
-    text: "text-amber-800 dark:text-amber-300",
-    border: "border-amber-300 dark:border-amber-800",
+    bg: "bg-amber-50",
+    text: "text-amber-800",
+    border: "border-amber-300",
     icon: "⏳",
   },
   onaylandi: {
-    bg: "bg-emerald-50 dark:bg-emerald-950/60",
-    text: "text-emerald-800 dark:text-emerald-300",
-    border: "border-emerald-300 dark:border-emerald-800",
+    bg: "bg-emerald-50",
+    text: "text-emerald-800",
+    border: "border-emerald-300",
     icon: "✓",
   },
   reddedildi: {
-    bg: "bg-red-50 dark:bg-red-950/60",
-    text: "text-red-800 dark:text-red-300",
-    border: "border-red-300 dark:border-red-800",
+    bg: "bg-red-50",
+    text: "text-red-800",
+    border: "border-red-300",
     icon: "✕",
   },
 };
@@ -252,24 +252,24 @@ export function CrmSuggestionCard({
 
   return (
     <div
-      className={`rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs transition-all ${
-        variant === "detail" ? "p-5" : "p-5 hover:border-sky-300 dark:hover:border-sky-500"
+      className={`rounded-xl border border-slate-200 bg-white shadow-xs transition-all ${
+        variant === "detail" ? "p-5" : "p-5 hover:border-sky-300"
       }`}
     >
       {/* Üst Başlık & Durum Rozeti */}
-      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
+      <div className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="text-base font-bold text-slate-900 dark:text-slate-100">
+            <h2 className="text-base font-bold text-slate-900">
               {suggestion.caller}
             </h2>
             {suggestion.boatName && (
-              <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              <span className="text-xs font-medium text-slate-500">
                 • {suggestion.boatName}
               </span>
             )}
           </div>
-          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+          <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500">
             <span>📍 {currentValues.location ?? EMPTY_LABEL}</span>
             <span>•</span>
             <span>Çağrı ID: {suggestion.callId}</span>
@@ -301,7 +301,7 @@ export function CrmSuggestionCard({
           {variant === "list" && (
             <Link
               href={`/admin/calls/${suggestion.callId}`}
-              className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-1 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+              className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700 hover:bg-slate-100 transition-colors"
             >
               Çağrı Detayı →
             </Link>
@@ -311,19 +311,19 @@ export function CrmSuggestionCard({
 
       {/* Servis Emri Bilgisi (Onaylandıysa) */}
       {serviceOrderId && (
-        <div className="mt-4 flex items-center justify-between rounded-lg bg-emerald-50 dark:bg-emerald-950/40 p-3 border border-emerald-200 dark:border-emerald-800 text-xs">
-          <div className="flex items-center gap-2 text-emerald-800 dark:text-emerald-300 font-semibold">
+        <div className="mt-4 flex items-center justify-between rounded-lg bg-emerald-50 p-3 border border-emerald-200 text-xs">
+          <div className="flex items-center gap-2 text-emerald-800 font-semibold">
             <span>📋</span>
             <span>Servis Emri Oluşturuldu:</span>
             <Link
               href="/admin/service-orders"
-              className="font-mono font-bold text-emerald-900 dark:text-emerald-200 underline hover:text-emerald-700 dark:hover:text-emerald-100"
+              className="font-mono font-bold text-emerald-900 underline hover:text-emerald-700"
               title="Servis Emirleri Sayfasına Git"
             >
               {serviceOrderId} ➔
             </Link>
           </div>
-          <span className="rounded bg-emerald-100 dark:bg-emerald-900/60 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:text-emerald-200 uppercase tracking-wider">
+          <span className="rounded bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 uppercase tracking-wider">
             Aktif Servis Emri
           </span>
         </div>
@@ -334,8 +334,8 @@ export function CrmSuggestionCard({
         <div
           className={`mt-4 rounded-lg p-3 text-xs border ${
             is409Error
-              ? "bg-amber-50 dark:bg-amber-950/40 border-amber-300 dark:border-amber-800 text-amber-800 dark:text-amber-200"
-              : "bg-red-50 dark:bg-red-950/40 border-red-200 dark:border-red-900 text-red-800 dark:text-red-200"
+              ? "bg-amber-50 border-amber-300 text-amber-800"
+              : "bg-red-50 border-red-200 text-red-800"
           }`}
         >
           <div className="flex items-start gap-2">
@@ -351,103 +351,103 @@ export function CrmSuggestionCard({
       {/* 7 CRM Alanı Izgara Görünümü */}
       <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {/* 1. Kategori */}
-        <div className="rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800/50 p-3">
+        <div className="rounded-lg bg-slate-50 border border-slate-100 p-3">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
               1. Müşteri Talebi (Kategori)
             </span>
             {isEdited("request_category") && (
-              <span className="rounded bg-amber-100 dark:bg-amber-950/80 px-1.5 py-0.2 text-[9px] font-bold text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+              <span className="rounded bg-amber-100 px-1.5 py-0.2 text-[9px] font-bold text-amber-800 border border-amber-300">
                 düzenlendi
               </span>
             )}
           </div>
-          <p className="mt-0.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
+          <p className="mt-0.5 text-xs font-semibold text-slate-800">
             {labelOf(REQUEST_CATEGORY_LABELS, currentValues.requestCategory)}
           </p>
         </div>
 
         {/* 2. Lokasyon */}
-        <div className="rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800/50 p-3">
+        <div className="rounded-lg bg-slate-50 border border-slate-100 p-3">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
               2. Lokasyon / Marina
             </span>
             {isEdited("location") && (
-              <span className="rounded bg-amber-100 dark:bg-amber-950/80 px-1.5 py-0.2 text-[9px] font-bold text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+              <span className="rounded bg-amber-100 px-1.5 py-0.2 text-[9px] font-bold text-amber-800 border border-amber-300">
                 düzenlendi
               </span>
             )}
           </div>
-          <p className="mt-0.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
+          <p className="mt-0.5 text-xs font-semibold text-slate-800">
             {currentValues.location ?? EMPTY_LABEL}
           </p>
         </div>
 
         {/* 3. Problem Tanımı */}
-        <div className="rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800/50 p-3">
+        <div className="rounded-lg bg-slate-50 border border-slate-100 p-3">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
               3. Problem Tanımı
             </span>
             {isEdited("problem") && (
-              <span className="rounded bg-amber-100 dark:bg-amber-950/80 px-1.5 py-0.2 text-[9px] font-bold text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+              <span className="rounded bg-amber-100 px-1.5 py-0.2 text-[9px] font-bold text-amber-800 border border-amber-300">
                 düzenlendi
               </span>
             )}
           </div>
-          <p className="mt-0.5 text-xs font-semibold text-slate-800 dark:text-slate-200 line-clamp-2">
+          <p className="mt-0.5 text-xs font-semibold text-slate-800 line-clamp-2">
             {currentValues.problem ?? EMPTY_LABEL}
           </p>
         </div>
 
         {/* 4. Hizmet Biçimi */}
-        <div className="rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800/50 p-3">
+        <div className="rounded-lg bg-slate-50 border border-slate-100 p-3">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
               4. Hizmet Biçimi
             </span>
             {isEdited("service_mode") && (
-              <span className="rounded bg-amber-100 dark:bg-amber-950/80 px-1.5 py-0.2 text-[9px] font-bold text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+              <span className="rounded bg-amber-100 px-1.5 py-0.2 text-[9px] font-bold text-amber-800 border border-amber-300">
                 düzenlendi
               </span>
             )}
           </div>
-          <p className="mt-0.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
+          <p className="mt-0.5 text-xs font-semibold text-slate-800">
             {labelOf(SERVICE_MODE_LABELS, currentValues.serviceMode)}
           </p>
         </div>
 
         {/* 6. Potansiyel İş */}
-        <div className="rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800/50 p-3">
+        <div className="rounded-lg bg-slate-50 border border-slate-100 p-3">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
               6. Potansiyel İş
             </span>
             {isEdited("potential_job") && (
-              <span className="rounded bg-amber-100 dark:bg-amber-950/80 px-1.5 py-0.2 text-[9px] font-bold text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+              <span className="rounded bg-amber-100 px-1.5 py-0.2 text-[9px] font-bold text-amber-800 border border-amber-300">
                 düzenlendi
               </span>
             )}
           </div>
-          <p className="mt-0.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
+          <p className="mt-0.5 text-xs font-semibold text-slate-800">
             {currentValues.potentialJob ?? EMPTY_LABEL}
           </p>
         </div>
 
         {/* 7. Sonraki Aksiyon */}
-        <div className="rounded-lg bg-sky-50 dark:bg-sky-950/40 border border-sky-100 dark:border-sky-900/60 p-3">
+        <div className="rounded-lg bg-sky-50 border border-sky-100 p-3">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-sky-700 dark:text-sky-400">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-sky-700">
               7. Sonraki Aksiyon / Servis Emri
             </span>
             {isEdited("next_action") && (
-              <span className="rounded bg-amber-100 dark:bg-amber-950/80 px-1.5 py-0.2 text-[9px] font-bold text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+              <span className="rounded bg-amber-100 px-1.5 py-0.2 text-[9px] font-bold text-amber-800 border border-amber-300">
                 düzenlendi
               </span>
             )}
           </div>
-          <p className="mt-0.5 text-xs font-bold text-sky-900 dark:text-sky-200">
+          <p className="mt-0.5 text-xs font-bold text-sky-900">
             {labelOf(NEXT_ACTION_LABELS, currentValues.nextAction)}
           </p>
         </div>
@@ -455,14 +455,14 @@ export function CrmSuggestionCard({
 
       {/* Kanıt Alıntıları */}
       {suggestion.evidence && Object.keys(suggestion.evidence).length > 0 && (
-        <div className="mt-4 rounded-lg bg-amber-50/50 dark:bg-amber-950/30 p-3 border border-amber-200/60 dark:border-amber-900/60 text-xs">
-          <span className="block text-[11px] font-semibold text-amber-800 dark:text-amber-300 uppercase mb-1">
+        <div className="mt-4 rounded-lg bg-amber-50/50 p-3 border border-amber-200/60 text-xs">
+          <span className="block text-[11px] font-semibold text-amber-800 uppercase mb-1">
             🔍 Konuşmadan Kanıt Alıntıları
           </span>
-          <div className="space-y-1 text-amber-900 dark:text-amber-200">
+          <div className="space-y-1 text-amber-900">
             {Object.entries(suggestion.evidence).map(([key, val]) => (
               <div key={key}>
-                <span className="font-semibold text-amber-700 dark:text-amber-400">{key}:</span> &ldquo;{val}&rdquo;
+                <span className="font-semibold text-amber-700">{key}:</span> &ldquo;{val}&rdquo;
               </div>
             ))}
           </div>
@@ -470,14 +470,14 @@ export function CrmSuggestionCard({
       )}
 
       {/* Aksiyon Butonları (Onayla, Düzenle, Reddet) */}
-      <div className="mt-5 flex flex-wrap items-center justify-end gap-2 border-t border-slate-100 dark:border-slate-800 pt-4">
+      <div className="mt-5 flex flex-wrap items-center justify-end gap-2 border-t border-slate-100 pt-4">
         {/* Düzenle Butonu */}
         <button
           ref={editTriggerRef}
           type="button"
           onClick={openEditModal}
           disabled={isSubmitting}
-          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3.5 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <span>✏️</span>
           <span>Düzenle</span>
@@ -493,7 +493,7 @@ export function CrmSuggestionCard({
               setIsRejectModalOpen(true);
             }}
             disabled={isSubmitting}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/30 px-3.5 py-2 text-xs font-semibold text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-950/60 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-red-200 bg-red-50 px-3.5 py-2 text-xs font-semibold text-red-700 hover:bg-red-100 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <span>✕</span>
             <span>Reddet</span>
@@ -506,7 +506,7 @@ export function CrmSuggestionCard({
             type="button"
             onClick={() => handleApprove()}
             disabled={isSubmitting}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xs"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-xs"
           >
             {isSubmitting ? (
               <>
@@ -525,7 +525,7 @@ export function CrmSuggestionCard({
             type="button"
             onClick={() => handleApprove()}
             disabled={isSubmitting}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-300 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/40 px-3.5 py-2 text-xs font-bold text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-300 bg-emerald-50 px-3.5 py-2 text-xs font-bold text-emerald-800 hover:bg-emerald-100 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
           >
             <span>✓</span>
             <span>Tekrar Onayla (Güncelle)</span>
@@ -537,27 +537,27 @@ export function CrmSuggestionCard({
       {/* 1. DÜZENLEME MODALI                                           */}
       {/* ------------------------------------------------------------- */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60  p-4">
           <div
             ref={editModalRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby="edit-modal-title"
-            className="w-full max-w-2xl rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-xl max-h-[90vh] overflow-y-auto"
+            className="w-full max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 shadow-lg max-h-[90vh] overflow-y-auto"
           >
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3 mb-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
               <div>
-                <h3 id="edit-modal-title" className="text-base font-bold text-slate-900 dark:text-slate-100">
+                <h3 id="edit-modal-title" className="text-base font-bold text-slate-900">
                   CRM Öneri Alanlarını Düzenle
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-slate-500">
                   Değiştirilen alanlar kaydedildiğinde &quot;düzenlendi&quot; olarak işaretlenecek ve onaylanacaktır.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setIsEditModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg font-bold p-1 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                className="text-slate-400 hover:text-slate-600 text-lg font-bold p-1 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                 aria-label="Kapat"
               >
                 ✕
@@ -565,7 +565,7 @@ export function CrmSuggestionCard({
             </div>
 
             {actionError && (
-              <div className="mb-4 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 p-3 text-xs text-red-700 dark:text-red-300">
+              <div className="mb-4 rounded-lg bg-red-50 border border-red-200 p-3 text-xs text-red-700">
                 {actionError}
               </div>
             )}
@@ -574,14 +574,14 @@ export function CrmSuggestionCard({
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 {/* 1. Kategori */}
                 <div>
-                  <label htmlFor="crm-edit-category" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label htmlFor="crm-edit-category" className="block text-xs font-semibold text-slate-700 mb-1">
                     1. Müşteri Talebi (Kategori)
                   </label>
                   <select
                     id="crm-edit-category"
                     value={editFormData.request_category}
                     onChange={(e) => setEditFormData({ ...editFormData, request_category: e.target.value })}
-                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                   >
                     <option value="">Seçiniz</option>
                     {Object.entries(REQUEST_CATEGORY_LABELS).map(([k, label]) => (
@@ -594,7 +594,7 @@ export function CrmSuggestionCard({
 
                 {/* 2. Lokasyon / Marina */}
                 <div>
-                  <label htmlFor="crm-edit-location" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label htmlFor="crm-edit-location" className="block text-xs font-semibold text-slate-700 mb-1">
                     2. Lokasyon / Marina
                   </label>
                   <input
@@ -603,13 +603,13 @@ export function CrmSuggestionCard({
                     value={editFormData.location}
                     onChange={(e) => setEditFormData({ ...editFormData, location: e.target.value })}
                     placeholder="Örn: Tuzla Marina"
-                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                   />
                 </div>
 
                 {/* 3. Problem Tanımı */}
                 <div className="sm:col-span-2">
-                  <label htmlFor="crm-edit-problem" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label htmlFor="crm-edit-problem" className="block text-xs font-semibold text-slate-700 mb-1">
                     3. Problem Tanımı
                   </label>
                   <textarea
@@ -618,20 +618,20 @@ export function CrmSuggestionCard({
                     value={editFormData.problem}
                     onChange={(e) => setEditFormData({ ...editFormData, problem: e.target.value })}
                     placeholder="Arıza veya müşteri şikayeti tanımı..."
-                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 p-2.5 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                    className="w-full rounded-lg border border-slate-300 bg-white p-2.5 text-xs text-slate-900 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                   />
                 </div>
 
                 {/* 4. Hizmet Biçimi */}
                 <div>
-                  <label htmlFor="crm-edit-service-mode" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label htmlFor="crm-edit-service-mode" className="block text-xs font-semibold text-slate-700 mb-1">
                     4. Hizmet Biçimi
                   </label>
                   <select
                     id="crm-edit-service-mode"
                     value={editFormData.service_mode}
                     onChange={(e) => setEditFormData({ ...editFormData, service_mode: e.target.value })}
-                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                   >
                     <option value="">Seçiniz</option>
                     {Object.entries(SERVICE_MODE_LABELS).map(([k, label]) => (
@@ -644,14 +644,14 @@ export function CrmSuggestionCard({
 
                 {/* 5. Aciliyet */}
                 <div>
-                  <label htmlFor="crm-edit-urgency" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label htmlFor="crm-edit-urgency" className="block text-xs font-semibold text-slate-700 mb-1">
                     5. Aciliyet Seviyesi
                   </label>
                   <select
                     id="crm-edit-urgency"
                     value={editFormData.urgency}
                     onChange={(e) => setEditFormData({ ...editFormData, urgency: e.target.value })}
-                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                   >
                     <option value="">Seçiniz</option>
                     {Object.entries(URGENCY_LABELS).map(([k, label]) => (
@@ -664,7 +664,7 @@ export function CrmSuggestionCard({
 
                 {/* 6. Potansiyel İş */}
                 <div>
-                  <label htmlFor="crm-edit-potential-job" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label htmlFor="crm-edit-potential-job" className="block text-xs font-semibold text-slate-700 mb-1">
                     6. Potansiyel İş
                   </label>
                   <input
@@ -673,20 +673,20 @@ export function CrmSuggestionCard({
                     value={editFormData.potential_job}
                     onChange={(e) => setEditFormData({ ...editFormData, potential_job: e.target.value })}
                     placeholder="Örn: Motor arıza tespiti ve bakımı"
-                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                   />
                 </div>
 
                 {/* 7. Sonraki Aksiyon */}
                 <div>
-                  <label htmlFor="crm-edit-next-action" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label htmlFor="crm-edit-next-action" className="block text-xs font-semibold text-slate-700 mb-1">
                     7. Önerilen Sonraki Aksiyon
                   </label>
                   <select
                     id="crm-edit-next-action"
                     value={editFormData.next_action}
                     onChange={(e) => setEditFormData({ ...editFormData, next_action: e.target.value })}
-                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                   >
                     <option value="">Seçiniz</option>
                     {Object.entries(NEXT_ACTION_LABELS).map(([k, label]) => (
@@ -699,7 +699,7 @@ export function CrmSuggestionCard({
 
                 {/* Onay Notu */}
                 <div className="sm:col-span-2">
-                  <label htmlFor="crm-edit-note" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label htmlFor="crm-edit-note" className="block text-xs font-semibold text-slate-700 mb-1">
                     İsteğe Bağlı Onay Notu
                   </label>
                   <input
@@ -708,24 +708,24 @@ export function CrmSuggestionCard({
                     value={editFormData.note}
                     onChange={(e) => setEditFormData({ ...editFormData, note: e.target.value })}
                     placeholder="Örn: Müşteri acil usta istediği için öncelik verildi."
-                    className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-slate-100 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs text-slate-900 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setIsEditModalOpen(false)}
                   disabled={isSubmitting}
-                  className="rounded-lg border border-slate-300 dark:border-slate-700 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                  className="rounded-lg border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                 >
                   İptal
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-5 py-2 text-xs font-bold text-white hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-50 transition-all shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-5 py-2 text-xs font-bold text-white hover:bg-emerald-700 active:scale-[0.98] disabled:opacity-50 transition-all shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
                 >
                   {isSubmitting ? (
                     <>
@@ -749,22 +749,22 @@ export function CrmSuggestionCard({
       {/* 2. REDDETME MODALI                                            */}
       {/* ------------------------------------------------------------- */}
       {isRejectModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60  p-4">
           <div
             ref={rejectModalRef}
             role="dialog"
             aria-modal="true"
             aria-labelledby="reject-modal-title"
-            className="w-full max-w-md rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-xl"
+            className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-lg"
           >
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3 mb-4">
-              <h3 id="reject-modal-title" className="text-base font-bold text-slate-900 dark:text-slate-100">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+              <h3 id="reject-modal-title" className="text-base font-bold text-slate-900">
                 CRM Önerisini Reddet
               </h3>
               <button
                 type="button"
                 onClick={() => setIsRejectModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-lg font-bold p-1 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                className="text-slate-400 hover:text-slate-600 text-lg font-bold p-1 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                 aria-label="Kapat"
               >
                 ✕
@@ -772,14 +772,14 @@ export function CrmSuggestionCard({
             </div>
 
             {actionError && (
-              <div className="mb-4 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 p-3 text-xs text-red-700 dark:text-red-300">
+              <div className="mb-4 rounded-lg bg-red-50 border border-red-200 p-3 text-xs text-red-700">
                 {actionError}
               </div>
             )}
 
             <form onSubmit={handleReject} className="space-y-4">
               <div>
-                <label htmlFor="crm-reject-reason" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label htmlFor="crm-reject-reason" className="block text-xs font-semibold text-slate-700 mb-1">
                   Red Gerekçesi veya Not <span className="text-slate-400 font-normal">(İsteğe Bağlı)</span>
                 </label>
                 <textarea
@@ -788,23 +788,23 @@ export function CrmSuggestionCard({
                   value={rejectReason}
                   onChange={(e) => setRejectReason(e.target.value)}
                   placeholder="Örn: Tekne sahibi başka bir servis ile anlaştı / bilgi amaçlı arama..."
-                  className="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 p-2.5 text-xs text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:border-red-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                  className="w-full rounded-lg border border-slate-300 bg-white p-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus:border-red-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setIsRejectModalOpen(false)}
                   disabled={isSubmitting}
-                  className="rounded-lg border border-slate-300 dark:border-slate-700 px-4 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                  className="rounded-lg border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                 >
                   Vazgeç
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-4 py-2 text-xs font-bold text-white hover:bg-red-700 active:scale-[0.98] disabled:opacity-50 transition-all shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-4 py-2 text-xs font-bold text-white hover:bg-red-700 active:scale-[0.98] disabled:opacity-50 transition-all shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
                 >
                   {isSubmitting ? (
                     <>

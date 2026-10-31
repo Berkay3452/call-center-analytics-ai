@@ -458,8 +458,8 @@ function CallUploadContent() {
                       : isActive
                       ? "bg-sky-600 text-white ring-2 ring-sky-300 animate-pulse"
                       : isFailed
-                      ? "bg-gray-200 dark:bg-slate-700 text-gray-400 dark:text-slate-500"
-                      : "bg-gray-200 dark:bg-slate-700 text-gray-400 dark:text-slate-500"
+                      ? "bg-gray-200 text-gray-400"
+                      : "bg-gray-200 text-gray-400"
                   }`}
                 >
                   {isDone ? "✓" : idx + 1}
@@ -467,10 +467,10 @@ function CallUploadContent() {
                 <span
                   className={`mt-1 text-[9px] font-medium text-center leading-tight ${
                     isDone
-                      ? "text-emerald-600 dark:text-emerald-400"
+                      ? "text-emerald-600"
                       : isActive
-                      ? "text-sky-700 dark:text-sky-400"
-                      : "text-gray-400 dark:text-slate-500"
+                      ? "text-sky-700"
+                      : "text-gray-400"
                   }`}
                 >
                   {info.label}
@@ -479,7 +479,7 @@ function CallUploadContent() {
               {idx < PIPELINE_STEPS.length - 1 && (
                 <div
                   className={`flex-1 h-0.5 mx-1 mb-4 transition-all duration-500 ${
-                    isDone ? "bg-emerald-400" : "bg-gray-200 dark:bg-slate-700"
+                    isDone ? "bg-emerald-400" : "bg-gray-200"
                   }`}
                 />
               )}
@@ -497,14 +497,14 @@ function CallUploadContent() {
         <div>
           <Link
             href="/admin/calls"
-            className="inline-flex items-center text-sm font-medium text-sky-700 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 hover:underline mb-1"
+            className="inline-flex items-center text-sm font-medium text-sky-700 hover:text-sky-800 hover:underline mb-1"
           >
             ← Çağrı listesine dön
           </Link>
-          <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-slate-100">
+          <h1 className="text-2xl font-bold tracking-tight text-gray-900">
             Yeni Çağrı Yükleme &amp; Analiz
           </h1>
-          <p className="text-sm text-gray-500 dark:text-slate-400">
+          <p className="text-sm text-gray-500">
             Ses kaydı veya transkript metni yükleyin; Miço AI motoru CRM 7
             temel alanı ve satış analizini çıkarsın.
           </p>
@@ -512,7 +512,7 @@ function CallUploadContent() {
       </div>
 
       {/* Bilgi bandı */}
-      <div className="rounded-lg bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800 px-4 py-2.5 text-xs text-sky-800 dark:text-sky-300 flex items-start gap-2">
+      <div className="rounded-lg bg-sky-50 border border-sky-200 px-4 py-2.5 text-xs text-sky-800 flex items-start gap-2">
         <span className="mt-0.5 flex-shrink-0">ℹ️</span>
         <span>
           <strong>Ses yükleme:</strong> WAV, MP3, M4A, OGG, FLAC, AAC, WEBM —
@@ -523,14 +523,14 @@ function CallUploadContent() {
 
       {/* 409 Conflict uyarısı */}
       {conflictInfo && (
-        <div className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 p-5">
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-5">
           <div className="flex items-start gap-3">
             <span className="text-xl flex-shrink-0">⚠️</span>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-amber-800 dark:text-amber-300 mb-1">
+              <p className="text-sm font-semibold text-amber-800 mb-1">
                 Bu ses kaydı daha önce yüklenmiş.
               </p>
-              <p className="text-xs text-amber-700 dark:text-amber-400 mb-3">
+              <p className="text-xs text-amber-700 mb-3">
                 Aynı ses dosyası sistemde zaten mevcut. Mevcut çağrının
                 detaylarını inceleyebilirsiniz.
               </p>
@@ -547,7 +547,7 @@ function CallUploadContent() {
 
       {/* Analiz İzleme Paneli */}
       {isSubmitting && (
-        <div className="rounded-2xl border border-sky-200 dark:border-sky-900/60 bg-white dark:bg-slate-900 p-6 shadow-md">
+        <div className="rounded-2xl border border-sky-200 bg-white p-6 shadow-sm">
           {/* Başlık satırı */}
           <div className="flex items-center justify-between mb-1">
             <div className="flex items-center gap-3">
@@ -567,7 +567,7 @@ function CallUploadContent() {
               )}
 
               <div>
-                <h3 className="text-base font-semibold text-gray-900 dark:text-slate-100">
+                <h3 className="text-base font-semibold text-gray-900">
                   {analysisState === "beklemede" &&
                     "1. Adım: Çağrı Sıraya Alındı"}
                   {analysisState === "yaziya_cevriliyor" &&
@@ -580,7 +580,7 @@ function CallUploadContent() {
                   {analysisState === "basarisiz" &&
                     "Hata: Analiz Tamamlanamadı"}
                 </h3>
-                <p className="text-xs text-gray-500 dark:text-slate-400">
+                <p className="text-xs text-gray-500">
                   {statusMessage}
                 </p>
               </div>
@@ -590,12 +590,12 @@ function CallUploadContent() {
             <span
               className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wider flex-shrink-0 ${
                 analysisState === "tamam"
-                  ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
+                  ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
                   : analysisState === "basarisiz"
-                  ? "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800"
+                  ? "bg-red-50 text-red-700 border border-red-200"
                   : analysisState === "kismi"
-                  ? "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800"
-                  : "bg-sky-50 dark:bg-sky-950/40 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800"
+                  ? "bg-amber-50 text-amber-700 border border-amber-200"
+                  : "bg-sky-50 text-sky-700 border border-sky-200"
               }`}
             >
               {analysisState}
@@ -606,7 +606,7 @@ function CallUploadContent() {
           {renderPipelineSteps()}
 
           {/* İlerleme çubuğu */}
-          <div className="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-2.5 overflow-hidden mb-5">
+          <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden mb-5">
             <div
               className={`h-2.5 rounded-full transition-all duration-700 ${
                 analysisState === "tamam"
@@ -623,11 +623,11 @@ function CallUploadContent() {
 
           {/* tamam — başarı ve otomatik yönlendirme */}
           {analysisState === "tamam" && createdCallId && (
-            <div className="rounded-xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 p-4">
-              <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300 mb-1">
+            <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-4">
+              <p className="text-sm font-semibold text-emerald-800 mb-1">
                 🎉 Analiz Başarıyla Tamamlandı
               </p>
-              <p className="text-xs text-emerald-700 dark:text-emerald-400 mb-3">
+              <p className="text-xs text-emerald-700 mb-3">
                 {redirectCancelled
                   ? "Otomatik yönlendirme iptal edildi."
                   : `${AUTO_REDIRECT_MS / 1000} saniye içinde otomatik olarak çağrı detayına yönlendirileceksiniz.`}
@@ -642,7 +642,7 @@ function CallUploadContent() {
                 <button
                   type="button"
                   onClick={cancelRedirect}
-                  className="ml-2 inline-flex items-center rounded-lg border border-emerald-600 px-4 py-2 text-xs font-semibold text-emerald-800 dark:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-emerald-900/40 transition-colors"
+                  className="ml-2 inline-flex items-center rounded-lg border border-emerald-600 px-4 py-2 text-xs font-semibold text-emerald-800 hover:bg-emerald-100 transition-colors"
                 >
                   Burada kal
                 </button>
@@ -652,11 +652,11 @@ function CallUploadContent() {
 
           {/* kismi — uyarı */}
           {analysisState === "kismi" && createdCallId && (
-            <div className="rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-4">
-              <p className="text-sm font-semibold text-amber-800 dark:text-amber-300 mb-1">
+            <div className="rounded-xl bg-amber-50 border border-amber-200 p-4">
+              <p className="text-sm font-semibold text-amber-800 mb-1">
                 Analiz kısmen tamamlandı. Bazı alanlar üretilemedi.
               </p>
-              <p className="text-xs text-amber-700 dark:text-amber-400 mb-3">
+              <p className="text-xs text-amber-700 mb-3">
                 Mevcut sonuçları görmek ve eksik alanları incelemek için çağrı
                 detayına gidebilirsiniz.
               </p>
@@ -671,17 +671,17 @@ function CallUploadContent() {
 
           {/* basarisiz — hata + backend detayı + yeniden dene */}
           {analysisState === "basarisiz" && (
-            <div className="rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 p-4">
-              <p className="text-sm font-semibold text-red-800 dark:text-red-300 mb-1">
+            <div className="rounded-xl bg-red-50 border border-red-200 p-4">
+              <p className="text-sm font-semibold text-red-800 mb-1">
                 Hata Oluştu
               </p>
               {errorMessage && (
-                <p className="text-xs text-red-700 dark:text-red-400 mb-2">
+                <p className="text-xs text-red-700 mb-2">
                   {errorMessage}
                 </p>
               )}
               {backendError && (
-                <p className="text-xs text-red-600 dark:text-red-500 mb-3 font-mono bg-red-100 dark:bg-red-950/50 rounded p-2 whitespace-pre-wrap">
+                <p className="text-xs text-red-600 mb-3 font-mono bg-red-100 rounded p-2 whitespace-pre-wrap">
                   Detay: {backendError}
                 </p>
               )}
@@ -710,14 +710,14 @@ function CallUploadContent() {
       {!isSubmitting && (
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Sekme seçimi */}
-          <div className="flex rounded-xl bg-gray-100 dark:bg-slate-800/80 p-1.5 shadow-inner border border-gray-200 dark:border-slate-700">
+          <div className="flex rounded-xl bg-gray-100 p-1.5 border border-gray-200">
             <button
               type="button"
               onClick={() => setMode("audio")}
-              className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 ${
+              className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 ${
                 mode === "audio"
-                  ? "bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-100 shadow-sm"
-                  : "text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200"
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
               }`}
             >
               <span>🎙️</span>
@@ -726,10 +726,10 @@ function CallUploadContent() {
             <button
               type="button"
               onClick={() => setMode("transcript")}
-              className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 ${
+              className={`flex-1 flex items-center justify-center gap-2 rounded-lg py-2.5 text-sm font-semibold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 ${
                 mode === "transcript"
-                  ? "bg-white dark:bg-slate-900 text-gray-900 dark:text-slate-100 shadow-sm"
-                  : "text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-200"
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-600 hover:text-gray-900"
               }`}
             >
               <span>📝</span>
@@ -739,11 +739,11 @@ function CallUploadContent() {
 
           {/* Ses Yükleme */}
           {mode === "audio" && (
-            <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
-              <h2 className="text-base font-semibold text-gray-900 dark:text-slate-100 mb-1">
+            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+              <h2 className="text-base font-semibold text-gray-900 mb-1">
                 Ses Dosyası Seçimi
               </h2>
-              <p className="text-xs text-gray-500 dark:text-slate-400 mb-4">
+              <p className="text-xs text-gray-500 mb-4">
                 Santralden veya kayıt cihazından indirilen ses dosyasını
                 yükleyin. Desteklenen formatlar:{" "}
                 <strong>WAV, MP3, M4A, OGG, FLAC, AAC, WEBM</strong> —
@@ -765,12 +765,12 @@ function CallUploadContent() {
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className={`relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 text-center cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 ${
+                className={`relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed p-8 text-center cursor-pointer transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 ${
                   isDragging
-                    ? "border-sky-500 bg-sky-50/50 dark:bg-sky-950/30"
+                    ? "border-sky-500 bg-sky-50/50"
                     : audioFile
-                    ? "border-emerald-400 dark:border-emerald-600 bg-emerald-50/30 dark:bg-emerald-950/30"
-                    : "border-gray-300 dark:border-slate-700 hover:border-gray-400 dark:hover:border-slate-600 bg-gray-50 dark:bg-slate-800/50"
+                    ? "border-emerald-400 bg-emerald-50/30"
+                    : "border-gray-300 hover:border-gray-400 bg-gray-50"
                 }`}
               >
                 <input
@@ -789,23 +789,23 @@ function CallUploadContent() {
                 <div className="text-4xl mb-3">{audioFile ? "🎵" : "☁️"}</div>
                 {audioFile ? (
                   <div>
-                    <p className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
+                    <p className="text-sm font-semibold text-emerald-800">
                       Seçilen Dosya: {audioFile.name}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
+                    <p className="text-xs text-gray-500 mt-0.5">
                       Boyut: {(audioFile.size / (1024 * 1024)).toFixed(2)} MB •
                       Değiştirmek için tıklayın
                     </p>
                   </div>
                 ) : (
                   <div>
-                    <p className="text-sm font-medium text-gray-700 dark:text-slate-200">
+                    <p className="text-sm font-medium text-gray-700">
                       Ses dosyasını buraya sürükleyin veya{" "}
-                      <span className="text-sky-700 dark:text-sky-400 font-bold underline">
+                      <span className="text-sky-700 font-bold underline">
                         dosya seçin
                       </span>
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-1">
+                    <p className="text-xs text-gray-500 mt-1">
                       WAV, MP3, M4A, OGG, FLAC, AAC, WEBM — en fazla 25 MB
                     </p>
                   </div>
@@ -814,7 +814,7 @@ function CallUploadContent() {
 
               {/* İstemci doğrulama hatası */}
               {errorMessage && (
-                <div className="mt-3 flex items-start gap-2 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 px-4 py-3 text-xs text-red-700 dark:text-red-300">
+                <div className="mt-3 flex items-start gap-2 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-xs text-red-700">
                   <span className="flex-shrink-0 font-bold">❌</span>
                   <span>{errorMessage}</span>
                 </div>
@@ -822,8 +822,8 @@ function CallUploadContent() {
 
               {/* Ses önizleme */}
               {audioUrl && (
-                <div className="mt-4 rounded-lg bg-gray-50 dark:bg-slate-800/80 p-3 border border-gray-200 dark:border-slate-700 flex items-center justify-between gap-4">
-                  <span className="text-xs font-semibold text-gray-600 dark:text-slate-300 flex-shrink-0">
+                <div className="mt-4 rounded-lg bg-gray-50 p-3 border border-gray-200 flex items-center justify-between gap-4">
+                  <span className="text-xs font-semibold text-gray-600 flex-shrink-0">
                     Önizleme:
                   </span>
                   <audio controls src={audioUrl} className="h-8 flex-1 min-w-0" />
@@ -834,20 +834,20 @@ function CallUploadContent() {
 
           {/* Transkript Yükleme */}
           {mode === "transcript" && (
-            <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm">
+            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
               <div className="flex items-center justify-between mb-1">
-                <h2 className="text-base font-semibold text-gray-900 dark:text-slate-100">
+                <h2 className="text-base font-semibold text-gray-900">
                   Görüşme Metni / Transkript
                 </h2>
                 <button
                   type="button"
                   onClick={fillSampleData}
-                  className="text-xs font-semibold text-sky-700 dark:text-sky-400 hover:text-sky-800 dark:hover:text-sky-300 hover:underline"
+                  className="text-xs font-semibold text-sky-700 hover:text-sky-800 hover:underline"
                 >
                   + Örnek Tuzla Marina Transkripti Doldur
                 </button>
               </div>
-              <p className="text-xs text-gray-500 dark:text-slate-400 mb-3">
+              <p className="text-xs text-gray-500 mb-3">
                 Görüşmeyi satır satır &ldquo;Temsilci:&rdquo; ve
                 &ldquo;Müşteri:&rdquo; formatında girebilirsiniz.
               </p>
@@ -860,16 +860,16 @@ function CallUploadContent() {
                 value={transcript}
                 onChange={(e) => setTranscript(e.target.value)}
                 placeholder={`Temsilci: Miço Usta, buyurun.\nMüşteri: Merhaba, Tuzla Marina'da teknem var. Motor devir almıyor...`}
-                className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 p-3 text-sm font-mono text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:border-sky-500 dark:focus:border-sky-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                className="w-full rounded-lg border border-gray-300 bg-white p-3 text-sm font-mono text-gray-900 placeholder:text-gray-400 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
               />
-              <div className="mt-2 flex justify-between text-xs text-gray-500 dark:text-slate-400">
+              <div className="mt-2 flex justify-between text-xs text-gray-500">
                 <span>
                   {transcript.split("\n").filter(Boolean).length} satır
                 </span>
                 <span>{transcript.length} karakter</span>
               </div>
               {errorMessage && (
-                <div className="mt-3 flex items-start gap-2 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 px-4 py-3 text-xs text-red-700 dark:text-red-300">
+                <div className="mt-3 flex items-start gap-2 rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-xs text-red-700">
                   <span className="flex-shrink-0 font-bold">❌</span>
                   <span>{errorMessage}</span>
                 </div>
@@ -878,15 +878,15 @@ function CallUploadContent() {
           )}
 
           {/* İsteğe bağlı müşteri / tekne bilgileri */}
-          <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-sm space-y-4">
+          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm space-y-4">
             <div>
-              <h2 className="text-base font-semibold text-gray-900 dark:text-slate-100 border-b border-gray-200 dark:border-slate-800 pb-2">
+              <h2 className="text-base font-semibold text-gray-900 border-b border-gray-200 pb-2">
                 Çağrı &amp; Müşteri Bilgileri{" "}
-                <span className="text-xs font-normal text-gray-500 dark:text-slate-400">
+                <span className="text-xs font-normal text-gray-500">
                   (İsteğe Bağlı)
                 </span>
               </h2>
-              <p className="text-xs text-sky-700 dark:text-sky-400 mt-2 flex items-start gap-1">
+              <p className="text-xs text-sky-700 mt-2 flex items-start gap-1">
                 <span className="flex-shrink-0 mt-0.5">💡</span>
                 <span>
                   Boş bırakılırsa konuşma içeriğinden yapay zeka tarafından
@@ -897,7 +897,7 @@ function CallUploadContent() {
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
-                <label htmlFor="upload-customer-name" className="block text-xs font-semibold uppercase text-gray-600 dark:text-slate-300 mb-1">
+                <label htmlFor="upload-customer-name" className="block text-xs font-semibold uppercase text-gray-600 mb-1">
                   Müşteri Adı Soyadı
                 </label>
                 <input
@@ -906,12 +906,12 @@ function CallUploadContent() {
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                   placeholder="Örn: Burak Çelik"
-                  className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:border-sky-500 dark:focus:border-sky-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                 />
               </div>
 
               <div>
-                <label htmlFor="upload-customer-phone" className="block text-xs font-semibold uppercase text-gray-600 dark:text-slate-300 mb-1">
+                <label htmlFor="upload-customer-phone" className="block text-xs font-semibold uppercase text-gray-600 mb-1">
                   Müşteri Telefonu
                 </label>
                 <input
@@ -920,12 +920,12 @@ function CallUploadContent() {
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
                   placeholder="Örn: +90 532 123 45 67"
-                  className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:border-sky-500 dark:focus:border-sky-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                 />
               </div>
 
               <div>
-                <label htmlFor="upload-boat-name" className="block text-xs font-semibold uppercase text-gray-600 dark:text-slate-300 mb-1">
+                <label htmlFor="upload-boat-name" className="block text-xs font-semibold uppercase text-gray-600 mb-1">
                   Tekne Adı
                 </label>
                 <input
@@ -934,12 +934,12 @@ function CallUploadContent() {
                   value={boatName}
                   onChange={(e) => setBoatName(e.target.value)}
                   placeholder="Örn: Rüzgar"
-                  className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:border-sky-500 dark:focus:border-sky-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                 />
               </div>
 
               <div>
-                <label htmlFor="upload-boat-model" className="block text-xs font-semibold uppercase text-gray-600 dark:text-slate-300 mb-1">
+                <label htmlFor="upload-boat-model" className="block text-xs font-semibold uppercase text-gray-600 mb-1">
                   Tekne Modeli
                 </label>
                 <input
@@ -948,19 +948,19 @@ function CallUploadContent() {
                   value={boatModel}
                   onChange={(e) => setBoatModel(e.target.value)}
                   placeholder="Örn: Jeanneau Merry Fisher 795"
-                  className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-slate-100 placeholder:text-gray-400 dark:placeholder:text-slate-500 focus:border-sky-500 dark:focus:border-sky-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                 />
               </div>
 
               <div className="sm:col-span-2">
-                <label htmlFor="upload-marina" className="block text-xs font-semibold uppercase text-gray-600 dark:text-slate-300 mb-1">
+                <label htmlFor="upload-marina" className="block text-xs font-semibold uppercase text-gray-600 mb-1">
                   Marina / Lokasyon
                 </label>
                 <select
                   id="upload-marina"
                   value={marina}
                   onChange={(e) => setMarina(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-sm text-gray-900 dark:text-slate-100 focus:border-sky-500 dark:focus:border-sky-400 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-sky-500 focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
                 >
                   <option value="">Seçiniz (isteğe bağlı)</option>
                   {MARINA_OPTIONS.map((m) => (
@@ -977,13 +977,13 @@ function CallUploadContent() {
           <div className="flex items-center justify-end gap-3 pt-2">
             <Link
               href="/admin/calls"
-              className="rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-5 py-2.5 text-sm font-semibold text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+              className="rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
             >
               İptal
             </Link>
             <button
               type="submit"
-              className="rounded-xl px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-all bg-sky-700 hover:bg-sky-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900"
+              className="rounded-xl px-6 py-2.5 text-sm font-bold text-white shadow-sm transition-all bg-sky-700 hover:bg-sky-800 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:ring-offset-2"
             >
               ⚡ Analizi Başlat
             </button>
