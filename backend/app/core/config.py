@@ -100,6 +100,9 @@ class Settings(BaseSettings):
     # Geçici hatada (zaman aşımı, 429, 5xx, bağlantı) bir kez denenecek yedek model. Boşsa
     # öteki katmanın modeli (fast <-> smart) yedek sayılır; o da yoksa yedek yoktur.
     llm_fallback_model: str | None = None
+    # Sınıflandırma agent'ı diğerlerinden önce ayrı aşamada mı çalışsın? Varsayılan hayır: dördü
+    # paralel çalışır, uçtan uca süre kısalır (#162).
+    analysis_classifier_first: bool = False
 
     # --- STT (ses → metin) --- (#15; sağlayıcılar `app/stt/`)
     # faster_whisper: yerel, CPU'da çalışır (`stt` ekstrası). openai_compatible: Whisper API'si

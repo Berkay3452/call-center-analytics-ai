@@ -9,7 +9,9 @@ Durumlar: beklemede → (yaziya_cevriliyor) → isleniyor → tamam | kismi | ba
 Her geçiş ayrı bir işlemde kaydedilir; arayüz `GET /calls/{id}/status` ile ilerlemeyi görür.
 """
 
+import time
 from collections.abc import Sequence
+from datetime import UTC, datetime
 from typing import Any, Literal, Protocol
 from uuid import UUID
 
@@ -181,6 +183,12 @@ async def _load_context(session: AsyncSession, call_id: UUID) -> AnalysisContext
     return AnalysisContext(call_id=call_id, segments=segments, call_info=info)
 
 
+def _seconds_since(moment: datetime | None) -> float | None:
+    if moment is None:
+        return None
+    return round((datetime.now(UTC) - moment).total_seconds(), 1)
+
+
 async def run_call_analysis(
     call_id: UUID,
     session_factory: async_sessionmaker[AsyncSession],
@@ -193,25 +201,31 @@ async def run_call_analysis(
 
     `orchestrator` verilmezse varsayılan akış kurulur (LLM ayarları ortamdan okunur).
     """
+    started = time.perf_counter()
     async with session_factory() as session, session.begin():
         ctx = await _load_context(session, call_id)
         if not ctx.segments:
             await set_state(session, call_id, "basarisiz", "Transkript boş.")
             return "basarisiz"
+        created_at = await session.scalar(select(Call.created_at).where(Call.id == call_id))
         await set_state(session, call_id, "isleniyor")
+    load_s = time.perf_counter() - started
 
     try:
         if orchestrator is None:
             from app.agents.registry import build_default_orchestrator
 
             orchestrator = build_default_orchestrator()
+        agents_started = time.perf_counter()
         outcome = await orchestrator.run(ctx)
+        agents_s = time.perf_counter() - agents_started
         analysis = outcome.to_analysis_result()
         error = (
             "; ".join(f"{agent}: {msg}" for agent, msg in analysis.errors.items())
             if analysis.status == "basarisiz"
             else None
         )
+        save_started = time.perf_counter()
         async with session_factory() as session, session.begin():
             await save_analysis(session, analysis)
             await set_state(session, call_id, analysis.status, error)
@@ -223,6 +237,18 @@ async def run_call_analysis(
                 except Exception:
                     log.exception("call.match_failed", call_id=str(call_id))
         log.info("call.analyzed", call_id=str(call_id), status=analysis.status)
+        # Aşama süreleri (#162): yüklemeden bu göreve kadar geçen süre (STT + kuyruk dahil),
+        # bağlam yükleme, agent'lar (hangisi ne kadar), kaydetme.
+        log.info(
+            "analysis.timing",
+            call_id=str(call_id),
+            since_created_s=_seconds_since(created_at),
+            load_s=round(load_s, 2),
+            agents_s=round(agents_s, 2),
+            agent_s={r.agent: round((r.latency_ms or 0) / 1000, 2) for r in outcome.runs},
+            save_s=round(time.perf_counter() - save_started, 2),
+            total_s=round(time.perf_counter() - started, 2),
+        )
         return analysis.status
     except Exception as exc:
         # Beklenmeyen hata (ör. yapılandırma, veritabanı): çağrı "isleniyor"da asılı kalmasın.
