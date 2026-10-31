@@ -116,7 +116,8 @@ class Settings(BaseSettings):
     whisper_model: str = "small"  # CPU için small/medium; GPU varsa large-v3
     whisper_compute_type: str = "int8"  # CPU: int8; GPU varsa float16
     whisper_cpu_threads: int = Field(default=0, ge=0)  # 0: otomatik
-    whisper_beam_size: int = Field(default=5, ge=1)
+    # 1: beam 5 ile aynı doğrulukta (WER farkı <0,5 puan) yaklaşık 1,3-2 kat hızlı (#163 ölçümü).
+    whisper_beam_size: int = Field(default=1, ge=1)
     # Ses etkinliği (VAD) eşiği: 0,5 dar bant telefon sesinde konuşmayı sessizlik sanıp atıyor
     # (#124 ölçümü: 97 kelimeden 28'i kalıyordu); 0,2 hem temiz hem telefon sesinde güvenli.
     whisper_vad_threshold: float = Field(default=0.2, gt=0, lt=1)

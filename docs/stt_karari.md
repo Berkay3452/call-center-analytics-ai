@@ -36,6 +36,25 @@ Bulut sağlayıcı (OpenAI uyumlu Whisper API, ör. Groq) ölçülmedi: API anah
 - **Yedek:** yerel model çalışmazsa `STT_PROVIDER=openai_compatible` (anahtar gerekir).
 - **Seed sesleri** artık varsayılan olarak stereo üretilir: `uv run --with piper-tts python -m scripts.generate_audio --force`.
 
+## Hız ayarı ölçümü (#163)
+
+**Tarih:** 2026-10-31 · **Ses:** `call_001-003` seed kayıtları (stereo, ~60-74 sn) · **CPU:** int8 · **Komut:** `python -m scripts.stt_benchmark --audio <klasör> --layout stereo_rep_left --model small --beam 1 --threads 0`
+
+| Yapılandırma | WER | RTF | 1 dk'lık çağrı STT |
+|---|---|---|---|
+| `small`, beam 5 | %20,2 | 0,26 | ~16 sn |
+| `small`, beam 2 | %20,4 | 0,19 | ~11 sn |
+| **`small`, beam 1** | **%20,7** | **0,18-0,21** | **~11-13 sn** |
+| `base`, beam 1 | %27,4 | 0,12 | ~7 sn |
+| `medium`, beam 1 | %15,6 | 0,56 | ~34 sn |
+
+- Beam 5 → 1: doğruluk farkı 0,5 puan altında (örnek küçük), süre yaklaşık %30 azalıyor. Varsayılan `WHISPER_BEAM_SIZE=1` yapıldı.
+- `base` 6-7 puan daha yanlış; kazanç (~4 sn) buna değmez. `medium` daha doğru ama 1 dk'lık çağrı ~34 sn: 30 sn hedefini aşıyor, doğruluk öncelikliyse seçilebilir.
+- Thread: otomatik (0) en iyisi; 4 thread belleği sıkıştırıp hata verdi, hız kazancı görülmedi.
+- **Model yeniden yüklenmiyor:** model süreç başına bir kez yüklenir (`_transcriber()` ve `_load_whisper` önbelleği, testi `test_whisper_model_is_loaded_once_per_process`). İlk görevdeki soğuk yükleme `small` için ~3 sn; darboğaz değil.
+- İki kanalı paralel çözmek CPU'da kazanç getirmez (CTranslate2 zaten tüm çekirdekleri kullanır, modelde kilit var). Bulut Whisper (Groq) anahtar olmadığı için ölçülmedi.
+- **Sonuç:** 1 dk'lık çağrıda STT ≈ 11-13 sn (hedef ≤ 30 sn tutuyor). Not: ölçüm sırasında bellek daraldığında RTF 1'e fırladı (aynı dosyada 0,2 → 1,19); STT sırasında RAM boş olmalı, Docker'da `stt` kuyruğu tek eşzamanlılıkla çalışmalı.
+
 ## Sınırlar
 
 - Sesler sentetik (tek Türkçe Piper sesi, perdesi değiştirilmiş). Gerçek santral kaydında aksan, üst üste konuşma ve yankı WER'i artırır.
