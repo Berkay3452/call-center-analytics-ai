@@ -100,3 +100,7 @@ Mevcut modelde iki yanlış: "Teknemi kışa hazırladınız mı, kışlama yap�
 python -m scripts.evaluate --split test --fast <model> --smart <model> --out sonuc.json
 python -m scripts.assistant_eval --fast <model> --smart <model>
 ```
+
+## Miço AI sohbet kalitesi ve güvenlik (#213)
+
+82 soruluk testle (selam, sohbet, genel bilgi, kayıt, sayısal, takip, küfür/argo, injection, anlamsız girdi, İngilizce) uygun cevap oranı **%85 → %95-98** (69/81 → 77-79/81). Küfür artık yankılanmıyor, hakaret ve anlamsız girdi saçma "kayıtlarınızda bulamadım" cevabı almıyor, "başka müşterilerin giderleri" kendi toplamını döndürmüyor, saat/tarih uydurulmuyor. Selam, saat, tarih, küfür politikası gibi 33 soru LLM'siz 0,7 sn'nin altında cevaplanıyor; LLM'li sorularda medyan ~2 sn. Ayrıntı, bulgular, politika ve soru bazlı tablo: [asistan_sohbet_olcumu.md](asistan_sohbet_olcumu.md). Yeniden üretmek için: `python -m scripts.assistant_chat_eval --out sonuc.json` (Postgres, embedding ve `.env` gerekir).

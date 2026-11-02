@@ -30,12 +30,14 @@ from uuid import UUID
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.agents.grounding import normalize
 from app.assistant.formatting import format_date, format_try
 from app.core.config import Settings
 from app.db.models.external import (
     Boat,
     BoatNote,
     Craftsman,
+    Customer,
     Expense,
     ServiceOrder,
     Subscription,
@@ -567,3 +569,21 @@ async def get_upcoming_maintenance(
         return await _get_upcoming_maintenance_db(session, owner_uuid, today)
     async with worker_session(Settings()) as sess:
         return await _get_upcoming_maintenance_db(sess, owner_uuid, today)
+
+
+async def other_customer_names(owner_id: str, *, session: AsyncSession | None = None) -> set[str]:
+    """Bu sahibin DIŞINDAki müşterilerin tam adları (normalize edilmiş).
+
+    Soruda başka bir müşterinin adı geçiyorsa asistan veri aramadan reddeder (#213). Yalnızca ad
+    karşılaştırması içindir; başka hiçbir alan döndürülmez.
+    """
+    owner_uuid = _parse_uuid(require_owner(owner_id))
+
+    async def _query(sess: AsyncSession) -> set[str]:
+        rows = await sess.scalars(select(Customer.full_name).where(Customer.id != owner_uuid))
+        return {n for name in rows if (n := normalize(name)) and " " in n}
+
+    if session is not None:
+        return await _query(session)
+    async with worker_session(Settings()) as sess:
+        return await _query(sess)

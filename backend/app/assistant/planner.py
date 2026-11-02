@@ -9,12 +9,15 @@
 Planlayıcı soruyu cevaplamaz ve `owner_id` ile ilgilenmez; yetki araçlarda ve aramada uygulanır.
 """
 
+from datetime import UTC, datetime, timedelta, timezone
 from typing import Literal
 
 from pydantic import BaseModel, Field, model_validator
 
 from app.agents.grounding import normalize
+from app.assistant.formatting import MONTHS
 from app.assistant.llm import AssistantLLM, load_prompt
+from app.assistant.safety import asks_other_party
 from app.schemas.assistant import AssistantTool, QuestionType
 
 Period = Literal["bu_ay", "tumu"]
@@ -59,6 +62,8 @@ def plan_by_rules(question: str) -> Plan | None:
     """Net sayısal sorular için plan; belirsizse None (LLM'e bırakılır)."""
     text = normalize(question)
     tokens = text.split()
+    if asks_other_party(question):
+        return Plan(question_type=QuestionType.KAPSAM_DISI)  # başkasının verisi: ret
     period: Period = "bu_ay" if "bu ay" in text else "tumu"
 
     if _has(tokens, "harca", "masraf", "gider", "odeme", "odedi", "fatura") and not mentions_topic(
@@ -96,7 +101,7 @@ async def plan_question(question: str, llm: AssistantLLM) -> Plan:
     )
 
 
-# --- Selam / teşekkür / "sen kimsin": LLM'siz hazır cevaplar (#161) -------------------------------
+# --- Selam, teşekkür, "sen kimsin", saat-tarih: LLM'siz hazır cevaplar (#161, #213) ------------
 
 CAPABILITIES_HINT = (
     "Tekneniz, bakım kayıtlarınız, giderleriniz veya aboneliğiniz hakkında soru sorabilirsiniz."
@@ -143,10 +148,17 @@ _IDENTITY_PHRASES = (
     "neler yapabilirsiniz", "ne ise yararsin", "nasil yardimci olabilirsin",
     "nasil yardimci olabilirsiniz", "sen nesin", "kim yapti seni",
 )  # fmt: skip
+_TIME_PHRASES = ("saat kac", "saati soyle", "saat ne", "su an saat", "saat kactir")
+_DATE_PHRASES = (
+    "gunlerden ne", "bugun gunlerden", "bugun ayin kaci", "bugunun tarihi", "bugun tarih",
+    "tarih ne", "tarih kac", "hangi gundeyiz", "bugun ne gunu", "bugun hangi gun",
+)  # fmt: skip
+_WEEKDAYS = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"]
+TURKEY_TZ = timezone(timedelta(hours=3), "TSİ")  # Türkiye 2016'dan beri sabit UTC+3
 _MAX_SMALLTALK_TOKENS = 7
 
 
-def smalltalk_reply(question: str) -> str | None:
+def smalltalk_reply(question: str, now: datetime | None = None) -> str | None:
     """Selam, teşekkür, veda ve "sen kimsin" gibi sohbet cümleleri için hazır cevap; yoksa None.
 
     Yalnızca kısa ve tamamı sohbet sözcüklerinden oluşan cümleleri yakalar ("Selam, bu ay ne
@@ -157,6 +169,15 @@ def smalltalk_reply(question: str) -> str | None:
     if not tokens or len(tokens) > _MAX_SMALLTALK_TOKENS:
         return None
     text = " ".join(tokens)
+    padded = f" {text} "
+    local = (now or datetime.now(UTC)).astimezone(TURKEY_TZ)
+    if any(f" {p} " in padded for p in _TIME_PHRASES):
+        return f"Şu an saat {local:%H:%M} (Türkiye saati)."
+    if any(f" {p} " in padded for p in _DATE_PHRASES):
+        return (
+            f"Bugün {local.day} {MONTHS[local.month - 1]} {local.year} "
+            f"{_WEEKDAYS[local.weekday()]}."
+        )
     if any(f" {p} " in f" {text} " for p in _IDENTITY_PHRASES):
         return IDENTITY_REPLY
     if any(f" {p} " in f" {text} " for p in _GOODBYE_PHRASES):
