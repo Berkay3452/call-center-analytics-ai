@@ -227,3 +227,21 @@ async def test_list_calls_and_crm_marina_filter(
         assert crm.total == 6
         assert len(crm.items) == 6
         assert all(r.location == "Tuzla Marina" for r in crm.items)
+
+
+async def test_list_and_detail_expose_stage_and_updated_at(
+    conn: AsyncConnection, factory: async_sessionmaker[AsyncSession]
+) -> None:
+    """Liste ve detay satırlarında aşama ve durum zamanı vardır (#218)."""
+    result = await conn.execute(
+        text("INSERT INTO calls (started_at, state) VALUES (now(), 'isleniyor') RETURNING id")
+    )
+    call_id = result.scalar_one()
+    async with factory() as session:
+        detail = await get_call_detail(session, call_id)
+        page = await list_calls(session, CallFilters(state="isleniyor", page_size=100))
+    assert detail.stage == "analiz"
+    assert detail.updated_at is not None
+    row = next(c for c in page.items if c.id == call_id)
+    assert (row.stage, row.state) == ("analiz", "isleniyor")
+    assert row.updated_at == detail.updated_at

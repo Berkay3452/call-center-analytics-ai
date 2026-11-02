@@ -31,6 +31,9 @@ export type CallState =
   | "kismi"
   | "basarisiz";
 
+/** Süren işlemin aşaması (#218): kuyrukta, ses yazıya çevriliyor, analiz ediliyor. */
+export type CallStage = "kuyruk" | "stt" | "analiz";
+
 export type Speaker = "customer" | "rep";
 
 export type SwitchboardOutcome =
@@ -149,6 +152,9 @@ export interface CallListItem {
   boat_name: string | null;
   marina: string | null;
   state: CallState;
+  stage?: CallStage | null;
+  /** Durumun son değiştiği an; sürüyorsa aşamanın başlama zamanı. */
+  updated_at?: IsoDateTime | null;
   call_type: CallType | null;
   request_category: RequestCategory | null;
   urgency: Urgency | null;
@@ -190,6 +196,9 @@ export interface CallDetail {
   marina: string | null;
   has_audio: boolean;
   state: CallState;
+  stage?: CallStage | null;
+  /** Durumun son değiştiği an; sürüyorsa aşamanın başlama zamanı. */
+  updated_at?: IsoDateTime | null;
   error: string | null;
   match_method: MatchMethod | null;
   transcript: TranscriptOut | null;
@@ -285,11 +294,16 @@ export interface CallAccepted {
   call_id: string;
   state: CallState;
   task_id: string | null;
+  /** true: çağrı zaten işleniyordu, yeni görev açılmadı; state mevcut durumdur (#218). */
+  already_running?: boolean;
+  stage?: CallStage | null;
+  updated_at?: IsoDateTime | null;
 }
 
 export interface CallStatus {
   call_id: string;
   state: CallState;
+  stage?: CallStage | null;
   analysis_version: number | null;
   error: string | null;
   updated_at: IsoDateTime;
