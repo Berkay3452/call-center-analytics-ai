@@ -63,7 +63,7 @@ docker compose -f infra/docker-compose.yml --profile app up -d
 
 Bu komut sırasıyla:
 1. PostgreSQL (pgvector) ve Redis altyapısını başlatır ve sağlık kontrollerini (`healthy`) bekler.
-2. `init` servisini çalıştırarak Alembic migration'larını uygular (`alembic upgrade head`) ve veritabanı boşsa 50 çağrılık sentetik seed verisini yükler.
+2. `init` servisini çalıştırarak Alembic migration'larını uygular (`alembic upgrade head`) ve veritabanı boşsa 100 çağrılık sentetik seed verisini yükler.
 3. FastAPI Backend API (`:8000`) ve Celery Worker'ı ayağa kaldırır; API'nin `/health/ready` uç noktasından sağlıklı olduğunu doğrular.
 4. Next.js Frontend (`:3000`) konteynerini başlatır.
 
@@ -122,8 +122,8 @@ uv run celery -A app.workers.celery_app beat -l info
 | `http://localhost:8000/health/ready` | Veritabanı ve Redis `ok`; değilse 503 |
 | `http://localhost:8000/docs` | Swagger arayüzü; `Authorize` ile `X-Service-Key` gir |
 | `GET /api/v1/me` (başlık: `X-Service-Key`) | 200 |
-| `GET /api/v1/calls?page_size=5` | 5 çağrı, `total` 50 |
-| `GET /api/v1/analytics/summary?date_from=2026-10-01&date_to=2026-10-31` | `total_calls` 50 |
+| `GET /api/v1/calls?page_size=5` | 5 çağrı, `total` 100 |
+| `GET /api/v1/analytics/summary?date_from=2026-10-01&date_to=2026-10-31` | `total_calls` 100 |
 | `http://localhost:3000` | `/admin/analytics` sayfasına yönlenir |
 
 Komut satırından deneme örneği:

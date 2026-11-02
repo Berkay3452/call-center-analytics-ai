@@ -1387,7 +1387,7 @@
   },
   {
     "call_id": "call_100",
-    "started_at": "2026-11-01T11:10:00+03:00",
+    "started_at": "2026-10-31T17:25:00+03:00",
     "answer_delay_s": 6,
     "duration_s": 145,
     "switchboard_outcome": "geri_aranacak",
