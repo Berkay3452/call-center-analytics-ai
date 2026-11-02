@@ -80,6 +80,8 @@ services:
       - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/call_center
       - REDIS_URL=redis://redis:6379/0
       - TEI_URL=http://embeddings:80
+      # Seed çağrılarının sesi: generate (varsayılan, ilk açılışta Piper ile üretir) | skip
+      - SEED_AUDIO=${SEED_AUDIO:-generate}
     volumes:
       - ../data:/data:ro
       - audio-storage:/app/storage/audio
@@ -94,7 +96,7 @@ services:
     profiles: ["app"]
     restart: unless-stopped
     ports:
-      - "8000:8000"
+      - "${API_PORT:-8000}:8000"
     depends_on:
       init:
         condition: service_completed_successfully
@@ -161,7 +163,7 @@ services:
     profiles: ["app"]
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "${WEB_PORT:-3000}:3000"
     depends_on:
       api:
         condition: service_healthy

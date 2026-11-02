@@ -212,11 +212,29 @@ jobs:
           assert result == 'pong', result
           print('Celery yanıtı:', result)
           "
+      - name: Yükleme → analiz akışı (sahte LLM ile, API + Celery analiz işçisi)
+        # Gerçek LLM kotasına dokunmadan metinle çağrı yükler ve analizin `tamam` bitmesini bekler.
+        # Ses/STT adımı model indirmeyi gerektirdiği için burada atlanır (konteyner duman testinde var).
+        env:
+          LLM_PROVIDER: openai_compatible
+          LLM_BASE_URL: http://127.0.0.1:9101/v1
+          LLM_API_KEY: sahte
+          LLM_FAST_MODEL: sahte
+          LLM_SMART_MODEL: sahte
+          LLM_FALLBACK_MODEL: ""
+          LLM_REQUESTS_PER_MINUTE: "0"
+        run: |
+          uv run python -m scripts.fake_llm --host 127.0.0.1 --port 9101 > fake_llm.log 2>&1 &
+          uv run celery -A app.workers.celery_app worker -Q analysis --concurrency 1 -n analysis@%h -l info > celery_analysis.log 2>&1 &
+          sleep 8
+          uv run python -m scripts.duman_testi --base-url http://localhost:8000 --no-seed --skip-audio-upload --timeout 90
       - name: Hata durumunda logları göster
         if: failure()
         run: |
           echo "===== uvicorn.log ====="; cat uvicorn.log || true
           echo "===== celery.log =====";  cat celery.log  || true
+          echo "===== celery_analysis.log ====="; cat celery_analysis.log || true
+          echo "===== fake_llm.log ====="; cat fake_llm.log || true
 
   dependencies:
     name: Bağımlılık sürümleri

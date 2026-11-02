@@ -19,9 +19,19 @@ from scripts.seed.audio import build_wav, write_seed_audio
 from scripts.seed.generator import DATA_DIR, generate_dataset, load_calls_bundle
 from scripts.seed.loader import _asyncpg_dsn, seed_database
 
-pytestmark = pytest.mark.skipif(
-    os.environ.get("RUN_DB_TESTS") != "1", reason="RUN_DB_TESTS=1 değil (gerçek veritabanı gerekir)"
-)
+# Bu dosya `seed_database(reset=True)` ile TÜM tabloları TRUNCATE eder. Yerelde yanlışlıkla ortak
+# geliştirme veritabanını silmesin diye yalnızca CI'da (GitHub `CI=true` verir) ya da bilinçli
+# `ALLOW_DB_RESET=1` ile (tek kullanımlık veritabanında) çalışır (#157).
+pytestmark = [
+    pytest.mark.skipif(
+        os.environ.get("RUN_DB_TESTS") != "1",
+        reason="RUN_DB_TESTS=1 değil (gerçek veritabanı gerekir)",
+    ),
+    pytest.mark.skipif(
+        os.environ.get("CI") != "true" and os.environ.get("ALLOW_DB_RESET") != "1",
+        reason="Veritabanını sıfırlar: yalnızca CI veya ALLOW_DB_RESET=1 (tek kullanımlık DB)",
+    ),
+]
 
 EXPECTED_AT_LEAST = {
     "customers": 15,

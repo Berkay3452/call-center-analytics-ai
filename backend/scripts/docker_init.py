@@ -4,12 +4,18 @@ Sırayla:
 1. Veritabanının hazır olduğunu doğrular.
 2. Alembic migration'larını uygular (`alembic upgrade head`).
 3. Veritabanı boşsa (calls tablosunda kayıt yoksa) sentetik veriyi seed'ler.
-4. Varsa ve embedding servisi erişilebilirse RAG parçalarını indeksler.
+4. Seed çağrılarının sesini üretir (Piper, `SEED_AUDIO=generate`) ve çağrılara bağlar (#157).
+5. Varsa ve embedding servisi erişilebilirse RAG parçalarını indeksler.
+
+`SEED_AUDIO`: `generate` (varsayılan) ses dosyaları yoksa üretir; `skip` hiç dokunmaz (sessiz
+çağrılarla çalışır). Üretim ilk açılışta birkaç dakika sürer; sesler `audio-storage` volume'unda
+kalır, sonraki açılışlarda atlanır. Üretim başarısız olursa init durmaz (uyarı verir).
 """
 
 from __future__ import annotations
 
 import asyncio
+import os
 import subprocess
 import sys
 import time
@@ -84,6 +90,50 @@ async def wait_for_db(dsn: str, max_wait_seconds: float = 60.0) -> None:
     sys.exit(1)
 
 
+PIPER_TARGET = Path("/tmp/piper-site")
+
+
+def count_seed_audio(audio_dir: Path) -> int:
+    seed_dir = audio_dir / "seed"
+    return len(list(seed_dir.glob("call_*.wav"))) if seed_dir.is_dir() else 0
+
+
+def ensure_seed_audio(data_dir: Path, audio_dir: Path) -> int:
+    """Seed çağrılarının sesi yoksa Piper ile üretir; kaç ses dosyası olduğunu döner (#157).
+
+    Piper projenin bağımlılığı değildir (bkz. `scripts/generate_audio.py`): imajdaki sistem
+    Python'unun pip'iyle geçici klasöre kurulur. Hata verirse init durmaz.
+    """
+    expected = len(list((data_dir / "calls").glob("call_*.json")))
+    have = count_seed_audio(audio_dir)
+    mode = os.environ.get("SEED_AUDIO", "generate").lower()
+    if mode == "skip" or have >= expected or expected == 0:
+        return have
+    print(f"▶ [init] Seed sesleri üretiliyor ({have}/{expected} var, Piper)...", flush=True)
+    base_python = Path(sys.base_prefix) / "bin" / "python"
+    try:
+        subprocess.run(
+            [str(base_python), "-m", "pip", "install", "-q", "--target", str(PIPER_TARGET),
+             "piper-tts"],
+            check=True,
+            timeout=600,
+        )  # fmt: skip
+        env = {**os.environ, "PYTHONPATH": f"{os.environ.get('PYTHONPATH', '')}:{PIPER_TARGET}"}
+        voice_dir = Path(os.environ.get("TTS_VOICE_DIR", "/app/storage/models/tts"))
+        subprocess.run(
+            [sys.executable, "-m", "scripts.generate_audio", "--audio-dir", str(audio_dir),
+             "--voice-dir", str(voice_dir)],
+            check=True,
+            env=env,
+            timeout=1800,
+        )  # fmt: skip
+    except Exception as exc:
+        print(f"⚠ [init] Seed sesleri üretilemedi, sessiz devam ediliyor ({exc}).", flush=True)
+    have = count_seed_audio(audio_dir)
+    print(f"ℹ [init] Seed ses dosyası sayısı: {have}/{expected}.", flush=True)
+    return have
+
+
 async def ensure_seed_and_rag(data_dir: Path) -> None:
     """Veritabanı boşsa seed verisini yükler ve RAG parçalarını indeksler."""
     settings = get_settings()
@@ -97,9 +147,12 @@ async def ensure_seed_and_rag(data_dir: Path) -> None:
     finally:
         await conn.close()
 
+    audio_path = storage_dir(settings)
+    # Sesler seed'den ÖNCE hazırlanır ki seed çağrılara bağlayabilsin.
+    audio_files = await asyncio.to_thread(ensure_seed_audio, data_dir, audio_path)
+
     if not call_count:
         print("▶ [init] Veritabanı boş, seed verisi yükleniyor...", flush=True)
-        audio_path = storage_dir(settings)
         counts = await seed_database(
             settings.database_url,
             data_dir=data_dir,
@@ -115,6 +168,18 @@ async def ensure_seed_and_rag(data_dir: Path) -> None:
         )
     else:
         print(f"ℹ [init] Veritabanında zaten {call_count} çağrı mevcut; seed atlandı.", flush=True)
+        # Ses sonradan üretildiyse seed çağrılarına bağla (seed idempotent: ON CONFLICT günceller).
+        conn = await asyncpg.connect(dsn, statement_cache_size=0)
+        try:
+            linked = await conn.fetchval("SELECT count(*) FROM calls WHERE audio_path IS NOT NULL;")
+        finally:
+            await conn.close()
+        if audio_files and (linked or 0) < audio_files:
+            print("▶ [init] Seed sesleri çağrılara bağlanıyor...", flush=True)
+            await seed_database(
+                settings.database_url, data_dir=data_dir, seed=SEED, reset=False,
+                audio_dir=audio_path,
+            )  # fmt: skip
 
     # RAG indeksi: embedding servisi ayaktaysa veya hash modundaysa
     try:
