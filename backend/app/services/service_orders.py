@@ -9,6 +9,7 @@
 from datetime import UTC, datetime, time
 from typing import Any
 from uuid import UUID
+from zoneinfo import ZoneInfo
 
 from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -29,6 +30,8 @@ from app.schemas.api import (
 )
 from app.schemas.common import Page
 
+ISTANBUL_TZ = ZoneInfo("Europe/Istanbul")
+
 ALLOWED_STATUS_TRANSITIONS: dict[ServiceOrderStatus, set[ServiceOrderStatus]] = {
     ServiceOrderStatus.YENI_ATANDI: {ServiceOrderStatus.KESIFTE},
     ServiceOrderStatus.KESIFTE: {ServiceOrderStatus.ONAYLANDI},
@@ -45,11 +48,11 @@ def _build_filter_conditions(filters: ServiceOrderFilters) -> list[Any]:
         conditions.append(ServiceOrder.status == filters.status.value)
 
     if filters.date_from:
-        start_dt = datetime.combine(filters.date_from, time.min, tzinfo=UTC)
+        start_dt = datetime.combine(filters.date_from, time.min, tzinfo=ISTANBUL_TZ)
         conditions.append(ServiceOrder.created_at >= start_dt)
 
     if filters.date_to:
-        end_dt = datetime.combine(filters.date_to, time.max, tzinfo=UTC)
+        end_dt = datetime.combine(filters.date_to, time.max, tzinfo=ISTANBUL_TZ)
         conditions.append(ServiceOrder.created_at <= end_dt)
 
     if filters.marina and filters.marina.strip():
