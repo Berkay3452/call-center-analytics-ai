@@ -10,9 +10,17 @@ from datetime import date
 import structlog
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.agents.grounding import normalize
+from app.assistant import safety, tools
 from app.assistant.answer import general_answer, history_answer, numeric_answer
 from app.assistant.llm import AssistantLLM
-from app.assistant.planner import EXAMPLE_QUESTIONS, plan_question, smalltalk_reply
+from app.assistant.planner import (
+    EXAMPLE_QUESTIONS,
+    mentions_topic,
+    plan_by_rules,
+    plan_question,
+    smalltalk_reply,
+)
 from app.assistant.retrieval import search_boat_notes
 from app.assistant.rewrite import standalone_question
 from app.schemas.assistant import AssistantAnswer, AssistantRequest, QuestionType
@@ -41,12 +49,37 @@ async def answer_question(
     llm = llm or AssistantLLM()
     today = today or date.today()
 
-    # Selam / teşekkür / "sen kimsin": LLM ve arama olmadan anında (#161).
+    # Selam / teşekkür / "sen kimsin" / saat-tarih: LLM ve arama olmadan anında (#161, #213).
     if (reply := smalltalk_reply(request.question)) is not None:
         log.info("assistant.smalltalk")
         return AssistantAnswer(answer=reply, question_type=QuestionType.GENEL_SOHBET)
 
-    question = await standalone_question(request.question, request.history, llm)
+    # Güvenlik katmanı (#213): küfür/cinsel/tehdit/kendine zarar ve harfsiz mesajlar LLM'e gitmez.
+    question_text = request.question
+    if (verdict := safety.moderate(question_text)) is not None:
+        log.info("assistant.moderated", violation=verdict.violation)
+        has_question = bool(verdict.cleaned) and verdict.violation == safety.Violation.ABUSE
+        if has_question and (
+            plan_by_rules(verdict.cleaned) is not None
+            or mentions_topic(normalize(verdict.cleaned).split())
+        ):
+            question_text = verdict.cleaned  # küfür ayıklanır, gerçek soru cevaplanır
+        else:
+            reply = safety.moderation_reply(
+                verdict.violation, repeat=safety.is_repeat_offense(request.history)
+            )
+            return AssistantAnswer(answer=reply, question_type=QuestionType.GENEL_SOHBET)
+    elif safety.has_no_words(question_text):
+        return AssistantAnswer(
+            answer=safety.NOT_UNDERSTOOD_REPLY, question_type=QuestionType.GENEL_SOHBET
+        )
+    if safety.mentions_other_customer(
+        question_text, await tools.other_customer_names(request.owner_id, session=session)
+    ):
+        log.info("assistant.other_party_name")
+        return AssistantAnswer(answer=REFUSAL_MESSAGE, question_type=QuestionType.KAPSAM_DISI)
+
+    question = await standalone_question(question_text, request.history, llm)
     plan = await plan_question(question, llm)
     log.info("assistant.planned", question_type=plan.question_type, tool=plan.tool)
 

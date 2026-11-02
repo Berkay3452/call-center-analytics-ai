@@ -318,10 +318,16 @@ async def get_upcoming_maintenance(
     return []
 
 
+async def other_customer_names(owner_id: str, *, session: object | None = None) -> set[str]:
+    """Sahte veride başka müşteri adı yoktur; ad koruması ayrıca `test_assistant_safety`te."""
+    return set()
+
+
 def install(monkeypatch: pytest.MonkeyPatch) -> None:
     """Araçların ve aramanın yerine sahte sürümlerini koyar (yalnızca bu test oturumunda)."""
     monkeypatch.setattr(tools, "get_expense_total", get_expense_total)
     monkeypatch.setattr(tools, "get_remaining_package", get_remaining_package)
     monkeypatch.setattr(tools, "get_last_maintenance", get_last_maintenance)
     monkeypatch.setattr(tools, "get_upcoming_maintenance", get_upcoming_maintenance)
+    monkeypatch.setattr(tools, "other_customer_names", other_customer_names)
     monkeypatch.setattr(assistant_module, "search_boat_notes", search_boat_notes)

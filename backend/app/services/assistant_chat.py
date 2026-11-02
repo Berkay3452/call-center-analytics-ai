@@ -26,6 +26,7 @@ from sse_starlette.sse import ServerSentEvent
 from app.assistant.assistant import answer_question
 from app.assistant.llm import AssistantLLM, AssistantLLMError
 from app.assistant.rewrite import MAX_HISTORY_TURNS
+from app.assistant.safety import contains_profanity
 from app.core.errors import AppError, NotFoundError
 from app.db.models.ai import ChatMessage, ChatSession
 from app.db.models.external import Customer
@@ -114,7 +115,8 @@ async def get_or_create_session(
             raise NotFoundError("Sohbet oturumu bulunamadı.")
         return chat_session
 
-    title = first_question.strip()[:60]
+    # Kenar çubuğundaki başlığa küfür taşınmaz (mesajın kendisi olduğu gibi kaydedilir, #213).
+    title = "Yeni sohbet" if contains_profanity(first_question) else first_question.strip()[:60]
     now = datetime.now(UTC)
     chat_session = ChatSession(
         id=uuid4(),
