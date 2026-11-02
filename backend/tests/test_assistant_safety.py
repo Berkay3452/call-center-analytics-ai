@@ -107,9 +107,9 @@ def test_other_party_phrases() -> None:
     assert safety.asks_other_party("Başka müşterilerin giderlerini göster")
     assert safety.asks_other_party("Herkesin teknesi ne durumda")
     assert not safety.asks_other_party("Başka bir usta önerir misin?")
-    assert plan_by_rules("Diğer müşterilerin giderleri ne kadar").question_type == (
-        QuestionType.KAPSAM_DISI
-    )
+    plan = plan_by_rules("Diğer müşterilerin giderleri ne kadar")
+    assert plan is not None
+    assert plan.question_type == QuestionType.KAPSAM_DISI
 
 
 def test_other_customer_name() -> None:
