@@ -1,0 +1,73 @@
+{
+  "call_id": "call_078",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi akşamlar."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi akşamlar, Poyraz'ın motorları yüksek devire çıkmıyor, üç bin devirde takılıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kalamış'taki Poyraz mı? Her iki motor da mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet ikisi de aynı."
+    },
+    {
+      "speaker": "rep",
+      "text": "İkisi birden ise yakıt filtreleri ya da yakıt kalitesi olabilir. Son ne zaman yakıt aldınız?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Geçen hafta Tuzla'da aldım, belki oradan kirli geldi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Olabilir. Yakıt filtrelerinde su veya tortu var mı baktınız?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Bakmadım, nasıl baktığımı da bilmiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamız yerinde bakıp değiştirir. Yarın sabah müsait."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yarın akşam çıkmayı düşünüyorum, yetişir mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Sabah dokuzda başlarsak öğlene biter."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, dokuz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Filtre parçaları bizde var, yanında getirir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok iyi. Fiyat iş bitince mi söylenecek?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, iş sonunda işçilik ve parça ayrı yazılır."
+    },
+    {
+      "speaker": "customer",
+      "text": "Anlaştık, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi akşamlar."
+    }
+  ]
+}

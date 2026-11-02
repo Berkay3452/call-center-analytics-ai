@@ -1,0 +1,73 @@
+{
+  "call_id": "call_059",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, bir şey soracağım. Yıldız'ın paketinde servis garantisi var mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yaptığımız her işte altı ay işçilik garantisi var. Parça garantisi üreticiye bağlı."
+    },
+    {
+      "speaker": "customer",
+      "text": "Paketim kapsamında yapılan işler de aynı mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, aynı garanti geçerli."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki paketteki bakım hakkımı yıl bitmeden kullanmazsam yanar mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Paket süresi dolunca kalan hak yanıyor, ama bitişe yakın bir uyarı mesajı gönderiyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Süre ne zaman doluyor, bakabilir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Bakıyorum, Mart sonuna kadar süreniz var, bir hakkınız kalmış."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, kışlamadan önce kullanırım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Uygun olur. Randevu için aramanız yeterli."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bir de Göcek'te hafta sonu ustanız oluyor mu?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Cumartesi nöbetçi usta var, pazar acil hattı açık."
+    },
+    {
+      "speaker": "customer",
+      "text": "Güzel, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Görüşürüz."
+    }
+  ]
+}

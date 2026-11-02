@@ -1,0 +1,73 @@
+{
+  "call_id": "call_069",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Çapariz için tente ve güverte minderi teklifini almıştım, sizi arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, geçen hafta gönderdik. Karar verdiniz mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Başka bir yerden de teklif aldım, onlar daha uygun."
+    },
+    {
+      "speaker": "rep",
+      "text": "Biz tentede kullandığımız kumaşı ve dikişi belirtmiştik, onlarınki aynı mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Kumaş aynı marka, dikiş garantisi de var diyorlar."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum. Bizim teklifimizde aradaki fark ne kadar?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yaklaşık yüzde on beş fark var."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yüzde on beşe kadar inebilirim, ama montajı Bodrum'da yapmak koşuluyla."
+    },
+    {
+      "speaker": "customer",
+      "text": "Onlar da montajı Bodrum'da yapıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Peki, o zaman rekabet edemeyiz diyelim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, onlarla ilerleyeceğim. Teşekkür ederim ilginiz için."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ne demek, bir işiniz olursa kapımız açık."
+    },
+    {
+      "speaker": "customer",
+      "text": "Sağ olun, iyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "Kolay gelsin."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teşekkürler."
+    }
+  ]
+}

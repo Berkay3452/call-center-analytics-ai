@@ -1,0 +1,18 @@
+{
+  "call_id": "call_099",
+  "call_type": "teklif",
+  "crm": {
+    "request_category": "mekanik_hidrolik",
+    "location": "Çeşme Marina",
+    "problem": null,
+    "service_mode": "atolyede",
+    "urgency": "dusuk",
+    "potential_job": "Sterndrive körük ve yağ değişimi",
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "rakip"
+  },
+  "notes": "Başka bir firmayla anlaştığını söyledi: kaybedildi, neden rakip. Yapılacak bir şey kalmadı: aksiyon_yok."
+}

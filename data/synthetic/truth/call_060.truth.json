@@ -1,0 +1,18 @@
+{
+  "call_id": "call_060",
+  "call_type": "acil",
+  "crm": {
+    "request_category": "makine",
+    "location": "Kalamış Marina",
+    "problem": "Yakıt kaçağı, motor bölmesinde benzin kokusu",
+    "service_mode": "yerinde_servis",
+    "urgency": "acil",
+    "potential_job": null,
+    "next_action": "usta_ata"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Yakıt kaçağı ve koku: acil. Usta hemen yönlendirildi: usta_ata, satisa_donustu."
+}

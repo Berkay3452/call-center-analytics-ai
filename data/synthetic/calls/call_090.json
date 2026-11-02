@@ -1,0 +1,73 @@
+{
+  "call_id": "call_090",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi akşamlar."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi akşamlar, geçen ay size ilk kez ulaşmıştım. Teknenin sol motoru yağ eksiltiyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hoş geldiniz tekrar. Ataköy'deki Merry Fisher mı? Ne kadar eksiltiyor?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Bir haftada yarım litre kadar."
+    },
+    {
+      "speaker": "rep",
+      "text": "Dışarıda sızıntı var mı, yağ lekesi görüyor musunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Pek görmüyorum, motor bölmesi kuru gibi."
+    },
+    {
+      "speaker": "rep",
+      "text": "O zaman içeriden yakıyor olabilir, segman veya valf lastiği. Ustamızın bakması gerekir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Şu an teknede değilim, hafta sonu gideceğim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hafta sonu için randevu açalım mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Eşimin takvimine bakmam lazım, belki tekne cumartesi başka yerde olur."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum. Siz günü netleştirince bize haber verebilir misiniz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Siz beni yarın öğlen arar mısınız, o zamana kadar kesinleşir."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yarın öğlen on ikide arıyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yağ seviyesini her çıkıştan önce kontrol edeyim değil mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, çubuğa her seferinde bakın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi akşamlar."
+    }
+  ]
+}

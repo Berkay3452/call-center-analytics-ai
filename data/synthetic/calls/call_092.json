@@ -1,0 +1,73 @@
+{
+  "call_id": "call_092",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, geçen ay bir kez konuşmuştuk. Maviş'in motorunda sızıntı var, ilk aramamda size bahsetmiştim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hatırlıyorum, Pendik'teki Antares. Sızıntı nereden?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Soğutma suyu hortumundan ya da pompadan, tam göremiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Motor çalışırken mi damlıyor?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, durunca kesiliyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Pompa contası ya da hortum kelepçesi olabilir. Ustamız yerinde bakar."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bu hafta içinde müsait misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Cuma sabah dokuzda Pendik'e gelebilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Cuma olur, ben tekneye geleceğim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hortum ve kelepçe yedeği yanında olur."
+    },
+    {
+      "speaker": "customer",
+      "text": "Fiyat nasıl yazılıyor?"
+    },
+    {
+      "speaker": "rep",
+      "text": "İşçilik ve parça ayrı, iş sonunda faturalanır."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, anlaştık."
+    },
+    {
+      "speaker": "rep",
+      "text": "Randevuyu cuma dokuza yazdım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler."
+    }
+  ]
+}

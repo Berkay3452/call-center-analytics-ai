@@ -1,0 +1,77 @@
+{
+  "call_id": "call_096",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, tekne aldım, bakım paketlerinizi öğrenmek istiyorum. İlk kez arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hoş geldiniz. Tekneniz nerede, ne tip?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Kuşadası Setur Marina'da, Jeanneau Cap Camarat, dış motorlu."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kuşadası'na hizmet veriyoruz. Dış motorlar için de bakım paketimiz var."
+    },
+    {
+      "speaker": "customer",
+      "text": "Paketlerde neler var, kaç çeşit?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Üç paket: Standart, Altın ve Platin. Hak sayısı ve kapsam değişiyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Farkları anlatır mısınız?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Standart yılda iki bakım hakkı, Altın üç ve kış bakımı, Platin sınırsız arıza çağrısı ve öncelik veriyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Fiyatlar nedir?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Fiyat listesi motor tipine göre değişiyor, sizin için yazıp mesajla iletelim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Mesajda paketlerin kapsamı da olur mu?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, broşür ve fiyat listesi birlikte gelecek."
+    },
+    {
+      "speaker": "customer",
+      "text": "Güzel, bugün gönderir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Bugün akşama kadar gönderiyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler, bakıp dönerim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler."
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "call_id": "call_087",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "makine",
+    "location": "Çeşme Marina",
+    "problem": "Motor rölantide tekliyor, güç kaybı",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": null,
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "guven"
+  },
+  "notes": "Müşteri önceki işin kalitesine ve garantiye güvenmiyor, vazgeçti: kaybedildi, neden guven. Yapılacak bir şey yok."
+}

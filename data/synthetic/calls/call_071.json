@@ -1,0 +1,73 @@
+{
+  "call_id": "call_071",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, günaydın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Günaydın, Yakamoz'un sağ motoru tekliyor ve siyah duman atıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tuzla'daki trawler mı? Sorun düşük devirde mi yüksekte mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yük binince, devir yükselirken tekliyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yakıt filtresi ne zaman değişti?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Bu sezon hiç değişmedi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yakıt filtresi ve enjektör olabilir. Yakıt deposunda su var mı kontrol ettiniz mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Hayır bakmadım, nasıl bakılır?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Filtre dibindeki ayrıştırıcıdan kontrol edilir, ustamız yerinde bakar."
+    },
+    {
+      "speaker": "customer",
+      "text": "Cumartesi uzun bir gezi planım var, o güne yetişir mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yarın öğleden önce Tuzla'ya usta gönderebiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yarın sabah on olur mu?"
+    },
+    {
+      "speaker": "rep",
+      "text": "On için yazdım. Yakıt filtresi parçalarını yanında getirir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok iyi, tek motorla gitmek istemiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyoruz. Yarın görüşürüz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler."
+    }
+  ]
+}

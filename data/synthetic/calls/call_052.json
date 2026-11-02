@@ -1,0 +1,73 @@
+{
+  "call_id": "call_052",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, geçen hafta Pusula'nın motor bakımını bırakmıştım, ne durumda?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Bakıyorum, Ataköy'deki Pusula değil mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet o."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamız yağ ve filtre değişimini bitirmiş, impeller değişimi sürüyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ne zaman biter?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yarın öğleye kadar bitmesini bekliyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ben hafta sonu tekneye gelmeyi düşünüyordum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hafta sonundan önce hazır olur. Bitince size mesaj atacağız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Mesajı telefonuma mı atacaksınız?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, kayıtlı numaranıza kısa mesajla bildireceğiz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam. Bir de fatura kime kesilecek, şirkete mi bana mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Kayıtta şahsınız görünüyor, değiştirmek isterseniz iş bitince söyleyin."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yok, şahsıma kalsın."
+    },
+    {
+      "speaker": "rep",
+      "text": "Peki, başka bir şey var mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Hayır, mesajı bekliyorum. Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz, iyi günler."
+    }
+  ]
+}

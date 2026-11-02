@@ -1,0 +1,77 @@
+{
+  "call_id": "call_056",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler. Sizi ilk kez arıyorum, tavsiye üzerine. Kış için motor bakımı yaptırmak istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hoş geldiniz. Tekneniz nerede, ne tip?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Çeşme Marina'dayız. Bavaria kırk, tek motorlu, Volvo Penta."
+    },
+    {
+      "speaker": "rep",
+      "text": "Çeşme'ye de hizmet veriyoruz. Kışlama paketimiz var: yağ, filtreler, antifriz basımı ve genel kontrol."
+    },
+    {
+      "speaker": "customer",
+      "text": "Fiyatı ne kadar?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Tek motor için paket fiyatı değişiyor, kayıt açıp net fiyatı söyleyeyim. Önce motor saatini söyler misiniz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Bilmiyorum, tekneyi yeni aldım. Sayaçta yirmi küsur saat vardı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yeni ve az saatli. O zaman paket uygundur."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ortaklarım var, onlara da sormam lazım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum. Siz konuşun, ne zaman tekrar arayalım?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Haftaya salı gibi olur mu?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Salı öğleden sonra sizi arayalım. Adınızı ve numaranızı alabilir miyim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "[İSİM], numaram [TELEFON]."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teşekkürler, kaydettim. Salı günü arıyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, bekliyorum. İyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "Görüşmek üzere."
+    }
+  ]
+}

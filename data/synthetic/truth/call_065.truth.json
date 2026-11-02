@@ -1,0 +1,18 @@
+{
+  "call_id": "call_065",
+  "call_type": "bilgi",
+  "crm": {
+    "request_category": null,
+    "location": "Göcek D-Marin",
+    "problem": null,
+    "service_mode": null,
+    "urgency": "dusuk",
+    "potential_job": null,
+    "next_action": "bilgi_ver"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Genel bilgi: kışlama takvimi henüz belli değil, çıkınca firma mesaj atacak: bilgi_ver. İş konuşulmuyor: kategori null."
+}

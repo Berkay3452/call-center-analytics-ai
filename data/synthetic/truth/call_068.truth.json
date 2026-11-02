@@ -1,0 +1,18 @@
+{
+  "call_id": "call_068",
+  "call_type": "acil",
+  "crm": {
+    "request_category": "elektrik_elektronik",
+    "location": "Çeşme Marina",
+    "problem": "Akü bölmesinden duman ve yanık kokusu geliyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "acil",
+    "potential_job": null,
+    "next_action": "usta_ata"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Duman ve yanık kokusu: acil. Usta hemen yönlendirildi: usta_ata."
+}

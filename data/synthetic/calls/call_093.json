@@ -1,0 +1,73 @@
+{
+  "call_id": "call_093",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Marmaris'te servisiniz var mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Marmaris Netsel Marina'da çalışıyoruz, haftada iki gün ustamız oluyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Hangi günler?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Salı ve perşembe. Acil durumda diğer günler de yönlendirme yapıyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Güzel. Teknem Netsel'de duruyor, kışın da bakım yapıyor musunuz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, kışlama ve kış bakımı hizmetlerimiz var."
+    },
+    {
+      "speaker": "customer",
+      "text": "Randevu almak için ne yapmam gerekiyor?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Arayıp tekne bilgisini söylemeniz yeterli. Kayıt açıp sizi randevuya yazarız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Şimdi değil, önce bilgi alıyordum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii, ihtiyaç olunca arayın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "Hoşça kalın."
+    },
+    {
+      "speaker": "rep",
+      "text": "Görüşürüz."
+    }
+  ]
+}

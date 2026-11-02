@@ -1,0 +1,73 @@
+{
+  "call_id": "call_073",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Alo, Poseidon'un pervanesine ağ dolandı, motor çalışmıyor, rüzgar da bizi kayalıklara doğru itiyor!"
+    },
+    {
+      "speaker": "rep",
+      "text": "Neredesiniz tam olarak?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Bodrum açıklarında, Gümbet tarafında, kayalara yaklaşık yarım mil var."
+    },
+    {
+      "speaker": "rep",
+      "text": "Çapa atabilir misiniz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Çapayı attım, şimdi bıraktım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Çapa tuttu mu, kayma devam ediyor mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Biraz süründü, sanırım tuttu."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi. Yelken açabilir misiniz, tekne yelkenli değil mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yelkenli ama rüzgar çok sert, açmak istemiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlaşıldı, açmayın. Sahil güvenliği aradınız mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Henüz aramadım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Önce onu arayın, ben de dalgıç ustamızı Bodrum'dan yönlendiriyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, hemen arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Dalgıcımız bir saat içinde konumunuza ulaşır, sizi de arayacak."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Dikkatli olun, geçmiş olsun."
+    }
+  ]
+}

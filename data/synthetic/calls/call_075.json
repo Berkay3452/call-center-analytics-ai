@@ -1,0 +1,73 @@
+{
+  "call_id": "call_075",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Martı'da güneş panelleri artık aküyü şarj etmiyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yalıkavak'taki Lagoon mu? Regülatör ekranında bir hata var mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Ekran yanıyor ama şarj akımı sıfır gösteriyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Güneşli havada bile mi sıfır?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, öğlen bile sıfır."
+    },
+    {
+      "speaker": "rep",
+      "text": "Panel kablolarında ya da regülatörün kendisinde sorun olabilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bir de dün fırtına vardı, belki bir şey bozulmuştur."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yıldırım düşmedi ama sigorta atmış olabilir, ustamız bakar."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ne zaman gelebilir?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Çarşamba öğleden önce Yalıkavak'ta olur."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çarşamba olur. Ben teknede olmasam da anahtar marinada."
+    },
+    {
+      "speaker": "rep",
+      "text": "Marina ofisine haber veririz, anahtarı alırız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, harika."
+    },
+    {
+      "speaker": "rep",
+      "text": "Randevuyu çarşamba sabaha yazdım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler."
+    }
+  ]
+}

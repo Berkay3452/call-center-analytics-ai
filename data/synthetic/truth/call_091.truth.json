@@ -1,0 +1,18 @@
+{
+  "call_id": "call_091",
+  "call_type": "teklif",
+  "crm": {
+    "request_category": "diger",
+    "location": "Kalamış Marina",
+    "problem": null,
+    "service_mode": null,
+    "urgency": "dusuk",
+    "potential_job": "Teknenin tamamı için ekspertiz ve onarım listesi",
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "diger"
+  },
+  "notes": "Müşteri nedenini söylemeden vazgeçti: kaybedildi, neden diger. Yapılacak bir şey kalmadı: aksiyon_yok."
+}

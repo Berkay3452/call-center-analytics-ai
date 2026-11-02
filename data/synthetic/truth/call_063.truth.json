@@ -1,0 +1,18 @@
+{
+  "call_id": "call_063",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "makine",
+    "location": "Marmaris Netsel Marina",
+    "problem": "Jeneratör çalışırken yağ basıncı düşüyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": null,
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "rakip"
+  },
+  "notes": "Müşteri başka ustayla anlaştığını söyledi: kaybedildi, neden rakip. Firmanın yapacağı bir şey yok: aksiyon_yok."
+}

@@ -1,0 +1,18 @@
+{
+  "call_id": "call_053",
+  "call_type": "acil",
+  "crm": {
+    "request_category": "su_sihhi_tesisat",
+    "location": "Çeşme Marina",
+    "problem": "Sintine alarmı çalıyor, tekne su alıyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "acil",
+    "potential_job": null,
+    "next_action": "usta_ata"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Su alma: acil. Usta hemen yönlendirildi: usta_ata, satisa_donustu, yerinde_servis."
+}

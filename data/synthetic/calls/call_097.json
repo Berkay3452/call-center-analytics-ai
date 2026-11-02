@@ -1,0 +1,73 @@
+{
+  "call_id": "call_097",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Kutup'un motorlarında yağ basıncı alarmı çaldı, ikisini de kapattım, açıkta sürükleniyoruz!"
+    },
+    {
+      "speaker": "rep",
+      "text": "Neredesiniz, Kalamış'a uzak mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Kalamış'a üç mil var, rüzgar bizi koya doğru değil dışarı itiyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Çapa atabilir misiniz, derinlik nasıl?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Derinlik otuz metre, çapa zinciri yetmez."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tamam, o zaman yelken yok, motorlardan birini bir an çalıştırabilir misiniz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Sağ motor çalışıyor ama yağ borusundan koku geliyor, korkuyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kısa süreyle düşük devirde kullanıp koya yaklaşın, bu arada ustamızı ve römorkörü ayarlıyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Römorkör gelecek mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Kalamış'tan bir römorkör kalkacak, ustamız da onunla gelecek, yirmi dakikada yanınızda olurlar."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, düşük devirde ilerliyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Konumunuzu telsizle de paylaşın, sahil güvenliğe haber verelim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Verdim, on altıdan çağırıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Usta sizi arayacak, telefonu açık tutun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, çok teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geçmiş olsun, yoldalar."
+    }
+  ]
+}

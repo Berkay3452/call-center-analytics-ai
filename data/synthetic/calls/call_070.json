@@ -1,0 +1,73 @@
+{
+  "call_id": "call_070",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Çeşme'de de servis veriyor musunuz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, Çeşme Marina'da haftada üç gün ustamız oluyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Alaçatı tarafına da gelir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Alaçatı Port'a gelebiliyoruz, yol ücreti ayrıca yazılıyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yol ücreti ne kadar?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Mesafeye göre değişiyor, kayıt açarken söylerim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki acil durumda gece de gelir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Acil hattımız yedi gün yirmi dört saat, Çeşme'de nöbetçi usta var."
+    },
+    {
+      "speaker": "customer",
+      "text": "Güzel. Teknemi şimdilik sadece öğreniyorum, yazın aracılık ederim diye düşünüyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii, istediğiniz zaman arayabilirsiniz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Mobil uygulama var mı? Servis takibi yapabilir miyim?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, Tekne Sahibi uygulamasından iş emirlerinizi görebilirsiniz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Süper, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Görüşürüz."
+    }
+  ]
+}

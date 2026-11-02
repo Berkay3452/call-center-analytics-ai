@@ -1,0 +1,18 @@
+{
+  "call_id": "call_066",
+  "call_type": "teklif",
+  "crm": {
+    "request_category": "diger",
+    "location": "Ataköy Marina",
+    "problem": "Kıçta iskele sürtmesinden jelkot çatlağı",
+    "service_mode": null,
+    "urgency": "dusuk",
+    "potential_job": "Gövde jelkot çatlağı onarımı",
+    "next_action": "teklif_hazirla"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Hasar onarımı için fiyat soruyor, karar yok: teklif. Fotoğraf gelince teklif hazırlanacak: teklif_hazirla. Kategori gövde onarımı: diger."
+}

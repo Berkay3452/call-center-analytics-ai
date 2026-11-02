@@ -1,0 +1,18 @@
+{
+  "call_id": "call_074",
+  "call_type": "teklif",
+  "crm": {
+    "request_category": "makine",
+    "location": "Kalamış Marina",
+    "problem": "Motor ömrünü doldurmuş, yağ yakıyor",
+    "service_mode": "atolyede",
+    "urgency": "dusuk",
+    "potential_job": "Sol motor revizyonu",
+    "next_action": "geri_ara"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Revizyon fiyatı soruyor, karar için zaman istedi: teklif, geri_ara, beklemede."
+}

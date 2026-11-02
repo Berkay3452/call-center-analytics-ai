@@ -1,0 +1,73 @@
+{
+  "call_id": "call_064",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Yıldırım'ın dümeni çok sertleşti, direksiyon zor dönüyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "İstinye'deki Sunseeker mı? Hidrolik yağ seviyesine baktınız mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Baktım, rezervuarda yağ az görünüyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yağ azsa bir yerden kaçırıyor olabilir. Altında bir sızıntı görüyor musunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Dümen bölmesinde yağ lekesi var."
+    },
+    {
+      "speaker": "rep",
+      "text": "O zaman hortum ya da silindir contası. Teknenin seyre çıkması doğru olmaz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yarın Karadeniz'e çıkmayı düşünüyorduk."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamızı bugün öğleden sonra göndereyim, yağ ve hortuma bakar."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bugün olursa çok iyi olur."
+    },
+    {
+      "speaker": "rep",
+      "text": "Dörtte İstinye'de olur. Hidrolik yağı yanında getirir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Parça gerekirse bugün bulunur mu?"
+    },
+    {
+      "speaker": "rep",
+      "text": "İstinye'de stokumuz var, değilse yarın sabaha getirtiriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, dört uygun."
+    },
+    {
+      "speaker": "rep",
+      "text": "Randevuyu dörde yazdım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kolay gelsin."
+    }
+  ]
+}

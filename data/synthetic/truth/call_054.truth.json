@@ -1,0 +1,18 @@
+{
+  "call_id": "call_054",
+  "call_type": "teklif",
+  "crm": {
+    "request_category": "temizlik_bakim",
+    "location": "Göcek D-Marin",
+    "problem": null,
+    "service_mode": null,
+    "urgency": "dusuk",
+    "potential_job": "Gövde cilası ve tik güverte bakımı",
+    "next_action": "teklif_hazirla"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Fiyat isteniyor, karar yok: teklif. Teklif hazırlanacak: teklif_hazirla. İş verilmedi: beklemede."
+}

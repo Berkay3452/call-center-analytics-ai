@@ -1,0 +1,18 @@
+{
+  "call_id": "call_069",
+  "call_type": "teklif",
+  "crm": {
+    "request_category": "temizlik_bakim",
+    "location": "Bodrum Milta Marina",
+    "problem": null,
+    "service_mode": "yerinde_servis",
+    "urgency": "dusuk",
+    "potential_job": "Gulet tente ve döşeme yenileme",
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "rakip"
+  },
+  "notes": "Başka bir firmanın daha ucuz teklifini kabul etti: kaybedildi, neden rakip. Yapılacak bir şey kalmadı: aksiyon_yok."
+}

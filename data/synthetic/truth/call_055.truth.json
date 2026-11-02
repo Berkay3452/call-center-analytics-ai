@@ -1,0 +1,18 @@
+{
+  "call_id": "call_055",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "iklimlendirme",
+    "location": "Bodrum Milta Marina",
+    "problem": "Klima soğutmuyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": null,
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "takvim"
+  },
+  "notes": "Müşterinin istediği tarihe usta yok, vazgeçti: kaybedildi, neden takvim. Firmanın yapacağı bir şey kalmadı: aksiyon_yok."
+}

@@ -1,0 +1,73 @@
+{
+  "call_id": "call_053",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Alo, Zıpkın'ın sintine alarmı çalıyor, tekne su alıyor galiba!"
+    },
+    {
+      "speaker": "rep",
+      "text": "Sakin olun, neredesiniz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Çeşme'de marinadayız, bağlıyız."
+    },
+    {
+      "speaker": "rep",
+      "text": "Suyun geldiği yeri görebiliyor musunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Hayır, motor bölmesinin altı dolu, sintine pompası sürekli çalışıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Elektrik panelinden manuel pompayı da açın. Yedek pompanız var mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, şimdi açtım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Güzel. Yakınınızda başka kimse var mı, marina görevlisi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Görevli geliyor, çağırdım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamızı Çeşme'ye hemen gönderiyorum, yirmi dakikada orada olur."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok sağ olun, ne kadar sürerse sürsün lütfen acele edin."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamız size yönlendirildi, adı Murat, telefonla arayacak."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki, pompalar çalışıyor, su seviyesi biraz düştü."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi, pompaları kapatmayın. Gelene kadar yanınızda kalın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, bekliyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Sizi arayıp konumunuzu da teyit edecek."
+    }
+  ]
+}

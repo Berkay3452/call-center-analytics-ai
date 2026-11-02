@@ -1,0 +1,73 @@
+{
+  "call_id": "call_098",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi akşamlar."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi akşamlar, Rüzgar'ın seyir fenerlerini ve can yeleklerini kontrol ettirmek istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tuzla'daki Jeanneau. Fenerler yanıyor mu, can yelekleri kaç tane?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Kıç feneri yanmıyor, yelekler sekiz tane, iki tanesi eski."
+    },
+    {
+      "speaker": "rep",
+      "text": "Fener ampulünü ya da bağlantıyı bakarız. Yelekleri de gaz kartuşuna göre kontrol ederiz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yeleklerin kartuşu kaç yılda bir değişiyor?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Üreticiye göre iki ile beş yıl arası, ustamız tarihlere bakar."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ne zaman gelirsiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Gelecek hafta pazartesi öğleden sonra müsait."
+    },
+    {
+      "speaker": "customer",
+      "text": "Pazartesi olur, ben tekneye geleceğim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Pazartesi on dörde yazdım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Parça fiyatları önceden söylenir mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, değişim gerekirse önce onayınızı alırız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Güzel, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi akşamlar."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi akşamlar."
+    },
+    {
+      "speaker": "rep",
+      "text": "Görüşürüz."
+    }
+  ]
+}

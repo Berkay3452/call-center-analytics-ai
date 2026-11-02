@@ -1,0 +1,18 @@
+{
+  "call_id": "call_090",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "makine",
+    "location": "Ataköy Marina",
+    "problem": "Sol motorun yağ seviyesi sürekli düşüyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": null,
+    "next_action": "geri_ara"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Müşteri şu an teknede değil, karar için zaman istedi: geri_ara, beklemede. Tekne kullanılabilir: normal."
+}

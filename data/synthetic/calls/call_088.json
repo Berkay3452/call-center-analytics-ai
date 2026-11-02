@@ -1,0 +1,73 @@
+{
+  "call_id": "call_088",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Yıldırım'ın acil durum ekipmanlarını yenilemek istiyorum, EPIRB'in pili bitmiş."
+    },
+    {
+      "speaker": "rep",
+      "text": "İstinye'deki Sunseeker mı? EPIRB hangi marka?"
+    },
+    {
+      "speaker": "customer",
+      "text": "ACR, yedi yıllık pil."
+    },
+    {
+      "speaker": "rep",
+      "text": "Pil değişimi için üreticiye gönderiyoruz, iki hafta sürer. Fişekler de bitmiş mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, işaret fişeklerinin tarihi geçmiş."
+    },
+    {
+      "speaker": "rep",
+      "text": "Fişek setini yenileyebiliriz. Yangın söndürücü kontrolü de ister misiniz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Olsun, hepsini toplu fiyatlayın."
+    },
+    {
+      "speaker": "rep",
+      "text": "Toplu fiyatla indirim de uygularız. Bugün e-postanıza yazılı teklif göndereyim."
+    },
+    {
+      "speaker": "customer",
+      "text": "E-posta kayıtlı, oraya gönderin."
+    },
+    {
+      "speaker": "rep",
+      "text": "Gönderiyoruz. Onaylarsanız randevu açarız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Onay vermeden önce sigorta firmasına sormam gerekiyor, belge şartı var mı diye."
+    },
+    {
+      "speaker": "rep",
+      "text": "Bu belgeleri biz de düzenleyip sertifikalarla veriyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Güzel. Teklifi bekliyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teklif bugün sizde."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler."
+    }
+  ]
+}

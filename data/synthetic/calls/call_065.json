@@ -1,0 +1,73 @@
+{
+  "call_id": "call_065",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler. Kışlama için hangi tarihlerde randevu başlıyor, öğrenmek istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Göcek için mi soruyorsunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, Fora için."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kışlama takvimini bu hafta sonuna kadar netleştiriyoruz, şu an kesin tarih veremem."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki, ilk gelenlere öncelik veriyor musunuz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Kayıt sırasına göre randevu veriyoruz, evet."
+    },
+    {
+      "speaker": "customer",
+      "text": "O zaman beni listeye yazar mısınız?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yazıyorum. Takvim çıkınca size mesajla bildireceğiz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Mesaj ne zaman gelir?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Cuma gününe kadar atmayı hedefliyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, bekliyorum. Fiyatlar da mesajda olur mu?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Paket fiyatları da mesajda yer alacak."
+    },
+    {
+      "speaker": "customer",
+      "text": "Güzel, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Görüşürüz."
+    }
+  ]
+}
