@@ -139,6 +139,19 @@ curl -H "X-Service-Key: <SERVICE_API_KEY>" "http://localhost:8000/api/v1/calls?p
 - **Seed çağrıları için ses (çağrı detayında dinlemek için):** seed çağrılarının ses dosyası yoktur. Türkçe, çevrimdışı Piper ile üretilir (50 çağrı ~2,5 dk, ~150 MB, model ~60 MB ilk seferde iner): `uv run --with piper-tts python -m scripts.generate_audio`, ardından `uv run python -m scripts.seed` sesleri bağlar (seed çıktısında `calls_with_audio: 50`). Sesler `AUDIO_STORAGE_DIR/seed/` altına yazılır (git'e girmez); çağrının süresi ve segment zamanları sesin gerçek değerleri olur. Sesler varsayılan olarak **stereo** üretilir (temsilci sol, müşteri sağ kanal; müşteri sesinin perdesi yükseltilir) ve STT konuşmacıları kanaldan ayırır (`STT_CHANNEL_LAYOUT=stereo_rep_left`). Eski mono seslerin üzerine yazmak için `--force` ekle; tek kanal için `--mono`. Telefon hattı benzeri bozulmuş ses: `uv run python -m scripts.telephone_audio --src <klasör> --dst <klasör>`. Ölçümler ve karar: `docs/stt_karari.md`.
 - **Miço AI sohbeti (gerçek veriyle):** `.env`'de `LLM_API_KEY` dolu olmalı ve arama için `EMBEDDING_PROVIDER=hash` (hızlı) ya da bge-m3 (ilk madde). Seed sahibi `606bd734-644f-5c21-af2f-dc734c4ecd67` (Ahmet Yılmaz, tekne Poyraz) ile: `curl -N -X POST -H "X-Service-Key: <anahtar>" -H "X-User-Id: 606bd734-644f-5c21-af2f-dc734c4ecd67" -H "Content-Type: application/json" -d '{"question":"Kaç bakım hakkım kaldı?"}' http://localhost:8000/api/v1/chat/messages/stream` (SSE: `status` → `delta` → `done`).
 - **Testler:** `uv run pytest` (hızlı, DB gerekmez). Gerçek veritabanı testleri: Docker ayaktayken `$env:RUN_DB_TESTS="1"; uv run pytest`.
+  * **Dikkat:** `tests/test_seed_integration.py` veritabanındaki tüm tabloları TRUNCATE eder; bu yüzden yalnızca CI'da (`CI=true`) ya da `ALLOW_DB_RESET=1` ile ve **tek kullanımlık bir veritabanında** çalışır. Ortak geliştirme veritabanına karşı koşmayın.
+- **Konteynerde uçtan uca duman testi (#157):** `docker compose --profile app` yığınında seed sesleri ilk açılışta Piper ile otomatik üretilir (`init` servisi, `SEED_AUDIO=generate`; 50 çağrı birkaç dakika sürer, sesler `audio-storage` volume'unda kalır; hiç üretmemek için `SEED_AUDIO=skip`). Yığını sahibin geliştirme ortamından (15432/6379/8000) ayrı, sahte LLM ile denemek için:
+    ```powershell
+    # backend/ klasöründe, ayrı terminalde: sahte OpenAI-uyumlu LLM
+    uv run python -m scripts.fake_llm --port 9101
+    # repo kökünde: ayrı proje adı ve portlarla yığın
+    $env:POSTGRES_PORT="25432"; $env:REDIS_PORT="26379"; $env:API_PORT="18000"
+    docker compose -p smoke -f infra/docker-compose.yml -f infra/docker-compose.smoke.yml --profile app up -d --build postgres redis init api worker
+    # backend/ klasöründe: seed sesi (Range), metin yükleme → analiz, ses yükleme → STT → analiz
+    uv run python -m scripts.duman_testi --base-url http://localhost:18000 --key duman-test-anahtari
+    docker compose -p smoke -f infra/docker-compose.yml -f infra/docker-compose.smoke.yml --profile app down -v
+    ```
+    Küçük (`tiny`) Whisper modeli ve hash embedding kullanılır; ilk koşuda model konteynere iner. CI'daki `smoke` işi aynı betikle (`--no-seed --skip-audio-upload`) yükleme → analiz adımını sahte LLM ile her PR'da dener.
 - **E2E Duman Testleri (Playwright - #116):** `frontend/` dizininde `npm run e2e` komutuyla 7 kritik uçtan uca akış (Analitik KPI'ları, Çağrı listesi/filtreleme/sayfalama, Çağrı detayı & ses çalar, CRM onay/ret akışı, Miço AI asistanı ve Açık/Koyu tema geçişi) Chromium üzerinde otomatik koşturulur.
   * **İlk kurulum (bir kez):** `npx playwright install chromium` (tarayıcı ~150 MB iner).
   * **Senaryo 7** (Miço AI'a gerçek soru, kaynak kartlı cevap) yalnızca `NEXT_PUBLIC_USE_MOCKS=false` ile koşar; mock modunda atlanır. Gerçek koşu için önce seed ve sesler hazır olmalı (`generate_audio`, `seed`); çağrı detayı testi ses kaydı olan çağrı ister.

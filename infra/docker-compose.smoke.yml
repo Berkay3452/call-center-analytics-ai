@@ -1,0 +1,41 @@
+# Konteyner duman testi (#157): gerçek LLM yerine sahte sunucu, küçük Whisper modeli, hash embedding.
+#
+# Ortak geliştirme ortamını (15432/6379/8000) bozmamak için ayrı proje adı ve portlarla çalışır:
+#
+#   python -m scripts.fake_llm --port 9101            # backend/ klasöründe, ayrı terminalde
+#   docker compose -p smoke -f infra/docker-compose.yml -f infra/docker-compose.smoke.yml \
+#       --profile app up -d --build postgres redis init api worker
+#   python -m scripts.duman_testi --base-url http://localhost:18000 --key duman-test-anahtari
+#   docker compose -p smoke -f infra/docker-compose.yml -f infra/docker-compose.smoke.yml \
+#       --profile app down -v
+#
+# Portlar: POSTGRES_PORT=25432 REDIS_PORT=26379 API_PORT=18000 ortam değişkenleriyle verilir
+# (aşağıdaki çalıştırma örneği docs/calistirma.md'dedir).
+
+x-smoke-env: &smoke-env
+  - LLM_PROVIDER=openai_compatible
+  - LLM_BASE_URL=http://host.docker.internal:${FAKE_LLM_PORT:-9101}/v1
+  - LLM_API_KEY=sahte
+  - LLM_FAST_MODEL=sahte
+  - LLM_SMART_MODEL=sahte
+  - LLM_FALLBACK_MODEL=
+  - LLM_REQUESTS_PER_MINUTE=0
+  - EMBEDDING_PROVIDER=hash
+  - STT_PROVIDER=faster_whisper
+  - WHISPER_MODEL=${SMOKE_WHISPER_MODEL:-tiny}
+  - WHISPER_DOWNLOAD_ROOT=/app/storage/models/whisper
+  - STT_CHANNEL_LAYOUT=stereo_rep_left
+  - SERVICE_API_KEY=duman-test-anahtari
+  - APP_ENV=local
+  - AUTH_DEV_BYPASS=false
+
+services:
+  init:
+    environment: *smoke-env
+    extra_hosts: ["host.docker.internal:host-gateway"]
+  api:
+    environment: *smoke-env
+    extra_hosts: ["host.docker.internal:host-gateway"]
+  worker:
+    environment: *smoke-env
+    extra_hosts: ["host.docker.internal:host-gateway"]
