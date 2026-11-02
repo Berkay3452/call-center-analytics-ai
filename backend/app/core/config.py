@@ -95,6 +95,11 @@ class Settings(BaseSettings):
     # ajanı dakikalarca bekletmesin (17 Ekim denemesinde 120 sn zaman aşımı görüldü).
     llm_timeout_s: float = Field(default=30.0, gt=0)
     llm_max_retries: int = Field(default=1, ge=0)
+    # 429 (oran sınırı) alınca ajan bekleyip aynı modeli yeniden dener (#216): bekleme önce
+    # `Retry-After` başlığına (en çok 30 sn), yoksa `llm_rate_limit_backoff_s` * 2^deneme'ye göre.
+    # Bekleme eşzamanlılık yuvasını tutmaz. 0 = hemen yedek modele geç / başarısız say.
+    llm_rate_limit_retries: int = Field(default=3, ge=0)
+    llm_rate_limit_backoff_s: float = Field(default=4.0, gt=0)
     # Ajanın (yedek model denemesi dahil) toplam süre bütçesi; aşılırsa ajan `timeout` ile biter.
     llm_agent_timeout_s: float = Field(default=90.0, gt=0)
     # Geçici hatada (zaman aşımı, 429, 5xx, bağlantı) bir kez denenecek yedek model. Boşsa

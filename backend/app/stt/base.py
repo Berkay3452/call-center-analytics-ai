@@ -6,12 +6,25 @@ kullanılacağı `STT_PROVIDER` ile seçilir (bkz. `app/stt/registry.py`). Sağl
 dönüştürme `app/stt/pipeline.py`'dedir.
 """
 
+import re
 from pathlib import Path
 from typing import Protocol
 
 from pydantic import BaseModel, Field
 
 from app.agents.base import Speaker
+
+_PATH = re.compile(
+    r"""(?<!\w)[A-Za-z]:[\\/](?![\\/])[^'"\s]+|(?<![\w:/.])/(?:[\w.\-]+/)+[\w.\-]+"""
+)
+
+
+def redact_paths(message: str) -> str:
+    """Hata iletisindeki sunucu dosya yollarını çıkarır (`calls.error` kullanıcıya gösterilir).
+
+    Windows (sürücü harfli) ve Unix (/var/app/ses.wav) yolları `<dosya>` olur.
+    """
+    return _PATH.sub("<dosya>", message)
 
 
 class SttError(Exception):
