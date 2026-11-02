@@ -314,7 +314,7 @@
         ],
         "responses": {
           "202": {
-            "description": "Analiz kuyruğa alındı",
+            "description": "Analiz kuyruğa alındı ya da çağrı zaten işleniyor (already_running)",
             "content": {
               "application/json": {
                 "schema": {
@@ -333,7 +333,8 @@
               }
             }
           }
-        }
+        },
+        "description": "Çağrı zaten işleniyorsa hata dönmez: 202 ile mevcut durum gelir (already_running=true) ve yeni görev açılmaz."
       }
     },
     "/calls/{call_id}/status": {
@@ -1695,6 +1696,21 @@
           "state": {
             "$ref": "#/components/schemas/CallState"
           },
+          "stage": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CallStage"
+              }
+            ],
+            "nullable": true,
+            "description": "İşlem sürüyorsa aşaması; bittiyse null."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Durumun son değiştiği an; sürüyorsa aşamanın başlama zamanıdır."
+          },
           "call_type": {
             "$ref": "#/components/schemas/CallType",
             "nullable": true
@@ -1845,6 +1861,21 @@
           },
           "state": {
             "$ref": "#/components/schemas/CallState"
+          },
+          "stage": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CallStage"
+              }
+            ],
+            "nullable": true,
+            "description": "İşlem sürüyorsa aşaması; bittiyse null."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Durumun son değiştiği an; sürüyorsa aşamanın başlama zamanıdır."
           },
           "error": {
             "type": "string",
@@ -2178,6 +2209,26 @@
           "task_id": {
             "type": "string",
             "nullable": true
+          },
+          "already_running": {
+            "type": "boolean",
+            "default": false,
+            "description": "True: çağrı zaten işleniyordu, yeni görev açılmadı; state mevcut durumdur."
+          },
+          "stage": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CallStage"
+              }
+            ],
+            "nullable": true,
+            "description": "İşlem sürüyorsa aşaması; bittiyse null."
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Durumun son değiştiği an (yalnızca already_running iken dolu)."
           }
         }
       },
@@ -2197,6 +2248,15 @@
           },
           "state": {
             "$ref": "#/components/schemas/CallState"
+          },
+          "stage": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CallStage"
+              }
+            ],
+            "nullable": true,
+            "description": "İşlem sürüyorsa aşaması; bittiyse null."
           },
           "analysis_version": {
             "type": "integer",
@@ -2934,6 +2994,15 @@
             "nullable": true
           }
         }
+      },
+      "CallStage": {
+        "type": "string",
+        "enum": [
+          "kuyruk",
+          "stt",
+          "analiz"
+        ],
+        "description": "Süren işlemin aşaması: kuyrukta, ses yazıya çevriliyor, agent'lar analiz ediyor."
       }
     }
   }

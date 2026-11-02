@@ -34,7 +34,7 @@ from app.storage.base import (  # noqa: F401 - hata sınıfları geriye uyumlulu
     StoredAudio,
     UnsupportedAudioError,
 )
-from app.stt.base import SttError, Transcriber
+from app.stt.base import SttError, Transcriber, redact_paths
 from app.stt.pipeline import ChannelLayout, transcribe_call
 
 log = structlog.get_logger(__name__)
@@ -210,12 +210,15 @@ async def run_transcription(
     except SttError as exc:
         log.warning("stt.failed", call_id=str(call_id), error=str(exc), transient=exc.transient)
         async with session_factory() as session, session.begin():
-            await set_state(session, call_id, "basarisiz", f"Yazıya çevirme başarısız: {exc}")
+            await set_state(
+                session, call_id, "basarisiz", f"Yazıya çevirme başarısız: {redact_paths(str(exc))}"
+            )
         return "basarisiz"
     except Exception as exc:
         log.exception("stt.crashed", call_id=str(call_id))
         async with session_factory() as session, session.begin():
-            await set_state(session, call_id, "basarisiz", f"{type(exc).__name__}: {exc}"[:500])
+            error = redact_paths(f"{type(exc).__name__}: {exc}")[:500]
+            await set_state(session, call_id, "basarisiz", error)
         return "basarisiz"
 
     save_started = time.perf_counter()

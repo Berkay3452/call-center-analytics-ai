@@ -28,6 +28,7 @@ from app.schemas.api import (
     CrmRecordItem,
     TranscriptOut,
     TranscriptSegmentOut,
+    stage_of,
 )
 from app.schemas.common import Page
 from app.services.analysis_store import get_latest_analysis
@@ -126,6 +127,7 @@ async def list_calls(session: AsyncSession, filters: CallFilters) -> Page[CallLi
             Call.boat_name,
             Call.marina,
             Call.state,
+            Call.updated_at,
             latest_analysis.c.call_type,
             latest_analysis.c.request_category,
             latest_analysis.c.urgency,
@@ -158,12 +160,14 @@ async def list_calls(session: AsyncSession, filters: CallFilters) -> Page[CallLi
             boat_name=r[6],
             marina=r[7],
             state=r[8],
-            call_type=r[9],
-            request_category=r[10],
-            urgency=r[11],
-            sales_outcome=r[12],
-            loss_reason=r[13],
-            summary=r[14],
+            stage=stage_of(r[8]),
+            updated_at=r[9],
+            call_type=r[10],
+            request_category=r[11],
+            urgency=r[12],
+            sales_outcome=r[13],
+            loss_reason=r[14],
+            summary=r[15],
         )
         for r in rows
     ]
@@ -235,6 +239,8 @@ async def get_call_detail(session: AsyncSession, call_id: UUID) -> CallDetail:
         marina=call.marina,
         has_audio=bool(call.audio_path),
         state=call.state,
+        stage=stage_of(call.state),
+        updated_at=call.updated_at,
         error=call.error,
         match_method=call.match_method,
         transcript=transcript_out,

@@ -7,6 +7,7 @@
 
 import calendar
 from datetime import date
+from typing import Literal
 
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -121,10 +122,15 @@ EMPTY_GENERAL_MESSAGE = (
 )
 
 
+GENERAL_TIER: Literal["fast", "smart"] = (
+    "smart"  # kısa sohbette bile doğru terim ve sakin ton (#213)
+)
+
+
 async def general_answer(question: str, llm: AssistantLLM) -> AssistantAnswer:
     """Kayıt gerektirmeyen sorular: doğrudan LLM cevabı, kaynak kartı yok (#177)."""
     reply = await llm.ask(
-        "fast", load_prompt("general"), f"## Tekne sahibinin sorusu\n{question}", GeneralReply
+        GENERAL_TIER, load_prompt("general"), f"## Tekne sahibinin sorusu\n{question}", GeneralReply
     )
     text = reply.answer.strip() or EMPTY_GENERAL_MESSAGE
     return AssistantAnswer(answer=text, question_type=QuestionType.GENEL_SOHBET)

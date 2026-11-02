@@ -272,3 +272,21 @@ async def test_list_calls_and_kpi_istanbul_timezone_midnight_boundary(
         )
         assert kpi_may10.total_calls == 0
         assert calls_may10.total == 0
+
+
+async def test_list_and_detail_expose_stage_and_updated_at(
+    conn: AsyncConnection, factory: async_sessionmaker[AsyncSession]
+) -> None:
+    """Liste ve detay satırlarında aşama ve durum zamanı vardır (#218)."""
+    result = await conn.execute(
+        text("INSERT INTO calls (started_at, state) VALUES (now(), 'isleniyor') RETURNING id")
+    )
+    call_id = result.scalar_one()
+    async with factory() as session:
+        detail = await get_call_detail(session, call_id)
+        page = await list_calls(session, CallFilters(state="isleniyor", page_size=100))
+    assert detail.stage == "analiz"
+    assert detail.updated_at is not None
+    row = next(c for c in page.items if c.id == call_id)
+    assert (row.stage, row.state) == ("analiz", "isleniyor")
+    assert row.updated_at == detail.updated_at

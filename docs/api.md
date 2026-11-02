@@ -43,7 +43,7 @@ Admin/tekne sahibi rol ayrımını .NET uygulaması yapar. Tekne sahibi uçları
 | `GET /analytics/summary` | Admin | `PeriodFilter` (sorgu) | `KpiSummary` | #52 |
 | `POST /calls` | Admin | `CallCreate` (JSON) | 202 `CallAccepted` | #48 |
 | `POST /calls/audio` | Admin | multipart: `file` (wav/mp3/m4a/ogg/flac/aac/webm, en fazla 25 MB) + `AudioCallMeta` alanları | 202 `CallAccepted`; aynı ses daha önce yüklendiyse 409 (`details.call_id`) | #49 |
-| `POST /calls/{call_id}/analyze` | Admin | — | 202 `CallAccepted` (yeni analiz sürümü) | #48 |
+| `POST /calls/{call_id}/analyze` | Admin | — | 202 `CallAccepted` (yeni analiz sürümü); çağrı zaten işleniyorsa da 202, `already_running=true` (hata değil, #218) | #48 |
 | `GET /calls/{call_id}/status` | Admin | — | `CallStatus` | #48 |
 | `GET /calls/{call_id}/audio` | Admin | — | Ses dosyası akışı (Range destekli 200/206) | #80 |
 | `POST /chat/messages` | Tekne sahibi | `ChatQuestion` | `ChatReply` | #28 |
@@ -80,6 +80,22 @@ Başka kullanıcının sohbet oturumu istenirse 404 döner (varlığı da sızd�
 
 Arayüz `GET /calls/{id}/status` ile durumu 2–3 saniyede bir sorar; `tamam`, `kismi` veya `basarisiz` gelince durur.
 
+**Aşama ve başlama zamanı (#218).** Durum bildiren her yanıtta (`GET /calls`, `GET /calls/{id}`, `GET /calls/{id}/status`, `POST .../analyze`) iki alan vardır:
+
+| Alan | Anlamı |
+|---|---|
+| `stage` | İşlem sürüyorsa aşaması: `kuyruk` (`beklemede`), `stt` (`yaziya_cevriliyor`), `analiz` (`isleniyor`). Bittiyse (`tamam`, `kismi`, `basarisiz`) `null`. |
+| `updated_at` | Durumun son değiştiği an. Süren bir işlemde bu, **o aşamanın başlama zamanıdır** ("Analiz 2 dk'dır sürüyor" için `şimdi - updated_at`). Yeni sütun yoktur; `calls.updated_at` kullanılır. |
+
+**Yeniden analiz sürerken tekrar istek (#218).** `POST /calls/{id}/analyze` çağrı `beklemede`, `yaziya_cevriliyor` veya `isleniyor` iken **hata vermez**: 202 döner, yeni görev açılmaz, durum değişmez ve gövdede mevcut durum bulunur:
+
+```json
+{ "call_id": "…", "state": "isleniyor", "task_id": null, "already_running": true,
+  "stage": "analiz", "updated_at": "2026-11-02T10:15:00Z" }
+```
+
+Yeni görev açıldıysa `already_running=false`'tur. Satır kilitlendiği için iki eşzamanlı istekten yalnızca biri görev açar. Bir çağrı `STUCK_CALL_TIMEOUT_MIN` (varsayılan 10 dk) süredir hareketsizse takılı sayılır: kurtarma görevi gelmeden de yeniden analiz isteği onu yeniden kuyruğa alır (`already_running=false`). Gerçek hata yalnızca çağrı yoksa (404) ya da ne transkripti ne sesi varsa (409 `no_transcript`) dönülür.
+
 > `calls.state` ve `calls.error` sütunları #48 ile eklendi; seed verisindeki analizli çağrılar `tamam` durumundadır.
 
 ### Servis emirleri (#118)
@@ -102,8 +118,8 @@ Arayüz `GET /calls/{id}/status` ile durumu 2–3 saniyede bir sorar; `tamam`, `
 ### Çağrı alma
 - `CallCreate`: sesi olmayan çağrı (geliştirme ve sentetik veri için). `transcript` (düz metin) veya `SegmentIn` listesinden biri zorunlu.
 - `AudioCallMeta`: sesli çağrının form alanları (`CallCreate` ile aynı, transkript hariç). Akış: ses kaydedilir → `yaziya_cevriliyor` (STT) → `isleniyor` (agent'lar) → sonuç. STT hata verirse `POST /calls/{id}/analyze` yeniden yazıya çevirmeyi başlatır.
-- `CallAccepted`: oluşturulan çağrının kimliği, durumu ve arka plan görevinin kimliği.
-- `CallStatus`: anlık durum, biten son analiz sürümü, hata.
+- `CallAccepted`: oluşturulan çağrının kimliği, durumu ve arka plan görevinin kimliği. Ayrıca `already_running`, `stage`, `updated_at` (yalnızca süren çağrıya yeniden analiz isteğinde dolu, #218).
+- `CallStatus`: anlık durum, aşama (`stage`), biten son analiz sürümü, hata.
 
 ### KPI
 - `KpiSummary`: dönem, toplam/analiz edilen çağrı, çağrı tiplerine göre sayılar, `converted_sales` ve `conversion_rate`, `lost_by_reason`, `top_problems` ve `busiest_marinas` (`CountItem`), `by_category`, `by_urgency`, `daily_calls` (`DailyCount`; boş gün 0), `avg_answer_delay_s`.

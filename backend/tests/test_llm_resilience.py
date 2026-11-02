@@ -12,7 +12,7 @@ from app.agents.orchestrator import Orchestrator
 from app.agents.registry import build_default_orchestrator
 from app.agents.summarizer import SummarizerAgent
 from app.assistant.llm import AssistantLLM, AssistantLLMError
-from app.llm.client import is_transient_llm_error
+from app.llm.client import is_rate_limit_error, is_transient_llm_error, rate_limit_delay
 from tests.conftest import make_settings
 from tests.llm_fakes import scripted
 from tests.test_agents import SUMMARY_JSON, tuzla_ctx
@@ -217,3 +217,79 @@ async def test_assistant_keeps_backup_for_fix_round() -> None:
 
     assert reply.answer == "tamam"
     assert len(primary.calls) == 1 and len(backup.calls) == 2
+
+
+# --- 429: bekle ve yeniden dene (#216) ----------------------------------------------------------
+
+
+class RateLimitError(Exception):
+    """OpenAI istemcisinin 429 istisnasının adını taşıyan sahte sınıf (başlıklı)."""
+
+    def __init__(self, retry_after: str | None = None) -> None:
+        super().__init__("429 Too Many Requests")
+        self.status_code = 429
+        self.response = type(
+            "R", (), {"headers": {"retry-after": retry_after} if retry_after else {}}
+        )()
+
+
+def test_rate_limit_detection() -> None:
+    assert is_rate_limit_error(StatusError(429)) is True
+    assert is_rate_limit_error(RateLimitError()) is True
+    assert is_rate_limit_error(StatusError(500)) is False
+    assert is_rate_limit_error(TimeoutError()) is False
+
+
+def test_rate_limit_delay_prefers_retry_after_and_is_capped() -> None:
+    assert rate_limit_delay(RateLimitError("7"), 0, 4.0) == 7.0
+    assert rate_limit_delay(RateLimitError("600"), 0, 4.0) == 30.0
+    # Başlık yoksa üstel: 4, 8, 16 sn (+ en çok %25 rastgele pay).
+    for attempt, base in [(0, 4.0), (1, 8.0), (2, 16.0)]:
+        assert base <= rate_limit_delay(StatusError(429), attempt, 4.0) <= base * 1.25
+    assert rate_limit_delay(StatusError(429), 10, 4.0) <= 30.0 * 1.25
+
+
+async def test_agent_waits_and_retries_on_429(monkeypatch: pytest.MonkeyPatch) -> None:
+    sleeps: list[float] = []
+
+    async def fake_sleep(delay: float) -> None:
+        sleeps.append(delay)
+
+    monkeypatch.setattr("app.agents.llm_agent.asyncio.sleep", fake_sleep)
+    model = scripted(RateLimitError("2"), RateLimitError("3"), SUMMARY_JSON)
+
+    result = await SummarizerAgent(model=model, settings=make_settings()).run(tuzla_ctx())
+
+    assert result.status == "ok"
+    assert sleeps == [2.0, 3.0]
+    assert len(model.calls) == 3
+
+
+async def test_agent_gives_up_after_rate_limit_retries(monkeypatch: pytest.MonkeyPatch) -> None:
+    async def fake_sleep(delay: float) -> None:
+        pass
+
+    monkeypatch.setattr("app.agents.llm_agent.asyncio.sleep", fake_sleep)
+    model = scripted(*[RateLimitError("1") for _ in range(10)])
+
+    result = await SummarizerAgent(
+        model=model, settings=make_settings(llm_rate_limit_retries=2)
+    ).run(tuzla_ctx())
+
+    assert (result.status, result.error_kind) == ("failed", "runtime")
+    assert len(model.calls) == 3  # ilk deneme + 2 yeniden deneme
+
+
+async def test_rate_limit_retries_zero_fails_fast(monkeypatch: pytest.MonkeyPatch) -> None:
+    async def boom(delay: float) -> None:
+        raise AssertionError("beklememeliydi")
+
+    monkeypatch.setattr("app.agents.llm_agent.asyncio.sleep", boom)
+    model = scripted(RateLimitError())
+
+    result = await SummarizerAgent(
+        model=model, settings=make_settings(llm_rate_limit_retries=0)
+    ).run(tuzla_ctx())
+
+    assert result.status == "failed"
+    assert len(model.calls) == 1
