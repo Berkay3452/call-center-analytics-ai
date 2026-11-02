@@ -28,7 +28,7 @@ billiard==4.3.0
     # via celery
 celery==5.6.3
     # via call-center-backend
-certifi==2026.7.22
+certifi==2026.10.23
     # via
     #   httpcore
     #   httpx
@@ -129,7 +129,7 @@ langgraph-checkpoint==4.2.0
     #   langgraph-prebuilt
 langgraph-prebuilt==1.1.0
     # via langgraph
-langgraph-sdk==0.4.5
+langgraph-sdk==0.4.11
     # via langgraph
 langsmith==0.14.4
     # via langchain-core
@@ -143,7 +143,7 @@ mcp-types==2.3.0
     # via mcp
 openai==3.24.0
     # via langchain-openai
-opentelemetry-api==1.45.0
+opentelemetry-api==1.45.2
     # via
     #   fastapi
     #   mcp
