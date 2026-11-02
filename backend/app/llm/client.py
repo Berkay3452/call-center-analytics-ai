@@ -9,6 +9,7 @@ LangChain bağımlılığı `ai` ekstrasındadır ve tembel import edilir; API b
 """
 
 import asyncio
+import random
 import time
 from collections import defaultdict, deque
 from collections.abc import Awaitable, Callable
@@ -58,6 +59,32 @@ def is_transient_llm_error(exc: BaseException) -> bool:
     if isinstance(status, int):
         return status in (404, 429) or status >= 500
     return any(cls.__name__ in _TRANSIENT_NAMES for cls in type(exc).__mro__)
+
+
+def is_rate_limit_error(exc: BaseException) -> bool:
+    """429 (oran sınırı) mı? Sağlayıcı istisnaları adıyla tanınır (kütüphane import edilmez)."""
+    if getattr(exc, "status_code", None) == 429:
+        return True
+    return any(cls.__name__ == "RateLimitError" for cls in type(exc).__mro__)
+
+
+MAX_RETRY_AFTER_S = 30.0
+
+
+def rate_limit_delay(exc: BaseException, attempt: int, base_s: float) -> float:
+    """429 sonrası beklenecek süre: `Retry-After` varsa o (en çok 30 sn), yoksa üstel geri çekilme.
+
+    `attempt` 0'dan başlar. Üstel süreye %25'e kadar rastgele pay eklenir (işçiler aynı anda
+    uyanıp birlikte yeniden 429 almasın).
+    """
+    response = getattr(exc, "response", None)
+    raw = getattr(getattr(response, "headers", None), "get", lambda _k: None)("retry-after")
+    try:
+        if raw is not None:
+            return min(max(float(raw), 0.0), MAX_RETRY_AFTER_S)
+    except (TypeError, ValueError):
+        pass
+    return min(base_s * 2**attempt, MAX_RETRY_AFTER_S) * (1 + random.random() * 0.25)
 
 
 def _resolve_base_url(settings: Settings) -> str:

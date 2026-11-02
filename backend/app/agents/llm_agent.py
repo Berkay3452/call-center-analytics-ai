@@ -10,6 +10,7 @@ yazıp dönen JSON'u Pydantic ile doğrulamak hepsinde çalışır; şemaya uyma
 `error_kind="validation"` ile döner ve orkestratör hata mesajını geri verip bir kez daha dener.
 """
 
+import asyncio
 import json
 import re
 from functools import cache
@@ -24,9 +25,11 @@ from app.core.config import Settings, get_settings
 from app.llm.client import (
     LLMNotConfiguredError,
     get_chat_model,
+    is_rate_limit_error,
     is_transient_llm_error,
     llm_rate_limiter,
     llm_semaphore,
+    rate_limit_delay,
 )
 
 if TYPE_CHECKING:
@@ -200,12 +203,28 @@ class LLMAgent[T: BaseModel](BaseAgent[T]):
             return None
 
     async def _invoke(self, model: "BaseChatModel", name: str | None, messages: Any) -> Any:
-        # Önce kota sırası (model başına dakikadaki istek), sonra eşzamanlılık sınırı.
-        waited = await llm_rate_limiter(self.settings).acquire(name or self.model_tier)
-        if waited:
-            log.info("agent.rate_limited", agent=self.name, waited_s=round(waited, 1))
-        async with llm_semaphore(self.settings):
-            return await model.ainvoke(messages)
+        settings = self.settings
+        retries = 0
+        while True:
+            # Önce kota sırası (model başına dakikadaki istek), sonra eşzamanlılık sınırı.
+            waited = await llm_rate_limiter(settings).acquire(name or self.model_tier)
+            if waited:
+                log.info("agent.rate_limited", agent=self.name, waited_s=round(waited, 1))
+            try:
+                async with llm_semaphore(settings):
+                    return await model.ainvoke(messages)
+            except Exception as exc:
+                # 429: sağlayıcı kotası doldu. Hemen vazgeçmek yerine yuvayı bırakıp bekler ve
+                # aynı modeli yeniden dener (#216); bütçe aşılırsa hata olduğu gibi yükselir.
+                if not is_rate_limit_error(exc) or retries >= settings.llm_rate_limit_retries:
+                    raise
+                delay = rate_limit_delay(exc, retries, settings.llm_rate_limit_backoff_s)
+                retries += 1
+                log.warning(
+                    "agent.rate_limit_backoff", agent=self.name, model=name, retry=retries,
+                    wait_s=round(delay, 1),
+                )  # fmt: skip
+                await asyncio.sleep(delay)
 
     def _fail(self, error: str, kind: str, **extra: Any) -> AgentResult[T]:
         return AgentResult[T].model_validate(
