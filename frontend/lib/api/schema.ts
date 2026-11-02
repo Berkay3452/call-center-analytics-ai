@@ -74,7 +74,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Çağrıyı yeniden analiz et */
+        /**
+         * Çağrıyı yeniden analiz et
+         * @description Çağrı zaten işleniyorsa hata dönmez: 202 ile mevcut durum gelir (already_running=true) ve yeni görev açılmaz.
+         */
         post: operations["analyzeCall"];
         delete?: never;
         options?: never;
@@ -443,6 +446,13 @@ export interface components {
             boat_name: string | null;
             marina: string | null;
             state: components["schemas"]["CallState"];
+            /** @description İşlem sürüyorsa aşaması; bittiyse null. */
+            stage?: components["schemas"]["CallStage"] | null;
+            /**
+             * Format: date-time
+             * @description Durumun son değiştiği an; sürüyorsa aşamanın başlama zamanıdır.
+             */
+            updated_at?: string | null;
             call_type: components["schemas"]["CallType"];
             request_category: components["schemas"]["RequestCategory"];
             urgency: components["schemas"]["Urgency"];
@@ -480,6 +490,13 @@ export interface components {
             marina: string | null;
             has_audio: boolean;
             state: components["schemas"]["CallState"];
+            /** @description İşlem sürüyorsa aşaması; bittiyse null. */
+            stage?: components["schemas"]["CallStage"] | null;
+            /**
+             * Format: date-time
+             * @description Durumun son değiştiği an; sürüyorsa aşamanın başlama zamanıdır.
+             */
+            updated_at?: string | null;
             error: string | null;
             transcript: components["schemas"]["TranscriptOut"];
             analysis: components["schemas"]["AnalysisOut"];
@@ -574,11 +591,25 @@ export interface components {
             call_id: string;
             state: components["schemas"]["CallState"];
             task_id: string | null;
+            /**
+             * @description True: çağrı zaten işleniyordu, yeni görev açılmadı; state mevcut durumdur.
+             * @default false
+             */
+            already_running: boolean;
+            /** @description İşlem sürüyorsa aşaması; bittiyse null. */
+            stage?: components["schemas"]["CallStage"] | null;
+            /**
+             * Format: date-time
+             * @description Durumun son değiştiği an (yalnızca already_running iken dolu).
+             */
+            updated_at?: string | null;
         };
         CallStatus: {
             /** Format: uuid */
             call_id: string;
             state: components["schemas"]["CallState"];
+            /** @description İşlem sürüyorsa aşaması; bittiyse null. */
+            stage?: components["schemas"]["CallStage"] | null;
             analysis_version: number | null;
             error: string | null;
             /** Format: date-time */
@@ -793,6 +824,11 @@ export interface components {
             /** Format: uuid */
             boat_id?: string | null;
         };
+        /**
+         * @description Süren işlemin aşaması: kuyrukta, ses yazıya çevriliyor, agent'lar analiz ediyor.
+         * @enum {string}
+         */
+        CallStage: "kuyruk" | "stt" | "analiz";
     };
     responses: never;
     parameters: never;
@@ -972,7 +1008,7 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Analiz kuyruğa alındı */
+            /** @description Analiz kuyruğa alındı ya da çağrı zaten işleniyor (already_running) */
             202: {
                 headers: {
                     [name: string]: unknown;

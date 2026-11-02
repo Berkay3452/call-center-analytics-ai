@@ -146,10 +146,30 @@ async def create_audio_call(
     responses=_ERRORS,
 )
 async def analyze_call(
-    call_id: UUID, _: ServiceCallerDep, session: SessionDep, enqueue: EnqueueDep
+    call_id: UUID,
+    _: ServiceCallerDep,
+    session: SessionDep,
+    settings: SettingsDep,
+    enqueue: EnqueueDep,
 ) -> CallAccepted:
-    """Çağrıyı yeniden işler: transkript varsa yeni analiz sürümü, yoksa sesi yeniden çevirir."""
-    kind = await call_ingest.request_analysis(session, call_id)
+    """Çağrıyı yeniden işler: transkript varsa yeni analiz sürümü, yoksa sesi yeniden çevirir.
+
+    Çağrı zaten işleniyorsa hata dönmez (#218): 202 ile mevcut durum gelir (`already_running`)
+    ve yeni görev açılmaz.
+    """
+    kind = await call_ingest.request_analysis(
+        session, call_id, stale_after_min=settings.stuck_call_timeout_min
+    )
+    if kind == "running":
+        current = await call_ingest.get_status(session, call_id)
+        await session.commit()
+        return CallAccepted(
+            call_id=call_id,
+            state=current.state,
+            already_running=True,
+            stage=current.stage,
+            updated_at=current.updated_at,
+        )
     await session.commit()
     return await _enqueue_or_fail(session, enqueue, call_id, kind)
 

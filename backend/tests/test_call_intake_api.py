@@ -13,7 +13,7 @@ import pytest
 
 from app.api.deps import get_db_session
 from app.api.routes import call_intake
-from app.core.errors import ConflictError, NotFoundError
+from app.core.errors import NotFoundError
 from app.main import create_app
 from app.schemas.api import CallCreate, CallStatus
 from tests.conftest import TEST_SERVICE_KEY, _client_for, make_settings
@@ -60,11 +60,11 @@ def spy(monkeypatch: pytest.MonkeyPatch) -> Spy:
         spy.created = payload  # type: ignore[attr-defined]
         return CALL_ID
 
-    async def request_analysis(session: Any, call_id: UUID) -> str:
+    async def request_analysis(session: Any, call_id: UUID, **_: Any) -> str:
         if call_id != CALL_ID:
             raise NotFoundError("Çağrı bulunamadı.")
         if getattr(spy, "busy", False):
-            raise ConflictError("Çağrı şu anda işleniyor.")
+            return "running"
         return spy.reanalysis_kind
 
     async def set_state(session: Any, call_id: UUID, state: str, error: str | None = None) -> None:
@@ -76,6 +76,7 @@ def spy(monkeypatch: pytest.MonkeyPatch) -> Spy:
         return CallStatus(
             call_id=call_id,
             state="isleniyor",
+            stage="analiz",
             analysis_version=None,
             error=None,
             updated_at=datetime(2026, 10, 13, 9, 0, tzinfo=UTC),
@@ -105,7 +106,14 @@ async def test_create_call_returns_202_and_enqueues(api: httpx.AsyncClient, spy:
     resp = await api.post("/api/v1/calls", json=BODY, headers=HEADERS)
 
     assert resp.status_code == 202
-    assert resp.json() == {"call_id": str(CALL_ID), "state": "beklemede", "task_id": "task-1"}
+    assert resp.json() == {
+        "call_id": str(CALL_ID),
+        "state": "beklemede",
+        "task_id": "task-1",
+        "already_running": False,
+        "stage": None,
+        "updated_at": None,
+    }
     assert spy.enqueued == [CALL_ID]
     assert spy.kinds == ["analysis"]
     assert spy.session.commits == 1  # görev başlamadan kayıt işlenmiş olmalı
@@ -168,13 +176,33 @@ async def test_reanalyze_unknown_call_is_404(api: httpx.AsyncClient, spy: Spy) -
     assert spy.enqueued == []
 
 
-async def test_reanalyze_running_call_is_409(api: httpx.AsyncClient, spy: Spy) -> None:
+async def test_reanalyze_running_call_returns_current_state(
+    api: httpx.AsyncClient, spy: Spy
+) -> None:
+    """Süren çağrıya yeniden analiz isteği hata değildir (#218): mevcut durum döner."""
     spy.busy = True  # type: ignore[attr-defined]
 
     resp = await api.post(f"/api/v1/calls/{CALL_ID}/analyze", headers=HEADERS)
 
-    assert resp.status_code == 409
+    assert resp.status_code == 202
+    body = resp.json()
+    assert body["already_running"] is True
+    assert body["state"] == "isleniyor"
+    assert body["stage"] == "analiz"
+    assert body["task_id"] is None
+    assert body["updated_at"] == "2026-10-13T09:00:00Z"
     assert spy.enqueued == []
+
+
+async def test_reanalyze_new_request_is_not_marked_running(
+    api: httpx.AsyncClient, spy: Spy
+) -> None:
+    resp = await api.post(f"/api/v1/calls/{CALL_ID}/analyze", headers=HEADERS)
+
+    assert resp.status_code == 202
+    assert resp.json()["already_running"] is False
+    assert resp.json()["state"] == "beklemede"
+    assert spy.enqueued == [CALL_ID]
 
 
 async def test_status_returns_state(api: httpx.AsyncClient) -> None:
@@ -182,6 +210,7 @@ async def test_status_returns_state(api: httpx.AsyncClient) -> None:
 
     assert resp.status_code == 200
     assert resp.json()["state"] == "isleniyor"
+    assert resp.json()["stage"] == "analiz"
     assert resp.json()["analysis_version"] is None
 
 

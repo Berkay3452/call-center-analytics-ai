@@ -43,6 +43,21 @@ from app.schemas.assistant import QuestionType, SourceRef
 # Çağrının işlenme durumu. İlk üçü agent sonucunu (AnalysisStatus) değil, sürecin aşamasını
 # anlatır: beklemede → (ses varsa) yazıya_cevriliyor → isleniyor → tamam | kismi | basarisiz.
 CallState = Literal["beklemede", "yaziya_cevriliyor", "isleniyor", "tamam", "kismi", "basarisiz"]
+# Süren işlemin aşaması (#218): kuyrukta bekliyor, ses yazıya çevriliyor, agent'lar analiz ediyor.
+CallStage = Literal["kuyruk", "stt", "analiz"]
+
+_STAGES: dict[str, CallStage] = {
+    "beklemede": "kuyruk",
+    "yaziya_cevriliyor": "stt",
+    "isleniyor": "analiz",
+}
+
+
+def stage_of(state: str) -> CallStage | None:
+    """Süren işlemin aşaması; işlem bittiyse (tamam, kismi, basarisiz) None."""
+    return _STAGES.get(state)
+
+
 Speaker = Literal["customer", "rep"]
 
 
@@ -105,6 +120,13 @@ class CallListItem(BaseModel):
     boat_name: str | None = None
     marina: str | None = None
     state: CallState
+    stage: CallStage | None = Field(
+        default=None, description="İşlem sürüyorsa aşaması (kuyruk, stt, analiz); bittiyse null."
+    )
+    updated_at: datetime | None = Field(
+        default=None,
+        description="Durumun son değiştiği an; sürüyorsa aşamanın başlama zamanıdır.",
+    )
     call_type: CallType | None = None
     request_category: RequestCategory | None = None
     urgency: Urgency | None = None
@@ -161,6 +183,13 @@ class CallDetail(BaseModel):
     marina: str | None = None
     has_audio: bool = False
     state: CallState
+    stage: CallStage | None = Field(
+        default=None, description="İşlem sürüyorsa aşaması (kuyruk, stt, analiz); bittiyse null."
+    )
+    updated_at: datetime | None = Field(
+        default=None,
+        description="Durumun son değiştiği an; sürüyorsa aşamanın başlama zamanıdır.",
+    )
     error: str | None = Field(default=None, description="state=basarisiz ise nedeni.")
     match_method: MatchMethod | None = Field(
         default=None, description="Çağrının müşteri/tekne eşleştirme yöntemi (#119)."
@@ -292,6 +321,19 @@ class CallAccepted(BaseModel):
     call_id: UUID
     state: CallState
     task_id: str | None = Field(default=None, description="Arka plan görevinin kimliği.")
+    already_running: bool = Field(
+        default=False,
+        description=(
+            "True: çağrı zaten işleniyordu, yeni görev açılmadı; state mevcut durumdur (#218). "
+            "Bu bir hata değildir; arayüz mevcut ilerlemeyi göstermeye devam eder."
+        ),
+    )
+    stage: CallStage | None = Field(
+        default=None, description="Süren işlemin aşaması (yalnızca already_running iken dolu)."
+    )
+    updated_at: datetime | None = Field(
+        default=None, description="Durumun son değiştiği an (yalnızca already_running iken dolu)."
+    )
 
 
 class CallStatus(BaseModel):
@@ -299,9 +341,14 @@ class CallStatus(BaseModel):
 
     call_id: UUID
     state: CallState
+    stage: CallStage | None = Field(
+        default=None, description="İşlem sürüyorsa aşaması (kuyruk, stt, analiz); bittiyse null."
+    )
     analysis_version: int | None = Field(default=None, description="Biten son analiz sürümü.")
     error: str | None = None
-    updated_at: datetime
+    updated_at: datetime = Field(
+        description="Durumun son değiştiği an; sürüyorsa aşamanın başlama zamanıdır."
+    )
 
 
 # --- Miço AI sohbeti (#28) ----------------------------------------------------------------

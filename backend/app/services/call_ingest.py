@@ -11,7 +11,7 @@ Her geçiş ayrı bir işlemde kaydedilir; arayüz `GET /calls/{id}/status` ile 
 
 import time
 from collections.abc import Sequence
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any, Literal, Protocol
 from uuid import UUID
 
@@ -24,7 +24,7 @@ from app.agents.orchestrator import OrchestrationResult
 from app.core.errors import ConflictError, NotFoundError
 from app.db.models.ai import AnalysisResult as AnalysisRow
 from app.db.models.ai import Call, Transcript, TranscriptSegment
-from app.schemas.api import CallCreate, CallState, CallStatus, SegmentIn
+from app.schemas.api import CallCreate, CallState, CallStatus, SegmentIn, stage_of
 from app.services.analysis_store import save_analysis, save_transcript
 from app.services.call_matching import match_call
 from app.services.masking import mask_text
@@ -111,20 +111,34 @@ async def set_state(
 
 
 AnalysisKind = Literal["analysis", "stt"]
+# `request_analysis` sonucu: başlatılacak görev ya da "running" (çağrı zaten işleniyor).
+AnalysisRequest = Literal["analysis", "stt", "running"]
+
+ACTIVE_STATES: tuple[str, ...] = ("beklemede", "yaziya_cevriliyor", "isleniyor")
 
 
-async def request_analysis(session: AsyncSession, call_id: UUID) -> AnalysisKind:
+async def request_analysis(
+    session: AsyncSession, call_id: UUID, *, stale_after_min: int | None = None
+) -> AnalysisRequest:
     """Çağrıyı (yeniden) işlemeye alır ve hangi görevin başlatılacağını döner. Commit çağıranındır.
 
     - Transkript varsa: yeniden analiz (`analysis`, yeni sürüm).
     - Transkript yok ama ses varsa (ör. STT hata vermişti): önce yazıya çevirme (`stt`).
-    Çağrı yoksa 404; zaten işleniyorsa 409; ne transkript ne ses varsa 409.
+    - Çağrı zaten işleniyorsa (#218) hata değil `running` döner; yeni görev açılmaz, durum
+      değişmez. Satır kilitli okunduğu için eşzamanlı iki istekten yalnızca biri görev açar.
+      `stale_after_min` verilirse o süredir hareketsiz kalan çağrı takılı sayılır ve yeniden
+      kuyruğa alınır (kurtarma görevinin gelmesi beklenmez).
+    Çağrı yoksa 404; ne transkript ne ses varsa 409.
     """
     call = await session.get(Call, call_id, with_for_update=True)
     if call is None:
         raise NotFoundError("Çağrı bulunamadı.")
-    if call.state in ("yaziya_cevriliyor", "isleniyor"):
-        raise ConflictError("Çağrı şu anda işleniyor.")
+    if call.state in ACTIVE_STATES:
+        stale = stale_after_min is not None and call.updated_at <= datetime.now(UTC) - timedelta(
+            minutes=stale_after_min
+        )
+        if not stale:
+            return "running"
     has_text = await session.scalar(
         select(func.count()).select_from(Transcript).where(Transcript.call_id == call_id)
     )
@@ -144,6 +158,7 @@ async def get_status(session: AsyncSession, call_id: UUID) -> CallStatus:
     return CallStatus(
         call_id=call_id,
         state=call.state,
+        stage=stage_of(call.state),
         analysis_version=version,
         error=call.error,
         updated_at=call.updated_at,

@@ -21,7 +21,7 @@ from sqlalchemy.ext.asyncio import (
 from app.agents.base import AnalysisContext
 from app.agents.orchestrator import OrchestrationResult
 from app.core.config import Settings
-from app.core.errors import ConflictError, NotFoundError
+from app.core.errors import NotFoundError
 from app.schemas.api import CallCreate
 from app.services.analysis_store import get_latest_analysis
 from app.services.call_ingest import (
@@ -196,12 +196,67 @@ async def test_request_analysis_rules(factory: async_sessionmaker[AsyncSession])
     async with factory() as session:
         assert (await get_status(session, call_id)).analysis_version == 2
 
-    # İşlenmekte olan çağrı tekrar başlatılamaz.
+    # İşlenmekte olan çağrıda ikinci istek hata vermez (#218): "running" döner, durum değişmez.
+    for active in ("beklemede", "yaziya_cevriliyor", "isleniyor"):
+        async with factory() as session, session.begin():
+            await set_state(session, call_id, active)
+        async with factory() as session, session.begin():
+            assert await request_analysis(session, call_id) == "running"
+        assert await state_of(factory, call_id) == active
+
+
+async def test_request_analysis_failed_call_can_be_retried(
+    factory: async_sessionmaker[AsyncSession],
+) -> None:
+    call_id = await new_call(factory)
+    async with factory() as session, session.begin():
+        await set_state(session, call_id, "basarisiz", "LLM hatası")
+
+    async with factory() as session, session.begin():
+        assert await request_analysis(session, call_id) == "analysis"
+    async with factory() as session:
+        status = await get_status(session, call_id)
+    assert status.state == "beklemede"
+    assert status.stage == "kuyruk"
+    assert status.error is None
+
+
+async def test_request_analysis_stale_active_call_is_requeued(
+    conn: AsyncConnection, factory: async_sessionmaker[AsyncSession]
+) -> None:
+    """Zaman aşımını aşan hareketsiz çağrı takılı sayılır ve yeniden kuyruğa alınır."""
+    call_id = await new_call(factory)
     async with factory() as session, session.begin():
         await set_state(session, call_id, "isleniyor")
+    await conn.execute(
+        text("UPDATE calls SET updated_at = now() - interval '30 minutes' WHERE id = :id"),
+        {"id": call_id},
+    )
+
+    # Taze eşiği (60 dk) aşılmadı: hâlâ süren sayılır.
     async with factory() as session, session.begin():
-        with pytest.raises(ConflictError):
-            await request_analysis(session, call_id)
+        assert await request_analysis(session, call_id, stale_after_min=60) == "running"
+    # 10 dk eşiği aşıldı: takılı, yeni görev açılır.
+    async with factory() as session, session.begin():
+        assert await request_analysis(session, call_id, stale_after_min=10) == "analysis"
+    assert await state_of(factory, call_id) == "beklemede"
+
+
+async def test_status_stage_follows_state(factory: async_sessionmaker[AsyncSession]) -> None:
+    call_id = await new_call(factory)
+    expected = {
+        "beklemede": "kuyruk",
+        "yaziya_cevriliyor": "stt",
+        "isleniyor": "analiz",
+        "tamam": None,
+        "kismi": None,
+        "basarisiz": None,
+    }
+    for state, stage in expected.items():
+        async with factory() as session, session.begin():
+            await set_state(session, call_id, state)  # type: ignore[arg-type]
+        async with factory() as session:
+            assert (await get_status(session, call_id)).stage == stage
 
 
 async def test_request_analysis_unknown_call_and_missing_transcript(
@@ -213,7 +268,9 @@ async def test_request_analysis_unknown_call_and_missing_transcript(
         with pytest.raises(NotFoundError):
             await get_status(session, uuid4())
 
-    result = await conn.execute(text("INSERT INTO calls (started_at) VALUES (now()) RETURNING id"))
+    result = await conn.execute(
+        text("INSERT INTO calls (started_at, state) VALUES (now(), 'basarisiz') RETURNING id")
+    )
     bare_call: UUID = result.scalar_one()  # transkripti olmayan çağrı
     async with factory() as session, session.begin():
         with pytest.raises(NoTranscriptError):
