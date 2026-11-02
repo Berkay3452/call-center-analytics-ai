@@ -1,0 +1,73 @@
+{
+  "call_id": "call_094",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Poyraz Rüzgârı için motor bakım paketi fiyatı almak istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Bodrum Milta'daki Bavaria mı? Hangi motor?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Volvo Penta, kırk beş beygir. Yağ, filtre, impeller, kayışlar gibi bir paket arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yıllık bakım paketimiz bunları kapsıyor. Fiyatı motor saatine göre değişir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Motor saati iki yüz kırk."
+    },
+    {
+      "speaker": "rep",
+      "text": "O saatte standart paket yeterli. Fiyatı söyleyeyim: tek motor için paket fiyatımız yazılı listemizde var."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bana WhatsApp'tan atar mısınız?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, numaranıza göndereyim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bir de başka bir firmadan teklif bekliyorum, onunla karşılaştırıp dönerim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii, ne zaman dönersiniz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Cuma gibi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Biz de cuma öğleden sonra sizi arasak olur mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Olur, o zamana karar vermiş olurum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Cuma öğleden sonra arıyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler."
+    }
+  ]
+}

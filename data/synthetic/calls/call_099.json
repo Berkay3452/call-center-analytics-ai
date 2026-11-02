@@ -1,0 +1,73 @@
+{
+  "call_id": "call_099",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Zıpkın'ın sterndrive körük değişimi teklifini almıştım, sizi arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, Çeşme'deki Saxdor için hazırlamıştık. Ne karar verdiniz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Aslında markanın yetkili servisiyle konuştum, onlarla yapacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum. Yetkili servisin sağladığı bir avantaj var mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Garanti kapsamında körükleri ücretsiz değiştireceklermiş."
+    },
+    {
+      "speaker": "rep",
+      "text": "O zaman çok mantıklı. Garanti kapsamıysa onlarda yaptırın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, teşekkür ederim ilginiz için."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz. Yağ değişimi için de onlarla mı gideceksiniz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Hepsini onlar yapacak."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tamam, notumuzu alıyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "İhtiyaç olursa size ararım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Memnuniyetle."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "Kolay gelsin."
+    },
+    {
+      "speaker": "rep",
+      "text": "Size de."
+    }
+  ]
+}

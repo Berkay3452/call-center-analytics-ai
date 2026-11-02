@@ -1,0 +1,73 @@
+{
+  "call_id": "call_072",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Albatros'un paketinde kaç hakkım kaldı bakabilir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Bakıyorum, Göcek'teki Albatros. Altın paketiniz var, iki hakkınız duruyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Hiç kullanmamışım yani."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hayır, bu yıl bir tanesini kullanmışsınız, iki tane kalmış."
+    },
+    {
+      "speaker": "customer",
+      "text": "Süre ne zaman bitiyor?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Nisan sonuna kadar geçerli."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki bakımı kışın yaptırırsam o hakka sayılır mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, kış bakımı da paket kapsamında."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, o zaman şimdilik bir şey yok. Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz, ihtiyaç olunca arayın."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dilerim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Kolay gelsin."
+    },
+    {
+      "speaker": "rep",
+      "text": "Size de."
+    },
+    {
+      "speaker": "customer",
+      "text": "Hoşça kalın."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hoşça kalın."
+    }
+  ]
+}

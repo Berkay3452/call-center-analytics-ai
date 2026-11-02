@@ -1,0 +1,73 @@
+{
+  "call_id": "call_085",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, bir şey soracağım. Pazar günleri çalışıyor musunuz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Pazar günleri atölye kapalı, acil hattı açık."
+    },
+    {
+      "speaker": "customer",
+      "text": "Marmaris'te de aynı mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, bütün şubelerde aynı."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ödemeyi nasıl yapabiliyorum, kart geçiyor mu?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Kredi kartı, havale ve nakit geçerli. Taksit seçeneği var."
+    },
+    {
+      "speaker": "customer",
+      "text": "Kaç taksit?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Üç, altı ve dokuz taksit seçeneğimiz var, bankaya göre değişebiliyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam. Fatura kurumsal kesilebilir mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, vergi numaranızı iş emrine yazıyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Süper, şimdilik bu kadar."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz. Başka sorunuz var mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Hayır, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Görüşürüz."
+    }
+  ]
+}

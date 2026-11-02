@@ -1,0 +1,73 @@
+{
+  "call_id": "call_100",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Lodos'un sahil elektriği fişi ısınıyor, inverter de uyarı veriyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kalamış'taki Sealine mı? Fiş ne kadar ısınıyor, yanık kokusu var mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Eliyle tutulmayacak kadar sıcak olmuyor ama ılık, koku yok."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kablo ya da priz bağlantısı gevşemiş olabilir. Şimdi bağlı mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet bağlı, ben şu an evdeyim, marinadaki görevli haber verdi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Güvenlik için bir süre fişi çekmesini söyleyin, tekne bataryada kalsın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Söylerim. Ustanız ne zaman bakabilir?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yarın sabah müsait, ama teknede biri olması gerekiyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ben yarın akşam teknede olurum, sabah olmaz."
+    },
+    {
+      "speaker": "rep",
+      "text": "O zaman perşembe öğleden sonraya alalım mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Perşembe için eşimin işine bakmam lazım, yarın size döneyim mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Biz sizi yarın sabah arayalım, kesin saati o zaman yazalım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, yarın sabah arayın."
+    },
+    {
+      "speaker": "rep",
+      "text": "Dokuz gibi arıyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler."
+    }
+  ]
+}

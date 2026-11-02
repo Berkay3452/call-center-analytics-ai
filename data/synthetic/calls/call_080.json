@@ -1,0 +1,73 @@
+{
+  "call_id": "call_080",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Yıldız'ın sintine pompası otomatik çalışmıyor, elle açınca çalışıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Göcek'teki Princess mi? Sintinede su var mı şu an?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Hayır, kuru. Ama şamandıra aşağıda takılı kalmış gibi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Şamandıra anahtarı yapışmış olabilir. Hiç su almıyor, değil mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Hayır, sadece yağmur sonrası biraz birikiyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "O zaman acil değil ama sezon kapanmadan değiştirelim, yağmurda risk olmasın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, bu hafta içinde olabilir mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Perşembe öğleden sonra Göcek'te ustamız olacak."
+    },
+    {
+      "speaker": "customer",
+      "text": "Perşembe iyi, ben tekneye gelirim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Şamandıra anahtarı yanında olacak, bir saatte değişir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Fiyat nasıl?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Parça küçük, işçilikle birlikte makul bir tutar çıkar, iş sonunda yazılır."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, anlaştık."
+    },
+    {
+      "speaker": "rep",
+      "text": "Perşembe on beşe yazdım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler."
+    }
+  ]
+}

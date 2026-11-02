@@ -1,0 +1,73 @@
+{
+  "call_id": "call_063",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Kalyon'un jeneratöründe yağ basıncı alarmı veriyor, size sormak istedim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Marmaris'teki gulet mi? Jeneratörün markası ne?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Kohler, yirmi kilovat. Yük bindiğinde basınç düşüyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yağ seviyesine baktınız mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Seviye tamam, geçen ay yağını da değiştirdim."
+    },
+    {
+      "speaker": "rep",
+      "text": "O zaman yağ pompası ya da basınç sensörü olabilir. Ustamız bakar, bu hafta çarşambaya yer var."
+    },
+    {
+      "speaker": "customer",
+      "text": "Aslında biz bu işi geçen yıl başka bir ustaya yaptırmıştık."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hangi usta, onunla devam etmek isterseniz sorun değil."
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, jeneratör işlerini o yapıyor, ona sorduğumda cuma günü gelebileceğini söyledi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum. Bizim çarşambamız daha erken ama sizin kararınız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Biraz fiyat bakmak için aramıştım, o daha ucuz söylüyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tamam. İsterseniz fiyatını da yazarım ama bence siz onunla devam edin."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler, yine arayacağım başka bir iş olursa."
+    },
+    {
+      "speaker": "rep",
+      "text": "Memnuniyetle, kolay gelsin."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dilerim."
+    }
+  ]
+}

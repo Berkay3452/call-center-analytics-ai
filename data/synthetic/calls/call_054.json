@@ -1,0 +1,73 @@
+{
+  "call_id": "call_054",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Ufuk için cila ve güverte bakımı fiyatı almak istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii. Ufuk Azimut elli beş değil mi? Göcek'te."
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet. Gövde cilası yapılsın, bir de tik güverte çok kararmış."
+    },
+    {
+      "speaker": "rep",
+      "text": "Güverte tik mi, sentetik mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Tik. Eskiden her yıl yağ sürerdik ama bu yıl atladık."
+    },
+    {
+      "speaker": "rep",
+      "text": "Önce temizlenip sonra koruyucu yağ sürülür. Gövde için de iki aşamalı pasta cila öneririm."
+    },
+    {
+      "speaker": "customer",
+      "text": "Fiyatı ne olur kabaca?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Tekneyi görmeden net söyleyemem ama gövde ve güverteyi birlikte yazıp size bugün teklif göndereceğiz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Mail olarak mı gelir?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, e-postanıza PDF olarak gelir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam. Ne zaman başlayabilirsiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Teklifi onaylarsanız gelecek ay başında bir hafta ayırabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Güzel. Önce teklifi göreyim, sonra karar veririm."
+    },
+    {
+      "speaker": "rep",
+      "text": "Elbette, teklifi hazırlıyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz, iyi günler."
+    }
+  ]
+}

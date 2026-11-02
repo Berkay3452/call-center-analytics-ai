@@ -1,0 +1,73 @@
+{
+  "call_id": "call_076",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Ufuk'un salon kliması hiç çalışmıyor, yarın misafirlerim gelecek."
+    },
+    {
+      "speaker": "rep",
+      "text": "Göcek'teki Azimut mu? Klimanın ekranı açılıyor mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Ekran yanıyor ama hata kodu çıkıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hata kodunu okur musunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "E dört gibi bir şey."
+    },
+    {
+      "speaker": "rep",
+      "text": "Genelde bu kod su akışı sorunudur. Klimanın deniz suyu filtresi tıkalı olabilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Filtre nerede? Daha önce bakmadım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Makine dairesinde klima pompasının yanında. Ustamız bugün gelir bakar."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bugün gelebilirse çok sevinirim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Öğleden sonra ikide Göcek'te olur, yarım saatte çözülmezse pompaya bakar."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, iki iyi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Randevuyu ikiye yazdım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler, çok yardımcı oldunuz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kolay gelsin."
+    }
+  ]
+}

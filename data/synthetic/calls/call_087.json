@@ -1,0 +1,73 @@
+{
+  "call_id": "call_087",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, İmbat'ın motoru rölantide tekliyor, güç de kaybediyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Çeşme'deki First 36 mı? Yakıt filtresi ne zaman değişti?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Geçen yaz sizin ustanız değiştirdi, yine tekliyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geçen yaz yaptığımız işten sonra mı başladı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, iki ay sonra. Aynı sorunu yaşıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Altı ay işçilik garantimiz var, ama yıl geçmiş. Yine de ustamız ücretsiz bakar."
+    },
+    {
+      "speaker": "customer",
+      "text": "Hayır, güvenim kalmadı. Aynı sorun tekrar ediyorsa iş düzgün yapılmamış."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum ama bu farklı bir arıza da olabilir, enjektör gibi."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bana yine aynı şeyi söylüyorsunuz. Başka bir yerde bakmasını sağlayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Peki, isterseniz iş emrini geri dönüş notuyla açabilirim, kalite ekibi arar."
+    },
+    {
+      "speaker": "customer",
+      "text": "Gerek yok, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tamam, size zorluk çıkarmak istemem. Memnuniyetsizliğiniz için üzgünüm."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "Kolay gelsin."
+    },
+    {
+      "speaker": "rep",
+      "text": "Size de."
+    }
+  ]
+}

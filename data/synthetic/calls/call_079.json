@@ -1,0 +1,73 @@
+{
+  "call_id": "call_079",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Yelkovan'ın karinası için fiyat almak istiyorum, bu kış boyatacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Pendik'teki Grand Banks mı? Karina en son ne zaman boyandı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "İki yıl önce, osmoz kontrolü de yapılmıştı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Bu sefer yüksek basınçla yıkama, epoksi astar kontrolü ve iki kat zehirli boya yazalım mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, tutya değişimi de olsun."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tekneyi karaya çekmek gerekecek, vinç ve bekleme ücreti de teklife girecek."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ne kadar kalır karada?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yaklaşık on gün. Boya kuruması için bir hafta ayırıyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bütçem için yaklaşık rakam öğrenmem lazım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Bugün öğleden sonra yazılı teklif gönderelim, kalemleri ayrı göreceksiniz."
+    },
+    {
+      "speaker": "customer",
+      "text": "E-posta kayıtlı mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Kayıtlı, oraya gönderiyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, teklife göre karar vereceğim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii, hazırlıyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz."
+    }
+  ]
+}

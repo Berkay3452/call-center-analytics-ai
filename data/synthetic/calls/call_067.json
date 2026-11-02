@@ -1,0 +1,73 @@
+{
+  "call_id": "call_067",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi akşamlar."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi akşamlar, Pruva'nın motor yağ ve filtre bakımını yaptırmak istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Marmaris'teki Hanse. Motor saati kaç?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Dört yüz küsur saat. Yağı bir yıl önce değiştirmiştik."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yağ, yağ filtresi, yakıt filtresi ve impeller kontrolüyle yapalım derim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Fiyat nedir?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Bu motor için paket fiyatımız belli, size mesajla yazarım ama kaba hesap o kadar yüksek değil."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, uygun. Ne zaman gelirsiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Gelecek salı sabah dokuzda Marmaris'te olabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Salı olur, tekne marinada olacak."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yedek filtre parçaları bizde, siz bir şey almayın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki, nasıl ödeme yapıyorum?"
+    },
+    {
+      "speaker": "rep",
+      "text": "İş bitince faturayla birlikte havale ya da kart."
+    },
+    {
+      "speaker": "customer",
+      "text": "Güzel. Randevumu yazdınız mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yazdım, salı dokuz Marmaris."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi akşamlar."
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "call_id": "call_091",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, daha önce sizinle konuşmuştum. Teknem için ekspertiz ve onarım listesi teklifiniz vardı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, Kalamış'taki Bavaria için hazırlamıştık. Gördünüz mü?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Gördüm, teşekkür ederim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kalemleri konuşmak ister misiniz? Gerekirse bazılarını çıkarırız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Hayır, kalemlerde sorun yok."
+    },
+    {
+      "speaker": "rep",
+      "text": "Fiyat ya da takvimle ilgili bir sorun mu var?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Şimdilik bir şey diyemem, aslında vazgeçtim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum. Sebebini paylaşmak ister misiniz, belki çözebiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Özel bir sebep yok, planlar değişti."
+    },
+    {
+      "speaker": "rep",
+      "text": "Peki, teklif bir ay daha geçerli, fikir değiştirirseniz haber verin."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, ihtiyaç olursa ararım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Başka bir konuda yardımcı olabilir miyim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Hayır, sağ olun."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Görüşürüz."
+    }
+  ]
+}

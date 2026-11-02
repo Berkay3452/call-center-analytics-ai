@@ -1,0 +1,73 @@
+{
+  "call_id": "call_057",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Kutup'ta pervane ve şaft yatağında titreşim var, size teklif sormuştum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, teklifi dün gönderdik, gördünüz mü?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Gördüm. İki pervane, iki şaft yatağı, karaya çekme ve işçilik, toplam çok yüksek."
+    },
+    {
+      "speaker": "rep",
+      "text": "Karaya çekme ve vinç ücreti de içinde, tekneyi Kalamış'ta çıkarıyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet ama yine de bütçemin çok üstünde. İndirim yapabilir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yalnızca yatakları değiştirip pervaneleri tamir ettirmek daha ucuza gelir, onu da yazabilirim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Pervaneler zaten çizik, değişmesi lazım diyorlar."
+    },
+    {
+      "speaker": "rep",
+      "text": "O zaman değişim şart. İşçilikte yüzde on indirim yapabilirim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Toplamda yine yüksek kalıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum. Ödeme tarafında taksit seçeneğimiz de var."
+    },
+    {
+      "speaker": "customer",
+      "text": "Hayır, bu fiyata yaptırmam. Başka firmadan da sormayacağım, sezon sonuna bırakırım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Peki, nasıl isterseniz. İhtiyaç olursa arayın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kolay gelsin."
+    }
+  ]
+}

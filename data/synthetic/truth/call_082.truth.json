@@ -1,0 +1,18 @@
+{
+  "call_id": "call_082",
+  "call_type": "teklif",
+  "crm": {
+    "request_category": "temizlik_bakim",
+    "location": "Ataköy Marina",
+    "problem": null,
+    "service_mode": null,
+    "urgency": "dusuk",
+    "potential_job": "Bimini tente ve sprayhood yenileme",
+    "next_action": "teklif_hazirla"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Fiyat isteniyor, karar yok: teklif. Teklif hazırlanacak: teklif_hazirla."
+}

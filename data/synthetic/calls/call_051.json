@@ -1,0 +1,77 @@
+{
+  "call_id": "call_051",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Günaydın, Rüzgar'ın motoru ısınıyor, sıcaklık alarmı çalıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Günaydın. Motoru hemen durdurdunuz mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet durdurdum, şu an bağlamada duruyoruz, Tuzla'dayız."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi yapmışsınız. Alarm kaç dakika çalıştıktan sonra geldi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "On beş yirmi dakika sonra. Egzozdan su da zayıf geliyor gibi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Soğutma suyu pompasının impelleri olabilir. En son ne zaman değişti?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Hatırlamıyorum, bir yıldan fazla oldu."
+    },
+    {
+      "speaker": "rep",
+      "text": "O zaman büyük ihtimalle impeller. Soğutma suyu girişini kontrol ettiniz mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Vanayı açık gördüm, filtreyi de temizledim ama değişmedi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum. Yarın yarışa çıkacağınızı da düşünürsek bugün ustamızın gelmesi lazım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, yarın sabah çıkış var, bugün olabilir mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Öğleden sonra üçte ustamız Tuzla'da olur."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, güzel. Bir saat sürer mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "İmpeller değişimi yaklaşık bir buçuk saat. Parça stokta var."
+    },
+    {
+      "speaker": "customer",
+      "text": "Harika, o zaman öyle yapalım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Randevuyu öğleden sonra üçe yazıyorum, usta gelmeden önce arayacak."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, görüşürüz."
+    }
+  ]
+}

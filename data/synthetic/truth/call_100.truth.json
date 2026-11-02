@@ -1,0 +1,18 @@
+{
+  "call_id": "call_100",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "elektrik_elektronik",
+    "location": "Kalamış Marina",
+    "problem": "Sahil elektriği fişinde ısınma, inverter uyarı veriyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": null,
+    "next_action": "geri_ara"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Tekne kullanılabilir: normal. Müşteri teknede değil, ertesi gün netleştirip dönecek; firma arayacak: geri_ara."
+}

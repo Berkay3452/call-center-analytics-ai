@@ -1,0 +1,18 @@
+{
+  "call_id": "call_067",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "makine",
+    "location": "Marmaris Netsel Marina",
+    "problem": "Rutin motor yağ ve filtre bakımı",
+    "service_mode": "yerinde_servis",
+    "urgency": "dusuk",
+    "potential_job": null,
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Planlı bakım, acelesi yok: dusuk. Fiyatı uygun bulup randevu aldı: servis_randevusu_olustur, satisa_donustu."
+}

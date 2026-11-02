@@ -1,0 +1,73 @@
+{
+  "call_id": "call_061",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Meltem'de tatlı su basıncı çok düştü, hidrofor da sürekli çalışıp duruyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ataköy'deki Dufour mu? Su tankı dolu mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Dolu, dün doldurdum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Musluklarda hava püskürmesi oluyor mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, arada fışkırıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tank çıkışında hava alıyor olabilir ya da hidrofor membranı bitmiş. Ustamız bakmalı."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ne kadar tutar böyle bir şey?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Hidrofor değişirse parça ve işçilikle yaklaşık o aralıkta olur, ama önce bakmak gerek."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bu hafta teknede olmayacağım, haftaya bakabilir miyim diyeceğim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Randevuyu şimdi açabiliriz, yine de değiştirebilirsiniz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bir de eşime sormam lazım, yeni sezon için başka işler de var."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum. O zaman karar verince siz mi arayacaksınız, biz mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Siz arayın en iyisi, yarın akşam gibi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tamam, yarın akşam altıdan sonra arıyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz."
+    }
+  ]
+}

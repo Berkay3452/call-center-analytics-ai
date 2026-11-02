@@ -1,0 +1,73 @@
+{
+  "call_id": "call_089",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Fora'nın kliması için yıllık bakım yaptırmak istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Göcek'teki katamaran. Kaç klima ünitesi var?"
+    },
+    {
+      "speaker": "customer",
+      "text": "İki kabinde ve salonda, toplam üç."
+    },
+    {
+      "speaker": "rep",
+      "text": "Filtre temizliği, soğutucu pompa ve gaz kontrolü yapalım mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, kış gelmeden bitsin."
+    },
+    {
+      "speaker": "rep",
+      "text": "Üç ünite için yarım gün yeter. Önümüzdeki salı müsait."
+    },
+    {
+      "speaker": "customer",
+      "text": "Salı olur, teknedeyim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Sabah on gibi ustamız Göcek'te olur."
+    },
+    {
+      "speaker": "customer",
+      "text": "Parça lazım olursa fiyatı önceden söylenir mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, onayınızı almadan parça takmayız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Güzel. Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Randevuyu salı ona yazdım."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dilerim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Görüşürüz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kolay gelsin."
+    }
+  ]
+}

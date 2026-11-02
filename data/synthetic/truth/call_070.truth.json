@@ -1,0 +1,18 @@
+{
+  "call_id": "call_070",
+  "call_type": "bilgi",
+  "crm": {
+    "request_category": null,
+    "location": "Çeşme Marina",
+    "problem": null,
+    "service_mode": null,
+    "urgency": "dusuk",
+    "potential_job": null,
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Hizmet bölgesi sorusu, görüşmede yanıtlandı: aksiyon_yok. İş konuşulmuyor: kategori ve hizmet biçimi null."
+}

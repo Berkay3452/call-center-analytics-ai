@@ -1,0 +1,73 @@
+{
+  "call_id": "call_062",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi akşamlar."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi akşamlar, Bora'nın yangın söndürücü ve can salı kontrolünü yaptırmak istiyorum, fiyat alabilir miyim?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii. Pendik'teki Absolute değil mi? Kaç söndürücünüz var?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Altı tane söndürücü var, bir de dört kişilik can salı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Söndürücülerin dolum tarihi belli mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "İki tanesinin süresi geçmiş galiba, diğerlerini bilmiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hepsini kontrol edip gerekenleri dolum veya yenileme için yazarız. Can salı da servise gider."
+    },
+    {
+      "speaker": "customer",
+      "text": "Can salı ne kadar sürer?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Servise göre yedi on gün sürer, sertifikayla geri gelir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Sertifika sigorta için lazım olacak."
+    },
+    {
+      "speaker": "rep",
+      "text": "Sertifika dahildir. Fiyatı toplayıp bugün teklif gönderelim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Güzel, e-posta yeterli."
+    },
+    {
+      "speaker": "rep",
+      "text": "E-postanızdan gönderiyoruz. Kararınızı iletirseniz randevu açarız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, bakıp dönerim."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi akşamlar."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi akşamlar, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz."
+    }
+  ]
+}

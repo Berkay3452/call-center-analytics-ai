@@ -1,0 +1,18 @@
+{
+  "call_id": "call_092",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "makine",
+    "location": "Pendik Marinturk Marina",
+    "problem": "Motor çalışırken sağ taraftan sıcak su sızıyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": null,
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Sorun var ama tekne kullanılabiliyor: normal. Randevu verildi."
+}

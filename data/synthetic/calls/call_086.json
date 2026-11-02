@@ -1,0 +1,73 @@
+{
+  "call_id": "call_086",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Kalyon'un şaft salmastrasından su fışkırıyor, sintine hızla doluyor!"
+    },
+    {
+      "speaker": "rep",
+      "text": "Marmaris'teki gulet mi? Sintine pompaları çalışıyor mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Çalışıyor ama yetişmiyor gibi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yedek pompayı da açın. Salmastra somununu sıkabiliyor musunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Elimle sıkmaya çalışıyorum, biraz azaldı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anahtar varsa çeyrek tur daha sıkın, fazla sıkmayın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Sıktım, akış azaldı ama durmadı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamızı şimdi gönderiyorum, yirmi dakikada Marmaris'te olur."
+    },
+    {
+      "speaker": "customer",
+      "text": "Marina vinci de lazım olur mu?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Gerekirse ustamız yönlendirir, siz marinayı da uyarın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, uyarıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Pompaları kapatmayın, su seviyesini takip edin."
+    },
+    {
+      "speaker": "customer",
+      "text": "Takip ediyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Usta sizi arayacak."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok sağ olun."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geçmiş olsun."
+    }
+  ]
+}

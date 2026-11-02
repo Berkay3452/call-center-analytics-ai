@@ -1,0 +1,73 @@
+{
+  "call_id": "call_058",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi akşamlar."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi akşamlar. Karayel'de seyir ekranı ve otopilot hiç açılmıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tuzla'daki Fairline mı? Elektrik geliyor mu, diğer cihazlar çalışıyor mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Işıklar, buzdolabı çalışıyor, sadece ekran ve otopilot ölü."
+    },
+    {
+      "speaker": "rep",
+      "text": "Sigorta atmış olabilir. Panelde kırmızı veya sarı sigorta var mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Bir sigorta kopmuş gibi duruyor ama yedeğim yok."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ekranın kendi sigortası da olabilir. Bunu ustamız yerinde bakmalı."
+    },
+    {
+      "speaker": "customer",
+      "text": "Hafta sonu Marmara'ya çıkacaktık. Yarın gelebilir mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yarın sabah dokuzda Tuzla'da ustamız olur."
+    },
+    {
+      "speaker": "customer",
+      "text": "Güzel. Elektronik kısmı da bakar mı, haritalar falan?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, elektrik ustamız seyir elektroniğine de bakıyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Parça lazım olursa?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Sigorta ve basit parçalar yanında olur. Büyük parça çıkarsa size haber veririz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki, yarın dokuz iyi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Randevunuzu yazdım, Tuzla Marina'da görüşürüz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi akşamlar."
+    }
+  ]
+}

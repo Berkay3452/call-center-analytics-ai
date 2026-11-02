@@ -1,0 +1,73 @@
+{
+  "call_id": "call_074",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Lodos'un sol motoru çok yağ yakıyor, revizyon yaptırmayı düşünüyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kalamış'taki Sealine mı? Motor saati kaç?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Dört bin saati geçti."
+    },
+    {
+      "speaker": "rep",
+      "text": "O saatte revizyon mantıklı. Motoru indirip atölyede açmak gerekir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ne kadar sürer, ne kadar tutar?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Üç dört hafta sürer. Fiyat için önce kompresyon ölçümü yapmak lazım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ölçümü siz yapar mısınız?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, ustamız yerinde ölçer, sonra net teklif veririz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bir de sağ motorun saati yakın, ikisini birlikte yaptırsam indirim olur mu?"
+    },
+    {
+      "speaker": "rep",
+      "text": "İkisinde birlikte işçilikte anlaşma yapabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Şu an karar veremem, ortağıma sormam lazım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii. O zaman ne zaman arayalım?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Haftaya perşembe arayın, o güne kadar konuşmuş olurum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Perşembe öğleden sonra arıyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz."
+    }
+  ]
+}

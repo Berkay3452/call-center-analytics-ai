@@ -1,0 +1,73 @@
+{
+  "call_id": "call_060",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Lodos'un motor bölmesinde çok yoğun mazot kokusu var, yerde yakıt görüyorum!"
+    },
+    {
+      "speaker": "rep",
+      "text": "Motorlar çalışıyor mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Hayır, kapalı. Ama bölmede su gibi yakıt birikmiş."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kalamış'ta mısınız?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, marinadayım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hiçbir şeyi çalıştırmayın, sigara ve kıvılcım olmasın, aküyü de ayırın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, ana şalteri kapattım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Çok iyi. Yakıt vanasını da kapatabiliyor musunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet kapattım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamızı hemen Kalamış'a yönlendiriyorum, yarım saatte orada."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, çevreye sızarsa ceza gelir diye korkuyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Marina görevlisine de haber verin, emici örtü getirsinler."
+    },
+    {
+      "speaker": "customer",
+      "text": "Haber veriyorum şimdi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Usta sizi arayacak, ona yerini tam tarif edin."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, bekliyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geçmiş olsun, ustamız yoldadır."
+    }
+  ]
+}
