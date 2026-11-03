@@ -117,6 +117,26 @@ export const NEXT_ACTION_LABELS: Record<NextAction, string> = {
   aksiyon_yok: "Aksiyon gerekmiyor",
 };
 
+/**
+ * CRM alanlarının (API anahtarı → ekranda görünen ad) tek sözlüğü (#208).
+ * CRM kartı, "Konuşmadan alıntılar", düzenleme penceresi ve çağrı detayı bu sözlüğü kullanır;
+ * ekranda ham değişken adı (request_category vb.) gösterilmez.
+ */
+export const CRM_FIELD_LABELS = {
+  request_category: "Talep kategorisi",
+  location: "Konum",
+  problem: "Sorun",
+  service_mode: "Hizmet biçimi",
+  urgency: "Aciliyet",
+  potential_job: "Olası iş",
+  next_action: "Sonraki adım",
+} as const;
+
+/** Bilinmeyen anahtar gelirse ham ad yerine genel bir Türkçe ad döner. */
+export function crmFieldLabel(key: string): string {
+  return (CRM_FIELD_LABELS as Record<string, string>)[key] ?? "Diğer alan";
+}
+
 export const LOSS_REASON_LABELS: Record<LossReason, string> = {
   fiyat: "Fiyat yüksek bulundu",
   gec_donus: "Geç dönüş yapıldı",

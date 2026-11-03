@@ -532,8 +532,11 @@ export const mockSeedCrm: CrmRecordItem[] = [
     "potential_job": "Motor arıza tespiti",
     "next_action": "servis_randevusu_olustur",
     "evidence": {
+      "request_category": "Motor gaz verildiğinde devir yükselmiyor",
       "location": "Tuzla Marina",
-      "problem": "Motor gaz verildiğinde devir yükselmiyor"
+      "problem": "Motor gaz verildiğinde devir yükselmiyor",
+      "service_mode": "Yarın bir usta gelebilir mi",
+      "next_action": "Usta uygunluğuna bakıp sizi bilgilendireceğiz"
     }
   },
   {
