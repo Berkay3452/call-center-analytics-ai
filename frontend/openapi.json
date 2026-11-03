@@ -1983,6 +1983,21 @@
             "type": "string",
             "nullable": true
           },
+          "match_method": {
+            "$ref": "#/components/schemas/MatchMethod",
+            "nullable": true,
+            "description": "Çağrının müşteri/tekne eşleştirme yöntemi (telefon, ad_tekne, elle, yok); null: eşleştirme henüz denenmedi. Onay için müşteri eşleşmiş olmalıdır (#209)."
+          },
+          "matched_customer_name": {
+            "type": "string",
+            "nullable": true,
+            "description": "Eşleşmişse bağlı müşterinin kayıtlı adı (`customer_name` çağrı ipucudur)."
+          },
+          "matched_boat_name": {
+            "type": "string",
+            "nullable": true,
+            "description": "Eşleşmişse çağrıya bağlı teknenin kayıtlı adı."
+          },
           "analysis_version": {
             "type": "integer"
           },

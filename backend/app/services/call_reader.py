@@ -20,6 +20,7 @@ from sqlalchemy.sql import Select
 from app.core.errors import NotFoundError
 from app.db.models.ai import AnalysisResult as AnalysisRow
 from app.db.models.ai import Call, CrmReview, Transcript, TranscriptSegment
+from app.db.models.external import Boat, Customer
 from app.domain.enums import CrmReviewStatus
 from app.schemas.api import (
     CallDetail,
@@ -284,10 +285,15 @@ async def list_crm_records(session: AsyncSession, filters: CallFilters) -> Page[
             func.coalesce(CrmReview.status, "bekliyor").label("review_status"),
             func.coalesce(CrmReview.edited_fields, text("'{}'::jsonb")).label("edited_fields"),
             CrmReview.service_order_id,
+            Call.match_method,
+            Customer.full_name,
+            Boat.name,
         )
         .select_from(Call)
         .join(latest_analysis, Call.id == latest_analysis.c.call_id)
         .outerjoin(CrmReview, CrmReview.analysis_id == latest_analysis.c.id)
+        .outerjoin(Customer, Customer.id == Call.customer_id)
+        .outerjoin(Boat, Boat.id == Call.boat_id)
     )
     if conditions:
         query_stmt = query_stmt.where(*conditions)
@@ -309,6 +315,9 @@ async def list_crm_records(session: AsyncSession, filters: CallFilters) -> Page[
                 started_at=r[1],
                 customer_name=r[2],
                 boat_name=r[3],
+                match_method=r[16],
+                matched_customer_name=r[17],
+                matched_boat_name=r[18],
                 analysis_version=r[4],
                 request_category=edited.get("request_category", r[5]),
                 location=edited.get("location", r[6]),
