@@ -53,6 +53,8 @@ export function ChatWindow({
           Array.isArray(msg.citations) &&
           msg.citations.length > 0;
         const error = msg.error;
+        // İlk içerik gelene kadar balon yok; bekleme yalnızca durum göstergesiyle anlatılır (#212).
+        if (!isUser && !msg.content.trim() && !error) return null;
         const isConfigError =
           !!error &&
           (error.isApiKeyError ||
@@ -60,7 +62,12 @@ export function ChatWindow({
             error.message.includes("LLM_API_KEY"));
 
         return (
-          <div key={msg.id} className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+          <div
+            key={msg.id}
+            data-testid="chat-message"
+            data-role={msg.role}
+            className={`flex ${isUser ? "justify-end" : "justify-start"}`}
+          >
             <div
               className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm sm:max-w-[75%] ${
                 isUser
@@ -68,15 +75,17 @@ export function ChatWindow({
                   : "rounded-bl-sm border border-slate-200 bg-white text-slate-900"
               }`}
             >
-              <p className="whitespace-pre-wrap break-words leading-relaxed">
-                {msg.content}
-                {msg.isStreaming && (
-                  <span
-                    className="ml-1 inline-block h-4 w-1.5 animate-pulse bg-brand-600 align-middle"
-                    aria-hidden="true"
-                  />
-                )}
-              </p>
+              {msg.content.trim() && (
+                <p className="whitespace-pre-wrap break-words leading-relaxed">
+                  {msg.content}
+                  {msg.isStreaming && (
+                    <span
+                      className="ml-1 inline-block h-4 w-1.5 animate-pulse bg-brand-600 align-middle"
+                      aria-hidden="true"
+                    />
+                  )}
+                </p>
+              )}
 
               {isNotFound && !msg.isStreaming && (
                 <p className="mt-2 text-xs text-slate-500">
@@ -87,7 +96,7 @@ export function ChatWindow({
               {hasCitations && <CitationList citations={msg.citations} />}
 
               {error && (
-                <div role="alert" className="mt-2 space-y-2 text-xs text-red-700">
+                <div role="alert" className={`${msg.content.trim() ? "mt-2 " : ""}space-y-2 text-xs text-red-700`}>
                   <p>
                     {isConfigError
                       ? "Yapay zekâ servisi yapılandırılmamış. Sistem yöneticinize başvurun."

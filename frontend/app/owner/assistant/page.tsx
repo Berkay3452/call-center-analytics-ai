@@ -178,7 +178,9 @@ export default function AssistantPage() {
         copy[lastIndex] = {
           ...copy[lastIndex],
           isStreaming: false,
-          content: copy[lastIndex].content + "\n\n*(Akış kullanıcı tarafından durduruldu)*",
+          content: copy[lastIndex].content.trim()
+            ? copy[lastIndex].content + "\n\n(Yanıt kullanıcı tarafından durduruldu)"
+            : "Yanıt kullanıcı tarafından durduruldu.",
         };
       }
       return copy;
