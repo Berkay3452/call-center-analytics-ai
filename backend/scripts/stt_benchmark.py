@@ -12,6 +12,7 @@ Referans metin: ses dosyasıyla aynı adlı sentetik çağrı (`data/synthetic/c
 → `call_001.wav`) veya ses yanındaki `.txt`. Ölçütler:
 - WER / CER: kelime ve karakter hata oranı (düşük iyi; maskeli adlar hesaba katılmaz)
 - RTF: işlem süresi / ses süresi (1'den küçükse gerçek zamandan hızlı)
+- Bellek: sürecin tepe çalışma kümesi (MB); her modeli ayrı süreçte koşarak ölçün.
 - Konuşmacı WER'i (`wer_rep`, `wer_customer`): her konuşmacının metni ayrı karşılaştırılır.
   Konuşmacılar doğru ayrılmazsa (ör. mono kayıt) bu değerler genel WER'den çok yüksek çıkar.
 """
@@ -33,6 +34,48 @@ from app.stt.registry import build_transcriber
 
 DATA = Path(__file__).parents[2] / "data" / "synthetic" / "calls"
 AUDIO_EXT = {".wav", ".mp3", ".m4a", ".ogg", ".flac", ".aac"}
+
+
+def peak_memory_mb() -> float | None:
+    """Sürecin tepe bellek kullanımı (MB); ölçülemezse None. Modeller ayrı süreçte ölçülmeli."""
+    try:
+        import resource  # Linux/macOS
+
+        peak = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        return round(peak / (1024 if sys.platform != "darwin" else 1024 * 1024), 0)
+    except ImportError:
+        pass
+    if sys.platform != "win32":
+        return None
+    import ctypes
+    from ctypes import wintypes
+
+    class Counters(ctypes.Structure):
+        _fields_ = [
+            ("cb", wintypes.DWORD),
+            ("PageFaultCount", wintypes.DWORD),
+            ("PeakWorkingSetSize", ctypes.c_size_t),
+            ("WorkingSetSize", ctypes.c_size_t),
+            ("QuotaPeakPagedPoolUsage", ctypes.c_size_t),
+            ("QuotaPagedPoolUsage", ctypes.c_size_t),
+            ("QuotaPeakNonPagedPoolUsage", ctypes.c_size_t),
+            ("QuotaNonPagedPoolUsage", ctypes.c_size_t),
+            ("PagefileUsage", ctypes.c_size_t),
+            ("PeakPagefileUsage", ctypes.c_size_t),
+        ]
+
+    counters = Counters()
+    counters.cb = ctypes.sizeof(Counters)
+    kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+    kernel.GetCurrentProcess.restype = wintypes.HANDLE
+    psapi = ctypes.WinDLL("psapi", use_last_error=True)
+    psapi.GetProcessMemoryInfo.argtypes = [
+        wintypes.HANDLE,
+        ctypes.POINTER(Counters),
+        wintypes.DWORD,
+    ]
+    ok = psapi.GetProcessMemoryInfo(kernel.GetCurrentProcess(), ctypes.byref(counters), counters.cb)
+    return round(counters.PeakWorkingSetSize / (1024 * 1024)) if ok else None
 
 
 def reference_text(audio: Path) -> str | None:
@@ -75,6 +118,8 @@ async def run(args: argparse.Namespace) -> list[dict[str, Any]]:
         overrides["whisper_cpu_threads"] = args.threads
     if args.compute_type:
         overrides["whisper_compute_type"] = args.compute_type
+    if args.vad_threshold is not None:
+        overrides["whisper_vad_threshold"] = args.vad_threshold
     if overrides:
         settings = settings.model_copy(update=overrides)
     providers = args.providers.split(",") if args.providers else [settings.stt_provider]
@@ -84,10 +129,12 @@ async def run(args: argparse.Namespace) -> list[dict[str, Any]]:
     for provider in providers:
         transcriber = build_transcriber(settings, provider)
         load_model = getattr(transcriber, "_get_model", None)
+        load_s: float | None = None
         if load_model is not None:  # modeli ayrı yükle: soğuk başlangıç süresi (#163)
             loading = time.perf_counter()
             load_model()
-            print(f"  {provider:18} model yükleme: {time.perf_counter() - loading:.1f}s")
+            load_s = round(time.perf_counter() - loading, 1)
+            print(f"  {provider:18} model yükleme: {load_s}s")
         for audio in audio_files(Path(args.audio)):
             row: dict[str, Any] = {"provider": provider, "file": audio.name}
             try:
@@ -108,6 +155,8 @@ async def run(args: argparse.Namespace) -> list[dict[str, Any]]:
             }
             row |= {
                 "model": result.model,
+                "load_s": load_s,
+                "peak_mb": peak_memory_mb(),
                 "duration_s": round(result.duration_sec, 1),
                 "processing_s": round(result.processing_s, 1),
                 "rtf": round(result.processing_s / result.duration_sec, 2)
@@ -145,8 +194,12 @@ def summarize(rows: list[dict[str, Any]]) -> None:
         spk = _mean(
             [(r["wer_rep"] + r["wer_customer"]) / 2 for r in ok if r.get("wer_rep") is not None]
         )
+        peak = max((r["peak_mb"] for r in ok if r.get("peak_mb")), default=None)
+        proc = sum(r["processing_s"] for r in ok)
+        audio = sum(r["duration_s"] for r in ok)
         print(
             f"  {provider:18} dosya={len(ok)}  hata={len(mine) - len(ok)}"
+            f"  toplam-RTF={round(proc / audio, 2) if audio else None}  tepe-bellek={peak} MB"
             f"  WER={None if wer_avg is None else round(wer_avg, 3)}"
             f"  konuşmacı-WER={None if spk is None else round(spk, 3)}"
             f"  RTF={None if rtf_avg is None else round(rtf_avg, 2)}"
@@ -163,6 +216,7 @@ def main() -> None:
     parser.add_argument("--beam", type=int, help="WHISPER_BEAM_SIZE'ı ez (1 en hızlı)")
     parser.add_argument("--threads", type=int, help="WHISPER_CPU_THREADS'i ez (0: otomatik)")
     parser.add_argument("--compute-type", help="WHISPER_COMPUTE_TYPE'ı ez (int8, int8_float32...)")
+    parser.add_argument("--vad-threshold", type=float, help="WHISPER_VAD_THRESHOLD'u ez")
     parser.add_argument("--layout", choices=["mono", "stereo_rep_left", "stereo_rep_right"])
     parser.add_argument("--out", help="Sonuçları JSON olarak kaydet")
     args = parser.parse_args()

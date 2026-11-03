@@ -17,7 +17,7 @@ import re
 import sys
 import wave
 from array import array
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -72,7 +72,7 @@ def shift_pitch(pcm: bytes, factor: float) -> bytes:
 
 def build_wav(
     turns: Sequence[dict[str, Any]],
-    synth: Synth,
+    synth: Synth | Mapping[str, Synth],
     *,
     stereo: bool = True,
     customer_pitch: float = 1.0,
@@ -83,11 +83,14 @@ def build_wav(
     `stereo=True` (varsayılan, santral kaydı gibi): temsilci (`rep`) sol, müşteri (`customer`)
     sağ kanala konur; `STT_CHANNEL_LAYOUT=stereo_rep_left` ile konuşmacılar kanaldan ayrılır.
     `customer_pitch` > 1 müşteri sesinin perdesini yükseltir (iki farklı ses gibi duyulur).
+    `synth` konuşmacı adına (`rep`, `customer`) göre bir sözlük de olabilir: iki ayrı gerçek ses
+    (ör. kadın temsilci, erkek müşteri) kullanılırken perde kaydırmaya gerek kalmaz.
     """
     chunks: list[tuple[str, bytes]] = []
     rate = 0
     for turn in turns:
-        pcm, sr = synth(clean_for_speech(turn["text"]))
+        voice = synth[turn["speaker"]] if isinstance(synth, Mapping) else synth
+        pcm, sr = voice(clean_for_speech(turn["text"]))
         if turn["speaker"] == "customer":
             pcm = shift_pitch(pcm, customer_pitch)
         if rate and sr != rate:

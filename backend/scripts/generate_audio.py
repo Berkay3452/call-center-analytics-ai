@@ -11,6 +11,11 @@ Kullanım (`backend/` klasöründe; Piper projenin bağımlılığı değildir, 
     uv run --with piper-tts python -m scripts.generate_audio --calls call_001,call_004
     uv run --with piper-tts python -m scripts.generate_audio --mono     # tek kanal (eski biçim)
 
+Daha doğal ses (#214): Microsoft Edge nöral Türkçe sesleri, temsilci kadın, müşteri erkek.
+İnternet gerekir; mp3'ü PCM'e çevirmek için PyAV (`stt` ekstrası) kullanılır:
+
+    uv run --extra stt --with edge-tts python -m scripts.generate_audio --engine edge --force
+
 Ses modeli (`tr_TR-dfki-medium`, ~60 MB) ilk çalıştırmada `--voice-dir` klasörüne indirilir.
 Varsayılan **stereo** (santral kaydı gibi): temsilci sol, müşteri sağ kanal; STT
 `STT_CHANNEL_LAYOUT=stereo_rep_left` ile konuşmacıları kanaldan ayırır. Tek Türkçe Piper sesi
@@ -67,6 +72,45 @@ def make_synth(model_path: Path) -> Any:
     return synth
 
 
+EDGE_VOICES = {"rep": "tr-TR-EmelNeural", "customer": "tr-TR-AhmetNeural"}
+EDGE_RATE = 16000
+
+
+def make_edge_synth(voice: str) -> Any:
+    """Edge nöral sesiyle (metin -> 16-bit mono PCM, 16 kHz) üreten fonksiyon döner."""
+    try:
+        import edge_tts
+    except ImportError:
+        sys.exit(
+            "edge-tts kurulu değil. Şöyle çalıştırın:\n"
+            "  uv run --extra stt --with edge-tts python -m scripts.generate_audio --engine edge"
+        )
+    import asyncio
+
+    import av
+
+    async def fetch(text: str) -> bytes:
+        stream = edge_tts.Communicate(text, voice).stream()
+        mp3 = b"".join([c["data"] async for c in stream if c["type"] == "audio"])
+        if not mp3:
+            raise RuntimeError(f"Edge TTS ses döndürmedi: {text[:40]!r}")
+        return mp3
+
+    def synth(text: str) -> tuple[bytes, int]:
+        import io
+
+        mp3 = asyncio.run(fetch(text))
+        resampler = av.AudioResampler(format="s16", layout="mono", rate=EDGE_RATE)
+        out = bytearray()
+        with av.open(io.BytesIO(mp3)) as container:
+            for frame in container.decode(audio=0):
+                for resampled in resampler.resample(frame):
+                    out += bytes(resampled.planes[0])[: resampled.samples * 2]
+        return bytes(out), EDGE_RATE
+
+    return synth
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Seed çağrıları için sentetik ses üretir (#85).")
     parser.add_argument("--calls", help="Virgülle ayrılmış çağrı kimlikleri (boşsa hepsi).")
@@ -80,10 +124,16 @@ def main() -> None:
         "--mono", action="store_true", help="Tek kanal üret (varsayılan stereo: temsilci sol)."
     )
     parser.add_argument(
+        "--engine",
+        choices=("piper", "edge"),
+        default="piper",
+        help="TTS motoru: piper (çevrimdışı, robotumsu) veya edge (nöral, internet gerekir).",
+    )
+    parser.add_argument(
         "--customer-pitch",
         type=float,
-        default=1.15,
-        help="Müşteri sesinin perde çarpanı (1 = değişmez; varsayılan 1.15).",
+        default=None,
+        help="Müşteri sesinin perde çarpanı (piper varsayılan 1.15; edge'de iki ayrı ses var, 1).",
     )
     parser.add_argument("--force", action="store_true", help="Var olan sesleri yeniden üret.")
     args = parser.parse_args()
@@ -96,7 +146,13 @@ def main() -> None:
     if not call_files:
         sys.exit("Üretilecek çağrı bulunamadı.")
 
-    synth = make_synth(ensure_voice(args.voice_dir))
+    pitch = args.customer_pitch if args.customer_pitch is not None else 1.15
+    synth: Any
+    if args.engine == "edge":
+        synth = {role: make_edge_synth(name) for role, name in EDGE_VOICES.items()}
+        pitch = args.customer_pitch if args.customer_pitch is not None else 1.0
+    else:
+        synth = make_synth(ensure_voice(args.voice_dir))
     made = skipped = 0
     for path in call_files:
         call_id = path.stem
@@ -105,9 +161,7 @@ def main() -> None:
             skipped += 1
             continue
         turns = json.loads(path.read_text(encoding="utf-8"))["turns"]
-        wav, timing = build_wav(
-            turns, synth, stereo=not args.mono, customer_pitch=args.customer_pitch
-        )
+        wav, timing = build_wav(turns, synth, stereo=not args.mono, customer_pitch=pitch)
         write_seed_audio(audio_dir, call_id, wav, timing)
         made += 1
         print(f"{call_id}: {len(turns)} tur, {timing[-1][1] / 1000:.0f} sn, {len(wav) // 1024} KB")
