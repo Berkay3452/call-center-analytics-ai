@@ -104,3 +104,33 @@ python -m scripts.assistant_eval --fast <model> --smart <model>
 ## Miço AI sohbet kalitesi ve güvenlik (#213)
 
 82 soruluk testle (selam, sohbet, genel bilgi, kayıt, sayısal, takip, küfür/argo, injection, anlamsız girdi, İngilizce) uygun cevap oranı **%85 → %95-98** (69/81 → 77-79/81). Küfür artık yankılanmıyor, hakaret ve anlamsız girdi saçma "kayıtlarınızda bulamadım" cevabı almıyor, "başka müşterilerin giderleri" kendi toplamını döndürmüyor, saat/tarih uydurulmuyor. Selam, saat, tarih, küfür politikası gibi 33 soru LLM'siz 0,7 sn'nin altında cevaplanıyor; LLM'li sorularda medyan ~2 sn. Ayrıntı, bulgular, politika ve soru bazlı tablo: [asistan_sohbet_olcumu.md](asistan_sohbet_olcumu.md). Yeniden üretmek için: `python -m scripts.assistant_chat_eval --out sonuc.json` (Postgres, embedding ve `.env` gerekir).
+
+## Tek LLM değerlendirmesi: karma mı, tek (güçlü) model mi? (#215)
+
+**Tarih:** 2026-11-02 · **Veri:** test kümesi, 20 çağrı × 2 tekrar (aynı koşullar, sırayla A-B-A-B) · **Ayar:** `LLM_REQUESTS_PER_MINUTE=10` (model başına), eşzamanlılık 2 · **Komut:** `python -m scripts.evaluate --split test --fast <m> --smart <m> --out sonuc.json`
+
+- **A (karma, mevcut):** hızlı `lightning-30b-a3b`, güçlü `super-vl-120b-a12b`; geçici hatada diğer modele yedek geçiş.
+- **B (tek model):** `LLM_FAST_MODEL` = `LLM_SMART_MODEL` = `super-vl-120b-a12b`. Yedek model yok (`llm_fallback_for`: aday birincille aynı olunca `None`).
+
+| Ölçüt | A karma | B tek model |
+|---|---|---|
+| Başarısız ajan çalışması (hepsi 429) | **38 / 200 (%19)** | 93 / 200 (%47) |
+| Yedek modele geçen ajan çalışması | 80 | 0 (yedek yok) |
+| Analiz durumu (tamam / kısmi / başarısız), 2 koşu toplamı | 15 / 25 / 0 | 1 / 37 / 2 |
+| Ölçülen alanlarda doğruluk (özet hariç) | %88,8 ve %86,1 | %92,9 ve %92,5 |
+| Çağrı başına süre (ort.) | **18,9 sn** | 24,4 sn |
+| Ajan süresi (ort. / p95) | **10,2 sn / 49,0 sn** | 15,3 sn / 54,2 sn |
+| Zaman aşımı | 0 | 0 |
+
+**Okuma.** Doğruluk karşılaştırmasını B lehine okumak yanıltıcı: B'de ajanların yarıya yakını 429 ile düştüğü için yalnızca *çalışabilen* (kolay) ajanların alanları ölçülüyor. Aynı alanda gerçek fark küçük (birkaç puan) ve bu örneklemle (20 çağrı, 2 koşu) güvenilir değil. Güvenilir olan fark dayanıklılık ve süredir:
+
+1. **Kota model başına tükeniyor.** Karma yapılandırma yükü iki modele böler; tek modelde bütün istekler (4-5 ajan × çağrı) aynı kotaya biner ve 429 oranı 2,4 katına çıkar.
+2. **Yedek yol kalmıyor.** Karmada 429 alan 80 ajan çalışması diğer modele geçip tamamlandı; tek modelde böyle bir yol yok, çağrılar `kismi` kaldı (37/40).
+3. **Güçlü model daha yavaş:** ajan süresi 10,2 → 15,3 sn, çağrı süresi 18,9 → 24,4 sn (+%29).
+
+Ek gözlem: ilk deneme (50 çağrı × 3 tekrar, `LLM_REQUESTS_PER_MINUTE=30`, art arda koşular) iki yapılandırmada da çöktü: ilk ~35 çağrıdan sonra tüm istekler 429 aldı (hızlı modele atılan tek tek `curl` istekleri bile 429 verdi). Anahtar başka oturumlarla paylaşıldığı için etkin sınır `.env`'deki 30 RPM'den düşük; bu yüzden model başına 10 RPM'e inildi ve yine de her iki yapılandırmada 429 görüldü. Sonuç, kotanın mevcut yapılandırmanın dar boğazı olduğu ve tek modelin bunu kötüleştirdiğidir.
+
+**Karar: karma yapılandırma kalır; `.env.example` ve varsayılan ayarlar değişmedi.** Tek modelin kazancı (sadelik, tutarlılık) kota ve süre kaybını karşılamıyor. Tek modele ancak şu koşullarda dönülür: (a) ücretli/yüksek kotalı bir anahtar, (b) güçlü modele ayrı bir yedek model (`LLM_FALLBACK_MODEL`) ve (c) bu ölçümün yeniden yapılması. Tek model + hızlı yedek (C) yapılandırması kota yüzünden ölçülemedi.
+
+**Yapılamayanlar.** Asistan sorularının (82 soru × 3 tekrar) tek model ile ölçümü kota ve embedding servisi (bellek baskısıyla kapalıydı) nedeniyle yapılamadı; asistan tarafında yalnızca iki iyileştirme yapıldı: `AssistantLLM` artık ajanlarla aynı dakikalık kota sırasını (`llm_rate_limiter`) kullanıyor (daha önce yalnızca eşzamanlılık sınırı vardı), ve genel cevap güçlü modele alındı (#213). 50 çağrılık tam küme yerine 20 çağrılık test kümesi kullanıldı.
+
