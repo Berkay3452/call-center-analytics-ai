@@ -196,10 +196,16 @@ export function ReanalyzeButton({
             setModalStage("confirm");
           }}
           disabled={isSubmitting}
-          className={`inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 active:scale-[0.98] transition-all shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 disabled:opacity-50 ${className}`}
+          className={`inline-flex items-center gap-1.5 rounded-lg border border-transparent bg-amber-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-700 active:scale-[0.98] transition-all shadow-xs focus:outline-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60 ${className}`}
           title="Çağrıyı yeniden analize gönder"
           aria-label="Çağrıyı yeniden analiz et"
         >
+          {isSubmitting && (
+            <span
+              className="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent"
+              aria-hidden="true"
+            />
+          )}
           <span>Yeniden Analiz Et</span>
         </button>
       ) : (
@@ -215,6 +221,12 @@ export function ReanalyzeButton({
           title="Kısmi analizi tekrar tamamlat"
           aria-label="Kısmi analizi şimdi yeniden analiz et"
         >
+          {isSubmitting && (
+            <span
+              className="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent"
+              aria-hidden="true"
+            />
+          )}
           <span>Şimdi Yeniden Analiz Et</span>
         </button>
       )}

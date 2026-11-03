@@ -122,12 +122,17 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
     await expect(page.getByText("Analiz: Kısmi")).toBeVisible();
     await expect(page.getByText("Analiz kısmen tamamlandı")).toBeVisible();
     await expect(page.getByText(/Çağrı sınıflandırma üretilemedi/)).toBeVisible();
-    await expect(page.getByText("Sınıflandırma güveni")).toHaveCount(0);
+    // Üretilemeyen ajanın skoru yüzde yerine "Hesaplanamadı" gösterir
+    await expect(page.getByText("Çağrı türü güveni")).toBeVisible();
+    await expect(page.getByText("Hesaplanamadı")).toBeVisible();
 
     // Tam analiz: rozet "Tamam" ve güven yüzdesi
     await page.goto("/admin/calls/11111111-1111-4111-8111-111111111111");
     await expect(page.getByText("Analiz: Tamam")).toBeVisible();
-    await expect(page.getByText("Sınıflandırma güveni")).toBeVisible();
+    await expect(page.getByText("Çağrı türü güveni")).toBeVisible();
+    await expect(page.getByText("Satış sonucu güveni")).toBeVisible();
+    await expect(page.getByText(/^%\d+$/)).toHaveCount(2);
+    await expect(page.getByRole("button", { name: "Çağrıyı yeniden analiz et" })).toHaveClass(/bg-amber-600/);
   });
 
   // ──────────────────────────────────────────────────────────────────────────
@@ -377,7 +382,66 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
 
     // Sayısal sorular LLM'siz, kodla cevaplanır: cevap ve paket kaynak kartı gelir.
     await expect(page.getByText(/bakım hakkınız kaldı/i).first()).toBeVisible({ timeout: 20000 });
+    // Kaynaklar açılır liste: kapalıysa aç (varsayılan durumdan bağımsız)
+    const sourcesToggle = page.getByText(/^Kaynaklar \(\d+\)$/).first();
+    await expect(sourcesToggle).toBeVisible();
+    if (!(await page.locator("details").first().evaluate((d) => (d as HTMLDetailsElement).open))) {
+      await sourcesToggle.click();
+    }
     await expect(page.getByRole("region", { name: /Kaynak:/i }).first()).toBeVisible();
+  });
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // Senaryo 9: Miço AI — cevap gelmeden boş balon / imleç yok (#212)
+  // ──────────────────────────────────────────────────────────────────────────
+  test("Senaryo 9 (Miço AI bekleme): ilk kelimeye kadar yalnızca durum göstergesi görünür, boş balon olmaz", async ({
+    page,
+  }) => {
+    test.skip(
+      process.env.NEXT_PUBLIC_USE_MOCKS === "false",
+      "Zamanlama mock akışına bağlı; gerçek backend ile Senaryo 7 koşar.",
+    );
+    await page.goto("/owner/assistant");
+    await page.waitForLoadState("networkidle"); // hidrasyon bitmeden yazılan metin kaybolmasın
+    const messages = page.getByTestId("chat-message");
+    await expect(messages).toHaveCount(1); // yalnızca karşılama
+
+    const chatInput = page.locator("#assistant-chat-input");
+    await chatInput.fill("Son bakım ne zaman yapıldı?");
+    await chatInput.press("Enter");
+
+    // Bekleme: durum göstergesi var; yalnızca kullanıcı balonu eklendi, boş asistan balonu ve imleç yok
+    await expect(page.getByRole("status").filter({ hasText: /aranıyor/ })).toBeVisible();
+    await expect(messages).toHaveCount(2);
+    await expect(messages.last()).toHaveAttribute("data-role", "user");
+    await expect(page.locator('[role="log"] .animate-pulse')).toHaveCount(0);
+
+    // Cevap gelince asistan balonu metinle oluşur
+    await expect(messages).toHaveCount(3);
+    await expect(messages.last()).toHaveAttribute("data-role", "assistant");
+    await expect(messages.last()).not.toHaveText("");
+    await expect(page.getByRole("status")).toHaveCount(0);
+    await expect(page.locator('[role="log"] .animate-pulse')).toHaveCount(0);
+  });
+
+  test("Senaryo 9b (Miço AI hata): hatada boş balon kalmaz, hata mesajı ve 'Yeniden dene' görünür", async ({
+    page,
+  }) => {
+    test.skip(
+      process.env.NEXT_PUBLIC_USE_MOCKS === "false",
+      "Hata tetikleme mock akışına bağlı.",
+    );
+    await page.goto("/owner/assistant");
+    await page.waitForLoadState("networkidle");
+    const chatInput = page.locator("#assistant-chat-input");
+    await chatInput.fill("llm-error");
+    await chatInput.press("Enter");
+
+    const alert = page.getByRole("alert").filter({ hasText: /yapılandırılmamış/ });
+    await expect(alert).toBeVisible();
+    await expect(alert.getByRole("button", { name: "Yeniden dene" })).toBeVisible();
+    await expect(page.getByRole("status")).toHaveCount(0);
+    await expect(page.locator('[role="log"] .animate-pulse')).toHaveCount(0);
   });
 
   // ──────────────────────────────────────────────────────────────────────────
