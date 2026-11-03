@@ -215,6 +215,23 @@ class CallMatchIn(BaseModel):
     )
 
 
+class CustomerBoatOut(BaseModel):
+    """Müşteri aramasında müşterinin teknesi (#209)."""
+
+    id: UUID
+    name: str
+    model: str | None = None
+
+
+class CustomerSearchItem(BaseModel):
+    """`GET /customers` satırı: müşteri ve tekneleri; elle eşleştirme için seçilir (#209)."""
+
+    id: UUID
+    name: str
+    phone: str | None = Field(default=None, description="Yalnızca admin görür.")
+    boats: list[CustomerBoatOut] = Field(default_factory=list)
+
+
 # --- CRM kayıt önerileri (#51) ------------------------------------------------------------
 
 

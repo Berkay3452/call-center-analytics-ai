@@ -60,6 +60,8 @@ SHARED_MODELS: list[type[BaseModel]] = [
     api.DeltaEvent,
     api.DoneEvent,
     api.ErrorEvent,
+    api.CustomerBoatOut,
+    api.CustomerSearchItem,
     api.ServiceOrderListItem,
     api.ServiceOrderCustomerOut,
     api.ServiceOrderBoatOut,

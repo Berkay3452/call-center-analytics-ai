@@ -60,6 +60,9 @@ def normalize_text(text: str | None) -> str:
             "ş": "s",
             "ö": "o",
             "ç": "c",
+            "â": "a",  # Rüzgârgülü, kâğıt: düzeltme işaretli ünlüler
+            "î": "i",
+            "û": "u",
         }
     )
     s = s.translate(tr_map)
