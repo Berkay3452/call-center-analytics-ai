@@ -379,4 +379,21 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
     await expect(page.getByText(/bakım hakkınız kaldı/i).first()).toBeVisible({ timeout: 20000 });
     await expect(page.getByRole("region", { name: /Kaynak:/i }).first()).toBeVisible();
   });
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // Senaryo 10: CRM "Konuşmadan alıntılar" alan adları Türkçe (#208)
+  // ──────────────────────────────────────────────────────────────────────────
+  test("Senaryo 10 (CRM alıntılar): alıntı alan adları Türkçe, ham değişken adı görünmez", async ({ page }) => {
+    await page.goto("/admin/crm");
+    const card = page.locator("div.rounded-xl.border").filter({ hasText: "Burak Çelik" }).first();
+    const details = card.locator("details", { hasText: "Konuşmadan alıntılar" });
+    await expect(details).toBeVisible();
+    await details.locator("summary").click();
+    await expect(details.getByText("Talep kategorisi:")).toBeVisible();
+    await expect(details.getByText("Hizmet biçimi:")).toBeVisible();
+    await expect(details.getByText("Sonraki adım:")).toBeVisible();
+    // Etiket kısmında alt çizgili kod adı kalmamalı (ör. request_category:)
+    await expect(details.locator("li > span")).not.toContainText([/_/]);
+    await expect(card).not.toContainText(/request_category|service_mode|potential_job|next_action/);
+  });
 });

@@ -10,6 +10,8 @@ import {
   EMPTY_LABEL,
   labelOf,
   NEXT_ACTION_LABELS,
+  CRM_FIELD_LABELS,
+  crmFieldLabel,
   REQUEST_CATEGORY_LABELS,
   SERVICE_MODE_LABELS,
   URGENCY_LABELS,
@@ -310,11 +312,11 @@ export function CrmSuggestionCard({
   const isEdited = (key: string) => Boolean(editedFields[key]);
 
   const fields: { key: string; label: string; value: string }[] = [
-    { key: "request_category", label: "Talep", value: labelOf(REQUEST_CATEGORY_LABELS, currentValues.requestCategory) },
-    { key: "location", label: "Marina", value: currentValues.location ?? EMPTY_LABEL },
-    { key: "service_mode", label: "Hizmet biçimi", value: labelOf(SERVICE_MODE_LABELS, currentValues.serviceMode) },
-    { key: "potential_job", label: "Olası iş", value: currentValues.potentialJob ?? EMPTY_LABEL },
-    { key: "next_action", label: "Sonraki adım", value: labelOf(NEXT_ACTION_LABELS, currentValues.nextAction) },
+    { key: "request_category", label: CRM_FIELD_LABELS.request_category, value: labelOf(REQUEST_CATEGORY_LABELS, currentValues.requestCategory) },
+    { key: "location", label: CRM_FIELD_LABELS.location, value: currentValues.location ?? EMPTY_LABEL },
+    { key: "service_mode", label: CRM_FIELD_LABELS.service_mode, value: labelOf(SERVICE_MODE_LABELS, currentValues.serviceMode) },
+    { key: "potential_job", label: CRM_FIELD_LABELS.potential_job, value: currentValues.potentialJob ?? EMPTY_LABEL },
+    { key: "next_action", label: CRM_FIELD_LABELS.next_action, value: labelOf(NEXT_ACTION_LABELS, currentValues.nextAction) },
   ];
 
   const evidence = suggestion.evidence ? Object.entries(suggestion.evidence) : [];
@@ -366,7 +368,7 @@ export function CrmSuggestionCard({
           <ul className="mt-2 space-y-1 text-slate-600">
             {evidence.map(([key, val]) => (
               <li key={key}>
-                <span className="font-medium text-slate-700">{key}:</span> &ldquo;{val}&rdquo;
+                <span className="font-medium text-slate-700">{crmFieldLabel(key)}:</span> &ldquo;{val}&rdquo;
               </li>
             ))}
           </ul>
@@ -489,7 +491,7 @@ export function CrmSuggestionCard({
           )}
           <form onSubmit={handleSaveAndApprove} className="space-y-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <Field id="crm-edit-category" label="Müşteri talebi">
+              <Field id="crm-edit-category" label={CRM_FIELD_LABELS.request_category}>
                 <Select
                   id="crm-edit-category"
                   value={editFormData.request_category}
@@ -503,7 +505,7 @@ export function CrmSuggestionCard({
                   ))}
                 </Select>
               </Field>
-              <Field id="crm-edit-location" label="Marina">
+              <Field id="crm-edit-location" label={CRM_FIELD_LABELS.location}>
                 <Input
                   id="crm-edit-location"
                   value={editFormData.location}
@@ -511,7 +513,7 @@ export function CrmSuggestionCard({
                   placeholder="Örn: Tuzla Marina"
                 />
               </Field>
-              <Field id="crm-edit-problem" label="Sorun tanımı" className="sm:col-span-2">
+              <Field id="crm-edit-problem" label={CRM_FIELD_LABELS.problem} className="sm:col-span-2">
                 <Textarea
                   id="crm-edit-problem"
                   rows={3}
@@ -520,7 +522,7 @@ export function CrmSuggestionCard({
                   placeholder="Arıza veya müşteri şikayeti"
                 />
               </Field>
-              <Field id="crm-edit-service-mode" label="Hizmet biçimi">
+              <Field id="crm-edit-service-mode" label={CRM_FIELD_LABELS.service_mode}>
                 <Select
                   id="crm-edit-service-mode"
                   value={editFormData.service_mode}
@@ -534,7 +536,7 @@ export function CrmSuggestionCard({
                   ))}
                 </Select>
               </Field>
-              <Field id="crm-edit-urgency" label="Aciliyet">
+              <Field id="crm-edit-urgency" label={CRM_FIELD_LABELS.urgency}>
                 <Select
                   id="crm-edit-urgency"
                   value={editFormData.urgency}
@@ -548,7 +550,7 @@ export function CrmSuggestionCard({
                   ))}
                 </Select>
               </Field>
-              <Field id="crm-edit-potential-job" label="Olası iş">
+              <Field id="crm-edit-potential-job" label={CRM_FIELD_LABELS.potential_job}>
                 <Input
                   id="crm-edit-potential-job"
                   value={editFormData.potential_job}
@@ -556,7 +558,7 @@ export function CrmSuggestionCard({
                   placeholder="Örn: Motor arıza tespiti ve bakımı"
                 />
               </Field>
-              <Field id="crm-edit-next-action" label="Sonraki adım">
+              <Field id="crm-edit-next-action" label={CRM_FIELD_LABELS.next_action}>
                 <Select
                   id="crm-edit-next-action"
                   value={editFormData.next_action}
