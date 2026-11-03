@@ -31,3 +31,15 @@ LLM ve arama **çağrılmaz**; cevap anında gelir (`app/assistant/planner.py` �
 | `Kış bakımı nedir?` | Doğrudan LLM cevabı (`genel_sohbet`) |
 
 Hız hedefi: genel soruda ilk kelime < 5 sn (planlayıcı + tek hızlı model çağrısı).
+
+## Tek işin tutarı (#152)
+
+Gider kayıtları iş açıklamasına göre aranır; tutarı kod hesaplar, LLM sayı yazmaz (`get_job_expenses`).
+
+| Soru | Beklenen davranış |
+|---|---|
+| `Akü değişimine ne kadar ödedim?` | "Akü grubu değişimi için 10 Mart 2026 tarihinde 9.200,00 TL ödediniz (Poyraz)." + gider kaynak kartı |
+| `Motora ne harcadım?` (birden çok eşleşme) | Kayıt sayısı, toplam ve tarihli liste (en yeni önce, en çok 8) + her kayıt için kaynak kartı |
+| `Jeneratöre ne kadar ödedim?` (eşleşme yok) | "Kayıtlarınızda «jenerator» ile ilgili bir gider bulamadım." (`found=false`) |
+| `Bu ay ne kadar harcadım?` (iş adı yok) | Eskisi gibi tüm giderlerin toplamı |
+

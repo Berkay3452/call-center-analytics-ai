@@ -31,6 +31,10 @@ class Plan(BaseModel):
         default=None, description="Yalnızca sayisal sorularda doldurulur, diğerlerinde null."
     )
     period: Period = Field(default="tumu", description="Gider sorularında dönem.")
+    topics: list[str] = Field(
+        default_factory=list,
+        description="get_job_expenses için iş/parça anahtar sözcükleri (ör. ['akü']).",
+    )
 
     @model_validator(mode="after")
     def _tool_only_for_numeric(self) -> "Plan":
@@ -39,6 +43,8 @@ class Plan(BaseModel):
             raise ValueError("question_type=sayisal iken tool zorunludur.")
         if not numeric and self.tool is not None:
             raise ValueError("tool yalnızca question_type=sayisal iken verilebilir.")
+        if self.tool == AssistantTool.GET_JOB_EXPENSES and not self.topics:
+            raise ValueError("get_job_expenses için topics zorunludur.")
         return self
 
 
@@ -58,6 +64,11 @@ def mentions_topic(tokens: list[str]) -> bool:
     return _has(tokens, *_TOPIC_PREFIXES)
 
 
+def topics_in(tokens: list[str]) -> list[str]:
+    """Soruda geçen iş/parça kökleri (sırayı koruyarak, tekrarsız)."""
+    return [p for p in _TOPIC_PREFIXES if any(t.startswith(p) for t in tokens)]
+
+
 def plan_by_rules(question: str) -> Plan | None:
     """Net sayısal sorular için plan; belirsizse None (LLM'e bırakılır)."""
     text = normalize(question)
@@ -66,9 +77,18 @@ def plan_by_rules(question: str) -> Plan | None:
         return Plan(question_type=QuestionType.KAPSAM_DISI)  # başkasının verisi: ret
     period: Period = "bu_ay" if "bu ay" in text else "tumu"
 
-    if _has(tokens, "harca", "masraf", "gider", "odeme", "odedi", "fatura") and not mentions_topic(
-        tokens
+    spent = _has(tokens, "harca", "masraf", "gider", "odeme", "odedi", "fatura")
+    if mentions_topic(tokens) and (
+        spent or ("ne kadar" in text and _has(tokens, "ucret", "tutar"))
     ):
+        # "Akü değişimine ne ödedim?": tek işin tutarı, genel toplam değil (#152)
+        return Plan(
+            question_type=QuestionType.SAYISAL,
+            tool=AssistantTool.GET_JOB_EXPENSES,
+            period=period,
+            topics=topics_in(tokens),
+        )
+    if spent and not mentions_topic(tokens):
         return Plan(
             question_type=QuestionType.SAYISAL, tool=AssistantTool.GET_EXPENSE_TOTAL, period=period
         )

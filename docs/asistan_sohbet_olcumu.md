@@ -9,7 +9,7 @@
 - **Uygunluk:** soru başına kural tabanlı denetim: beklenen tür, yol, süre bütçesi, kaynak kartı var/yok ve ilgili mi, beklenen/yasak ifade, kayıt dışı tutar-yıl uydurma şüphesi, cevapta küfür/hakaret sözcüğü, iç bilgi sızıntısı ("gecmis_oneri", "system prompt"...), yapmadığı eylemi yaptım demek. Denetimin yakalayamadığı kaliteyi (saçma ama zararsız cevap) ayrıca cevapları okuyarak inceledim; aşağıdaki "bulgular" bu incelemeden de gelir.
 - **İlk kelimeye süre:** arayüzdeki kelime kelime akış cevap tamamlandıktan SONRA başlar (`STREAM_WORD_DELAY_S` = 0,06 sn). Yani ilk kelime süresi = tabloda ölçülen toplam süre + ~0,06 sn.
 - **Tekrar:** LLM kararsızdır; "sonra" iki kez koşuldu. "Önce" aynı test setiyle `origin/main` koduna karşı koşuldu.
-- `say-07` ("Akü değişimi için ne kadar ödedim?") #152 kapsamındadır; başarı oranına katılmaz, tabloda ✗ görünür.
+- `say-07` ("Akü değişimi için ne kadar ödedim?") ölçüm sırasında #152 kapsamındaydı; başarı oranına katılmadı, tabloda ✗ görünür. #152 ile çözüldü (iş bazlı gider aracı: tutar kodla hesaplanır, kaynak kartı verilir).
 
 ## Sonuç
 

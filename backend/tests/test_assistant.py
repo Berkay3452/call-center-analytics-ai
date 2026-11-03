@@ -92,6 +92,30 @@ def test_rules_classify_clear_numeric_questions_without_llm(
 
 
 @pytest.mark.parametrize(
+    ("question", "topics", "period"),
+    [
+        ("Akü değişimine ne kadar ödedim?", ["aku"], "tumu"),
+        ("Akü değişimi için ne ödedim?", ["aku"], "tumu"),
+        ("Bu ay boyaya ne harcadım?", ["boya"], "bu_ay"),
+        ("Impeller ücreti ne kadar tuttu?", ["impeller"], "tumu"),
+    ],
+)
+def test_rules_route_single_job_cost_to_job_expense_tool(
+    question: str, topics: list[str], period: str
+) -> None:
+    plan = plan_by_rules(question)
+
+    assert plan is not None
+    assert plan.tool == AssistantTool.GET_JOB_EXPENSES
+    assert (plan.topics, plan.period) == (topics, period)
+
+
+def test_job_expense_plan_requires_topics() -> None:
+    with pytest.raises(ValidationError):
+        Plan(question_type=QuestionType.SAYISAL, tool=AssistantTool.GET_JOB_EXPENSES)
+
+
+@pytest.mark.parametrize(
     "question",
     [
         "Yakıt filtresi ne zaman değişti?",
@@ -576,3 +600,65 @@ async def test_numeric_question_never_goes_to_general_llm() -> None:
 def test_planner_prompt_defines_general_chat_class() -> None:
     prompt = load_prompt("planner")
     assert "genel_sohbet" in prompt and "kapsam_disi" in prompt
+
+
+# --- Tek işin tutarı (#152) ---
+
+
+async def test_job_cost_answer_gives_amount_and_source_card() -> None:
+    llm, model = llm_with()  # kural + kod: LLM çağrılmaz
+
+    answer = await answer_question(ask("Akü değişimine ne kadar ödedim?"), llm=llm, today=TODAY)
+
+    assert answer.question_type == QuestionType.SAYISAL
+    assert "9.200,00 TL" in answer.answer and "Akü grubu değişimi" in answer.answer
+    assert answer.found
+    assert [s.record_id for s in answer.sources] == ["exp-103"]
+    assert model.calls == []
+
+
+async def test_job_cost_answer_without_match_says_not_found() -> None:
+    llm, _ = llm_with()
+
+    answer = await answer_question(ask("Jeneratöre ne kadar ödedim?"), llm=llm, today=TODAY)
+
+    assert answer.question_type == QuestionType.SAYISAL
+    assert not answer.found and not answer.sources
+    assert "jenerator" in answer.answer.casefold() or "jeneratör" in answer.answer.casefold()
+
+
+async def test_job_cost_answer_lists_several_matches_with_total(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def item(rid: str, on: date, text: str, amount: str) -> tools.JobExpense:
+        return tools.JobExpense(
+            on=on,
+            description=text,
+            amount=Decimal(amount),
+            boat_name="Poyraz",
+            source=SourceRef(kind="expense", record_id=rid, title=text, date=on),
+        )
+
+    async def two(owner_id: str, topics: list[str], **_: object) -> tools.JobExpenses:
+        return tools.JobExpenses(
+            items=[
+                item("e2", date(2026, 8, 15), "Motor bakımı", "18500.00"),
+                item("e1", date(2025, 11, 12), "Motor kışlama", "21750.00"),
+            ]
+        )
+
+    monkeypatch.setattr(tools, "get_job_expenses", two)
+    llm, _ = llm_with()
+
+    answer = await answer_question(ask("Motora ne kadar ödedim?"), llm=llm, today=TODAY)
+
+    assert "2 gider kaydı" in answer.answer and "40.250,00 TL" in answer.answer
+    assert "15 Ağustos 2026: Motor bakımı, 18.500,00 TL (Poyraz)" in answer.answer
+    assert [s.record_id for s in answer.sources] == ["e2", "e1"]
+
+
+def test_matches_topics_uses_word_starts() -> None:
+    assert tools.matches_topics("Akü grubu değişimi", ["akü"])
+    assert tools.matches_topics("Yakıt filtresi değişimi", ["yakıt filtresi"])
+    assert not tools.matches_topics("Akü grubu değişimi", ["yakıt filtresi"])
+    assert not tools.matches_topics("Marina bağlama ve elektrik/su", ["aku"])

@@ -333,12 +333,12 @@ CASES: list[Case] = [
         "say-07",
         "sayisal",
         "Akü değişimi için ne kadar ödedim?",
-        types=(GECMIS, SAYISAL),
+        types=(SAYISAL,),
+        path="kural",
         found=True,
         has="9[.,]?200",
         sources="some",
-        max_s=8,
-        known_issue="#152",
+        max_s=3,
     ),
     # --- Takip soruları (oturum geçmişiyle) ---
     Case(
