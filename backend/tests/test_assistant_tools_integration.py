@@ -69,6 +69,24 @@ def session_factory(conn: AsyncConnection) -> async_sessionmaker[AsyncSession]:
 # --- 1. Gider Toplamı (get_expense_total) ---
 
 
+async def test_get_job_expenses_real_db(session_factory: async_sessionmaker[AsyncSession]) -> None:
+    """Tek işin tutarı (#152): akü değişimi 9.200 TL, kaynak kartıyla; başkasının kaydı dönmez."""
+    async with session_factory() as session:
+        aku = await tools.get_job_expenses(str(AHMET_ID), ["akü"], session=session)
+        assert [i.amount for i in aku.items] == [Decimal("9200.00")]
+        assert aku.items[0].boat_name == "Poyraz"
+        assert aku.sources[0].kind == "expense"
+        assert aku.sources[0].excerpt is not None and "9.200,00 TL" in aku.sources[0].excerpt
+
+        none = await tools.get_job_expenses(str(AHMET_ID), ["jeneratör"], session=session)
+        assert none.items == []
+
+        fatma = await tools.get_job_expenses(str(FATMA_ID), ["akü"], session=session)
+        assert {i.source.record_id for i in fatma.items}.isdisjoint(
+            {i.source.record_id for i in aku.items}
+        )
+
+
 async def test_get_expense_total_real_db(session_factory: async_sessionmaker[AsyncSession]) -> None:
     async with session_factory() as session:
         # Ahmet Yılmaz'ın tüm giderleri

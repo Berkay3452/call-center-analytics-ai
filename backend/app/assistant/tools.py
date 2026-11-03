@@ -59,6 +59,30 @@ class ExpenseTotal:
 
 
 @dataclass(frozen=True)
+class JobExpense:
+    on: date | None
+    description: str
+    amount: Decimal
+    boat_name: str
+    source: SourceRef
+
+
+@dataclass(frozen=True)
+class JobExpenses:
+    """İş/parça adına uyan gider kayıtları (en yeni önce); tutarı kod toplar."""
+
+    items: list[JobExpense]
+
+    @property
+    def total_try(self) -> Decimal:
+        return sum((i.amount for i in self.items), Decimal("0"))
+
+    @property
+    def sources(self) -> list[SourceRef]:
+        return [i.source for i in self.items]
+
+
+@dataclass(frozen=True)
 class RemainingPackage:
     plan: str
     remaining: int
@@ -138,6 +162,59 @@ async def _get_expense_total_db(
         item_count=len(expenses),
         sources=sources,
     )
+
+
+def matches_topics(description: str, topics: list[str]) -> bool:
+    """Gider açıklaması konulardan en az birine uyuyor mu? Konudaki her sözcük, açıklamada bir
+    sözcüğün başıdır ("akü" → "Akü grubu değişimi", "yakıt filtresi" → "yakıt filtresi bakımı")."""
+    tokens = normalize(description).split()
+    for topic in topics:
+        words = normalize(topic).split()
+        if words and all(any(t.startswith(w) for t in tokens) for w in words):
+            return True
+    return False
+
+
+async def _get_job_expenses_db(
+    session: AsyncSession,
+    owner_uuid: UUID,
+    topics: list[str],
+    *,
+    start: date | None,
+    end: date | None,
+) -> JobExpenses:
+    stmt = (
+        select(Expense, Boat.name)
+        .join(Boat, Expense.boat_id == Boat.id)
+        .where(Boat.owner_id == owner_uuid)
+        .order_by(Expense.expense_date.desc(), Expense.created_at.desc())
+    )
+    if start is not None:
+        stmt = stmt.where(Expense.expense_date >= start)
+    if end is not None:
+        stmt = stmt.where(Expense.expense_date <= end)
+    items = []
+    for expense, boat_name in (await session.execute(stmt)).all():
+        description = expense.description or ""
+        if not matches_topics(description, topics):
+            continue
+        amount = Decimal(str(expense.amount))
+        items.append(
+            JobExpense(
+                on=expense.expense_date,
+                description=description,
+                amount=amount,
+                boat_name=boat_name,
+                source=SourceRef(
+                    kind="expense",
+                    record_id=str(expense.id),
+                    title=description or "Gider kaydı",
+                    date=expense.expense_date,
+                    excerpt=format_try(amount),
+                ),
+            )
+        )
+    return JobExpenses(items=items)
 
 
 async def _get_remaining_package_db(
@@ -294,6 +371,25 @@ async def get_expense_total(
         return await _get_expense_total_db(
             sess, owner_uuid, start=start, end=end, boat_uuid=boat_uuid
         )
+
+
+async def get_job_expenses(
+    owner_id: str,
+    topics: list[str],
+    *,
+    start: date | None = None,
+    end: date | None = None,
+    session: AsyncSession | None = None,
+) -> JobExpenses:
+    """İş açıklamasına göre (ör. "akü") sahibin gider kayıtları; tutarı kod toplar (#152)."""
+    clean_owner = require_owner(owner_id)
+    owner_uuid = _parse_uuid(clean_owner)
+    if owner_uuid is None or not topics:
+        return JobExpenses(items=[])
+    if session is not None:
+        return await _get_job_expenses_db(session, owner_uuid, topics, start=start, end=end)
+    async with worker_session(Settings()) as sess:
+        return await _get_job_expenses_db(sess, owner_uuid, topics, start=start, end=end)
 
 
 async def get_remaining_package(

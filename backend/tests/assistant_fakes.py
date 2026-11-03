@@ -207,6 +207,39 @@ async def get_expense_total(
     )
 
 
+async def get_job_expenses(
+    owner_id: str,
+    topics: list[str],
+    *,
+    start: date | None = None,
+    end: date | None = None,
+    session: object = None,
+) -> tools.JobExpenses:
+    data = require_owner(owner_id)
+    boats = {b.boat_id: b for b in data.boats}
+    items = [
+        tools.JobExpense(
+            on=e.on,
+            description=e.description,
+            amount=e.amount,
+            boat_name=boats[e.boat_id].name,
+            source=SourceRef(
+                kind="expense",
+                record_id=e.record_id,
+                title=e.description,
+                date=e.on,
+                excerpt=f"{e.amount:,.2f} TL",
+            ),
+        )
+        for e in sorted(data.expenses, key=lambda x: x.on, reverse=True)
+        if e.boat_id in boats
+        and (start is None or e.on >= start)
+        and (end is None or e.on <= end)
+        and tools.matches_topics(e.description, topics)
+    ]
+    return tools.JobExpenses(items=items)
+
+
 async def get_remaining_package(
     owner_id: str, *, boat_id: str | None = None, session: object = None
 ) -> RemainingPackage | None:
@@ -326,6 +359,7 @@ async def other_customer_names(owner_id: str, *, session: object | None = None) 
 def install(monkeypatch: pytest.MonkeyPatch) -> None:
     """Araçların ve aramanın yerine sahte sürümlerini koyar (yalnızca bu test oturumunda)."""
     monkeypatch.setattr(tools, "get_expense_total", get_expense_total)
+    monkeypatch.setattr(tools, "get_job_expenses", get_job_expenses)
     monkeypatch.setattr(tools, "get_remaining_package", get_remaining_package)
     monkeypatch.setattr(tools, "get_last_maintenance", get_last_maintenance)
     monkeypatch.setattr(tools, "get_upcoming_maintenance", get_upcoming_maintenance)

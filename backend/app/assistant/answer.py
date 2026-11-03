@@ -55,6 +55,37 @@ async def numeric_answer(
             question_type=qt,
             sources=result.sources,
         )
+    if plan.tool == AssistantTool.GET_JOB_EXPENSES:
+        if plan.period == "bu_ay":
+            start = today.replace(day=1)
+            end = today.replace(day=calendar.monthrange(today.year, today.month)[1])
+        else:
+            start = end = None
+        jobs = await tools.get_job_expenses(
+            owner_id, plan.topics, start=start, end=end, session=session
+        )
+        label = ", ".join(plan.topics)
+        if not jobs.items:
+            return not_found(qt, f"Kayıtlarınızda «{label}» ile ilgili bir gider bulamadım.")
+        if len(jobs.items) == 1:
+            item = jobs.items[0]
+            text = (
+                f"{item.description} için {_when(item.on)} tarihinde "
+                f"{format_try(item.amount)} ödediniz ({item.boat_name})."
+            )
+        else:
+            job_shown = jobs.items[:MAX_JOB_ITEMS]
+            job_lines = [
+                f"- {_when(i.on)}: {i.description}, {format_try(i.amount)} ({i.boat_name})"
+                for i in job_shown
+            ]
+            job_more = len(jobs.items) - len(job_shown)
+            tail = f"\n(ve {job_more} kayıt daha)" if job_more > 0 else ""
+            text = (
+                f"«{label}» ile ilgili {len(jobs.items)} gider kaydı var, toplam "
+                f"{format_try(jobs.total_try)}:\n" + "\n".join(job_lines) + tail
+            )
+        return AssistantAnswer(answer=text, question_type=qt, sources=jobs.sources)
     if plan.tool == AssistantTool.GET_REMAINING_PACKAGE:
         pkg = await tools.get_remaining_package(owner_id, session=session)
         if pkg is None:
@@ -96,10 +127,15 @@ async def numeric_answer(
     raise ValueError(f"Bilinmeyen araç: {plan.tool}")
 
 
+def _when(on: date | None) -> str:
+    return format_date(on) if on else "tarihi kayıtlı olmayan"
+
+
 NO_UPCOMING_MESSAGE = (
     "Kayıtlarınıza göre yakında yapılması gereken veya planlanmış bir iş görünmüyor."
 )
 MAX_UPCOMING_ITEMS = 6
+MAX_JOB_ITEMS = 8
 
 
 def _upcoming_line(item: tools.UpcomingItem) -> str:
