@@ -122,12 +122,17 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
     await expect(page.getByText("Analiz: Kısmi")).toBeVisible();
     await expect(page.getByText("Analiz kısmen tamamlandı")).toBeVisible();
     await expect(page.getByText(/Çağrı sınıflandırma üretilemedi/)).toBeVisible();
-    await expect(page.getByText("Sınıflandırma güveni")).toHaveCount(0);
+    // Üretilemeyen ajanın skoru yüzde yerine "Hesaplanamadı" gösterir
+    await expect(page.getByText("Çağrı türü güveni")).toBeVisible();
+    await expect(page.getByText("Hesaplanamadı")).toBeVisible();
 
     // Tam analiz: rozet "Tamam" ve güven yüzdesi
     await page.goto("/admin/calls/11111111-1111-4111-8111-111111111111");
     await expect(page.getByText("Analiz: Tamam")).toBeVisible();
-    await expect(page.getByText("Sınıflandırma güveni")).toBeVisible();
+    await expect(page.getByText("Çağrı türü güveni")).toBeVisible();
+    await expect(page.getByText("Satış sonucu güveni")).toBeVisible();
+    await expect(page.getByText(/^%\d+$/)).toHaveCount(2);
+    await expect(page.getByRole("button", { name: "Çağrıyı yeniden analiz et" })).toHaveClass(/bg-amber-600/);
   });
 
   // ──────────────────────────────────────────────────────────────────────────

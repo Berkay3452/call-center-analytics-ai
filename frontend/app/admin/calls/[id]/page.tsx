@@ -20,11 +20,13 @@ import {
   SALES_OUTCOME_LABELS,
 } from "@/lib/types";
 import {
+  ANALYSIS_SECTION_LABELS,
   ANALYSIS_STATUS_LABELS,
   ANALYSIS_STATUS_TONE,
   describeAnalysis,
 } from "@/lib/types";
-import { Badge, Card, CardHeader, ProgressBar, type Tone } from "@/components/ui";
+import { Badge, Card, CardHeader, type Tone } from "@/components/ui";
+import { ConfidenceMeter } from "@/components/ConfidenceMeter";
 import mockCallsList from "@/mocks/cagri_listesi.json";
 
 interface Props {
@@ -126,12 +128,12 @@ async function CallDetailContent({ params }: Props) {
   const analysisStatus = call.analysis?.status ?? (call.state === "basarisiz" ? "basarisiz" : "kismi");
 
   // Durum etiketi/rengi tek kaynaktan (lib/types); güven yüzdesi yalnızca tam analizde gösterilir.
-  const { showConfidence, missing: missingSections } = describeAnalysis(analysisStatus, call.analysis);
-  const rawConfidence = classification?.confidence;
-  const confidencePercent =
-    showConfidence && !inProgress && rawConfidence != null
-      ? Math.round(rawConfidence <= 1 ? rawConfidence * 100 : rawConfidence)
-      : null;
+  const { missing: missingSections } = describeAnalysis(analysisStatus, call.analysis);
+  // Bölümü üretilemeyen ajanın skoru gösterilmez ("Hesaplanamadı").
+  const classificationConfidence = missingSections.includes(ANALYSIS_SECTION_LABELS.classification)
+    ? null
+    : classification?.confidence;
+  const salesConfidence = missingSections.includes(ANALYSIS_SECTION_LABELS.sales) ? null : sales?.confidence;
 
   // Kısmi analiz veya analiz hataları ayrıştırma
   const rawErrors = call.analysis?.errors;
@@ -237,15 +239,28 @@ async function CallDetailContent({ params }: Props) {
             )}
           </div>
         </div>
-        {confidencePercent !== null && (
-          <div className="mt-4 max-w-sm">
-            <div className="mb-1 flex justify-between text-xs text-slate-500">
-              <span>Sınıflandırma güveni</span>
-              <span className="font-semibold text-brand-800">%{confidencePercent}</span>
-            </div>
-            <ProgressBar value={confidencePercent} tone="success" label="Sınıflandırma güveni" />
-          </div>
-        )}
+      </Card>
+
+      {/* İki ayrı ajanın güven skoru tek bölümde, aynı görünümle */}
+      <Card>
+        <CardHeader
+          title="Analiz güveni"
+          description="Her skor, ilgili yapay zekâ ajanının kendi kararından ne kadar emin olduğunu gösterir; iki skor birbirinden bağımsızdır."
+        />
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+          <ConfidenceMeter
+            title="Çağrı türü güveni"
+            hint="Çağrı Sınıflandırma ajanının, çağrının türünü (ör. servis talebi, fiyat sorusu) doğru belirlediğinden ne kadar emin olduğunu gösterir."
+            value={classificationConfidence}
+            pending={inProgress}
+          />
+          <ConfidenceMeter
+            title="Satış sonucu güveni"
+            hint="Satış Analiz ajanının, satış sonucunu (satıldı, kaybedildi, takipte…) doğru belirlediğinden ne kadar emin olduğunu gösterir."
+            value={salesConfidence}
+            pending={inProgress}
+          />
+        </div>
       </Card>
 
       {/* Kısmi / başarısız analiz uyarısı: eksik bölümler adlandırılır */}
@@ -322,14 +337,6 @@ async function CallDetailContent({ params }: Props) {
                   <div>
                     <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">Dayanak</dt>
                     <dd className="mt-0.5 italic text-slate-700">&ldquo;{sales.evidence}&rdquo;</dd>
-                  </div>
-                )}
-                {sales.confidence != null && (
-                  <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-xs text-slate-500">
-                    <span>Satış analizi güveni</span>
-                    <span className="font-semibold text-brand-800">
-                      %{Math.round(sales.confidence <= 1 ? sales.confidence * 100 : sales.confidence)}
-                    </span>
                   </div>
                 )}
               </dl>
