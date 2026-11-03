@@ -5,7 +5,7 @@ sağlayıcı/model, eşzamanlılık sınırı ve JSON ayıklama.
 """
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Literal, TypeVar
+from typing import TYPE_CHECKING, Any, Literal, TypeVar
 
 import structlog
 from pydantic import BaseModel, ValidationError
@@ -16,6 +16,7 @@ from app.llm.client import (
     LLMNotConfiguredError,
     get_chat_model,
     is_transient_llm_error,
+    llm_rate_limiter,
     llm_semaphore,
 )
 
@@ -72,6 +73,12 @@ class AssistantLLM:
         except LLMNotConfiguredError:
             return None
 
+    async def _invoke(self, model: "BaseChatModel", tier: str, messages: list) -> Any:
+        """Önce model başına dakikalık kota sırası, sonra eşzamanlılık sınırı (ajanlarla aynı)."""
+        await llm_rate_limiter(self.settings).acquire(getattr(model, "model_name", None) or tier)
+        async with llm_semaphore(self.settings):
+            return await model.ainvoke(messages)
+
     async def ask(
         self,
         tier: Literal["fast", "smart"],
@@ -97,8 +104,7 @@ class AssistantLLM:
             content = prompt + (f"\n\n## Düzeltme gerekli\n{feedback}" if feedback else "")
             messages = [SystemMessage(system), HumanMessage(content)]
             try:
-                async with llm_semaphore(self.settings):
-                    response = await model.ainvoke(messages)
+                response = await self._invoke(model, tier, messages)
             except Exception as exc:  # sağlayıcı, ağ, kota
                 log.warning("assistant.llm_error", error=str(exc)[:200])
                 fallback = None if fallback_used else self._fallback_for(tier, primary_name, exc)
@@ -108,8 +114,7 @@ class AssistantLLM:
                 log.warning("assistant.fallback", reason=type(exc).__name__)
                 model, fallback_used = fallback, True
                 try:
-                    async with llm_semaphore(self.settings):
-                        response = await model.ainvoke(messages)
+                    response = await self._invoke(model, tier, messages)
                 except Exception as exc2:
                     log.warning("assistant.fallback_failed", error=str(exc2)[:200])
                     raise AssistantLLMError(
