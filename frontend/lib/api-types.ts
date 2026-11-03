@@ -494,6 +494,21 @@ export interface ServiceOrderDetail {
   source_call: ServiceOrderSourceCallOut | null;
 }
 
+/** `GET /customers` satırındaki tekne (#209). */
+export interface CustomerBoatOut {
+  id: string;
+  name: string;
+  model?: string | null;
+}
+
+/** `GET /customers` satırı: elle eşleştirmede seçilecek müşteri ve tekneleri (#209). */
+export interface CustomerSearchItem {
+  id: string;
+  name: string;
+  phone?: string | null;
+  boats?: CustomerBoatOut[];
+}
+
 export interface ServiceOrderStatusUpdate {
   status: ServiceOrderStatus;
 }

@@ -37,6 +37,7 @@ Admin/tekne sahibi rol ayrımını .NET uygulaması yapar. Tekne sahibi uçları
 | `GET /crm` | Admin | `CallFilters` (sorgu) | `Page` of `CrmRecordItem` | #51 |
 | `POST /crm/{call_id}/approve` | Admin | `CrmApproveIn` (isteğe bağlı) | `CrmReviewOut`; eşleşme yoksa 409 | #106 |
 | `POST /crm/{call_id}/reject` | Admin | `CrmRejectIn` (isteğe bağlı) | `CrmReviewOut` | #106 |
+| `GET /customers` | Admin | `q` (ad, telefon veya tekne adı; boşsa ilk müşteriler), `limit` (1–50, varsayılan 20) | `CustomerSearchItem` dizisi | #209 |
 | `GET /service-orders` | Admin | `ServiceOrderFilters` (sorgu) | `Page` of `ServiceOrderListItem` | #118 |
 | `GET /service-orders/{order_id}` | Admin | — | `ServiceOrderDetail` | #118 |
 | `PATCH /service-orders/{order_id}/status` | Admin | `ServiceOrderStatusUpdate` | `ServiceOrderDetail` | #118 |
@@ -97,6 +98,12 @@ Arayüz `GET /calls/{id}/status` ile durumu 2–3 saniyede bir sorar; `tamam`, `
 Yeni görev açıldıysa `already_running=false`'tur. Satır kilitlendiği için iki eşzamanlı istekten yalnızca biri görev açar. Bir çağrı `STUCK_CALL_TIMEOUT_MIN` (varsayılan 10 dk) süredir hareketsizse takılı sayılır: kurtarma görevi gelmeden de yeniden analiz isteği onu yeniden kuyruğa alır (`already_running=false`). Gerçek hata yalnızca çağrı yoksa (404) ya da ne transkripti ne sesi varsa (409 `no_transcript`) dönülür.
 
 > `calls.state` ve `calls.error` sütunları #48 ile eklendi; seed verisindeki analizli çağrılar `tamam` durumundadır.
+
+### Müşteri arama (#209)
+- `CustomerSearchItem`: `GET /customers` satırı (`id`, `name`, `phone`, `boats`). Düz dizi döner (`Page` değil); en çok `limit` müşteri, ada göre sıralı.
+- `CustomerBoatOut`: müşterinin teknesi (`id`, `name`, `model`).
+- **Eşleşme kuralları:** ad için büyük/küçük harf ve Türkçe karakter duyarsız (`ismail` = `İSMAİL`, `celik` = `Çelik`, `ruzgar` = `Rüzgâr`), kısmi ve sözcük sırasından bağımsız (`celik ismail`); noktalama yok sayılır. Telefon için yalnızca rakamlar karşılaştırılır, en az 3 rakam (`532 123`, `+90 532 123 45 67`, `0532-123-45-67` aynı müşteriyi bulur). Müşterinin teknelerinden birinin adı eşleşirse müşteri de bulunur. `q` boşsa ilk `limit` müşteri döner; aranabilir bir şey içermeyen `q` (`!!!`) boş dizi verir. `%` ve `_` düz karakterdir.
+- Seçilen müşteri ve tekne `PUT /calls/{call_id}/match` ile çağrıya bağlanır (girdi biçimi değişmedi: `CallMatchIn`).
 
 ### Servis emirleri (#118)
 - `ServiceOrderListItem`: sayfalı liste satırı (`id`, `status`, `category`, `description`, `scheduled_at`, `completed_at`, `created_at`, `customer_id`, `customer_name`, `customer_phone`, `boat_id`, `boat_name`, `boat_model`, `marina`, `craftsman_id`, `craftsman_name`, `source_call_id`).
