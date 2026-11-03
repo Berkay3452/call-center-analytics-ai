@@ -213,6 +213,12 @@ export interface CrmRecordItem {
   started_at: IsoDateTime;
   customer_name: string | null;
   boat_name: string | null;
+  /** Çağrının eşleştirme yöntemi; yok/null → müşteri bağlı değil, onay için elle seçilmeli (#209). */
+  match_method?: MatchMethod | null;
+  /** Eşleşmişse bağlı müşterinin kayıtlı adı (`customer_name` çağrı ipucudur). */
+  matched_customer_name?: string | null;
+  /** Eşleşmişse bağlı teknenin kayıtlı adı. */
+  matched_boat_name?: string | null;
   analysis_version: number;
   request_category: RequestCategory | null;
   location: string | null;

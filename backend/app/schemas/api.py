@@ -242,6 +242,20 @@ class CrmRecordItem(BaseModel):
     started_at: datetime
     customer_name: str | None = None
     boat_name: str | None = None
+    match_method: MatchMethod | None = Field(
+        default=None,
+        description=(
+            "Çağrının müşteri/tekne eşleştirme yöntemi (telefon, ad_tekne, elle, yok); "
+            "null: eşleştirme henüz denenmedi. Onay için müşteri eşleşmiş olmalıdır (#209)."
+        ),
+    )
+    matched_customer_name: str | None = Field(
+        default=None,
+        description="Eşleşmişse bağlı müşterinin kayıtlı adı (`customer_name` çağrı ipucudur).",
+    )
+    matched_boat_name: str | None = Field(
+        default=None, description="Eşleşmişse çağrıya bağlı teknenin kayıtlı adı."
+    )
     analysis_version: int = Field(ge=1)
     request_category: RequestCategory | None = None
     location: str | None = None

@@ -182,6 +182,69 @@ async def test_latest_analysis_version_is_picked_when_multiple_exist(
         assert crm_item.urgency == Urgency.YUKSEK
 
 
+async def test_crm_records_expose_match_state(
+    conn: AsyncConnection, factory: async_sessionmaker[AsyncSession]
+) -> None:
+    """CRM satırı eşleşme yöntemini ve bağlı müşteri/tekne adını verir; eşleşmemişte null (#209)."""
+    customer_id = (
+        await conn.execute(
+            text("INSERT INTO customers (full_name) VALUES ('Zzz Eşleşen Müşteri') RETURNING id")
+        )
+    ).scalar_one()
+    boat_id = (
+        await conn.execute(
+            text(
+                "INSERT INTO boats (owner_id, name) VALUES (:c, 'Zzz Eşleşen Tekne') RETURNING id"
+            ),
+            {"c": customer_id},
+        )
+    ).scalar_one()
+    now = datetime.now(UTC)
+    call_ids = {}
+    for key, hint, method, cust, boat in (
+        ("eslesti", "Zzz Eşleşme Ipucu", "elle", customer_id, boat_id),
+        ("eslesmedi", "Zzz Eşleşmeyen Ipucu", "yok", None, None),
+        ("denenmedi", "Zzz Denenmeyen Ipucu", None, None, None),
+    ):
+        cid = (
+            await conn.execute(
+                text(
+                    "INSERT INTO calls (started_at, customer_name, boat_name, marina, state, "
+                    "match_method, customer_id, boat_id) "
+                    "VALUES (:t, :n, 'İpucu Tekne', 'Test Marina', 'tamam', :m, :c, :b) "
+                    "RETURNING id"
+                ),
+                {"t": now, "n": hint, "m": method, "c": cust, "b": boat},
+            )
+        ).scalar_one()
+        await conn.execute(
+            text(
+                "INSERT INTO analysis_results (call_id, version, status, request_category, "
+                "urgency, summary) VALUES (:cid, 1, 'tamam', 'makine', 'yuksek', 'özet')"
+            ),
+            {"cid": cid},
+        )
+        call_ids[key] = cid
+
+    async with factory() as session:
+        page = await list_crm_records(session, CallFilters(q="Zzz", page_size=50))
+    rows = {item.call_id: item for item in page.items}
+    assert set(rows) == set(call_ids.values())
+
+    matched = rows[call_ids["eslesti"]]
+    assert matched.match_method == "elle"
+    assert matched.matched_customer_name == "Zzz Eşleşen Müşteri"
+    assert matched.matched_boat_name == "Zzz Eşleşen Tekne"
+    # Çağrı ipucu ayrı kalır, bağlı kayıtla karışmaz.
+    assert matched.customer_name == "Zzz Eşleşme Ipucu"
+
+    for key, method in (("eslesmedi", "yok"), ("denenmedi", None)):
+        item = rows[call_ids[key]]
+        assert item.match_method == method
+        assert item.matched_customer_name is None
+        assert item.matched_boat_name is None
+
+
 async def test_free_text_wildcards_are_literal(factory: async_sessionmaker[AsyncSession]) -> None:
     """`%` ve `_` joker değil, düz karakter olarak aranır."""
     async with factory() as session:

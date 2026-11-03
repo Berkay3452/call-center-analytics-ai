@@ -529,6 +529,12 @@ export interface components {
             started_at: string;
             customer_name: string | null;
             boat_name: string | null;
+            /** @description Çağrının müşteri/tekne eşleştirme yöntemi (telefon, ad_tekne, elle, yok); null: eşleştirme henüz denenmedi. Onay için müşteri eşleşmiş olmalıdır (#209). */
+            match_method?: components["schemas"]["MatchMethod"];
+            /** @description Eşleşmişse çağrıya bağlı müşterinin kayıtlı adı; `customer_name` çağrı ipucudur. */
+            matched_customer_name?: string | null;
+            /** @description Eşleşmişse çağrıya bağlı teknenin kayıtlı adı. */
+            matched_boat_name?: string | null;
             analysis_version: number;
             request_category: components["schemas"]["RequestCategory"];
             location: string | null;

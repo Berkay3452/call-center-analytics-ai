@@ -117,7 +117,7 @@ Yeni görev açıldıysa `already_running=false`'tur. Satır kilitlendiği için
 - **Durum Geçişi:** `yeni_atandi` -> `kesifte` -> `onaylandi` -> `devam_ediyor` -> `tamamlandi`. Geçersiz geçiş 400 döner. `tamamlandi` durumuna geçildiğinde `completed_at` otomatik doldurulur.
 
 ### CRM önerileri (#106)
-- `CrmRecordItem`: hocanın 7 alanı (`request_category`, `location`, `problem`, `service_mode`, `urgency`, `potential_job`, `next_action`), alıntılar (`evidence`), inceleme durumu (`review_status`: `bekliyor` / `onaylandi` / `reddedildi`), düzenlenen alanlar (`edited_fields`), servis emri (`service_order_id`) ve kaynağı olan çağrı. Her çağrının en son analiz sürümünden gelir.
+- `CrmRecordItem`: hocanın 7 alanı (`request_category`, `location`, `problem`, `service_mode`, `urgency`, `potential_job`, `next_action`), alıntılar (`evidence`), inceleme durumu (`review_status`: `bekliyor` / `onaylandi` / `reddedildi`), düzenlenen alanlar (`edited_fields`), servis emri (`service_order_id`) ve kaynağı olan çağrı. Her çağrının en son analiz sürümünden gelir. Eşleşme durumu (#209): `match_method` (`telefon` / `ad_tekne` / `elle` / `yok` / null), eşleşmişse bağlı kayıtların adı `matched_customer_name` ve `matched_boat_name`; `customer_name`/`boat_name` ise çağrıdan çıkan ipucudur. `match_method` `yok` veya null ise müşteri bağlı değildir ve onay 409 verir; önce `GET /customers` ile seçip `PUT /calls/{call_id}/match` çağrılır.
 - `CrmApproveIn`: isteğe bağlı 7 alan düzenlemesi (`request_category`, `location`, `problem`, `service_mode`, `urgency`, `potential_job`, `next_action`) ve `note`.
 - `CrmRejectIn`: red nedeni veya not (`note`).
 - `CrmReviewOut`: inceleme kaydı (`id`, `call_id`, `analysis_id`, `status`, `edited_fields`, `note`, `reviewed_at`, `service_order_id`).
