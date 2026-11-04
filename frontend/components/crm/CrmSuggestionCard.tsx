@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useRef, type ReactNode } from "react";
+import { useState, useRef, useEffect, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useFocusTrap } from "@/lib/use-focus-trap";
-import { approveCrmRecord, matchCall, rejectCrmRecord } from "@/lib/api/client";
+import { approveCrmRecord, matchCall, rejectCrmRecord, searchCustomers } from "@/lib/api/client";
 import { ApiError } from "@/lib/api/errors";
 import {
   EMPTY_LABEL,
@@ -23,7 +23,7 @@ import {
   type ServiceMode,
   type NextAction,
 } from "@/lib/types";
-import type { CrmApproveIn } from "@/lib/api/types";
+import type { CrmApproveIn, CustomerSearchItem } from "@/lib/api/types";
 import {
   Badge,
   Button,
@@ -55,10 +55,8 @@ const STATUS_TONE: Record<CrmReviewStatus, Tone> = {
   reddedildi: "danger",
 };
 
-const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
 const CONFLICT_MESSAGE =
-  "Bu çağrı henüz bir müşteri veya tekneyle eşleşmediği için servis emri açılamadı. “Elle eşleştir” ile müşteriyi bağlayıp tekrar onaylayabilirsiniz.";
+  "Bu çağrı henüz bir müşteri veya tekneyle eşleşmediği için servis emri açılamadı. “Müşteri ve tekne seç” ile müşteriyi bağlayıp tekrar onaylayabilirsiniz.";
 
 /** Hata nesnesini kullanıcıya gösterilecek anlaşılır Türkçe metne çevirir. */
 function describeError(err: unknown, fallback: string): string {
@@ -128,6 +126,15 @@ export function CrmSuggestionCard({
     suggestion.editedFields ?? {},
   );
 
+  const [manualMatch, setManualMatch] = useState<boolean | null>(null);
+  const isMatched = manualMatch ?? Boolean(suggestion.customerId && suggestion.boatId);
+  const [matchedCustomerName, setMatchedCustomerName] = useState<string | null>(
+    suggestion.matchedCustomerName ?? null,
+  );
+  const [matchedBoatName, setMatchedBoatName] = useState<string | null>(
+    suggestion.matchedBoatName ?? null,
+  );
+
   // Güncel değerler (düzenlemeler yansıtılmış)
   const [currentValues, setCurrentValues] = useState({
     requestCategory: suggestion.requestCategory,
@@ -143,9 +150,17 @@ export function CrmSuggestionCard({
   const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
   const [isMatchModalOpen, setIsMatchModalOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
-  const [matchForm, setMatchForm] = useState({ customerId: "", boatId: "" });
+
+  // Eşleştirme modalı state'i
+  const [searchQuery, setSearchQuery] = useState("");
+  const [customers, setCustomers] = useState<CustomerSearchItem[]>([]);
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string>("");
+  const [selectedBoatId, setSelectedBoatId] = useState<string>("");
+  const [isLoadingCustomers, setIsLoadingCustomers] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [matchError, setMatchError] = useState<string | null>(null);
   const [matchDone, setMatchDone] = useState(false);
+
   const [actionError, setActionError] = useState<string | null>(null);
   const [isConflict, setIsConflict] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -182,9 +197,88 @@ export function CrmSuggestionCard({
     setIsEditModalOpen(true);
   };
 
+  const openMatchModal = () => {
+    setMatchError(null);
+    setSearchQuery("");
+    setSelectedCustomerId("");
+    setSelectedBoatId("");
+    setCustomers([]);
+    setIsLoadingCustomers(true);
+    setIsMatchModalOpen(true);
+  };
+
+  useEffect(() => {
+    if (!isMatchModalOpen) return;
+    let active = true;
+    const timer = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const res = await searchCustomers(searchQuery.trim(), 20);
+        if (active) {
+          setCustomers(res);
+          setMatchError(null);
+        }
+      } catch {
+        if (active) setMatchError("Müşteri listesi yüklenemedi. Lütfen tekrar deneyin.");
+      } finally {
+        if (active) {
+          setIsSearching(false);
+          setIsLoadingCustomers(false);
+        }
+      }
+    }, 250);
+    return () => { active = false; clearTimeout(timer); };
+  }, [searchQuery, isMatchModalOpen]);
+
+  const handleSelectCustomer = (cust: CustomerSearchItem) => {
+    setSelectedCustomerId(cust.id);
+    setSelectedBoatId("");
+  };
+
+  const handleMatchSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customers.find((c) => c.id === selectedCustomerId)?.boats?.some((b) => b.id === selectedBoatId) || isSubmitting) return;
+
+    setIsSubmitting(true);
+    setMatchError(null);
+
+    try {
+      const res = await matchCall(suggestion.callId, {
+        customer_id: selectedCustomerId,
+        boat_id: selectedBoatId,
+      });
+
+      const selectedCust = customers.find((c) => c.id === selectedCustomerId);
+      const selectedBoat = selectedCust?.boats?.find((b) => b.id === selectedBoatId);
+
+      if (!res.customer_id || !res.boat_id) {
+        setMatchError("Eşleştirme tamamlanamadı. Müşteri ve tekneyi tekrar seçin.");
+        return;
+      }
+      setManualMatch(true);
+      setMatchDone(true);
+      setMatchedCustomerName(selectedCust?.name ?? res.customer_name ?? null);
+      setMatchedBoatName(selectedBoat?.name ?? res.boat_name ?? null);
+      setIsMatchModalOpen(false);
+      setActionError(null);
+      setIsConflict(false);
+      router.refresh(); // sekme ve kartları güncelle
+    } catch (err: unknown) {
+      if (err instanceof ApiError && err.status === 400) {
+        setMatchError("Seçilen tekne bu müşteriye ait değil. Lütfen geçerli bir seçim yapın.");
+      } else if (err instanceof ApiError && err.status === 404) {
+        setMatchError("Seçilen müşteri veya tekne sistemde bulunamadı.");
+      } else {
+        setMatchError(describeError(err, "Eşleştirme sırasında bir sorun oluştu. Lütfen tekrar deneyin."));
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   // Onaylama işlemi (isteğe bağlı diff ile). Başarılıysa true döner.
   const handleApprove = async (diff?: Partial<CrmApproveIn>, note?: string): Promise<boolean> => {
-    if (isSubmitting) return false;
+    if (isSubmitting || !isMatched) return false;
     setIsSubmitting(true);
     setActionError(null);
     setIsConflict(false);
@@ -199,10 +293,14 @@ export function CrmSuggestionCard({
       }
       setIsEditModalOpen(false);
       onStatusChange?.(suggestion.callId, res.status, newOrderId);
-      router.refresh(); // sekme sayıları ve liste güncellensin
+      router.refresh();
       return true;
     } catch (err: unknown) {
-      setIsConflict(err instanceof ApiError && err.status === 409);
+      const isConf = err instanceof ApiError && err.status === 409;
+      setIsConflict(isConf);
+      if (isConf) {
+        setManualMatch(false);
+      }
       setActionError(describeError(err, "Onaylama sırasında bir sorun oluştu. Lütfen tekrar deneyin."));
       return false;
     } finally {
@@ -238,7 +336,6 @@ export function CrmSuggestionCard({
     }
 
     const ok = await handleApprove(diff, editFormData.note);
-    // Değerleri yalnızca kayıt başarılıysa ekranda güncelle
     if (ok) {
       setCurrentValues({
         requestCategory: (editFormData.request_category as RequestCategory) || null,
@@ -274,41 +371,6 @@ export function CrmSuggestionCard({
     }
   };
 
-  const handleMatch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (isSubmitting) return;
-    const customerId = matchForm.customerId.trim();
-    const boatId = matchForm.boatId.trim();
-    if (!UUID_RE.test(customerId)) {
-      setMatchError("Müşteri numarası geçerli bir kimlik (UUID) olmalı. Örnek: 123e4567-e89b-12d3-a456-426614174000");
-      return;
-    }
-    if (boatId && !UUID_RE.test(boatId)) {
-      setMatchError("Tekne numarası geçerli bir kimlik (UUID) olmalı ya da boş bırakılmalı.");
-      return;
-    }
-    setIsSubmitting(true);
-    setMatchError(null);
-    try {
-      await matchCall(suggestion.callId, { customer_id: customerId, boat_id: boatId || null });
-      setMatchDone(true);
-      setIsMatchModalOpen(false);
-      setActionError(null);
-      setIsConflict(false);
-      router.refresh();
-    } catch (err: unknown) {
-      if (err instanceof ApiError && err.status === 400) {
-        setMatchError("Seçilen tekne bu müşteriye ait değil. Tekne numarasını kontrol edin.");
-      } else if (err instanceof ApiError && err.status === 404) {
-        setMatchError("Bu numaraya sahip müşteri veya tekne bulunamadı.");
-      } else {
-        setMatchError(describeError(err, "Eşleştirme sırasında bir sorun oluştu. Lütfen tekrar deneyin."));
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const isEdited = (key: string) => Boolean(editedFields[key]);
 
   const fields: { key: string; label: string; value: string }[] = [
@@ -320,6 +382,10 @@ export function CrmSuggestionCard({
   ];
 
   const evidence = suggestion.evidence ? Object.entries(suggestion.evidence) : [];
+  const selectedCustomer = customers.find((c) => c.id === selectedCustomerId);
+
+  const displayName = matchedCustomerName || suggestion.caller;
+  const displayBoat = matchedBoatName || suggestion.boatName;
 
   return (
     <Card className="space-y-4">
@@ -327,9 +393,18 @@ export function CrmSuggestionCard({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <h2 className="text-base font-semibold text-brand-800">
-            {suggestion.caller}
-            {suggestion.boatName && (
-              <span className="font-normal text-slate-500"> · {suggestion.boatName}</span>
+            {displayName}
+            {displayBoat && (
+              <span className="font-normal text-slate-500"> · {displayBoat}</span>
+            )}
+            {isMatched ? (
+              <span className="ml-2 inline-flex items-center text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                Eşleşti
+              </span>
+            ) : (
+              <span className="ml-2 inline-flex items-center text-xs font-medium text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                Eşleşmedi
+              </span>
             )}
           </h2>
           <p className="mt-0.5 text-sm text-slate-700">
@@ -346,6 +421,29 @@ export function CrmSuggestionCard({
           <Badge tone={STATUS_TONE[reviewStatus]}>{labelOf(CRM_REVIEW_STATUS_LABELS, reviewStatus)}</Badge>
         </div>
       </div>
+
+      {/* Eşleşmeyen Çağrıda Açık Türkçe Uyarı ve Tek Eylem Butonu (#209) */}
+      {!isMatched && reviewStatus !== "onaylandi" && (
+        <div
+          role="alert"
+          className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl border border-amber-300 bg-amber-50 p-4 text-amber-900"
+        >
+          <div className="flex items-start gap-2.5">
+            <span className="text-xl shrink-0" aria-hidden="true">⚠️</span>
+            <p className="text-sm font-medium leading-relaxed">
+              Bu çağrı otomatik olarak bir müşteri ve tekneye bağlanamadı. Servis emri açmak için önce müşteri ve tekneyi seçin.
+            </p>
+          </div>
+          <button
+            type="button"
+            className={buttonClasses("primary", "sm") + " whitespace-nowrap shrink-0 bg-amber-600 hover:bg-amber-700 text-white"}
+            onClick={openMatchModal}
+            ref={matchTriggerRef}
+          >
+            Müşteri ve tekne seç
+          </button>
+        </div>
+      )}
 
       {/* Okunur etiketli alanlar */}
       <dl className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm sm:grid-cols-3">
@@ -377,31 +475,16 @@ export function CrmSuggestionCard({
 
       {matchDone && (
         <p role="status" className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
-          Çağrı müşteriye bağlandı. Şimdi tekrar onaylayabilirsiniz.
+          Çağrı müşteri ve tekneye bağlandı. Şimdi onaylayıp servis emri oluşturabilirsiniz.
         </p>
       )}
 
-      {actionError && !isEditModalOpen && !isRejectModalOpen && (
+      {actionError && !isEditModalOpen && !isRejectModalOpen && !isConflict && (
         <div
           role="alert"
-          className={`rounded-lg border p-3 text-sm ${
-            isConflict ? "border-amber-200 bg-amber-50 text-amber-800" : "border-red-200 bg-red-50 text-red-700"
-          }`}
+          className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700"
         >
           <p>{actionError}</p>
-          {isConflict && (
-            <Button
-              variant="secondary"
-              size="sm"
-              className="mt-2"
-              onClick={() => {
-                setMatchError(null);
-                setIsMatchModalOpen(true);
-              }}
-            >
-              Elle eşleştir
-            </Button>
-          )}
         </div>
       )}
 
@@ -431,20 +514,16 @@ export function CrmSuggestionCard({
 
         {reviewStatus !== "onaylandi" && (
           <div className="flex flex-wrap items-center gap-2">
-            {/* Eşleşme uyarısında aynı eylem uyarı kutusunda sunulur; iki kez gösterilmez */}
-            {!isConflict && (
-            <button
-              ref={matchTriggerRef}
-              type="button"
-              disabled={isSubmitting}
-              onClick={() => {
-                setMatchError(null);
-                setIsMatchModalOpen(true);
-              }}
-              className={buttonClasses("ghost", "sm")}
-            >
-              Elle eşleştir
-            </button>
+            {isMatched && (
+              <button
+                ref={matchTriggerRef}
+                type="button"
+                disabled={isSubmitting}
+                onClick={openMatchModal}
+                className={buttonClasses("ghost", "sm")}
+              >
+                Müşteri ve tekne seç
+              </button>
             )}
             <button
               ref={editTriggerRef}
@@ -469,9 +548,32 @@ export function CrmSuggestionCard({
                 Reddet
               </button>
             )}
-            <Button size="sm" disabled={isSubmitting} onClick={() => handleApprove()}>
-              {isSubmitting ? "Onaylanıyor…" : "Onayla ve Servis Emri Oluştur"}
-            </Button>
+
+            {/* Onay Butonu Erken Engel (Proaktif UX, #209) */}
+            <div
+              className="relative inline-flex group"
+              tabIndex={!isMatched ? 0 : undefined}
+              aria-describedby={!isMatched ? `unmatched-hint-${suggestion.callId}` : undefined}
+            >
+              <Button
+                size="sm"
+                aria-describedby={!isMatched ? `unmatched-hint-${suggestion.callId}` : undefined}
+                disabled={!isMatched || isSubmitting}
+                onClick={() => handleApprove()}
+                title={!isMatched ? "Servis emri oluşturabilmek için önce müşteri ve tekne eşleştirmesi yapmalısınız." : undefined}
+              >
+                {isSubmitting ? "Onaylanıyor…" : "Onayla ve Servis Emri Oluştur"}
+              </Button>
+              {!isMatched && (
+                <div
+                  id={`unmatched-hint-${suggestion.callId}`}
+                  role="tooltip"
+                  className="pointer-events-none absolute bottom-full mb-2 right-0 hidden w-64 rounded-lg bg-slate-900 px-3 py-2 text-xs text-white shadow-lg transition-opacity group-hover:block group-focus-within:block z-20 text-center"
+                >
+                  Servis emri oluşturabilmek için önce müşteri ve tekne eşleştirmesi yapmalısınız.
+                </div>
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -516,10 +618,10 @@ export function CrmSuggestionCard({
               <Field id="crm-edit-problem" label={CRM_FIELD_LABELS.problem} className="sm:col-span-2">
                 <Textarea
                   id="crm-edit-problem"
-                  rows={3}
+                  rows={2}
                   value={editFormData.problem}
                   onChange={(e) => setEditFormData({ ...editFormData, problem: e.target.value })}
-                  placeholder="Arıza veya müşteri şikayeti"
+                  placeholder="Müşterinin belirttiği ana sorun"
                 />
               </Field>
               <Field id="crm-edit-service-mode" label={CRM_FIELD_LABELS.service_mode}>
@@ -585,7 +687,7 @@ export function CrmSuggestionCard({
               <Button variant="secondary" onClick={() => setIsEditModalOpen(false)} disabled={isSubmitting}>
                 İptal
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button type="submit" disabled={isSubmitting || !isMatched}>
                 {isSubmitting ? "Kaydediliyor…" : "Kaydet ve Onayla"}
               </Button>
             </div>
@@ -627,43 +729,154 @@ export function CrmSuggestionCard({
         </Modal>
       )}
 
+      {/* Müşteri ve Tekne Seçim Penceresi (#209) */}
       {isMatchModalOpen && (
         <Modal
-          title="Çağrıyı elle eşleştir"
+          title="Müşteri ve tekne seç"
           titleId="match-modal-title"
-          description="Çağrıyı kayıtlı bir müşteriye (ve istenirse teknesine) bağlar. Eşleşince servis emri açılabilir."
+          description="Çağrıyı sistemdeki kayıtlı bir müşteri ve tekneye bağlar. Eşleşince servis emri açılabilir."
           onClose={() => setIsMatchModalOpen(false)}
           triggerRef={matchTriggerRef}
         >
-          <form onSubmit={handleMatch} className="space-y-4">
+          {/* Önerilen Eşleşme Vurgusu */}
+          <div className="mb-4 rounded-lg border border-brand-200 bg-brand-50/70 p-3 text-sm">
+            <span className="text-xs font-bold uppercase tracking-wider text-brand-800">
+              Önerilen:
+            </span>
+            <div className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-slate-800">
+              <span>
+                <strong className="font-medium text-slate-600">Çağrıdan çıkarılan:</strong>{" "}
+                <span className="font-semibold text-brand-900">{suggestion.caller}</span>
+              </span>
+              {suggestion.boatName && (
+                <span>
+                  <strong className="font-medium text-slate-600">Tekne:</strong>{" "}
+                  <span className="font-semibold text-brand-900">{suggestion.boatName}</span>
+                </span>
+              )}
+            </div>
+          </div>
+
+          <form onSubmit={handleMatchSubmit} className="space-y-4">
             <Field
-              id="crm-match-customer"
-              label="Müşteri numarası"
-              hint="Müşteri kaydındaki kimlik (UUID)."
+              id="crm-search-customer"
+              label="Müşteri ara"
+              hint="Ad, telefon numarası veya tekne adı ile arayabilirsiniz."
               error={matchError}
             >
-              <Input
-                id="crm-match-customer"
-                value={matchForm.customerId}
-                onChange={(e) => setMatchForm({ ...matchForm, customerId: e.target.value })}
-                placeholder="123e4567-e89b-12d3-a456-426614174000"
-                autoComplete="off"
-                required
-              />
+              <div className="relative">
+                <Input
+                  id="crm-search-customer"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setSelectedCustomerId("");
+                    setSelectedBoatId("");
+                  }}
+                  placeholder="Müşteri adı veya telefon ara..."
+                  autoComplete="off"
+                  autoFocus
+                />
+                {isSearching && (
+                  <span className="absolute right-3 top-2.5 text-xs text-slate-400">
+                    Aranıyor…
+                  </span>
+                )}
+              </div>
             </Field>
-            <Field id="crm-match-boat" label="Tekne numarası (isteğe bağlı)" hint="Boşsa yalnızca müşteri bağlanır.">
-              <Input
-                id="crm-match-boat"
-                value={matchForm.boatId}
-                onChange={(e) => setMatchForm({ ...matchForm, boatId: e.target.value })}
-                autoComplete="off"
-              />
-            </Field>
+
+            {/* Müşteri Listesi */}
+            <div className="space-y-2">
+              <label className="text-xs font-semibold text-slate-700">
+                Müşteri seçin {customers.length > 0 && `(${customers.length} müşteri bulundu)`}
+              </label>
+
+              {isLoadingCustomers ? (
+                <div className="rounded-lg border border-slate-200 bg-slate-50 p-6 text-center text-sm text-slate-500">
+                  Müşteriler yükleniyor…
+                </div>
+              ) : customers.length === 0 ? (
+                <div className="rounded-lg border border-slate-200 bg-slate-50 p-6 text-center text-sm text-slate-500">
+                  Aramanıza uygun müşteri bulunamadı.
+                </div>
+              ) : (
+                <div className="max-h-56 space-y-1.5 overflow-y-auto rounded-lg border border-slate-200 p-2">
+                  {customers.map((cust) => {
+                    const isSelected = selectedCustomerId === cust.id;
+                    return (
+                      <div
+                        key={cust.id}
+                        onClick={() => handleSelectCustomer(cust)}
+                        className={`cursor-pointer rounded-lg border p-2.5 transition-colors ${
+                          isSelected
+                            ? "border-brand-500 bg-brand-50/50"
+                            : "border-slate-100 bg-white hover:bg-slate-50"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <label className="flex items-center gap-2 cursor-pointer font-medium text-slate-900 text-sm">
+                            <input
+                              type="radio"
+                              name="customer-selection"
+                              checked={isSelected}
+                              onChange={() => handleSelectCustomer(cust)}
+                              className="h-4 w-4 text-brand-600 focus:ring-brand-500"
+                            />
+                            <span>{cust.name}</span>
+                          </label>
+                          <span className="text-xs text-slate-500">{cust.phone ?? "Telefon yok"}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            {/* Seçilen Müşterinin Tekneleri */}
+            {selectedCustomer && (
+              <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50/50 p-3">
+                <label className="text-xs font-semibold text-slate-700">
+                  {selectedCustomer.name} için tekne seçin:
+                </label>
+                {selectedCustomer.boats && selectedCustomer.boats.length > 0 ? (
+                  <div className="space-y-1.5">
+                    {selectedCustomer.boats.map((b) => (
+                      <label key={b.id} className="flex items-center gap-2 text-sm text-slate-800 cursor-pointer">
+                        <input
+                          type="radio"
+                          name="boat-selection"
+                          value={b.id}
+                          checked={selectedBoatId === b.id}
+                          onChange={() => setSelectedBoatId(b.id)}
+                          className="h-4 w-4 text-brand-600 focus:ring-brand-500"
+                        />
+                        <span className="font-medium">{b.name}</span>
+                        {b.model && <span className="text-xs text-slate-500">({b.model})</span>}
+                      </label>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-slate-500">
+                    Bu müşteriye kayıtlı tekne bulunmuyor. Eşleştirmek için teknesi olan bir müşteri seçin.
+                  </p>
+                )}
+              </div>
+            )}
+
             <div className="flex items-center justify-end gap-2 border-t border-slate-100 pt-3">
-              <Button variant="secondary" onClick={() => setIsMatchModalOpen(false)} disabled={isSubmitting}>
+              <Button
+                variant="secondary"
+                type="button"
+                onClick={() => setIsMatchModalOpen(false)}
+                disabled={isSubmitting}
+              >
                 Vazgeç
               </Button>
-              <Button type="submit" disabled={isSubmitting}>
+              <Button
+                type="submit"
+                disabled={!selectedCustomerId || !selectedBoatId || isSubmitting}
+              >
                 {isSubmitting ? "Eşleştiriliyor…" : "Eşleştir"}
               </Button>
             </div>

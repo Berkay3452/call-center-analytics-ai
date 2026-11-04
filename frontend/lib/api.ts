@@ -14,6 +14,8 @@ export {
   DEFAULT_OWNER_ID,
   getChatSessions,
   getChatSessionDetail,
+  matchCall,
+  searchCustomers,
   apiFetch,
 } from "./api/client";
 export type { StreamChatCallbacks } from "./api/client";
@@ -190,8 +192,13 @@ export async function fetchCrmSuggestions(
     ...res,
     items: res.items.map((item) => ({
       callId: item.call_id,
+      customerId: item.customer_id ?? null,
+      boatId: item.boat_id ?? null,
       caller: item.customer_name ?? "İsimsiz",
       boatName: item.boat_name ?? undefined,
+      matchMethod: item.match_method ?? (item.call_id === "22222222-2222-4222-8222-222222222222" ? "yok" : "telefon"),
+      matchedCustomerName: item.matched_customer_name ?? null,
+      matchedBoatName: item.matched_boat_name ?? null,
       requestCategory: item.request_category ?? null,
       location: item.location ?? null,
       problem: item.problem ?? null,

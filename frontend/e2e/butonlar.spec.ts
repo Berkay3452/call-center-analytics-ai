@@ -74,17 +74,24 @@ for (const path of PAGES) {
         }).observe(document.body, { childList: true, subtree: true, attributes: true, characterData: true });
       });
 
-      await el.click({ timeout: 3000 }).catch(() => failures.push(`${label}: tıklanamadı`));
-      await page.waitForTimeout(700);
-
-      const urlChanged = page.url() !== startUrl;
-      const mutated = await page
-        .evaluate(() => (window as unknown as { __mut?: number }).__mut ?? 0)
-        .catch(() => 1); // sayfa gezindiyse bağlam kapandı: sonuç var
-      const dialog = await page.getByRole("dialog").count();
-
-      if (!urlChanged && mutated === 0 && dialog === 0) {
-        failures.push(`${label}: tıklayınca hiçbir şey olmadı`);
+      const href = tag === "a" ? await el.getAttribute("href") : null;
+      try {
+        await el.click({ timeout: 10000 });
+        if (href && !href.startsWith("#")) {
+          // Client navigation may need to compile its destination in development.
+          await expect(page).toHaveURL(new URL(href, startUrl).href, { timeout: 15000 });
+          expect(page.url(), label).not.toBe(startUrl);
+        } else {
+          await expect.poll(async () => {
+            if (page.url() !== startUrl) return true;
+            const mutated = await page.evaluate(() =>
+              (window as unknown as { __mut?: number }).__mut ?? 0,
+            ).catch(() => 1);
+            return mutated > 0 || await page.getByRole("dialog").count() > 0;
+          }, { message: label, timeout: 5000 }).toBe(true);
+        }
+      } catch (error) {
+        failures.push(`${label}: ${error instanceof Error ? error.message : String(error)}`);
       }
     }
 

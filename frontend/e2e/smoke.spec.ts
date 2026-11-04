@@ -175,7 +175,7 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
     await expect(firstCard.getByRole("button", { name: /Tekrar Onayla/ })).toHaveCount(0);
   });
 
-  test("Senaryo 4b (CRM): eşleşmemiş çağrı onayı anlaşılır uyarı verir, elle eşleştirince onaylanır", async ({
+  test("Senaryo 4b (CRM): eşleşmemiş çağrıda açık uyarı ve erken engel vardır, müşteri ve tekne seçilince onaylanır (#209)", async ({
     page,
   }) => {
     await page.goto("/admin/crm");
@@ -183,28 +183,54 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
     const card = page.locator("div.rounded-xl.border", {
       has: page.locator('a[href="/admin/calls/22222222-2222-4222-8222-222222222222"]'),
     });
-    await card.getByRole("button", { name: "Onayla ve Servis Emri Oluştur" }).click();
 
+    // 1. Açık Türkçe uyarı metni kontrolü
     const alert = card.getByRole("alert");
-    await expect(alert).toContainText("henüz bir müşteri veya tekneyle eşleşmediği");
-    await expect(alert).not.toContainText("409");
+    await expect(alert).toContainText("Bu çağrı otomatik olarak bir müşteri ve tekneye bağlanamadı. Servis emri açmak için önce müşteri ve tekneyi seçin.");
 
-    // Geçersiz numara anlaşılır hata verir
-    await alert.getByRole("button", { name: "Elle eşleştir" }).click();
-    const dialog = page.getByRole("dialog", { name: "Çağrıyı elle eşleştir" });
-    await dialog.getByLabel("Müşteri numarası").fill("abc");
-    await dialog.getByRole("button", { name: "Eşleştir" }).click();
-    await expect(dialog.getByRole("alert")).toContainText("geçerli bir kimlik");
+    // 2. Onay butonunun disabled olduğunu ve ipucu metnini doğrula (Erken engel)
+    const approveButton = card.getByRole("button", { name: "Onayla ve Servis Emri Oluştur" });
+    await expect(approveButton).toBeDisabled();
+    await expect(approveButton).toHaveAttribute("title", "Servis emri oluşturabilmek için önce müşteri ve tekne eşleştirmesi yapmalısınız.");
 
-    await dialog.getByLabel("Müşteri numarası").fill("123e4567-e89b-12d3-a456-426614174000");
+    // 3. "Müşteri ve tekne seç" butonuna tıkla
+    await card.getByRole("button", { name: "Müşteri ve tekne seç" }).click();
+
+    // 4. Modal kontrolü: başlık ve Önerilen bölümü
+    const dialog = page.getByRole("dialog", { name: "Müşteri ve tekne seç" });
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByText("Önerilen:")).toBeVisible();
+    await expect(dialog.getByText("Fatma Kaya", { exact: true }).last()).toBeVisible();
+
+    // 5. Müşteri arama ve seçim
+    const searchInput = dialog.getByLabel("Müşteri ara");
+    await searchInput.fill("Fatma");
+    await expect(dialog.getByText("Fatma Kaya", { exact: true }).last()).toBeVisible();
+
+    // Fatma Kaya radio seçimi
+    const customerRadio = dialog.locator('input[name="customer-selection"]').first();
+    await customerRadio.check();
+    await expect(dialog.getByRole("button", { name: "Eşleştir", exact: true })).toBeDisabled();
+
+    // Tekne seçeneklerinde Albatros seçimi
+    await expect(dialog.getByText("Albatros", { exact: true }).last()).toBeVisible();
+    const boatRadio = dialog.locator('input[name="boat-selection"][value="22222222-3333-4222-8222-222222222222"]');
+    await boatRadio.check();
+
+    // 6. Eşleştir butonuna bas
     await dialog.getByRole("button", { name: "Eşleştir" }).click();
     await expect(dialog).not.toBeVisible();
-    await expect(card.getByText("Çağrı müşteriye bağlandı")).toBeVisible();
 
-    await card.getByRole("button", { name: "Onayla ve Servis Emri Oluştur" }).click();
+    // 7. Uyarının kalktığını, onay butonunun aktifleştiğini doğrula
+    await expect(card.getByText("Bu çağrı otomatik olarak bir müşteri ve tekneye bağlanamadı.")).not.toBeVisible();
+    await expect(card.getByText("Çağrı müşteri ve tekneye bağlandı")).toBeVisible();
+    await expect(approveButton).toBeEnabled();
+
+    // 8. Onayla ve servis emri açıldığını doğrula
+    await approveButton.click();
     await expect(card.getByText("Onaylandı, servis emri açıldı.")).toBeVisible();
+    await expect(card.getByRole("link", { name: "Servis emrini aç" })).toBeVisible();
   });
-
   // ──────────────────────────────────────────────────────────────────────────
   // Senaryo 4c: Servis Emirleri kart listesi (#173)
   // ──────────────────────────────────────────────────────────────────────────
@@ -365,18 +391,14 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
   });
 
   // ──────────────────────────────────────────────────────────────────────────
-  // Senaryo 7: Miço AI gerçek cevap (yalnızca gerçek backend; mock modunda atlanır)
+  // Senaryo 7: Miço AI sayısal cevap (mock ve gerçek backend sözleşmesi)
   // ──────────────────────────────────────────────────────────────────────────
-  test("Senaryo 7 (Miço AI gerçek cevap): sayısal soru kaynak kartıyla cevaplanır", async ({
+  test("Senaryo 7 (Miço AI sayısal cevap): sayısal soru kaynak kartıyla cevaplanır", async ({
     page,
   }) => {
-    test.skip(
-      process.env.NEXT_PUBLIC_USE_MOCKS !== "false",
-      "Gerçek backend gerekir: NEXT_PUBLIC_USE_MOCKS=false ile koşun.",
-    );
-
     await page.goto("/owner/assistant");
-    const chatInput = page.locator("#assistant-chat-input");
+    const chatInput = page.getByRole("textbox", { name: "Soru giriş kutusu" });
+    await expect(chatInput).toBeEnabled();
     await chatInput.fill("Kaç bakım hakkım kaldı?");
     await chatInput.press("Enter");
 
