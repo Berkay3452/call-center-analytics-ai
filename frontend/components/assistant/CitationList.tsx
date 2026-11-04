@@ -6,15 +6,15 @@ interface CitationListProps {
   citations?: CitationCardType[] | null;
 }
 
-/** Kaynaklar varsayılan olarak kapalıdır; açılınca kartlar görünür. */
+/** Kaynaklar varsayılan olarak açıktır; kullanıcı klavyeyle de daraltabilir. */
 export function CitationList({ citations }: CitationListProps) {
   if (!citations || citations.length === 0) {
     return null;
   }
 
   return (
-    <details className="mt-3 border-t border-slate-100 pt-2">
-      <summary className="cursor-pointer text-xs font-medium text-brand-700">
+    <details open className="mt-3 border-t border-slate-100 pt-2">
+      <summary className="cursor-pointer rounded-sm text-xs font-medium text-brand-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500">
         Kaynaklar ({citations.length})
       </summary>
       <div className="mt-2 grid gap-2" role="group" aria-label="Kaynak referansları">

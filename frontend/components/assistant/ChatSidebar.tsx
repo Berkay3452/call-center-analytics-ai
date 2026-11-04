@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useFocusTrap } from "@/lib/use-focus-trap";
 import type { ChatSessionOut } from "@/lib/api/types";
 import { Button, cn } from "@/components/ui";
@@ -26,9 +26,6 @@ export interface ChatSidebarProps {
   error: string | null;
   activeSessionId: string | null;
   onSelectSession: (sessionId: string) => void;
-  onNewChat: () => void;
-  /** Zaten boş bir sohbetteyken "Yeni sohbet" işlevsizdir. */
-  newChatDisabled?: boolean;
   /** Tek oturumu siler (onay kenar çubuğunda alınır). */
   onDeleteSession: (sessionId: string) => Promise<void>;
   /** Tüm oturumları siler (onay kenar çubuğunda alınır). */
@@ -44,14 +41,20 @@ export function ChatSidebar({
   error,
   activeSessionId,
   onSelectSession,
-  onNewChat,
-  newChatDisabled = false,
   onDeleteSession,
   onDeleteAll,
   isOpen,
   onClose,
 }: ChatSidebarProps) {
   const drawerRef = useFocusTrap<HTMLElement>({ isOpen, onClose });
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    const closeOnDesktop = () => { if (desktop.matches) onClose(); };
+    desktop.addEventListener("change", closeOnDesktop);
+    closeOnDesktop();
+    return () => desktop.removeEventListener("change", closeOnDesktop);
+  }, [onClose]);
+
   /** Silme onayı bekleyen oturum kimliği ya da tümü için "all". */
   const [confirming, setConfirming] = useState<string | "all" | null>(null);
   const [busy, setBusy] = useState(false);
@@ -80,20 +83,6 @@ export function ChatSidebar({
         </span>
         <Button variant="ghost" size="sm" className="lg:hidden" onClick={onClose} aria-label="Kenar çubuğunu kapat">
           ✕
-        </Button>
-      </div>
-
-      <div className="px-3 pb-3">
-        <Button
-          className="w-full"
-          aria-label="Yeni sohbet başlat"
-          disabled={newChatDisabled}
-          onClick={() => {
-            onNewChat();
-            onClose();
-          }}
-        >
-          Yeni sohbet
         </Button>
       </div>
 
@@ -148,12 +137,12 @@ export function ChatSidebar({
                     }}
                     aria-current={isActive ? "page" : undefined}
                     className={cn(
-                      "min-w-0 flex-1 rounded-lg px-3 py-2 text-left transition-colors",
+                      "min-w-0 flex-1 rounded-lg px-3 py-2 text-left transition-colors focus-visible:ring-2 focus-visible:ring-brand-500",
                       isActive ? "bg-brand-50 text-brand-800" : "text-slate-700 hover:bg-slate-50",
                     )}
                   >
                     <span className="block truncate text-sm font-medium">{title}</span>
-                    <span className="block text-xs text-slate-500">{formatRelativeDate(session.updated_at)}</span>
+                    <span className="block text-xs text-slate-600">{formatRelativeDate(session.updated_at)}</span>
                   </button>
                   <Button
                     variant="ghost"
@@ -222,14 +211,15 @@ export function ChatSidebar({
       {isOpen && (
         <div
           className="fixed inset-0 z-40 flex lg:hidden"
+          id="chat-sidebar-drawer"
           role="dialog"
           aria-modal="true"
           aria-label="Sohbet geçmişi"
           onClick={(e) => {
-            if (e.target === e.currentTarget) onClose();
+            if (e.target === e.currentTarget || (e.target instanceof HTMLElement && e.target.dataset.drawerBackdrop === "true")) onClose();
           }}
         >
-          <div className="fixed inset-0 bg-black/50" aria-hidden="true" />
+          <div className="fixed inset-0 bg-black/50" data-drawer-backdrop="true" aria-hidden="true" />
           <aside
             ref={drawerRef}
             className="relative z-50 flex w-72 max-w-[85vw] flex-col border-r border-slate-200 bg-white"

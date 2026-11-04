@@ -76,7 +76,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               className="text-lg font-bold tracking-tight"
               aria-label="Miço Usta ana sayfa"
             >
-              Miço<span className="text-orange-400">Usta</span>
+              Miço{" "}<span className="text-orange-400">Usta</span>
             </Link>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1 text-xs font-medium">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden="true" />

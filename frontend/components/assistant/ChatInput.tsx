@@ -58,7 +58,7 @@ export function ChatInput({
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         disabled={!hydrated || disabled || isStreaming}
-        className="max-h-[140px] min-h-[38px] flex-1 resize-none bg-transparent px-2 py-1.5 text-sm text-slate-900 placeholder:text-slate-500 focus:outline-none disabled:opacity-50"
+        className="max-h-[140px] min-h-[38px] min-w-0 flex-1 resize-none bg-transparent px-2 py-1.5 text-sm text-slate-900 placeholder:text-slate-500 focus:outline-none disabled:opacity-50"
       />
       {isStreaming && onStopStreaming ? (
         <Button variant="secondary" onClick={onStopStreaming} aria-label="Akışı Durdur">

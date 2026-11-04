@@ -74,6 +74,7 @@ export default function AssistantPage() {
 
   // ── Mobil kenar çubuğu durumu ─────────────────────────────────────────────
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const closeSidebar = useCallback(() => setSidebarOpen(false), []);
 
   // ── Bileşen unmount olduğunda akışı kes ──────────────────────────────────
   useEffect(() => {
@@ -358,22 +359,20 @@ export default function AssistantPage() {
   const isFreshChat = messages.length <= 1;
 
   return (
-    <div className="mx-auto flex h-[calc(100vh-13rem)] min-h-[32rem] max-w-6xl overflow-hidden rounded-xl border border-slate-200 bg-white">
+    <div className="mx-auto flex h-[calc(100dvh-13rem)] min-h-[26rem] w-full min-w-0 max-w-6xl overflow-hidden rounded-xl border border-slate-200 bg-white">
       <ChatSidebar
         sessions={sessions}
         isLoading={sessionsLoading}
         error={sessionsError}
         activeSessionId={activeSessionId}
         onSelectSession={(id) => void handleSelectSession(id)}
-        onNewChat={handleNewChat}
-        newChatDisabled={isFreshChat && !activeSessionId}
         onDeleteSession={handleDeleteSession}
         onDeleteAll={handleDeleteAll}
         isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
+        onClose={closeSidebar}
       />
 
-      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+      <div inert={sidebarOpen} className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <header className="flex flex-shrink-0 items-center justify-between gap-3 border-b border-slate-200 px-4 py-3">
           <div className="flex min-w-0 items-center gap-2.5">
             <Button
@@ -383,25 +382,28 @@ export default function AssistantPage() {
               onClick={() => setSidebarOpen(true)}
               aria-label="Sohbet geçmişini aç"
               aria-expanded={sidebarOpen}
-              aria-controls="chat-sidebar"
+              aria-controls={sidebarOpen ? "chat-sidebar-drawer" : undefined}
             >
               Geçmiş
             </Button>
             <div className="min-w-0">
-              <h1 className="truncate text-base font-semibold text-brand-800">Miço AI</h1>
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-base font-semibold text-brand-800">Miço AI</h1>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  aria-label="Yeni sohbet başlat"
+                  onClick={handleNewChat}
+                  disabled={isLoading || (isFreshChat && !activeSessionId)}
+                  title="Mevcut sohbet geçmişte kalır, boş bir sohbet açılır"
+                  className="shrink-0 focus-visible:ring-2 focus-visible:ring-brand-500"
+                >
+                  Yeni sohbet
+                </Button>
+              </div>
               <p className="truncate text-xs text-slate-500">Poyraz (Motoryat 42) · Kalamış Marina</p>
             </div>
           </div>
-          <Button
-            variant="secondary"
-            size="sm"
-            className="lg:hidden"
-            onClick={handleNewChat}
-            disabled={isLoading || isFreshChat}
-            title="Mevcut sohbet geçmişte kalır, boş bir sohbet açılır"
-          >
-            Yeni sohbet
-          </Button>
         </header>
 
         <div className="min-h-0 flex-1 bg-slate-50">
@@ -410,22 +412,18 @@ export default function AssistantPage() {
             currentStage={currentStage}
             isLoading={isLoading}
             onRetry={handleRetry}
-            footer={
-              isFreshChat && !isLoading ? (
-                <SuggestedPrompts onSelectPrompt={(prompt) => void sendMessage(prompt)} />
-              ) : null
-            }
           />
         </div>
 
-        <div className="flex-shrink-0 border-t border-slate-200 bg-white p-3">
+        <section aria-label="Mesaj yazma alanı" className="min-w-0 flex-shrink-0 space-y-2 border-t border-slate-200 bg-white p-3">
+          <SuggestedPrompts disabled={isLoading} onSelectPrompt={(prompt) => void sendMessage(prompt)} />
           <ChatInput
             onSendMessage={(content) => void sendMessage(content)}
             disabled={isLoading}
             isStreaming={isLoading}
             onStopStreaming={handleStopStreaming}
           />
-        </div>
+        </section>
       </div>
     </div>
   );

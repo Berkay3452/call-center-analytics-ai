@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, type ReactNode } from "react";
+import React, { useEffect, useRef } from "react";
 import type { ChatMessage } from "@/lib/types";
 import type { StreamStage } from "@/lib/api/types";
 import { Button } from "@/components/ui";
@@ -10,8 +10,6 @@ interface ChatWindowProps {
   currentStage?: StreamStage | "yaziyor" | null;
   isLoading?: boolean;
   onRetry?: () => void;
-  /** Mesaj listesinin altında gösterilir (ör. ilk ekrandaki hazır sorular). */
-  footer?: ReactNode;
   className?: string;
 }
 
@@ -25,7 +23,6 @@ export function ChatWindow({
   currentStage,
   isLoading = false,
   onRetry,
-  footer,
   className = "",
 }: ChatWindowProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -40,7 +37,7 @@ export function ChatWindow({
       role="log"
       aria-live="polite"
       aria-label="Asistan Sohbet Geçmişi"
-      className={`h-full space-y-4 overflow-y-auto p-4 sm:p-6 ${className}`}
+      className={`h-full min-w-0 space-y-4 overflow-y-auto p-4 sm:p-6 ${className}`}
     >
       {messages.map((msg) => {
         const isUser = msg.role === "user";
@@ -69,14 +66,14 @@ export function ChatWindow({
             className={`flex ${isUser ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm sm:max-w-[75%] ${
+              className={`min-w-0 max-w-[85%] rounded-2xl px-4 py-2.5 text-sm sm:max-w-[75%] ${
                 isUser
                   ? "rounded-br-sm bg-brand-700 text-white"
                   : "rounded-bl-sm border border-slate-200 bg-white text-slate-900"
               }`}
             >
               {msg.content.trim() && (
-                <p className="whitespace-pre-wrap break-words leading-relaxed">
+                <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] leading-relaxed">
                   {msg.content}
                   {msg.isStreaming && (
                     <span
@@ -114,7 +111,7 @@ export function ChatWindow({
               )}
 
               {msg.timestamp && (
-                <p className={`mt-1 text-[10px] ${isUser ? "text-right text-white/70" : "text-slate-400"}`}>
+                <p className={`mt-1 text-[10px] ${isUser ? "text-right text-white/70" : "text-slate-500"}`}>
                   {formatTime(msg.timestamp)}
                 </p>
               )}
@@ -124,8 +121,6 @@ export function ChatWindow({
       })}
 
       {isLoading && currentStage && <StatusIndicator stage={currentStage} />}
-
-      {footer}
 
       <div ref={bottomRef} className="h-1" />
     </div>
