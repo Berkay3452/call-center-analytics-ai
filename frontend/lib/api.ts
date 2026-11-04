@@ -77,6 +77,7 @@ export async function fetchCalls(
     location: item.marina ?? null,
     analysisStatus: finalStatus(item.state),
     pendingState: isFinal(item.state) ? undefined : item.state,
+    stateUpdatedAt: item.updated_at,
     transcript: "",
     summary: item.summary ?? "",
     tags: item.call_type ? [item.call_type] : [],

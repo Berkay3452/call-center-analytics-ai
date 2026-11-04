@@ -9,6 +9,7 @@ import {
   createCallWithAudio,
   getCallStatus,
 } from "@/lib/api/client";
+import { useTrackAnalysis } from "@/components/AnalysisTracker";
 import { ApiError } from "@/lib/api/errors";
 import type { CallCreate, CallState, CallStatus } from "@/lib/api/types";
 import { MARINA_OPTIONS } from "@/lib/types";
@@ -37,7 +38,7 @@ const ALLOWED_AUDIO_EXTENSIONS = [
 ];
 const ALLOWED_AUDIO_ACCEPT = ALLOWED_AUDIO_EXTENSIONS.map((e) => `.${e}`).join(",");
 const MAX_AUDIO_BYTES = 25 * 1024 * 1024; // 25 MB
-const POLL_INTERVAL_MS = 2500;
+const POLL_INTERVAL_MS = 4000;
 const POLL_TIMEOUT_MS = 5 * 60 * 1000;
 const AUTO_REDIRECT_MS = 3000;
 
@@ -174,6 +175,7 @@ function validateAudioFile(file: File): string | null {
 }
 
 function CallUploadContent() {
+  const trackAnalysis = useTrackAnalysis();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -247,6 +249,7 @@ function CallUploadContent() {
     (callId: string) => {
       stopPolling();
       const deadline = Date.now() + POLL_TIMEOUT_MS;
+      let registered = false;
 
       const poll = async () => {
         if (cancelled.current) {
@@ -256,6 +259,7 @@ function CallUploadContent() {
         try {
           const res: CallStatus = await getCallStatus(callId);
           const state = res.state;
+          if (!registered) { trackAnalysis(res); registered = true; }
 
           if (cancelled.current) return;
           setAnalysisState(state);
@@ -307,7 +311,7 @@ function CallUploadContent() {
       void poll();
       pollIntervalRef.current = setInterval(() => void poll(), POLL_INTERVAL_MS);
     },
-    [router, stopPolling],
+    [router, stopPolling, trackAnalysis],
   );
 
   // URL'de ?call_id=... varsa sayfa açılışında doğrudan izlemeye bağlan. Tüm state'ler lazy
