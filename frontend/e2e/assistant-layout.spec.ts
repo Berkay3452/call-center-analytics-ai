@@ -47,6 +47,11 @@ test.describe("Miço AI yerleşimi (#211)", () => {
 
     const summary = sources.locator("summary");
     await summary.focus();
+    // Firefox, programatik odağı fare odağı olarak sınıflandırabilir.
+    // Gerçek klavye geçişiyle geri gelerek :focus-visible davranışını sına.
+    await page.keyboard.press("Tab");
+    await page.keyboard.press("Shift+Tab");
+    await expect(summary).toBeFocused();
     await page.keyboard.press("Enter");
     await expect(sources).not.toHaveAttribute("open", "");
     await page.keyboard.press("Enter");

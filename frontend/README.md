@@ -37,6 +37,57 @@ npm run dev
 
 ---
 
+## Tarayıcılar arası E2E testleri (#155)
+
+Komutları `frontend` dizininde çalıştırın. Aynı E2E paketi (temel duman senaryoları dahil)
+üç projede çalışır: Chrome motorunu kullanan Playwright Chromium (`chromium`), gerçek
+Microsoft Edge (`msedge` kanalı) ve Playwright Firefox (`firefox`). Edge projesi Chromium'a
+sessizce geri dönmez; Microsoft Edge'in kurulu olması gerekir.
+
+```bash
+# İlk kurulum / Playwright sürümü güncellendiğinde
+npx playwright install chromium firefox
+
+# Microsoft Edge kurulu değilse (sistem kurulumu; yönetici yetkisi gerekebilir)
+npx playwright install msedge
+
+# Üç tarayıcıda tüm senaryolar
+npm run e2e
+# Eşdeğer komut
+npx playwright test
+
+# Tek tarayıcı veya yalnızca duman senaryoları
+npm run e2e -- --project=chromium
+npm run e2e -- --project=msedge
+npm run e2e -- --project=firefox
+npx playwright test e2e/smoke.spec.ts --project=firefox
+
+# Görünür tarayıcı ve HTML sonuç raporu
+npx playwright test --project=msedge --headed
+npx playwright show-report
+```
+
+Linux/CI ortamında tarayıcıların işletim sistemi bağımlılıkları için
+`npx playwright install --with-deps chromium firefox` kullanın; Edge'i ayrıca
+`npx playwright install msedge` ile kurun. Tarayıcı indirmeleri ağ erişimi gerektirir.
+
+Playwright geliştirme sunucusunu otomatik başlatır; varsayılan olarak mock verileri
+kullanır. Açık bir sunucu varsa aynı mock ayarıyla çalıştığından emin olun veya testten
+önce kapatın. Gerçek backend için `NEXT_PUBLIC_USE_MOCKS=false` ayarlayın; mock'a özel
+senaryolar bu modda atlanır. PowerShell örneği: `$env:NEXT_PUBLIC_USE_MOCKS='true'; npm run e2e`.
+`BASE_URL` ve `PORT` ortam değişkenleri mevcut sunucu/adres seçimini destekler.
+
+Testler paylaşılan mock akışlarının birbirini etkilememesi için tek worker ile sıralı
+çalışır. Genel düğme denetimi her tıklamayı ayrı bir sayfada başlatır; bu,
+Firefox'ta önceki istemci yönlendirmesinin sonraki gezinmeyi iptal etmesini önler.
+Odak halkası kontrolleri gerçek Tab/Shift+Tab geçişi kullanır; programatik `focus()`
+çağrısının `:focus-visible` üretmesi tarayıcılar arasında farklılık gösterebilir.
+Başarısız testlerin ekran görüntüleri ve videoları `test-results/`, HTML raporu
+`playwright-report/` altında oluşur; CI tekrarlarında trace kaydedilir. Mevcut GitHub
+Actions işi lint ve build çalıştırır; bu iş E2E testlerini henüz çalıştırmaz.
+
+---
+
 ## Klasör Yapısı
 
 ```

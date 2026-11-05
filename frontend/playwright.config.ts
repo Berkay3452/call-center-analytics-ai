@@ -4,7 +4,7 @@ const PORT = process.env.PORT || 3000;
 const baseURL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 /**
- * Playwright E2E Duman Testi Yapılandırması (#116)
+ * Playwright E2E: Chromium, Microsoft Edge ve Firefox (#116, #155)
  */
 export default defineConfig({
   testDir: "./e2e",
@@ -23,6 +23,14 @@ export default defineConfig({
     {
       name: "chromium",
       use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "msedge",
+      use: { ...devices["Desktop Edge"], channel: "msedge" },
+    },
+    {
+      name: "firefox",
+      use: { ...devices["Desktop Firefox"] },
     },
   ],
   webServer: {
