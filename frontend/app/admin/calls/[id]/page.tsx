@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -11,6 +12,7 @@ import type {
 } from "@/lib/api/types";
 import { CallDetailSkeleton } from "@/components/skeletons";
 import { AudioPlayer } from "@/components/AudioPlayer";
+import { AnalysisBanner } from "@/components/AnalysisTracker";
 import { ReanalyzeButton } from "@/components/ReanalyzeButton";
 import { CrmSuggestionCard } from "@/components/crm";
 import {
@@ -87,6 +89,7 @@ export default function CallDetailPage({ params }: Props) {
 }
 
 async function CallDetailContent({ params }: Props) {
+  await connection();
   const { id } = await params;
   let call: CallDetail | null = null;
 
@@ -215,6 +218,8 @@ async function CallDetailContent({ params }: Props) {
       <Link href="/admin/calls" className="inline-block text-sm font-medium text-brand-700 hover:underline">
         ← Çağrı listesine dön
       </Link>
+
+      <AnalysisBanner initial={{ call_id: call.id, state: call.state, stage: call.stage, updated_at: call.updated_at, analysis_version: call.analysis?.version }} />
 
       {/* Özet: kim, ne zaman, durum */}
       <Card>

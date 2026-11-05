@@ -1,10 +1,10 @@
+import { connection } from "next/server";
+import { CallAnalysisBadge } from "@/components/AnalysisTracker";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { fetchCalls } from "@/lib/api";
 import {
-  ANALYSIS_STATUS_LABELS,
-  ANALYSIS_STATUS_TONE,
   CALL_TYPE_LABELS,
   EMPTY_LABEL,
   labelOf,
@@ -139,6 +139,7 @@ async function CallsListContent({
   filters: CallQueryFilters;
   hasActiveFilters: boolean;
 }) {
+  await connection();
   let calls: Call[] = [];
   let total = 0;
   let page = filters.page ?? 1;
@@ -223,13 +224,7 @@ async function CallsListContent({
                 </Badge>
               </Td>
               <Td className="whitespace-nowrap">
-                {call.pendingState ? (
-                  <Badge tone="brand">{call.pendingState === "beklemede" ? "Sırada" : "İşleniyor"}</Badge>
-                ) : (
-                  <Badge tone={ANALYSIS_STATUS_TONE[call.analysisStatus]}>
-                    {labelOf(ANALYSIS_STATUS_LABELS, call.analysisStatus)}
-                  </Badge>
-                )}
+                <CallAnalysisBadge initial={{ call_id: call.id, state: call.pendingState ?? call.analysisStatus, updated_at: call.stateUpdatedAt }} />
               </Td>
               <Td className="whitespace-nowrap">
                 <SalesBadge sales={call.sales} />

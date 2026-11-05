@@ -1,3 +1,4 @@
+import { mockAnalysisRuns as mockReanalyzeMap, readMockAnalysis, startMockAnalysis } from "./mock-analysis";
 /**
  * Tipli API İstemcisi (#10).
  *
@@ -13,7 +14,6 @@ import type {
   CallDetail,
   CallMatchIn,
   CallListItem,
-  CallState,
   CallStatus,
   ChatQuestion,
   ChatReply,
@@ -44,7 +44,6 @@ export type { ServiceOrderStatusUpdate };
 
 // Mock JSON importları (docs/ornekler/api/ ile eşleşen 10 dosya)
 import mockCallDetail from "@/mocks/cagri_detayi.json";
-import mockCallStatus from "@/mocks/cagri_durumu.json";
 import mockCallAccepted from "@/mocks/cagri_kabul.json";
 import mockCallsList from "@/mocks/cagri_listesi.json";
 import mockCrmList from "@/mocks/crm_listesi.json";
@@ -54,11 +53,6 @@ import mockChatSessionDetail from "@/mocks/sohbet_oturumu.json";
 import mockServiceOrderDetail from "@/mocks/servis_emri_detayi.json";
 import { mockSeedCalls, mockSeedCrm } from "./mock-seed";
 
-interface MockAnalysisProgress {
-  step: number;
-  startedAt: number;
-  analysisVersion: number;
-}
 const MOCK_UNMATCHED_CALL_ID = "22222222-2222-4222-8222-222222222222";
 const mockMatchedCalls = new Set<string>();
 const mockCustomersList: CustomerSearchItem[] = [
@@ -109,7 +103,6 @@ const MOCK_CHAT_SESSION_IDS = [
   "f1e2d3c4-b5a6-4f7e-8d9c-0b1a2f3e4d5c",
 ];
 const mockDeletedChatSessions = new Set<string>();
-const mockReanalyzeMap = new Map<string, MockAnalysisProgress>();
 
 interface MockCrmReviewProgress {
   status: CrmReviewStatus;
@@ -396,6 +389,24 @@ export async function apiFetch<T>(
   const useMocks = isMockEnabled();
 
   if (useMocks) {
+    if (typeof window !== "undefined" && options.method === "POST" && (endpoint === "/calls" || endpoint === "/calls/audio")) {
+      const response = await fetch("/api/mock-analysis", {
+        method: "POST", body: options.body,
+        ...(endpoint === "/calls" ? { headers: { "Content-Type": "application/json" } } : {}),
+      });
+      if (!response.ok) throw new ApiError({ status: response.status, code: "MOCK_CREATE_ERROR", message: "Çağrı oluşturulamadı.", requestId: null });
+      return response.json() as Promise<T>;
+    }
+    // Browser and server rendering share the same mock lifecycle through this route.
+    const callRoute = /^\/calls\/([^/]+)(?:\/(status|analyze))?$/.exec(endpoint);
+    if (typeof window !== "undefined" && callRoute &&
+        ((options.method ?? "GET") === "GET" || callRoute[2] === "analyze")) {
+      const response = await fetch(`/api/mock-analysis/${encodeURIComponent(callRoute[1])}${!callRoute[2] ? "?detail=1" : ""}`, {
+        method: callRoute[2] === "analyze" ? "POST" : "GET", cache: "no-store",
+      });
+      if (!response.ok) throw new ApiError({ status: response.status, code: "MOCK_STATUS_ERROR", message: "Analiz durumu alınamadı.", requestId: null });
+      return response.json() as Promise<T>;
+    }
     return handleMockRequest<T>(endpoint, options);
   }
 
@@ -523,6 +534,11 @@ async function handleMockRequest<T>(
       }
     }
 
+    list = list.map((item) => {
+      const status = readMockAnalysis(item.id);
+      return { ...item, state: status.state, stage: status.stage, updated_at: status.updated_at };
+    });
+
     if (params?.q) {
       const q = String(params.q).trim().toLowerCase();
       if (q) {
@@ -622,41 +638,12 @@ async function handleMockRequest<T>(
   // 4. POST /calls/:id/analyze
   if (method === "POST" && /^\/calls\/[^/]+\/analyze$/.test(path)) {
     const id = path.split("/")[2];
-    const prev = mockReanalyzeMap.get(id);
-    const nextVersion = (prev?.analysisVersion ?? 1) + 1;
-    mockReanalyzeMap.set(id, {
-      step: 0,
-      startedAt: Date.now(),
-      analysisVersion: nextVersion,
-    });
-    return {
-      call_id: id,
-      state: "beklemede",
-      analysis_version: nextVersion,
-      created_at: new Date().toISOString(),
-    } as unknown as T;
+    return startMockAnalysis(id) as unknown as T;
   }
 
   // 5. GET /calls/:id/status
   if (method === "GET" && /^\/calls\/[^/]+\/status$/.test(path)) {
-    const id = path.split("/")[2];
-    const progress = mockReanalyzeMap.get(id);
-    if (progress) {
-      const steps: CallState[] = ["beklemede", "yaziya_cevriliyor", "isleniyor", "tamam"];
-      const currentStepState = steps[Math.min(progress.step, steps.length - 1)];
-      const result: CallStatus = {
-        call_id: id,
-        state: currentStepState,
-        analysis_version: progress.analysisVersion,
-        error: null,
-        updated_at: new Date().toISOString(),
-      };
-      if (progress.step < steps.length - 1) {
-        progress.step += 1;
-      }
-      return result as unknown as T;
-    }
-    return mockCallStatus as unknown as T;
+    return readMockAnalysis(path.split("/")[2]) as unknown as T;
   }
 
   // GET /customers (Müşteri ve tekne arama, #209)
@@ -737,6 +724,20 @@ async function handleMockRequest<T>(
   // 6. GET /calls/:id (Tekil çağrı detayı)
   if (method === "GET" && /^\/calls\/[^/]+$/.test(path)) {
     const id = path.split("/")[2];
+    const live = readMockAnalysis(id);
+    if (mockReanalyzeMap.has(id)) {
+      const seed = mockSeedCalls.find((item) => item.id === id);
+      return {
+        ...mockCallDetail,
+        ...(seed ? { customer_name: seed.customer_name, boat_name: seed.boat_name, marina: seed.marina } : {}),
+        id, state: live.state, stage: live.stage, updated_at: live.updated_at,
+        analysis: { ...mockCallDetail.analysis, version: live.analysis_version,
+          status: live.state === "kismi" ? "kismi" : live.state === "basarisiz" ? "basarisiz" : "tamam",
+          errors: live.error ? { call_classifier: live.error } : {},
+          summary: { ...mockCallDetail.analysis.summary, summary: `Yeni analiz tamamlandı (sürüm ${live.analysis_version}).` },
+        },
+      } as unknown as T;
+    }
     if (id === MOCK_UNMATCHED_CALL_ID) {
       const isMatched = mockMatchedCalls.has(id);
       return {

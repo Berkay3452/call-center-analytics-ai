@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist_Mono, Inter, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
 import { RoleProvider } from "@/lib/role-context";
+import { AnalysisTracker } from "@/components/AnalysisTracker";
 import { AppShell } from "@/components/layout/AppShell";
 
 const inter = Inter({
@@ -34,7 +35,7 @@ export default function RootLayout({
         className={`${inter.variable} ${serifHeading.variable} ${geistMono.variable} antialiased`}
       >
         <RoleProvider>
-          <AppShell>{children}</AppShell>
+          <AnalysisTracker><AppShell>{children}</AppShell></AnalysisTracker>
         </RoleProvider>
       </body>
     </html>
