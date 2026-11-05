@@ -1,0 +1,65 @@
+{
+  "call_id": "call_063",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta acil destek, merhaba ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba! Bodrum Milta Marina'dan arıyorum, Çapariz guletinin kaptanıyım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Buyrun Satrettin Bey, durum nedir?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Makine dairesinde şaft kovanından ip gibi su akıyor, damlama değil! Sintine pompası sürekli tahliye ediyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Şaft glend baskısı gevşemiş veya salmastra kömürü bitmiş olabilir. Motoru durdurdunuz mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Motor stopta ama su gelişi durmuyor, bası somununu biraz sıktım yine kesilmedi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Su girişini yavaşlatmak için donmuş gres pompalamayı denediniz mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Gresörlükte gres kalmamış maalesef, su yükselmeden ustanın acil müdahale etmesi şart."
+    },
+    {
+      "speaker": "rep",
+      "text": "Bodrum Milta Marina içerisindeki nöbetçi mekanikçimizi derhal arıyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "İskele B tarafındayız, Çapariz isimli gulet."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza iletmek üzere teknenin ponton numarasını ve anahtar durumunu teyit edebilir miyiz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknedeyim ben, ponton girişinde ekibinizi karşılayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza haber verildi, çantası ve salmastra takımlarıyla on dakika içinde yanınızda olacak."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok teşekkür ederim, bekliyoruz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamız yolda, motor kapağını açık bırakın soğusun lütfen. Geçmiş olsun."
+    }
+  ]
+}

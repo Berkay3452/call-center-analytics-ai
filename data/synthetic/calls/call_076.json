@@ -1,0 +1,65 @@
+{
+  "call_id": "call_076",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta marin danışma hattı, ben [İSİM], iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Kalamış Marina'da bağlı Poyraz motoryatımız için bilgi almak istemiştim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ahmet Bey buyrun, nasıl yardımcı olabiliriz Poyraz için?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Kış aylarında motorun donmaya ve korozyona karşı konserve edilmesi işlemini yaptırmak istiyoruz, tam neleri içeriyor?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Deniz suyu devresi tatlı suyla yıkanıp toksik olmayan marin antifrizle doldurulur, silindirlere koruyucu yağ püskürtülür ve yakıt stabilizatörü eklenir."
+    },
+    {
+      "speaker": "customer",
+      "text": "İmpelleri de söküyor musunuz kışın deforme olmasın diye?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, impeller sökülüp gliserinle yağlanarak saklanır, ilkbaharda tekrar takılır."
+    },
+    {
+      "speaker": "customer",
+      "text": "Harika bir paketmiş. Fiyat listesini gönderebilir misiniz e-posta ile?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Detaylı parça ve işçilik dökümünü içeren teklif formunu sistemdeki e-postanıza da iletiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, gelen kutumu ve spam klasörünü kontrol ederim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teklifimiz onaylandığı takdirde marinadaki palamar ve çekek planlamasını da biz koordine ediyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bunu öğrendiğim iyi oldu, koordinasyon kolaylaşır."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kalamış Marina için hazırladığımız kışlama broşürü ve fiyat listemizi hemen kayıtlı e-postanıza gönderiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler, kaptanla inceleyip randevu için arayacağız."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz Ahmet Bey, iyi günler dileriz."
+    }
+  ]
+}

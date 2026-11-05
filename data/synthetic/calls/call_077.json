@@ -1,0 +1,69 @@
+{
+  "call_id": "call_077",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta elektrik servisi, günaydın. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Günaydın, Göcek D-Marin'den arıyorum. Princess teknemiz Yıldız'ın aküleri şarj olmuyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Zeynep Hanım merhaba, sahil besleme kablosu takılıyken mi şarj olmuyor?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, sahil elektriği var, prizler çalışıyor ama akü monitörü on bir nokta sekiz volt gösteriyor ve kırmızı ışık yanıp sönüyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Mastervolt redresörün üzerindeki ikaz ledleri ne renkte yanıyor?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Fault ledi sarı renkte üç kez flaş yapıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Aşırı ısınma korumasına geçmiş olabilir ya da dahili şarj diyotu arızalanmıştır."
+    },
+    {
+      "speaker": "customer",
+      "text": "Göcek D-Marin'deki ustanız gelip ölçebilir mi acaba?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Baş elektrik teknisyenimiz Yıldız teknesinin tesisat şemasına bakıp size özel ölçüm cihazıyla gelmek için yarım saat içinde sizi geri arasın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok iyi olur, teknedeyim aramasını bekliyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Detaylı parça ve işçilik dökümünü içeren teklif formunu sistemdeki e-postanıza da iletiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, gelen kutumu ve spam klasörünü kontrol ederim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teklifimiz onaylandığı takdirde marinadaki palamar ve çekek planlamasını da biz koordine ediyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bunu öğrendiğim iyi oldu, koordinasyon kolaylaşır."
+    },
+    {
+      "speaker": "rep",
+      "text": "Notumu ilettim Zeynep Hanım, teknisyenimiz hemen dönecektir. İyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler, iyi günler."
+    }
+  ]
+}

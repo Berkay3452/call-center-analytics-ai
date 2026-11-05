@@ -1,0 +1,65 @@
+{
+  "call_id": "call_067",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta iklimlendirme servisi, günaydın. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Günaydın, İstinye Tekne Park'ta Yıldırım teknesi için görüşmek istedim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hasgül Bey günaydın, Yıldırım'daki klima problemi nedir?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Salondaki marin klima açıldıktan iki dakika sonra HP arızası verip kompresörü durduruyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "High Pressure hatası genellikle kondenser soğutma suyu basılamadığında oluşur. Bordadan su tahliyesi geliyor mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Baktım, bordadaki delikten hiç deniz suyu akmıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Pompa hava yapmış veya deniz suyu filtresi deniz anasıyla tıkanmış olabilir Hasgül Bey."
+    },
+    {
+      "speaker": "customer",
+      "text": "Filtreyi temizledim ama hava alma vanasını bulamadım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Pazartesi sabah İstinye Tekne Park'a servis ekibimiz uğrayabilir, pompayı havalandırıp devreyi kontrol ederler."
+    },
+    {
+      "speaker": "customer",
+      "text": "Pazartesi saat on uygun mudur?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza iletmek üzere teknenin ponton numarasını ve anahtar durumunu teyit edebilir miyiz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknedeyim ben, ponton girişinde ekibinizi karşılayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Pazartesi saat ona randevunuzu kaydettim Hasgül Bey."
+    },
+    {
+      "speaker": "customer",
+      "text": "Harika, teşekkür ederim. Pazartesi görüşürüz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Görüşmek üzere Hasgül Bey, iyi günler."
+    }
+  ]
+}

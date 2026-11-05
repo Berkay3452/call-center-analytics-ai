@@ -4,7 +4,7 @@
 
 ## 1. Hafif yük testi
 
-Tek `uvicorn` süreci (geliştirme düzeni), seed'li ayrı veritabanı (50 çağrı), Docker Desktop (Windows) üzerinde Postgres; makine yoğun kullanımdaydı (başka ajanlar/Docker çalışıyordu), sayılar yukarı yönde gürültülüdür. Her hücre 200 istek; **hata (200 dışı yanıt) yok**.
+Tek `uvicorn` süreci (geliştirme düzeni), seed'li ayrı veritabanı (100 çağrı), Docker Desktop (Windows) üzerinde Postgres; makine yoğun kullanımdaydı (başka ajanlar/Docker çalışıyordu), sayılar yukarı yönde gürültülüdür. Her hücre 200 istek; **hata (200 dışı yanıt) yok**.
 
 | Uç | Eşzamanlı | İstek/sn | p50 ms | p95 ms | maks ms |
 |---|---|---|---|---|---|

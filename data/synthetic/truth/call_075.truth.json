@@ -1,0 +1,18 @@
+{
+  "call_id": "call_075",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "elektrik_elektronik",
+    "location": "Tuzla Marina",
+    "problem": "Raymarine Quantum radar anteni ekranda 'Radar Not Rotating' uyarısı veriyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "yuksek",
+    "potential_job": "Radar anten kayış ve motor modülü diagnostik testi",
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "guven"
+  },
+  "notes": "Tuzla Marina Karayel teknesi radar arızası; müşteri geçen seferki elektrikçiden memnun kalmadığını belirterek hizmeti reddetti."
+}

@@ -1,0 +1,65 @@
+{
+  "call_id": "call_057",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta tekne bakım hizmetleri, günaydın. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Günaydın, Tuzla Marina'da bağlı Fairline Targa 40 teknemiz Karayel için görüşecektim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Buyrun Okan Bey, nasıl yardımcı olabiliriz Karayel için?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Kışlık kokpit tentemizin fermuarları patladı ve şeffaf mikalar çatladı. Bu hafta sonuna kadar yenilenmesi lazım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tente ve döşeme atölyemiz şu an sezon başı kışlama talepleri nedeniyle çok yoğun Okan Bey."
+    },
+    {
+      "speaker": "customer",
+      "text": "En erken ne zamana teslim edebilirsiniz peki ölçü alıp?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Bugün ölçü alsak bile atölyeden çıkışı en erken üç hafta sonrasını bulur."
+    },
+    {
+      "speaker": "customer",
+      "text": "Üç hafta çok geç, yağmurlar başlıyor haftaya. Tekne su alacak bu gidişle."
+    },
+    {
+      "speaker": "rep",
+      "text": "Dilerseniz geçici koruma brandası çekebiliriz bu süreçte?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yok, geçici istemiyorum, bu hafta yapabilecek başka bir brandacı bulmam gerekecek o zaman."
+    },
+    {
+      "speaker": "rep",
+      "text": "Dilerseniz ilerleyen dönemde parça tedariği veya teknik danışmanlık konusunda her zaman yardımcı olabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, ihtiyaç olursa aklımda bulunsun."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlayışınız için teşekkür ederiz Okan Bey, yardımcı olamadığımız için üzgünüz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Kolay gelsin, iyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dileriz Okan Bey."
+    }
+  ]
+}

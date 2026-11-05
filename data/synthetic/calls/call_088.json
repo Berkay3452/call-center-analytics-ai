@@ -1,0 +1,65 @@
+{
+  "call_id": "call_088",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta marin destek, iyi günler. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Göcek D-Marin'de bağlı Albatros teknesi için bilgi almak istedim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Fatma Hanım buyrun, nasıl yardımcı olabiliriz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Kasım ayından mayıs ayına kadar Göcek'te olmayacağız. Teknenin haftalık tonoz, palamar ve sintine kontrollerini yapıyor musunuz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet Fatma Hanım, kış gözetim paketimiz kapsamında haftada bir teknenizi ziyaret edip yirmi dört maddelik kontrol listesini uyguluyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Fırtınalı havalarda ekstra kontrol yapıyor musunuz peki?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Kesinlikle, Göcek koylarında fırtına uyarısı verildiğinde ekiplerimiz ilave bağlama ve usturmaça kontrolü gerçekleştiriyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok güven verici. Sözleşme şartlarını ve aylık bedeli bana gönderebilir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Detaylı parça ve işçilik dökümünü içeren teklif formunu sistemdeki e-postanıza da iletiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, gelen kutumu ve spam klasörünü kontrol ederim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teklifimiz onaylandığı takdirde marinadaki palamar ve çekek planlamasını da biz koordine ediyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bunu öğrendiğim iyi oldu, koordinasyon kolaylaşır."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kayıtlı e-postanıza sözleşme örneğini ve fiyat teklifimizi hemen iletiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, iyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Biz teşekkür ederiz Fatma Hanım, iyi günler."
+    }
+  ]
+}

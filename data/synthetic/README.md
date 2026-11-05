@@ -1,6 +1,6 @@
 # Sentetik çağrı verisi
 
-Miço Usta bağlamında yazılmış **50 sahte telefon görüşmesi** ve her biri için **doğru etiketler** (ground truth). Gerçek müşteri verisi yoktur; isimler, tekneler ve marinalar kurgusaldır. Agent'ların testinde ve doğruluk ölçümünde (#21) kullanılır.
+Miço Usta bağlamında yazılmış **100 sahte telefon görüşmesi** ve her biri için **doğru etiketler** (ground truth). Gerçek müşteri verisi yoktur; isimler, tekneler ve marinalar kurgusaldır. Agent'ların testinde ve doğruluk ölçümünde (#21) kullanılır.
 
 Şimdilik yalnızca **metin ve etiket**; ses kayıtları ayrı bir iştir. İlk 10 çağrı (#12), sonraki 20 çağrı (#38) ve agent doğruluğu çalışması için eklenen 20 çağrı (`call_031`–`call_050`, #122) elle yazıldı. Hedef sonrasında ~150 çağrıdır.
 
@@ -51,13 +51,13 @@ Değerler `backend/app/domain/enums.py` ile birebir aynıdır; kategori ve sonra
 
 `started_at`, `answer_delay_s` (çalma→açılma süresi, "Ortalama cevap süresi" KPI'ı buradan hesaplanır, sesten çıkmaz), `duration_s`, `switchboard_outcome` ve `customer_ref` (müşteri, tekne, model, marina). Müşteri/tekne adları şimdilik frontend mock verisinden alındı; Melih'in #23 listesi hazır olunca eşleştirilecek.
 
-## Dağılım (50 çağrı)
+## Dağılım (100 çağrı)
 
 | | |
 |---|---|
-| Çağrı tipi | 7 acil, 18 servis, 12 teklif, 6 yeni müşteri, 7 bilgi |
-| Satış sonucu | 18 satışa dönüşen, 16 kaybedilen, 16 beklemede |
-| Kayıp nedeni | fiyat 4, geç dönüş 3, rakip 3, takvim 3, güven 2, diğer 1 |
+| Çağrı tipi | 12 acil, 49 servis, 19 teklif, 6 yeni müşteri, 14 bilgi |
+| Satış sonucu | 40 satışa dönüşen, 27 kaybedilen, 33 beklemede |
+| Kayıp nedeni | fiyat 6, geç dönüş 5, rakip 5, takvim 6, güven 3, diğer 2 |
 | Talep kategorisi | sekiz kategorinin hepsi (+ iş konuşulmayan çağrılarda `null`) |
 | Aciliyet | dört seviyenin hepsi |
 
@@ -65,8 +65,8 @@ Değerler `backend/app/domain/enums.py` ile birebir aynıdır; kategori ve sonra
 
 ## Kümeler (`split`, `calls_meta.json`)
 
-- **`gelistirme`** (`call_001`–`call_010` ve `call_031`–`call_050`, 30 çağrı): agent prompt'ları bu çağrılara bakılarak ayarlanabilir.
-- **`test`** (`call_011`–`call_030`, 20 çağrı): **dokunulmaz test kümesi**. Prompt ayarında kullanılmaz, yalnızca ölçümde (`python -m scripts.evaluate --split test`). Bu kümedeki bir çağrıya bakarak prompt değiştirilirse ölçüm değerini kaybeder.
+- **`gelistirme`** (`call_001`–`call_010`, `call_031`–`call_050` ve `call_071`–`call_100`, 60 çağrı): agent prompt'ları bu çağrılara bakılarak ayarlanabilir.
+- **`test`** (`call_011`–`call_030` ve `call_051`–`call_070`, 40 çağrı): **dokunulmaz test kümesi** (20'den 40'a çıkarıldı). Prompt ayarında kullanılmaz, yalnızca ölçümde (`python -m scripts.evaluate --split test`). Bu kümedeki bir çağrıya bakarak prompt değiştirilirse ölçüm değerini kaybeder.
 
 Bazı çağrılar bilinçli olarak zor/sınır durumlarıdır: iş konuşulmayan bilgi çağrıları (kategori `null`), firmanın vermediği hizmet (kaptan kiralama → kayıp nedeni `diger`), kayıtlı olmayan ilk kez arayan müşteriler (`Volkan Tekin`, `Ece Aksoy`, `Tuncay Erdem`: CRM'de müşteri/tekne eşleşmesi yok), aynı müşterinin ikinci kez aramaları.
 
@@ -76,7 +76,7 @@ Etiket değiştirmek ölçüm sonuçlarını değiştirir; bir etiketi düzeltir
 
 ## Veritabanına yüklenen çağrı verisi hakkında
 
-`python -m scripts.seed` 50 çağrıyı da yükler: `calls`, `transcripts`, `transcript_segments` ve **doğru etiketleri `analysis_results` tablosuna sürüm 1 olarak** (Admin Çağrı Analitiği ekranı API hazır olmadan da dolsun diye). Dikkat:
+`python -m scripts.seed` 100 çağrıyı da yükler: `calls`, `transcripts`, `transcript_segments` ve **doğru etiketleri `analysis_results` tablosuna sürüm 1 olarak** (Admin Çağrı Analitiği ekranı API hazır olmadan da dolsun diye). Dikkat:
 - Bu satırlar yapay zekânın değil **elle yazılmış doğru etiketlerin** sonucudur (güven 1.0, `agent_runs` yok).
 - Gerçek analiz aynı çağrı için **sürüm 2** olarak eklenmelidir (`UNIQUE (call_id, version)`).
 - `audio_path` ve `audio_sha256` boştur; ses dosyaları (TTS) gelince doldurulur.

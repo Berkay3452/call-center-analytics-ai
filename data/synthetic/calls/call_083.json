@@ -1,0 +1,65 @@
+{
+  "call_id": "call_083",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta deniz güvenlik servisi, günaydın. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Günaydın, Marmaris Netsel Marina'da bağlı Kalyon isimli ticari guletimiz için bilgi almak istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Şüküfe Hanım günaydın, nasıl yardımcı olabiliriz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yıllık liman sörveyimiz yaklaşıyor. Can salı açma testi ve EPIRB hidrostatik kilit vizesini siz yapıyor musunuz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yetkili istasyonumuz üzerinden can sallarını marinadan teslim alıp basınç testi, tüp tartımı ve sertifikalandırmasını yapıyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ne kadar sürüyor işlem, tekneyi uzun süre güvenliksiz bırakmak istemiyoruz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Salı günü teslim alırsak perşembe günü sertifikalarıyla birlikte teknenize geri teslim ediyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Fiyat tarifesini içeren bir bilgilendirme notu atabilir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Detaylı parça ve işçilik dökümünü içeren teklif formunu sistemdeki e-postanıza da iletiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, gelen kutumu ve spam klasörünü kontrol ederim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teklifimiz onaylandığı takdirde marinadaki palamar ve çekek planlamasını da biz koordine ediyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bunu öğrendiğim iyi oldu, koordinasyon kolaylaşır."
+    },
+    {
+      "speaker": "rep",
+      "text": "Marmaris Netsel Marina için geçerli olan tarife ve teslimat prosedürümüzü e-postanıza hemen iletiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok memnun oldum, inceleyip döneceğim. İyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dileriz Şüküfe Hanım."
+    }
+  ]
+}

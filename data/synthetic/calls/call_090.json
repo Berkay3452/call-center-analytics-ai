@@ -1,0 +1,65 @@
+{
+  "call_id": "call_090",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta makine servisi, merhaba. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Kalamış Marina'dan Kemal Aydoğan ben. Lodos motoryatımızın yüz saatlik motor bakımını yaptırmak istiyoruz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kemal Bey merhaba, çift makinenin yağ ve filtre değişimleri yapılacak değil mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, motor yağları, filtreler ve ön yakıt filtreleri değişecek. Yarın cumartesi sabahı gelebilir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Cumartesi günü tüm makine teknisyenlerimizin randevuları tamamen dolu Kemal Bey."
+    },
+    {
+      "speaker": "customer",
+      "text": "Pazar veya en geç pazartesi olamaz mı? Salı günü güneye doğru seyre çıkacağız çünkü."
+    },
+    {
+      "speaker": "rep",
+      "text": "Pazartesi günü de doluyuz, en erken çarşamba gününe randevu verebiliyoruz maalesef."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çarşamba benim için çok geç, salı sabahı marinadan çıkmış olmam gerekiyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Dilerseniz ilerleyen dönemde parça tedariği veya teknik danışmanlık konusunda her zaman yardımcı olabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, ihtiyaç olursa aklımda bulunsun."
+    },
+    {
+      "speaker": "rep",
+      "text": "Farklı bir konuda danışmak istediğiniz bir husus var mıydı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Şimdilik yok, teşekkür ederim ilginize."
+    },
+    {
+      "speaker": "rep",
+      "text": "Seyir planınızı aksatmak istemeyiz Kemal Bey, maalesef takvimimiz izin vermiyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "O zaman başka bir özel servis bulmaya çalışayım. İyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlayışınız için teşekkür ederiz Kemal Bey, iyi seyirler."
+    }
+  ]
+}

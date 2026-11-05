@@ -1,0 +1,69 @@
+{
+  "call_id": "call_082",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta arma ve donanım servisi, merhaba. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Marmaris Netsel Marina'da Pruva yelkenlimiz için arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Muhammet Bey merhaba, vinçlerle ilgili bir sorun mu var?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Ana yelken mandalını bastığımız elektrikli Harken vinç yük altındayken dişli sürtme sesi çıkarıyor ve yavaşlıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tırnak yayları kırılmış veya iç dişli gresi kurumuş olabilir Muhammet Bey. Fazla zorlamamak gerekir, dişli kırabilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Komple sökülüp temizlenip yağlanması gerek sanırım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, vinç tamburu sökülüp özel beyaz marin vinç gresi ile yağlanacak ve yayları yenilenecek."
+    },
+    {
+      "speaker": "customer",
+      "text": "Marmaris Netsel Marina'ya yarın usta gelebilir mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yarın sabah saat on birde uygunluk var Muhammet Bey."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, yarın sabah on birde teknede bekliyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza iletmek üzere teknenin ponton numarasını ve anahtar durumunu teyit edebilir miyiz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknedeyim ben, ponton girişinde ekibinizi karşılayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Servis sonrası yapılan testleri ve değişen parçaları fotoğraflı servis formuyla bilginize sunacağız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok memnun olurum, detaylı kayıt tutulması iyi olur."
+    },
+    {
+      "speaker": "rep",
+      "text": "Randevunuz teyit edildi Muhammet Bey, yarın görüşmek üzere."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler, iyi çalışmalar."
+    }
+  ]
+}

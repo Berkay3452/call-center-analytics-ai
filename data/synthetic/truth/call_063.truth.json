@@ -1,0 +1,18 @@
+{
+  "call_id": "call_063",
+  "call_type": "acil",
+  "crm": {
+    "request_category": "mekanik_hidrolik",
+    "location": "Bodrum Milta Marina",
+    "problem": "Geleneksel şaft salmastrasından aşırı su sızıntısı var, sintine pompası sürekli devrede",
+    "service_mode": "yerinde_servis",
+    "urgency": "acil",
+    "potential_job": "Şaft kovanı glend baskı somunu sıkılması ve teflon salmastra acil takviyesi",
+    "next_action": "usta_ata"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Bodrum Milta Marina Çapariz guleti acil şaft sızıntısı; usta derhal sevk edildi."
+}

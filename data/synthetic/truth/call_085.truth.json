@@ -1,0 +1,18 @@
+{
+  "call_id": "call_085",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "elektrik_elektronik",
+    "location": "İstinye Tekne Park",
+    "problem": "Sahil besleme 32A fiş yuvası aşırı ısınmadan erimiş, teknede yanık kokusu var",
+    "service_mode": "yerinde_servis",
+    "urgency": "yuksek",
+    "potential_job": "Sahil besleme girişi marin soket değişimi ve klemens yenileme",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "İstinye Tekne Park Yıldırım teknesi sahil fişi erimesi için acil randevu verildi."
+}

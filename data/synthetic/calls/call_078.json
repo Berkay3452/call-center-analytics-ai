@@ -1,0 +1,65 @@
+{
+  "call_id": "call_078",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta teknik destek, merhaba. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Bodrum Milta Marina'da Akdeniz isimli teknemiz var."
+    },
+    {
+      "speaker": "rep",
+      "text": "Cem Bey merhaba, Akdeniz için nasıl yardımcı olabiliriz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Baş pervanenin hidrolik boru bağlantısından biraz yağ damlatıyordu, onun için servis randevusu alacaktım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Bugün öğleden sonra Bodrum Milta Marina'ya ustanızı yönlendirebiliriz Cem Bey."
+    },
+    {
+      "speaker": "customer",
+      "text": "Aslında şöyle bir durum oldu, tekneyi az önce bir alıcıyla anlaşıp devir protokolü imzaladık."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hayırlı olsun Cem Bey!"
+    },
+    {
+      "speaker": "customer",
+      "text": "Sağ olun, alıcı tekneyi olduğu gibi teslim alıp Marmaris'e götürecek, o yüzden masraf yapmak istemiyorum, randevu açmayalım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Dilerseniz ilerleyen dönemde parça tedariği veya teknik danışmanlık konusunda her zaman yardımcı olabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, ihtiyaç olursa aklımda bulunsun."
+    },
+    {
+      "speaker": "rep",
+      "text": "Farklı bir konuda danışmak istediğiniz bir husus var mıydı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Şimdilik yok, teşekkür ederim ilginize."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anladım Cem Bey, yeni sahibine de hayırlı seyirler dileriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "İlginiz için teşekkürler, kolay gelsin."
+    },
+    {
+      "speaker": "rep",
+      "text": "Biz teşekkür ederiz Cem Bey, iyi günler."
+    }
+  ]
+}

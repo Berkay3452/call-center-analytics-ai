@@ -1,0 +1,18 @@
+{
+  "call_id": "call_079",
+  "call_type": "bilgi",
+  "crm": {
+    "request_category": "su_sihhi_tesisat",
+    "location": "Ataköy Marina",
+    "problem": "Sintine tahliyesine yağ ve yakıt ayırıcı kartuş filtre taktırma danışması",
+    "service_mode": null,
+    "urgency": "dusuk",
+    "potential_job": "Sintine yağ separatör filtre sistemi bilgilendirmesi",
+    "next_action": "bilgi_ver"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Ataköy Marina Meltem teknesi için sintine separatör filtre bilgisi verildi."
+}

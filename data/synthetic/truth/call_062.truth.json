@@ -1,0 +1,18 @@
+{
+  "call_id": "call_062",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "elektrik_elektronik",
+    "location": "Pendik Marinturk Marina",
+    "problem": "Baş pervane beş saniye basıldıktan sonra termik röle atıyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "yuksek",
+    "potential_job": "Baş pervane röle kömür grubu kontrolü ve akü voltaj düşümü testi",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Pendik Marinturk Marina Bora teknesi baş pervane arızası randevusu verildi."
+}

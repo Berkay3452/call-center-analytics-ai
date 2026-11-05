@@ -1,0 +1,65 @@
+{
+  "call_id": "call_069",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta çağrı merkezi, iyi günler. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Tuzla Marina'dan Burak Çelik ben. Rüzgar isimli teknemizle ilgili arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Merhaba Burak Bey, Rüzgar teknesinde nasıl bir sıkıntı oluştu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Dün seyirden dönerken marinaya girerken hararet ikaz düdüğü öttü, egzozdan da yoğun beyaz buhar geliyordu."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tatlı su soğutma genleşme kabındaki antifriz seviyesini kontrol edebildiniz mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Baktım, antifriz kabı tamamen boşalmıştı, altına damlatmış sanırım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Devridaim pompası salmastrası veya termostat gövdesinde çatlak olabilir Burak Bey. Motoru kesinlikle çalıştırmayın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çalıştırmıyorum zaten. Ne zaman usta bakabilir tekneye Tuzla'da?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Pazartesi sabah saat onda Tuzla Marina'ya makine teknisyenimizi yönlendirebiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Pazartesi saat on uygundur. Yanında termostat ve conta getirsin lütfen."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza iletmek üzere teknenin ponton numarasını ve anahtar durumunu teyit edebilir miyiz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknedeyim ben, ponton girişinde ekibinizi karşılayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Not aldım Burak Bey, pazartesi saat ona servis randevunuz oluşturuldu."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok teşekkür ederim, pazartesi görüşürüz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geçmiş olsun Burak Bey, iyi günler."
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "call_id": "call_064",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta çağrı merkezi, merhaba, ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Marmaris Netsel Marina'da Hanse 458 teknemiz Pruva için arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Merhaba Muhammet Bey, Pruva için yardımcı olalım. Konu nedir?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknemizdeki tatlı su tankı dolu olduğu halde gösterge sürekli boş gösteriyor, yakıt göstergesi de yarıda takılı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Muhtemelen tank içi şamandıra sensörleri kireç bağlamış veya sinyal kablosunda oksitlenme var."
+    },
+    {
+      "speaker": "customer",
+      "text": "Kendim temizleyebilir miyim yoksa ustanın bakması mı gerekir?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Tank kapaklarının açılıp şamandıraların sökülmesi ve ohm değerlerinin kalibre edilmesi gerekir, ustanın bakması daha sağlıklıdır."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki, Marmaris Netsel Marina için ne zaman gelebilir ustalarınız?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Cuma günü öğleden sonra saat üçe randevu yazabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Cuma saat üç bana çok uygun. Maliyet olarak ne civarda olur?"
+    },
+    {
+      "speaker": "rep",
+      "text": "İki tank şamandırasının sökülüp temizlenmesi ve elektriksel kalibrasyonu iki bin beş yüz lira tutar."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, lütfen cuma saat üçe randevuyu kaydedin."
+    },
+    {
+      "speaker": "rep",
+      "text": "Randevunuz oluşturuldu Muhammet Bey, ustamız cuma günü gelmeden sizi arayacaktır."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, iyi çalışmalar."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dileriz."
+    }
+  ]
+}

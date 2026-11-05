@@ -1,0 +1,69 @@
+{
+  "call_id": "call_052",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta servisi, merhaba. Ben [İSİM], nasıl yardımcı olabilirim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Kalamış Marina'dayım. Sirena 58 teknemizde otopilotta sorun var."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geçmiş olsun Fatma Hanım. Otopilotta tam olarak ne gözlemliyorsunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Dümen dolabının altındaki hidrolik silindirden yağ damlatıyor ve otopilot rotayı tutamıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hidrolik seviyesi kritik düzeye düşmüş olabilir. Dümen sertleşmesi var mı manuel kullanımda?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, manuelde de biraz sertleşme başladı, hidrolik yağı sintineye akmış."
+    },
+    {
+      "speaker": "rep",
+      "text": "Keçe patlamış olabilir Fatma Hanım. Silindirin sökülüp keçelerin yenilenmesi ve yağ basılması gerek."
+    },
+    {
+      "speaker": "customer",
+      "text": "Salı günü seyir planımız var, yarına usta bakabilir mi Kalamış Marina'da?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yarın sabah saat on için hidrolik ustamıza randevu yazabilirim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok iyi olur. Tahmini maliyet ne çıkar?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yerinde servis ve keçe revizyonu yaklaşık altı bin lira tutar, parça gerekirse eklenir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Anlaştık, pazartesi sabah onu teyit ediyoruz o zaman."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza iletmek üzere teknenin ponton numarasını ve anahtar durumunu teyit edebilir miyiz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknedeyim ben, ponton girişinde ekibinizi karşılayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kaydınızı açtım, pazartesi sabah onda ustamız teknede olacak. İyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok teşekkür ederim, kolay gelsin."
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+{
+  "call_id": "call_068",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta danışma hattı, ben [İSİM], günaydın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Günaydın, Göcek D-Marin'de bağlı Fountaine Pajot Isla 40 katamaranımız Fora için bilgi alacaktım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Buyrun Mübetcel Hanım, nasıl yardımcı olabiliriz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Sigorta şirketimiz tekne kaskosu yenilemesi için yetkili servis kondisyon raporu istedi. Siz bu tür rapor düzenliyor musunuz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, sigorta şirketlerinin kabul ettiği kapsamlı 'Tekne Durum ve Kondisyon Ekspertiz Raporu' hazırlıyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Rapor neleri kapsıyor acaba?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Gövde osmoz kontrolü, motor ve şaft mekanik durumu, arma-yelken kontrolü ve yangın/sintine güvenlik sistemleri incelenip imzalı rapor veriliyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki ücreti ve süresi nedir katamaranlar için?"
+    },
+    {
+      "speaker": "rep",
+      "text": "İnceleme yaklaşık iki saat sürer, rapor ertesi gün PDF ve ıslak imzalı teslim edilir. Ücreti dört bin beş yüz liradır."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok iyi, sigorta acentemle konuşup talep ettikleri formata uyuyorsa sizi arayacağım randevu için."
+    },
+    {
+      "speaker": "rep",
+      "text": "Detaylı parça ve işçilik dökümünü içeren teklif formunu sistemdeki e-postanıza da iletiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, gelen kutumu ve spam klasörünü kontrol ederim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii ki, acentenizin özel bir kontrol formu varsa ona göre de doldurabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, çok teşekkür ederim bilgilendirme için."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz Mübetcel Hanım, iyi günler dileriz."
+    }
+  ]
+}

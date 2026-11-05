@@ -1,0 +1,18 @@
+{
+  "call_id": "call_069",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "makine",
+    "location": "Tuzla Marina",
+    "problem": "Yanmar motor rölantide hararet alarmı veriyor ve egzozdan beyaz buhar atıyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "yuksek",
+    "potential_job": "Termostat kontrolü, tatlı su devridaim pompası ve eşanjör kontrolü",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Tuzla Marina Rüzgar teknesi motor hararet arızası randevusu verildi."
+}

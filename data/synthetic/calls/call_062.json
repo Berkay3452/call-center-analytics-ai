@@ -1,0 +1,65 @@
+{
+  "call_id": "call_062",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta çağrı merkezi, günaydın. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Günaydın, Pendik Marinturk Marina'dan Aliihsan Korutürk ben. Bora teknemizle ilgili arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Aliihsan Bey günaydın, Bora'da nasıl bir teknik sorun yaşıyorsunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Baş manevra pervanesi marinaya yanaşırken birkaç saniye çalışıp hemen termikten devreden çıkıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Pervane tünelinde misina veya midye birikmesi olabilir ya da baş pervane akü voltajı çok düşüyordur."
+    },
+    {
+      "speaker": "customer",
+      "text": "Aküleri geçen yıl yenilemiştik gerçi, tüneli su altı kamerasıyla kontrol etsek iyi olur."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamızı hem elektriksel ölçüm yapması hem de tünel kontrolü yapması için yönlendirelim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Pendik Marinturk Marina'da bugün uygun saat var mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Bugün saat on beşte elektrik ustamız marinada olacak, size uğrayabilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok memnun olurum, saat on beşte Bora teknesinde bekliyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza iletmek üzere teknenin ponton numarasını ve anahtar durumunu teyit edebilir miyiz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknedeyim ben, ponton girişinde ekibinizi karşılayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Randevunuz teyit edildi Aliihsan Bey, ustamız gelmeden sizi arayacaktır."
+    },
+    {
+      "speaker": "customer",
+      "text": "Sağ olun, iyi çalışmalar."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dileriz."
+    }
+  ]
+}

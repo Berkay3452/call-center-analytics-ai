@@ -1,0 +1,65 @@
+{
+  "call_id": "call_091",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta marin elektronik, iyi günler. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Çeşme Marina'da Zıpkın teknesi için arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Deniz Bey merhaba, harita ekranında ne problem yaşıyorsunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Konsoldaki Simrad ekranı Navionics harita kartını görmüyor, ayrıca GPS No Fix uyarısı verip konum bulamıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kart yuvasında nem kaynaklı korozyon olabilir veya harici GPS anteni sinyal taşımıyor olabilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yazılım güncellemesiyle düzelir mi sizce?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yazılım sürümünden de kaynaklanabilir Deniz Bey. Simrad uzman teknisyenimiz sisteminizi kontrol etmek için sizi yarım saate geri arasın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok iyi olur, teknedeyim ekran başında bekliyorum aramasını."
+    },
+    {
+      "speaker": "rep",
+      "text": "Detaylı parça ve işçilik dökümünü içeren teklif formunu sistemdeki e-postanıza da iletiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, gelen kutumu ve spam klasörünü kontrol ederim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teklifimiz onaylandığı takdirde marinadaki palamar ve çekek planlamasını da biz koordine ediyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bunu öğrendiğim iyi oldu, koordinasyon kolaylaşır."
+    },
+    {
+      "speaker": "rep",
+      "text": "Notumu ilettim Deniz Bey, teknisyenimiz hemen dönecektir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler, iyi çalışmalar."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dileriz."
+    }
+  ]
+}

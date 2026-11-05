@@ -1,0 +1,65 @@
+{
+  "call_id": "call_080",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta yetkili marin servis, günaydın. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Günaydın, Pendik Marinturk Marina'da bağlı Absolute 47 teknemiz Bora için arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Aliihsan Bey günaydın, Bora'da nasıl bir teknik durum tespit ettiniz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Makine dairesinde sancak IPS pod ünitesinin etrafında sarı renkli sentetik şanzıman yağı birikintisi gördüm."
+    },
+    {
+      "speaker": "rep",
+      "text": "IPS ünitelerinde yağ sızıntısı çok kritiktir Aliihsan Bey, yağsız kalması pod dişlilerine ciddi zarar verebilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, o yüzden hemen aradım. Tekneyi çalıştırmıyorum şu an."
+    },
+    {
+      "speaker": "rep",
+      "text": "Üst sızdırmazlık halkası veya seviye tapasından kaçırıyor olabilir. Pendik Marinturk Marina'ya bugün ekip yönlendirelim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bugün saat on dörtte teknede olabilirim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Saat on dört için IPS uzman teknisyenimize randevunuzu açıyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Lütfen orijinal Volvo Penta dişli yağı da getirsinler takviye için."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza iletmek üzere teknenin ponton numarasını ve anahtar durumunu teyit edebilir miyiz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknedeyim ben, ponton girişinde ekibinizi karşılayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Notumu ekledim Aliihsan Bey, teknisyenimiz saat ikiye teknede olacak."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, görüşmek üzere."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz, iyi günler dileriz."
+    }
+  ]
+}

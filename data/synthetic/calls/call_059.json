@@ -1,0 +1,69 @@
+{
+  "call_id": "call_059",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta tekne bakım servisi, iyi günler. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Göcek D-Marin'de bağlı Yıldız teknesi için su yapıcı bakımı sormak istedim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Zeynep Hanım merhaba, su yapıcınızın markası ve kapasitesi nedir?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Schenker yüz litre kapasiteli sistemimiz var, kışlamaya almadan önce koruyucu kimyasal basılması gerekiyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Membranların korunması için biosid kimyasalı ile sirkülasyon yapılıp filtrelerin yenilenmesi işlemimiz mevcuttur."
+    },
+    {
+      "speaker": "customer",
+      "text": "Göcek D-Marin için bu bakım ve kimyasal dahil ücretiniz ne kadar?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Kimyasal kışlama kiti, ön tortu filtreleri ve teknisyen işçiliği toplam on iki bin lira tutmaktadır."
+    },
+    {
+      "speaker": "customer",
+      "text": "Schenker'in yetkili ana bayisi de dün on bir bin liraya teklif vermişti ve garantiyi onlar uzatıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Biz de orijinal ürünlerle çalışıyoruz fakat takdir sizindir elbette."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yetkili ana servisten yaptırmak garanti açısından daha mantıklı olacak benim için, kusura bakmayın."
+    },
+    {
+      "speaker": "rep",
+      "text": "Dilerseniz ilerleyen dönemde parça tedariği veya teknik danışmanlık konusunda her zaman yardımcı olabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, ihtiyaç olursa aklımda bulunsun."
+    },
+    {
+      "speaker": "rep",
+      "text": "Farklı bir konuda danışmak istediğiniz bir husus var mıydı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Şimdilik yok, teşekkür ederim ilginize."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hiç sorun değil Zeynep Hanım, ilerleyen ihtiyaçlarınızda yardımcı olmaktan memnuniyet duyarız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Anlayışınız için teşekkürler, iyi çalışmalar."
+    }
+  ]
+}

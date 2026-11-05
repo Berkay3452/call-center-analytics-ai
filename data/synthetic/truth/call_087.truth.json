@@ -1,0 +1,18 @@
+{
+  "call_id": "call_087",
+  "call_type": "teklif",
+  "crm": {
+    "request_category": "temizlik_bakim",
+    "location": "Tuzla Marina",
+    "problem": "Borda ve üst bina jelkot matlaşması, havuzluk tik temizliği ve koruyucu yağ uygulaması teklifi",
+    "service_mode": "yerinde_servis",
+    "urgency": "dusuk",
+    "potential_job": "44 feet yelkenli 3M pasta cila, boya koruma ve tik temizliği",
+    "next_action": "teklif_hazirla"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Tuzla Marina Rüzgar teknesi pasta cila ve tik bakımı için teklif istendi."
+}

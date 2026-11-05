@@ -1,0 +1,65 @@
+{
+  "call_id": "call_072",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta marin güvenlik sistemleri, iyi günler dilerim. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Kalamış Marina'da bağlı Sealine F42 teknemiz Lodos için arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kemal Bey merhaba, teknenin yangın güvenliğiyle ilgili nasıl bir işlem yapılacak?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Makine dairesindeki otomatik yangın tüpünün manometresi kırmızı banda düşmüş, ayrıca kabin içi duman dedektörlerini de yenilemek istiyoruz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tüpün sökülüp hidrostatik testten geçirilmesi, gaz dolumu ve yetkili sertifika düzenlenmesi gerekiyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Kabin dedektörlerini de kablosuz marin tip pilli modellerle değiştirebilir miyiz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Elbette, optik duman ve karbonmonoksit hibrit dedektörleri takabiliyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Kalamış Marina için tüp dolumu, sertifika ve dört adet dedektör montajı içeren teklif hazırlar mısınız?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Detaylı parça ve işçilik dökümünü içeren teklif formunu sistemdeki e-postanıza da iletiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, gelen kutumu ve spam klasörünü kontrol ederim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teklifimiz onaylandığı takdirde marinadaki palamar ve çekek planlamasını da biz koordine ediyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bunu öğrendiğim iyi oldu, koordinasyon kolaylaşır."
+    },
+    {
+      "speaker": "rep",
+      "text": "Memnuniyetle Kemal Bey, bugün gün sonuna kadar detaylı proforma faturayı e-postanıza gönderiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, teklifi inceleyip dönerim. İyi çalışmalar."
+    },
+    {
+      "speaker": "rep",
+      "text": "Biz teşekkür ederiz Kemal Bey, iyi günler dileriz."
+    }
+  ]
+}

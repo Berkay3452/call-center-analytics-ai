@@ -1,0 +1,65 @@
+{
+  "call_id": "call_096",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta güvenlik hattı, merhaba. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Bodrum Milta Marina'da bağlı Ferretti teknemiz Akdeniz için danışacaktım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Cem Bey merhaba, nasıl yardımcı olabiliriz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Haftaya gece seyrine çıkacağız. Teknede sekiz adet otomatik şişen can yeleğimiz var, bunların tüp ve tuz tabletleri ne sıklıkla değişmeli?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Tuz tabletleri ve hidrostatik mekanizmaların iki yılda bir, CO2 tüplerinin ise hassas terazide tartılarak yeşil indikatör kontrolüyle her sezon başında gözden geçirilmesi gerekir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Siz marinada yerinde kontrol edip eksik veya tarihi geçmiş olanları yeniliyor musunuz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, Bodrum Milta Marina'daki mağazamızdan teknisyeniz gelip tekne üzerinde sekiz yeleği de test eder ve gereken tüp/kartuşları yeniler."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok pratikmiş, seyre çıkmadan önce marinadaki ofisinize uğrayıp talep bırakacağım o halde."
+    },
+    {
+      "speaker": "rep",
+      "text": "Detaylı parça ve işçilik dökümünü içeren teklif formunu sistemdeki e-postanıza da iletiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, gelen kutumu ve spam klasörünü kontrol ederim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teklifimiz onaylandığı takdirde marinadaki palamar ve çekek planlamasını da biz koordine ediyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bunu öğrendiğim iyi oldu, koordinasyon kolaylaşır."
+    },
+    {
+      "speaker": "rep",
+      "text": "Memnuniyetle Cem Bey, her zaman bekleriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler dilerim."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dileriz Cem Bey."
+    }
+  ]
+}

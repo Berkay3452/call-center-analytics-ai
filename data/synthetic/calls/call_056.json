@@ -1,0 +1,65 @@
+{
+  "call_id": "call_056",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta acil servis, ben [İSİM], dinliyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Alo, acil yardım almamız gerekiyor! Göcek D-Marin önünde alargadaydık, marinaya bağlandık ama demir ırgatı bozuldu."
+    },
+    {
+      "speaker": "rep",
+      "text": "Selin Hanım sakin olun lütfen, tekneniz emniyette mi şu an?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Marinaya aborda olduk ama demiri alamadık, ırgat kavraması sıyırmış, zincir boşalıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Irgat motoru dönüyor mu peki, mekanik kavrama kolunu sıktınız mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Kolu sonuna kadar sıktık ama kavramıyor, kavelata serbest dönüyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kavrama balatası sıyırmış ya da kama kırılmış olabilir Selin Hanım. Göcek D-Marin ponton numaranız nedir?"
+    },
+    {
+      "speaker": "customer",
+      "text": "A iskelesi 12 numara. Bu gece fırtına uyarısı var, demiri güverteye sabitlememiz şart."
+    },
+    {
+      "speaker": "rep",
+      "text": "Göcek merkezdeki nöbetçi mekanik ustamızı hemen teknenize yönlendiriyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ne kadar sürede gelebilir acaba?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza iletmek üzere teknenin ponton numarasını ve anahtar durumunu teyit edebilir miyiz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknedeyim ben, ponton girişinde ekibinizi karşılayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamız yaklaşık yirmi dakika içinde teknenizde olacak Selin Hanım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok teşekkür ederim, acil bekliyoruz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ekibimiz çıkış yaptı, iyi akşamlar."
+    }
+  ]
+}

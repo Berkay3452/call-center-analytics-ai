@@ -1,0 +1,18 @@
+{
+  "call_id": "call_092",
+  "call_type": "teklif",
+  "crm": {
+    "request_category": "iklimlendirme",
+    "location": "Göcek D-Marin",
+    "problem": "Mevcut klima kapasitesi salonda yetersiz kalıyor, ilave 16k BTU bağımsız klima montajı projesi",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": "Dometic 16000 BTU self-contained marin klima ünitesi temini, deniz suyu pompası ve hava kanalı montajı",
+    "next_action": "teklif_hazirla"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Göcek D-Marin Ufuk motoryatı için ilave salon kliması montaj projesi teklifi hazırlandı."
+}

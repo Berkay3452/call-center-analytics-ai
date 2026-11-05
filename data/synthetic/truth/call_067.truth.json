@@ -1,0 +1,18 @@
+{
+  "call_id": "call_067",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "iklimlendirme",
+    "location": "İstinye Tekne Park",
+    "problem": "Salon kliması HP (High Pressure) hatası veriyor, kondenser soğutma suyu akmıyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": "Klima deniz suyu pompası hava alma, filtre temizliği ve gaz basınç kontrolü",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "İstinye Tekne Park Yıldırım teknesi klima arızası için randevu oluşturuldu."
+}

@@ -1,0 +1,18 @@
+{
+  "call_id": "call_081",
+  "call_type": "teklif",
+  "crm": {
+    "request_category": "temizlik_bakim",
+    "location": "Bodrum Milta Marina",
+    "problem": "Gulet tik güverte armuzlarının sökülüp Sika ile yenilenmesi ve zımpara talebi",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": "22 metre gulet güverte armuz sökümü, astar ve Sikaflex 290DC uygulaması",
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "takvim"
+  },
+  "notes": "Bodrum Milta Marina Çapariz guleti güverte işi için en erken 2 ay sonrasına gün verilebildi; müşteri tura çıkacağı için anlaşamadı."
+}

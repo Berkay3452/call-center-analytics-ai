@@ -1,0 +1,18 @@
+{
+  "call_id": "call_068",
+  "call_type": "bilgi",
+  "crm": {
+    "request_category": null,
+    "location": "Göcek D-Marin",
+    "problem": "Kasko sigortası yenilemesi için teknik kondisyon sörvey raporu hizmeti sorgusu",
+    "service_mode": null,
+    "urgency": "dusuk",
+    "potential_job": "Teknik kondisyon sörvey bilgilendirmesi",
+    "next_action": "bilgi_ver"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Müşteri sigorta şirketi için survey raporu verip vermediğimizi sordu; kapsam anlatıldı."
+}

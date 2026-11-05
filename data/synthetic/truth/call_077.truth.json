@@ -1,0 +1,18 @@
+{
+  "call_id": "call_077",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "elektrik_elektronik",
+    "location": "Göcek D-Marin",
+    "problem": "Sahil elektriğine bağlıyken servis aküleri 11.8V'ta kalıyor, redresör şarja geçmiyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": "Mastervolt redresör diyot köprüsü ve sahil besleme giriş sigortası testi",
+    "next_action": "geri_ara"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Göcek D-Marin Yıldız teknesi şarj arızası; elektrik başmühendisimiz şemayı inceleyip arayacak."
+}

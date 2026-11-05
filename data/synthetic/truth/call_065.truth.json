@@ -1,0 +1,18 @@
+{
+  "call_id": "call_065",
+  "call_type": "teklif",
+  "crm": {
+    "request_category": "mekanik_hidrolik",
+    "location": "Marmaris Netsel Marina",
+    "problem": "Kıç platforma servis botu için paslanmaz hidrolik matafora montajı teklif talebi",
+    "service_mode": "yerinde_servis",
+    "urgency": "dusuk",
+    "potential_job": "Paslanmaz 316 kalite elektrikli matafora vinç montajı ve elektrik hattı çekilmesi",
+    "next_action": "teklif_hazirla"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Marmaris Netsel Marina Kalyon guleti için bot matafora sistemi projelendirme teklifi hazırlandı."
+}

@@ -1,0 +1,65 @@
+{
+  "call_id": "call_097",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta çağrı merkezi, iyi günler. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Ataköy Marina'dan Sadiye Demir ben. Meltem teknesi için arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Sadiye Hanım merhaba, size yardımcı olmak isterim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Geçen hafta temiz su tankı şamandıra kalibrasyonu için kayıt bırakmıştım, teknik şefimiz arayacak demiştiniz ama hiç arayan olmadı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kayıtlarımızı inceliyorum hemen... Gerçekten çok haklısınız, sistemsel bir hata sebebiyle bildirim askıda kalmış, çok mahcubuz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ben de iki gün bekledim, arayan olmayınca marina içindeki elektrikçiyi çağırdım, gelip sensörü ayarladı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yaşattığımız gecikme ve aksaklık adına en içten özürlerimizi sunarız Sadiye Hanım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yoğun olabilirsiniz anlıyorum ama en azından bir arayıp bilgi verilmesi gerekirdi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Dilerseniz ilerleyen dönemde parça tedariği veya teknik danışmanlık konusunda her zaman yardımcı olabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, ihtiyaç olursa aklımda bulunsun."
+    },
+    {
+      "speaker": "rep",
+      "text": "Farklı bir konuda danışmak istediğiniz bir husus var mıydı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Şimdilik yok, teşekkür ederim ilginize."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kesinlikle haklısınız, gerekli tedbirleri alıp bir sonraki bakımınızda size telafi indirimi tanımlıyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler, yine de bildirmek istedim. İyi çalışmalar."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geri bildiriminiz için teşekkür eder, iyi günler dileriz."
+    }
+  ]
+}

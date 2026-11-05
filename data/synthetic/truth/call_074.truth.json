@@ -1,0 +1,18 @@
+{
+  "call_id": "call_074",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "iklimlendirme",
+    "location": "Göcek D-Marin",
+    "problem": "Master kabin fancoil yoğuşma tavası taştı, yatak başlığı ahşabına su damlatıyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": "Fancoil drenaj hattı hava ile açılması, yoğuşma tavası dezenfeksiyonu ve filtre temizliği",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Göcek D-Marin Ufuk teknesi klima drenaj tıkanıklığı için servis randevusu kaydedildi."
+}

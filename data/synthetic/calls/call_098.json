@@ -1,0 +1,65 @@
+{
+  "call_id": "call_098",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta teknik destek, iyi akşamlar dilerim. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi akşamlar, Pendik Marinturk Marina'da Bora teknesi için arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Aliihsan Bey iyi akşamlar, Bora'da nasıl bir sorun var?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Kıç taraftaki hidrolik yüzme platformu botu üzerine alınca yavaş yavaş kendini aşağıya salıyor, basıncı tutamıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Piston iç segman keçesi aşınmış veya hidrolik kilit çekvalfinde kaçak var Aliihsan Bey."
+    },
+    {
+      "speaker": "customer",
+      "text": "Pistonların marinadan sökülüp atölyeye mi gitmesi gerekir yerinde hallolur mu?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Çekvalf arızasıysa yerinde değişir ama piston keçesi ise sökülüp honlama ve revizyona girmesi gerekebilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Pendik Marinturk Marina için iş programınız nasıl?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Detaylı parça ve işçilik dökümünü içeren teklif formunu sistemdeki e-postanıza da iletiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, gelen kutumu ve spam klasörünü kontrol ederim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teklifimiz onaylandığı takdirde marinadaki palamar ve çekek planlamasını da biz koordine ediyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bunu öğrendiğim iyi oldu, koordinasyon kolaylaşır."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hidrolik atölye şefimiz yarım saat içinde sizi arayıp teknik detayları konuşsun ve gün versin."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, aramasını bekliyorum. Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi akşamlar dileriz Aliihsan Bey."
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "call_id": "call_066",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "mekanik_hidrolik",
+    "location": "Çeşme Marina",
+    "problem": "Cenova furling makarası dönmüyor, bilyalar dağılmış",
+    "service_mode": "yerinde_servis",
+    "urgency": "yuksek",
+    "potential_job": "Furling tamburu rulman değişimi ve tambur temizliği",
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "gec_donus"
+  },
+  "notes": "Müşteri Çeşme Marina İmbat teknesi furling arızası için üç gün önce aradığını, dönüş yapılmadığı için başka usta çağırdığını belirtti."
+}

@@ -41,9 +41,9 @@ EXPECTED_AT_LEAST = {
     "service_orders": 50,
     "expenses": 50,
     "subscriptions": 10,
-    "calls": 50,
-    "transcripts": 50,
-    "analysis_results": 50,
+    "calls": 100,
+    "transcripts": 100,
+    "analysis_results": 100,
 }
 
 
@@ -57,7 +57,7 @@ async def test_seed_fills_empty_database_and_is_idempotent() -> None:
     assert first == second == third
     for table, minimum in EXPECTED_AT_LEAST.items():
         assert first[table] >= minimum, (table, first[table])
-    assert first["transcript_segments"] >= 50 * 15
+    assert first["transcript_segments"] >= 100 * 15
     assert first["rag_chunks"] >= first["boat_notes"]
 
 

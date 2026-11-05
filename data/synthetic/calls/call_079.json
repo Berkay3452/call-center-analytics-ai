@@ -1,0 +1,65 @@
+{
+  "call_id": "call_079",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta danışma hattı, iyi günler. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Ataköy Marina'dan Sadiye Demir ben. Meltem teknemiz için bir regülasyon soracaktım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Sadiye Hanım buyrun, nasıl yardımcı olabiliriz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Marina yönetimi sintine basarken denize yakıt karışmaması için yağ ayırıcı filtre önerdi. Siz bu filtreleri takıyor musunuz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, sintine pompası çıkış hattına BilgeKleen veya Wavebrite tipi yağ absorbe edici filtre üniteleri monte ediyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Mavi Kart denetimlerinde veya marina kontrollerinde sorunsuz geçiyor mu?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Kesinlikle, sahil güvenlik ve liman başkanlığı standartlarına yüzde yüz uygundur ve hidrokarbon sızıntısını tamamen tutar."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok güzel, ürünün teknik detaylarını e-posta ile iletebilir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Detaylı parça ve işçilik dökümünü içeren teklif formunu sistemdeki e-postanıza da iletiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, gelen kutumu ve spam klasörünü kontrol ederim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teklifimiz onaylandığı takdirde marinadaki palamar ve çekek planlamasını da biz koordine ediyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bunu öğrendiğim iyi oldu, koordinasyon kolaylaşır."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii ki Sadiye Hanım, sisteme kayıtlı adresinize ürün broşürünü gönderiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, iyi günler dilerim."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dileriz."
+    }
+  ]
+}

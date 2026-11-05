@@ -1,0 +1,18 @@
+{
+  "call_id": "call_082",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "mekanik_hidrolik",
+    "location": "Marmaris Netsel Marina",
+    "problem": "Elektrikli mandal vinci yüke bindiğinde metal sürtme sesi yapıyor ve zorlanıyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": "Harken 50 elektrikli vinç sökümü, gresleme, tırnak yayları değişimi",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Marmaris Netsel Marina Pruva teknesi vinç bakımı için randevu kaydedildi."
+}

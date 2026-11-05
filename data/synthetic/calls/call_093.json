@@ -1,0 +1,65 @@
+{
+  "call_id": "call_093",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta çağrı merkezi, günaydın. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Günaydın, Tuzla Marina'dan arıyorum. Karayel teknemizdeki pasarella çalışmıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Okan Bey günaydın, pasarellada tam olarak ne tepki var kumandaya basınca?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Besenzoni hidrolik pompası ses yapıyor, elektrik gidiyor ama pasarella yerinden kımıldamıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hidrolik tankındaki yağ seviyesi eksilmiş olabilir veya yön valfi selenoidi takılı kalmıştır."
+    },
+    {
+      "speaker": "customer",
+      "text": "Manuel indirme vanasını gevşetmeyi denedim ama hiç oynamadı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Valf bloğu kilitlenmiş olabilir Okan Bey. Tuzla Marina'ya bugün öğleden sonra hidrolik ustası yönlendirebiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bugün saat iki uygun mudur?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza iletmek üzere teknenin ponton numarasını ve anahtar durumunu teyit edebilir miyiz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknedeyim ben, ponton girişinde ekibinizi karşılayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Servis sonrası yapılan testleri ve değişen parçaları fotoğraflı servis formuyla bilginize sunacağız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok memnun olurum, detaylı kayıt tutulması iyi olur."
+    },
+    {
+      "speaker": "rep",
+      "text": "Saat iki için randevunuzu açıyorum Okan Bey, ustamız teknenizde olacak."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz, iyi günler dileriz."
+    }
+  ]
+}

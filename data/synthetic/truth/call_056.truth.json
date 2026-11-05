@@ -1,0 +1,18 @@
+{
+  "call_id": "call_056",
+  "call_type": "acil",
+  "crm": {
+    "request_category": "mekanik_hidrolik",
+    "location": "Göcek D-Marin",
+    "problem": "Elektrikli demir ırgatı kavraması kaçırıyor, zincir kontrolsüz akıyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "acil",
+    "potential_job": "Irgat kavrama balatası ve kavelata dişli mekanizması acil onarımı",
+    "next_action": "usta_ata"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Göcek D-Marin Ufuk teknesinde ırgat kavrama arızası; acil teknisyen yönlendirildi."
+}

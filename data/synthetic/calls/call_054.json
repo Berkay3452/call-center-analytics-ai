@@ -1,0 +1,65 @@
+{
+  "call_id": "call_054",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta çağrı merkezi, günaydın. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Günaydın, Kalamış Marina'dan Kemal Aydoğan ben. Lodos motoryatımızla ilgili arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kemal Bey merhaba, Lodos'taki arıza nedir acaba?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Jeneratörü çalıştırıyoruz, yaklaşık on dakika sonra hararet alarmı verip kendini kapatıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Egzozdan deniz suyu atışı normal mi, kontrol ettiniz mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Su debisi çok zayıf gibi geldi bana, kesik kesik akıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Muhtemelen deniz suyu devridaim impelleri kanat kırmış ya da kondenser tıkanmış."
+    },
+    {
+      "speaker": "customer",
+      "text": "Biz de impellerden şüphelendik. Ne zaman bakabilirsiniz tekneye Kalamış'ta?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Bugün öğleden sonra saat iki gibi makine ustamızı yönlendirebiliriz Kalamış Marina'ya."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok iyi olur, teknede olacağım saat ikide."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza iletmek üzere teknenin ponton numarasını ve anahtar durumunu teyit edebilir miyiz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknedeyim ben, ponton girişinde ekibinizi karşılayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza yedek impeller ve conta setiyle gelmesi için not düşüyorum. Servis randevunuz açıldı."
+    },
+    {
+      "speaker": "customer",
+      "text": "Harika, teşekkürler. Görüşmek üzere."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz Kemal Bey, geçmiş olsun."
+    }
+  ]
+}

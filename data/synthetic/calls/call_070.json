@@ -1,0 +1,65 @@
+{
+  "call_id": "call_070",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta teknik servis, iyi günler. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Göcek D-Marin'de Albatros yelkenlimiz için arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Fatma Hanım merhaba, nasıl yardımcı olabiliriz Albatros için?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Tatlı su hidroforu musluklar kapalıyken bile durmuyor, motor sürekli vızıldıyor ve banyo altındaki sıcak su hortumunu patlattı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Lütfen elektrik panosundan hidrofor sigortasını hemen kapatın Fatma Hanım, su basmasın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Kapattım sigortayı, vanayı da kapattım ama teknede hiç su kullanamıyoruz şu an."
+    },
+    {
+      "speaker": "rep",
+      "text": "Basınç şalteri kontak kaynatmış, durdurma basıncına gelse de devreyi kesmiyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Göcek D-Marin'de bugün bize müdahale edebilecek ustanız var mı, teknede misafir var?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Göcek ofisimizdeki sıhhi tesisat ustamızı bir saat içinde Albatros teknesine gönderiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok makbule geçer, ücret ne kadar olur takriben?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza iletmek üzere teknenin ponton numarasını ve anahtar durumunu teyit edebilir miyiz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknedeyim ben, ponton girişinde ekibinizi karşılayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Basınç şalteri değişimi ve hortum tamiratı parça dahil üç bin beş yüz lira tutar."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, lütfen ustayı hemen yollayın, pontonda bekliyoruz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza bildirdim Fatma Hanım, yola çıkıyor. Geçmiş olsun."
+    }
+  ]
+}

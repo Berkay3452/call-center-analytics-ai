@@ -1,0 +1,69 @@
+{
+  "call_id": "call_095",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta mekanik servisi, tünaydın. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tünaydın, Göcek D-Marin'den arıyorum. Princess 48 teknemiz Yıldız için."
+    },
+    {
+      "speaker": "rep",
+      "text": "Zeynep Hanım tünaydın, motorda nasıl bir durum var?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Motor dairesini kontrol ederken iskele motorun alternatör kayışının kopup alta düştüğünü gördük, göstergede de şarj lambası yanıyordu zaten."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kayışın kopma sebebi gergi kasnağının bilye dağıtması veya alternatörün sıkışması olabilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Kasnaklar elle dönüyor ama kayış paramparça olmuş."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yeni marin V-kayış takılıp kasnak hizalamasının ve şarj akımının kontrol edilmesi gerekir. Göcek D-Marin'e usta yönlendirelim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yarın sabah saat ona randevu verebilir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Pazar sabahı saat ona randevunuzu teyit ediyorum Zeynep Hanım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok iyi, yedek kayışla gelin lütfen."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza iletmek üzere teknenin ponton numarasını ve anahtar durumunu teyit edebilir miyiz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknedeyim ben, ponton girişinde ekibinizi karşılayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Servis sonrası yapılan testleri ve değişen parçaları fotoğraflı servis formuyla bilginize sunacağız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok memnun olurum, detaylı kayıt tutulması iyi olur."
+    },
+    {
+      "speaker": "rep",
+      "text": "Orijinal ölçüdeki kayış ve takımlarla ustamız teknenizde olacak. Geçmiş olsun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler, iyi günler."
+    }
+  ]
+}

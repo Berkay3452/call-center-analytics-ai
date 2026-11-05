@@ -1,0 +1,18 @@
+{
+  "call_id": "call_093",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "mekanik_hidrolik",
+    "location": "Tuzla Marina",
+    "problem": "Besenzoni hidrolik pasarella pompası vızıldıyor ama pasarella kalkmıyor ve uzamıyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": "Pasarella hidrolik valf bloğu temizliği, selenoid testi ve hidrolik yağ tamamlanması",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Tuzla Marina Karayel teknesi hidrolik pasarella arızası servis randevusu teyit edildi."
+}

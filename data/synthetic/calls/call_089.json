@@ -1,0 +1,65 @@
+{
+  "call_id": "call_089",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta acil kurtarma hattı, ben [İSİM], dinliyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Alo! Çok acil Ataköy Marina'ya ekip lazım! Pusula teknesi su alıyor!"
+    },
+    {
+      "speaker": "rep",
+      "text": "Mehmet Bey sakin olun, su nereden giriyor tam olarak?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Makine dairesinde şaft körüğü yırtılmış, oluk gibi deniz suyu giriyor! Otomatik sintine pompası yetmiyor!"
+    },
+    {
+      "speaker": "rep",
+      "text": "Manuel sintine pompasını da devreye alın Mehmet Bey, marinadan seyyar dalgıç pompa istediniz mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Marina görevlilerine haber verdim seyyar pompayı getiriyorlar ama mekanik ustanın acil körüğü sarması lazım!"
+    },
+    {
+      "speaker": "rep",
+      "text": "Ataköy Marina nöbetçi ekibimizi acil çanta ve geçici su altı körük bandajıyla hemen iskelenize yönlendiriyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Hangi ponton olduğunu biliyorlar mı? F pontonu yirmi numara!"
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza iletmek üzere teknenin ponton numarasını ve anahtar durumunu teyit edebilir miyiz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknedeyim ben, ponton girişinde ekibinizi karşılayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Servis sonrası yapılan testleri ve değişen parçaları fotoğraflı servis formuyla bilginize sunacağız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok memnun olurum, detaylı kayıt tutulması iyi olur."
+    },
+    {
+      "speaker": "rep",
+      "text": "F pontonu yirmi numara olarak ustamıza bildirdim, koşarak teknenize geliyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Lütfen çok acele etsinler!"
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamız yanınızda olmak üzere Mehmet Bey, lütfen can yeleğinizi giyin."
+    }
+  ]
+}

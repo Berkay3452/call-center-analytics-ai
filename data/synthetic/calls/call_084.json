@@ -1,0 +1,65 @@
+{
+  "call_id": "call_084",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta elektronik destek, merhaba ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Çeşme Marina'da Beneteau teknemiz İmbat için arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Temime Hanım merhaba, elektronikte nasıl bir problem var?"
+    },
+    {
+      "speaker": "customer",
+      "text": "B&G harita ekranında derinlik ve hız geliyor ama rüzgar yönü ve şiddeti sıfır çizgi gösteriyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Direk içi NMEA kablosunda kopukluk olabilir veya direkteki sensör kartı oksitlenmiştir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Direğe tırmanmadan güverte altından test etme imkanı var mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, direk dibindeki NMEA2000 T-bağlantı noktasından multimetre ve diagnostik cihazıyla sinyal okunabilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çeşme Marina için ne zaman usta yönlendirebilirsiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Detaylı parça ve işçilik dökümünü içeren teklif formunu sistemdeki e-postanıza da iletiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, gelen kutumu ve spam klasörünü kontrol ederim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teklifimiz onaylandığı takdirde marinadaki palamar ve çekek planlamasını da biz koordine ediyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bunu öğrendiğim iyi oldu, koordinasyon kolaylaşır."
+    },
+    {
+      "speaker": "rep",
+      "text": "Elektronik şefimiz şu an sahada, yarım saat içinde sizi arayıp Çeşme programını netleştirsin."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, aramasını bekliyorum. Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz Temime Hanım, iyi günler."
+    }
+  ]
+}

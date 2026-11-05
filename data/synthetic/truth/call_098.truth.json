@@ -1,0 +1,18 @@
+{
+  "call_id": "call_098",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "mekanik_hidrolik",
+    "location": "Pendik Marinturk Marina",
+    "problem": "Yüzme platformu hidrolik pistonu yükteyken kendi kendine aşağı kayıyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": "Hidrolik kilit valfi ve piston iç keçe sızdırmazlık testi",
+    "next_action": "geri_ara"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Pendik Marinturk Marina Bora teknesi platform arızası; hidrolik atölye şefimiz geri arayacak."
+}

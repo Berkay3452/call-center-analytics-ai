@@ -1,0 +1,65 @@
+{
+  "call_id": "call_065",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta mühendislik ve marin servis, iyi günler. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Marmaris Netsel Marina'da bağlı Kalyon isimli guletimiz için bilgi almak istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Şüküfe Hanım merhaba, Kalyon guleti için ne gibi bir proje planlıyorsunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Kıç tarafa üç metre boyundaki servis botumuzu rahat indirip kaldırmak için elektrikli matafora sistemi yaptırmak istiyoruz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Paslanmaz üç yüz on altı L marin borudan imal, çift motorlu ve uzaktan kumandalı sistemler uyguluyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Mevcut elektrik panosundan hat çekilmesi de gerekecek değil mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, sigorta panosundan kıç aynaya kadar marin marin kablo ve devre kesici şalter monte edilmesi gerekiyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Marmaris Netsel Marina'da yerinde keşif yapıp projelendirme yapabilir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Pazartesi günü mühendisimiz marinada keşif yapıp ölçüleri alsın, akabinde detaylı malzeme ve işçilik teklifi sunalım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok sevinirim. Teklif formunu e-posta ile bekliyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Detaylı parça ve işçilik dökümünü içeren teklif formunu sistemdeki e-postanıza da iletiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, gelen kutumu ve spam klasörünü kontrol ederim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Pazartesi keşif sonrası teklifiniz e-postanıza iletilmiş olacak Şüküfe Hanım."
+    },
+    {
+      "speaker": "customer",
+      "text": "İlginiz için teşekkürler, kolay gelsin."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dileriz."
+    }
+  ]
+}

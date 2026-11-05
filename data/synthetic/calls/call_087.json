@@ -1,0 +1,65 @@
+{
+  "call_id": "call_087",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta tekne bakım hizmetleri, günaydın. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Günaydın, Tuzla Marina'dan Burak Çelik ben. Rüzgar yelkenlimiz için teklif almak istiyordum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Burak Bey günaydın, nasıl bir bakım paketi düşünüyorsunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Kışa girmeden önce tüm borda ve üst binaya üç aşamalı pasta cila ve havuzluk tiklerine özel temizlik ve tik yağı istiyoruz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Üç M marin pasta serisi ve nano polimer boya koruyucu uyguluyoruz. Tikler için de Teak Wonder iki aşamalı temizlik yapıyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Harika. Kırk dört feet tekne için yerinde servis fiyatınız ne olur Tuzla Marina'da?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Malzeme ve dört kişilik temizlik ekibi işçiliği dahil detaylı proforma teklif hazırlayabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Lütfen WhatsApp ve e-posta üzerinden teklifi gönderin, inceleyelim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Detaylı parça ve işçilik dökümünü içeren teklif formunu sistemdeki e-postanıza da iletiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, gelen kutumu ve spam klasörünü kontrol ederim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teklifimiz onaylandığı takdirde marinadaki palamar ve çekek planlamasını da biz koordine ediyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bunu öğrendiğim iyi oldu, koordinasyon kolaylaşır."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teklifinizi bir saat içinde hazırlayıp iletiyorum Burak Bey."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler, haberleşmek üzere."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dileriz Burak Bey."
+    }
+  ]
+}

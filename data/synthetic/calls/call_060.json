@@ -1,0 +1,65 @@
+{
+  "call_id": "call_060",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, ben [İSİM], iyi günler dilerim."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Bodrum Milta Marina'da Ferretti 500 teknemiz var, adı Akdeniz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Merhaba Cem Bey, Akdeniz için nasıl yardımcı olabiliriz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Kışın İstanbul'da olacağız. Bodrum'da teknenin haftada bir havalandırılması, sintine ve motor kontrolleri gibi bir hizmetiniz var mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, 'Tekne Gözetim ve Kış Koruma' sözleşmemiz mevcut. Ayda dört kez ziyaret yapıyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ziyarette neler kontrol ediliyor tam olarak?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Akü voltajları, sahil besleme bağlantısı, sintineler, vana kontrolleri yapılıyor ve motorlar yirmi dakika rölantide çalıştırılıyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Raporlama nasıl oluyor peki, fotoğraflı mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Her ziyaret sonrası mobil uygulamamızdan ve e-posta ile fotoğraflı durum raporu gönderiyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok güzel. Aylık bedeli ne kadar bu hizmetin motoryatlar için?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Kırk ile altmış feet arası motoryatlarda aylık üç yüz Euro artı KDV olarak ücretlendiriliyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Anladım, şartnameyi bana e-posta atabilirseniz ortakla değerlendirip haber vereyim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Sistemdeki adresinize şartnameyi ve örnek kontrol raporunu iletiyorum hemen."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, iyi çalışmalar dilerim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Biz teşekkür ederiz Cem Bey, iyi günler."
+    }
+  ]
+}

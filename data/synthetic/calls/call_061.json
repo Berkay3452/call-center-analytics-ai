@@ -1,0 +1,65 @@
+{
+  "call_id": "call_061",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta servis danışma, merhaba ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Ataköy Marina'da Meltem teknemiz için arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Sadiye Hanım merhaba, nasıl yardımcı olabiliriz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Ön kabindeki Jabsco manuel tuvaletin kolu yukarı çekilmiyor, takılı kaldı ve tabandan hafif su sızdırıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Muhtemelen jokey valf kireçlenmeden şişmiş ve piston contası aşınmış."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tekne içinde koku yapmaya başladı, komple değişmesi mi gerekir yoksa tamir olur mu?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Pompa ünitesinin komple değiştirilmesi çok daha kalıcı ve hijyenik bir çözüm oluyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Fiyatı ne kadar olur pompa grubu ve montajının?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Orijinal Jabsco manuel pompa kiti ve montaj işçiliği dahil üç bin iki yüz lira."
+    },
+    {
+      "speaker": "customer",
+      "text": "Gayet makul. Yarın öğleden sonra Ataköy Marina'ya gelebilir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza iletmek üzere teknenin ponton numarasını ve anahtar durumunu teyit edebilir miyiz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknedeyim ben, ponton girişinde ekibinizi karşılayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Perşembe günü saat on dört için randevunuzu oluşturuyorum Sadiye Hanım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, teknede olacağım, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Biz teşekkür ederiz, görüşmek üzere."
+    }
+  ]
+}

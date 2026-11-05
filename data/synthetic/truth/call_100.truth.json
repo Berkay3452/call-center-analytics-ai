@@ -1,0 +1,18 @@
+{
+  "call_id": "call_100",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "elektrik_elektronik",
+    "location": "Göcek D-Marin",
+    "problem": "Bimini üzerindeki esnek güneş panelleri MC4 konnektörü erimiş ve solar şarj kesilmiş",
+    "service_mode": "yerinde_servis",
+    "urgency": "yuksek",
+    "potential_job": "MC4 solar konnektörlerinin marin lehimli yenilenmesi ve panel diyot kutusu kontrolü",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Göcek D-Marin Fora teknesi solar sistem onarımı için servis randevusu kaydedildi (100. çağrı)."
+}

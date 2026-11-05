@@ -1,0 +1,18 @@
+{
+  "call_id": "call_071",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "mekanik_hidrolik",
+    "location": "Ataköy Marina",
+    "problem": "İskele dümen dolabında çeyrek tur boşluk var, dümen teli zincir dişlisinden gevşemiş",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": "Dümen kuadranı halat ve gergi liftinleri ayarı, zincir yağlaması",
+    "next_action": "geri_ara"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Müşteri Ataköy Marina Pusula teknesi dümen boşluğu için aradı; teknik müdür inceleyip geri arayacak."
+}

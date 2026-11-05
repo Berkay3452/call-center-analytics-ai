@@ -1,0 +1,65 @@
+{
+  "call_id": "call_053",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta yat bakım ve onarım, iyi günler. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Bodrum Milta Marina'da bağlı Bavaria Cruiser 46 teknemiz Poseidon için arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Merhaba Mehmet Bey. Poseidon için nasıl bir işlem düşünüyorsunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Önümüzdeki ay karaya alacağız. Karina temizliği, iki kat zehirli boya ve bordaya pasta cila yaptırmak istiyoruz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Uluslararası standartta epoksi astar kontrolü ve Jotun veya International zehirli boya uyguluyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Malzeme dahil komple paket fiyatınız ne kadar olur kırk altı feet için?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Malzeme, zımpara işçiliği ve iki kat zehirli boya ile pasta cila toplam seksen beş bin lira civarında tutar."
+    },
+    {
+      "speaker": "customer",
+      "text": "Seksen beş bin lira bana oldukça yüksek geldi, marina içindeki yerel boyacı elli bine teklif verdi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Biz orijinal marin malzeme ve iki sezon garanti veriyoruz Mehmet Bey."
+    },
+    {
+      "speaker": "customer",
+      "text": "Anlıyorum ama aradaki otuz beş bin liralık fark bütçemi çok aşıyor, ben yerel ustayla ilerleyeceğim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Dilerseniz ilerleyen dönemde parça tedariği veya teknik danışmanlık konusunda her zaman yardımcı olabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, ihtiyaç olursa aklımda bulunsun."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teklifimizi yine de sistemde kayıtlı e-postanıza detaylı olarak iletiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Sağ olun ama bu fiyata yaptırmam mümkün değil. İyi çalışmalar."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlayışınız için teşekkür ederiz Mehmet Bey, iyi günler dileriz."
+    }
+  ]
+}

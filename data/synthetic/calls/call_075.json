@@ -1,0 +1,69 @@
+{
+  "call_id": "call_075",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta elektronik servisi, iyi günler. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Tuzla Marina'dan Okan Yurdakul. Karayel teknesindeki Raymarine radar çalışmıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Okan Bey merhaba, ekranda tam olarak ne mesajı alıyorsunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Radar not rotating yazıyor, anten motoru dönmüyor sanırım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Radar besleme voltajı veya dahili motor sürücü kartında temassızlık olabilir, ustanın bakması lazım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Sizin göndereceğiniz teknisyen Raymarine sertifikalı mı peki?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Elektronik ustalarımız marin elektronik konusunda son derece deneyimlidir ancak doğrudan fabrika sertifikası yoktur."
+    },
+    {
+      "speaker": "customer",
+      "text": "Geçen ay gönderdiğiniz elektrikçi de otopilotu yarım yamalak yapıp gitmişti, açıkçası güvenemiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "O konudaki aksaklığı telafi etmek isteriz Okan Bey, en kıdemli ustamızı yönlendirebiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yok, ben doğrudan Raymarine ana yetkili servisini çağıracağım, maceraya girmek istemiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Dilerseniz ilerleyen dönemde parça tedariği veya teknik danışmanlık konusunda her zaman yardımcı olabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, ihtiyaç olursa aklımda bulunsun."
+    },
+    {
+      "speaker": "rep",
+      "text": "Farklı bir konuda danışmak istediğiniz bir husus var mıydı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Şimdilik yok, teşekkür ederim ilginize."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geri bildiriminiz için teşekkür ederiz Okan Bey, kararınıza saygı duyuyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler."
+    }
+  ]
+}

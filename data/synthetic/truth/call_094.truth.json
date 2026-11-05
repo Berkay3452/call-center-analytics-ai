@@ -1,0 +1,18 @@
+{
+  "call_id": "call_094",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "elektrik_elektronik",
+    "location": "Kalamış Marina",
+    "problem": "Mevcut AGM servis akülerini 400Ah LiFePO4 lityum akü bankı ile dönüştürme teklifi",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": "Lityum akü, Victron Lynx Shunt, DC-DC şarj cihazları ve BMS montajı",
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "rakip"
+  },
+  "notes": "Kalamış Marina Poyraz motoryatı lityum dönüşümü; müşteri Kalamış'taki başka bir marina firmasından daha düşük teklif aldığı için onları seçti."
+}

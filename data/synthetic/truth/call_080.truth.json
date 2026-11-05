@@ -1,0 +1,18 @@
+{
+  "call_id": "call_080",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "makine",
+    "location": "Pendik Marinturk Marina",
+    "problem": "Volvo IPS pod tahrik sistemi sintineye hafif şanzıman yağı sızdırıyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "yuksek",
+    "potential_job": "IPS pod ünitesi üst conta, yağ seviyesi ve karter havalandırma kontrolü",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Pendik Marinturk Marina Bora teknesi IPS pod kontrolü için servis randevusu teyit edildi."
+}

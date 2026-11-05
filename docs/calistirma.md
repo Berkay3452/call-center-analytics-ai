@@ -63,7 +63,7 @@ docker compose -f infra/docker-compose.yml --profile app up -d
 
 Bu komut sırasıyla:
 1. PostgreSQL (pgvector) ve Redis altyapısını başlatır ve sağlık kontrollerini (`healthy`) bekler.
-2. `init` servisini çalıştırarak Alembic migration'larını uygular (`alembic upgrade head`) ve veritabanı boşsa 50 çağrılık sentetik seed verisini yükler.
+2. `init` servisini çalıştırarak Alembic migration'larını uygular (`alembic upgrade head`) ve veritabanı boşsa 100 çağrılık sentetik seed verisini yükler.
 3. FastAPI Backend API (`:8000`) ve Celery Worker'ı ayağa kaldırır; API'nin `/health/ready` uç noktasından sağlıklı olduğunu doğrular.
 4. Next.js Frontend (`:3000`) konteynerini başlatır.
 
@@ -122,8 +122,8 @@ uv run celery -A app.workers.celery_app beat -l info
 | `http://localhost:8000/health/ready` | Veritabanı ve Redis `ok`; değilse 503 |
 | `http://localhost:8000/docs` | Swagger arayüzü; `Authorize` ile `X-Service-Key` gir |
 | `GET /api/v1/me` (başlık: `X-Service-Key`) | 200 |
-| `GET /api/v1/calls?page_size=5` | 5 çağrı, `total` 50 |
-| `GET /api/v1/analytics/summary?date_from=2026-10-01&date_to=2026-10-31` | `total_calls` 50 |
+| `GET /api/v1/calls?page_size=5` | 5 çağrı, `total` 100 |
+| `GET /api/v1/analytics/summary?date_from=2026-10-01&date_to=2026-10-31` | `total_calls` 100 |
 | `http://localhost:3000` | `/admin/analytics` sayfasına yönlenir |
 
 Komut satırından deneme örneği:
@@ -136,11 +136,11 @@ curl -H "X-Service-Key: <SERVICE_API_KEY>" "http://localhost:8000/api/v1/calls?p
 
 - **Miço AI araması (bge-m3 embedding):** `docker compose -f infra/docker-compose.yml --profile rag up -d` (ilk açılışta ~2,3 GB model iner), sonra `backend/` içinde `uv run python -m scripts.rag_index`. Ayrıntı: `backend/README.md`.
 - **Ses → yazı (STT):** `uv sync --extra ai --extra stt`; ilk kullanımda model (`small`, ~500 MB) iner. Model varsayılan olarak `C:\Users\<sen>\.cache\huggingface` altına iner; C: diskin doluysa `.env` içinde `WHISPER_DOWNLOAD_ROOT=D:/models/whisper` yaz (klasörü önceden aç). Denemek için bir ses dosyası `POST /api/v1/calls/audio` ile yüklenir (`file` + `started_at` form alanları); durum `yaziya_cevriliyor` → `isleniyor` → `tamam` ilerler. Mono kayıtta konuşmacılar ayrılamaz (tek parça çıkar). Ayrıntı: `backend/README.md`.
-- **Seed çağrıları için ses (çağrı detayında dinlemek için):** seed çağrılarının ses dosyası yoktur. Türkçe, çevrimdışı Piper ile üretilir (50 çağrı ~2,5 dk, ~150 MB, model ~60 MB ilk seferde iner): `uv run --with piper-tts python -m scripts.generate_audio`, ardından `uv run python -m scripts.seed` sesleri bağlar (seed çıktısında `calls_with_audio: 50`). Sesler `AUDIO_STORAGE_DIR/seed/` altına yazılır (git'e girmez); çağrının süresi ve segment zamanları sesin gerçek değerleri olur. Sesler varsayılan olarak **stereo** üretilir (temsilci sol, müşteri sağ kanal; müşteri sesinin perdesi yükseltilir) ve STT konuşmacıları kanaldan ayırır (`STT_CHANNEL_LAYOUT=stereo_rep_left`). Eski mono seslerin üzerine yazmak için `--force` ekle; tek kanal için `--mono`. Telefon hattı benzeri bozulmuş ses: `uv run python -m scripts.telephone_audio --src <klasör> --dst <klasör>`. Ölçümler ve karar: `docs/stt_karari.md`.
+- **Seed çağrıları için ses (çağrı detayında dinlemek için):** seed çağrılarının ses dosyası yoktur. Türkçe, çevrimdışı Piper ile üretilir (100 çağrı ~5 dk, ~300 MB, model ~60 MB ilk seferde iner): `uv run --with piper-tts python -m scripts.generate_audio`, ardından `uv run python -m scripts.seed` sesleri bağlar (seed çıktısında `calls_with_audio: 100`). Sesler `AUDIO_STORAGE_DIR/seed/` altına yazılır (git'e girmez); çağrının süresi ve segment zamanları sesin gerçek değerleri olur. Sesler varsayılan olarak **stereo** üretilir (temsilci sol, müşteri sağ kanal; müşteri sesinin perdesi yükseltilir) ve STT konuşmacıları kanaldan ayırır (`STT_CHANNEL_LAYOUT=stereo_rep_left`). Eski mono seslerin üzerine yazmak için `--force` ekle; tek kanal için `--mono`. Telefon hattı benzeri bozulmuş ses: `uv run python -m scripts.telephone_audio --src <klasör> --dst <klasör>`. Ölçümler ve karar: `docs/stt_karari.md`.
 - **Miço AI sohbeti (gerçek veriyle):** `.env`'de `LLM_API_KEY` dolu olmalı ve arama için `EMBEDDING_PROVIDER=hash` (hızlı) ya da bge-m3 (ilk madde). Seed sahibi `606bd734-644f-5c21-af2f-dc734c4ecd67` (Ahmet Yılmaz, tekne Poyraz) ile: `curl -N -X POST -H "X-Service-Key: <anahtar>" -H "X-User-Id: 606bd734-644f-5c21-af2f-dc734c4ecd67" -H "Content-Type: application/json" -d '{"question":"Kaç bakım hakkım kaldı?"}' http://localhost:8000/api/v1/chat/messages/stream` (SSE: `status` → `delta` → `done`).
 - **Testler:** `uv run pytest` (hızlı, DB gerekmez). Gerçek veritabanı testleri: Docker ayaktayken `$env:RUN_DB_TESTS="1"; uv run pytest`.
   * **Dikkat:** `tests/test_seed_integration.py` veritabanındaki tüm tabloları TRUNCATE eder; bu yüzden yalnızca CI'da (`CI=true`) ya da `ALLOW_DB_RESET=1` ile ve **tek kullanımlık bir veritabanında** çalışır. Ortak geliştirme veritabanına karşı koşmayın.
-- **Konteynerde uçtan uca duman testi (#157):** `docker compose --profile app` yığınında seed sesleri ilk açılışta Piper ile otomatik üretilir (`init` servisi, `SEED_AUDIO=generate`; 50 çağrı birkaç dakika sürer, sesler `audio-storage` volume'unda kalır; hiç üretmemek için `SEED_AUDIO=skip`). Yığını sahibin geliştirme ortamından (15432/6379/8000) ayrı, sahte LLM ile denemek için:
+- **Konteynerde uçtan uca duman testi (#157):** `docker compose --profile app` yığınında seed sesleri ilk açılışta Piper ile otomatik üretilir (`init` servisi, `SEED_AUDIO=generate`; 100 çağrı birkaç dakika sürer, sesler `audio-storage` volume'unda kalır; hiç üretmemek için `SEED_AUDIO=skip`). Yığını sahibin geliştirme ortamından (15432/6379/8000) ayrı, sahte LLM ile denemek için:
     ```powershell
     # backend/ klasöründe, ayrı terminalde: sahte OpenAI-uyumlu LLM
     uv run python -m scripts.fake_llm --port 9101

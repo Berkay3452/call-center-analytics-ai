@@ -1,0 +1,18 @@
+{
+  "call_id": "call_072",
+  "call_type": "teklif",
+  "crm": {
+    "request_category": "tekne_guvenligi",
+    "location": "Kalamış Marina",
+    "problem": "Makine dairesi FM200 otomatik yangın tüpü basınç düşmesi ve kabin dedektör yenileme",
+    "service_mode": "yerinde_servis",
+    "urgency": "dusuk",
+    "potential_job": "Otomatik yangın söndürme tüpü dolum testi ve sertifikasyonu, 4 adet dedektör montajı",
+    "next_action": "teklif_hazirla"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Kalamış Marina Lodos teknesi için yangın güvenlik ve sertifikasyon teklifi hazırlandı."
+}

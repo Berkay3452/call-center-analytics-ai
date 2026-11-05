@@ -1,0 +1,65 @@
+{
+  "call_id": "call_081",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta yat ahşap ve güverte atölyesi, iyi günler. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Bodrum Milta Marina'dan arıyorum. Çapariz guletinin armuzlarını yeniletmek istiyoruz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Satrettin Kaptan merhaba. Güverte toplam kaç metrekare civarında?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yaklaşık seksen metrekare tik güvertemiz var. Armuzlar kalktı, zımparalanıp Sika çekilecek."
+    },
+    {
+      "speaker": "rep",
+      "text": "Büyük bir işçilik gerektiriyor. Ne zamana kadar bitmesi gerekiyor işin?"
+    },
+    {
+      "speaker": "customer",
+      "text": "On beş güne yabancı misafir grubumuz var, haftaya başlayıp on günde teslim almamız lazım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ahşap ekibimiz şu an çekekteki üç guletin komple güvertesini yapıyor, en erken iki ay sonra başlayabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "İki ay sonra benim sezonum bitiyor zaten, on beş gün içinde bitirebilecek ekip arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Dilerseniz ilerleyen dönemde parça tedariği veya teknik danışmanlık konusunda her zaman yardımcı olabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, ihtiyaç olursa aklımda bulunsun."
+    },
+    {
+      "speaker": "rep",
+      "text": "Farklı bir konuda danışmak istediğiniz bir husus var mıydı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Şimdilik yok, teşekkür ederim ilginize."
+    },
+    {
+      "speaker": "rep",
+      "text": "Maalesef Satrettin Bey, takvimimiz tamamen dolu olduğu için o tarihe yetiştirmemiz imkansız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Anladım, dışarıdan başka marangoz ekibi bulmam gerekecek. Kolay gelsin."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlayışınız için teşekkür ederiz Kaptan, iyi sezonlar dileriz."
+    }
+  ]
+}

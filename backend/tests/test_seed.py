@@ -135,7 +135,7 @@ def test_write_synthetic_files_and_calls_bundle(tmp_path: Path) -> None:
         assert isinstance(loaded, list) and len(loaded) > 0
 
     bundle = load_calls_bundle(data_dir=DATA_DIR)
-    assert len(bundle) == 50
+    assert len(bundle) == 100
     assert bundle[0]["call_id"] == "call_001"
 
 
@@ -181,4 +181,4 @@ def test_readme_counts_match_generated_and_saved_files() -> None:
     # Çağrılar: "50 sahte telefon görüşmesi"
     calls_match = re.search(r"(\d+)\s+sahte telefon görüşmesi", readme_text)
     assert calls_match is not None
-    assert int(calls_match.group(1)) == len(bundle) == 50
+    assert int(calls_match.group(1)) == len(bundle) == 100

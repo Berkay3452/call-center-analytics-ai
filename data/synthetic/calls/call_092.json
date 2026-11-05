@@ -1,0 +1,65 @@
+{
+  "call_id": "call_092",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta iklimlendirme ve marin mühendislik, iyi günler. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Göcek D-Marin'de bağlı Azimut 55 teknemiz Ufuk için arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Selin Hanım merhaba, nasıl bir klima projesi düşünüyorsunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Salondaki mevcut klima sıcak yaz aylarında yetersiz kalıyor. Koltuk altına ilave on altı bin BTU bağımsız bir klima ünitesi koydurmak istiyoruz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Dometic veya Webasto self-contained kompakt marin üniteler bu tür ilaveler için çok uygundur."
+    },
+    {
+      "speaker": "customer",
+      "text": "Deniz suyu hattı ve elektrik panosundan yeni hat çekilmesi gerekecek değil mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, gövdeden ilave kinistin vanası veya mevcut pompanın kapasite artırımı ve ayrı sigorta hattı gerekir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Göcek D-Marin için cihaz, montaj ve kanal işçiliği dahil bir teklif hazırlayabilir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Detaylı parça ve işçilik dökümünü içeren teklif formunu sistemdeki e-postanıza da iletiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, gelen kutumu ve spam klasörünü kontrol ederim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teklifimiz onaylandığı takdirde marinadaki palamar ve çekek planlamasını da biz koordine ediyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bunu öğrendiğim iyi oldu, koordinasyon kolaylaşır."
+    },
+    {
+      "speaker": "rep",
+      "text": "Pazartesi gününe kadar mühendislik hesabını yapıp detaylı teklifimizi e-postanıza sunalım Selin Hanım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Harika, teklifi bekliyorum o halde."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dileriz Selin Hanım, teşekkürler."
+    }
+  ]
+}

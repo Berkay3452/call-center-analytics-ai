@@ -1,0 +1,65 @@
+{
+  "call_id": "call_074",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta marin iklimlendirme servisi, merhaba. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Günaydın, Göcek D-Marin'de bağlı Azimut 55 teknemiz Ufuk için arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Selin Hanım günaydın, nasıl yardımcı olabiliriz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Master kabindeki klima ünitesinden ahşap tavan kaplamasının arkasından damla damla su sızıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yoğuşma tavasının tahliye hortumu yosun veya tozdan tıkanmış olabilir Selin Hanım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Klimayı kapattım şimdilik ahşap şişmesin diye ama kabin çok havasız kalıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Drenaj hattının basınçlı hava ile açılması ve tavaya antibakteriyel tablet bırakılması gerekir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Göcek D-Marin'e ne zaman bir usta gönderebilirsiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Bugün öğleden sonra saat iki buçukta iklimlendirme teknisyenimiz teknenize gelebilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "İki buçuk harika olur, lütfen randevuyu oluşturun."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza iletmek üzere teknenin ponton numarasını ve anahtar durumunu teyit edebilir miyiz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknedeyim ben, ponton girişinde ekibinizi karşılayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Randevunuzu oluşturdum Selin Hanım, teknisyenimiz gelmeden arayacaktır."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok teşekkürler, iyi çalışmalar."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz, iyi günler dileriz."
+    }
+  ]
+}

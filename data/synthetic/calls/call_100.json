@@ -1,0 +1,65 @@
+{
+  "call_id": "call_100",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta marin elektrik servisi, iyi akşamlar dilerim. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi akşamlar, Göcek D-Marin'de bağlı Fora katamaranımız için arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Mübetcel Hanım iyi akşamlar, Fora'da nasıl bir elektriksel arıza oluştu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Bimini tentesinin üzerindeki güneş panellerinin altından koku geldi, baktık bağlantı soketi kömür gibi yanmış ve şarj sıfıra düşmüş."
+    },
+    {
+      "speaker": "rep",
+      "text": "MC4 konnektörlerinde gevşek temas olunca yüksek amper ark yapıp soketi yakar Mübetcel Hanım. Panel yüzeyinde yanık izi var mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Paneller temiz görünüyor, sadece kablo birleşim yerindeki siyah plastik erimiş."
+    },
+    {
+      "speaker": "rep",
+      "text": "Konnektörlerin kesilip yüksek kaliteli marin soketlerle yenilenmesi ve panel bypass diyotlarının ölçülmesi gerekir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Göcek D-Marin'e yarın gün içinde gelebilir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yarın pazar günü saat on bir için elektrik teknisyenimizi yönlendirebiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Saat on bir çok uygundur, randevuyu oluşturalım lütfen."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza iletmek üzere teknenin ponton numarasını ve anahtar durumunu teyit edebilir miyiz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknedeyim ben, ponton girişinde ekibinizi karşılayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Pazar saat on bire randevunuz oluşturuldu Mübetcel Hanım. Yüzüncü kaydımızı da başarıyla tamamladık, geçmiş olsun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Harika, elinize sağlık. Yarın görüşürüz."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi akşamlar dileriz Mübetcel Hanım."
+    }
+  ]
+}

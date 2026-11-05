@@ -1,0 +1,18 @@
+{
+  "call_id": "call_059",
+  "call_type": "teklif",
+  "crm": {
+    "request_category": "su_sihhi_tesisat",
+    "location": "Göcek D-Marin",
+    "problem": "Su yapıcı membranlarının kimyasal kışlama ve yıkama işlemi teklif talebi",
+    "service_mode": "yerinde_servis",
+    "urgency": "dusuk",
+    "potential_job": "Schenker su yapıcı membran koruma kimyasalı basılması ve filtre değişimi",
+    "next_action": "teklif_hazirla"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "rakip"
+  },
+  "notes": "Göcek D-Marin Yıldız teknesi su yapıcı bakımı; yetkili distribütör servisi tercih edildi."
+}

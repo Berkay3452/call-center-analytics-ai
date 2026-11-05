@@ -1,0 +1,69 @@
+{
+  "call_id": "call_085",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta teknik servis, merhaba. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, İstinye Tekne Park'ta Yıldırım teknesi için arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hasgül Bey merhaba, elektrikle ilgili bir tehlike mi var?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Sahil elektriğini bağladığımız otuz iki amperlik giriş soketi aşırı ısınmış, plastik gövdesi erimiş ve koku yapıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hemen sahil fişini marinadaki besleme panosundan çekin lütfen, yangın riski oluşturabilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çektim fişi hemen. İçerideki klemensler de kararmış görünüyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Marin soketin ve iç kablo pabuçlarının yüksek akıma dayanıklı yenileriyle değiştirilmesi şart."
+    },
+    {
+      "speaker": "customer",
+      "text": "İstinye Tekne Park'a bugün gelebilecek teknisyeniniz var mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Bugün saat on altıda elektrik ustamızı marinaya yönlendirebilirim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok iyi olur, teknede elektriksiz kaldık çünkü. Saat dörtte bekliyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza iletmek üzere teknenin ponton numarasını ve anahtar durumunu teyit edebilir miyiz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknedeyim ben, ponton girişinde ekibinizi karşılayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Servis sonrası yapılan testleri ve değişen parçaları fotoğraflı servis formuyla bilginize sunacağız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok memnun olurum, detaylı kayıt tutulması iyi olur."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamız marin soket takımıyla saat dörtte teknenizde olacak. Randevunuzu kaydettim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler Hasgül Bey, geçmiş olsun."
+    }
+  ]
+}

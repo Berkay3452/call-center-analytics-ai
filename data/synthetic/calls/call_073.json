@@ -1,0 +1,65 @@
+{
+  "call_id": "call_073",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta acil müdahale hattı, ben [İSİM], dinliyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Alo, merhaba! Çeşme Marina açıklarındayız, marinaya girmek üzereyiz ama sancak motor durdu marş basmıyor!"
+    },
+    {
+      "speaker": "rep",
+      "text": "Deniz Bey sakin olun, tek motorla manevra yapabiliyor musunuz marinaya girmek için?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, iskele motor çalışıyor ama rüzgar sert, marinaya bağlandıktan sonra hemen ustanın bakması lazım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kontak açıldığında göstergede arıza lambası yanıyor mu veya bip sesi veriyor mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Hiç tepki yok kontağa, yakıt pompasının sesi de gelmiyor, tamamen elektrik kesmiş gibi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Motor kapağının altındaki elli amperlik ana bıçak sigorta atmış olabilir veya emniyet mandalı yerinden çıkmıştır."
+    },
+    {
+      "speaker": "customer",
+      "text": "Emniyet mandalını kontrol ettim takılı. Çeşme Marina'ya on dakikaya palamara yanaşıyoruz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Çeşme Marina ofisimizdeki nöbetçi marin elektrik ustamıza konumu verdim, pontonunuza geçiyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok sağ olun, C pontonu 8 numaraya bağlıyoruz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza iletmek üzere teknenin ponton numarasını ve anahtar durumunu teyit edebilir miyiz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknedeyim ben, ponton girişinde ekibinizi karşılayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamız alet çantasıyla pontonda sizi bekleyecek Deniz Bey, emniyetle yanaşın lütfen."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, görüşmek üzere."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler Deniz Bey, geçmiş olsun."
+    }
+  ]
+}

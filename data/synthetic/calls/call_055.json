@@ -1,0 +1,65 @@
+{
+  "call_id": "call_055",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta teknik destek hattı, iyi günler. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Yalıkavak Marina'dayım. Martı katamaranımızın güneş enerjisi sisteminde arıza var."
+    },
+    {
+      "speaker": "rep",
+      "text": "Merhaba Deniz Bey, sistemde tam olarak nasıl bir belirti var?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Victron MPPT regülatör öğlen saatlerinde el değmeyecek kadar ısınıyor ve Error 38 verip şarjı kesiyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Panel voltajı veya akü bağlantı terminallerinde gevşeklik olabilir ya da dahili soğutucu blok arızalıdır."
+    },
+    {
+      "speaker": "customer",
+      "text": "Cihazın değişmesi gerekebilir mi sizce?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, iç devre hasar gördüyse yenilemek gerekir. Yalıkavak Marina'ya teknisyen gönderip ölçüm yapabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Önce regülatör değişimi ve servis için bana bir fiyat teklifi yollayabilir misiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii ki, Victron SmartSolar yüz bölü elli modeli için malzeme ve montaj teklifini hemen hazırlayıp atıyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teklifi inceleyip kaptanla görüşeceğim, ona göre onay veririm."
+    },
+    {
+      "speaker": "rep",
+      "text": "Detaylı parça ve işçilik dökümünü içeren teklif formunu sistemdeki e-postanıza da iletiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, gelen kutumu ve spam klasörünü kontrol ederim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teklifinizi WhatsApp ve e-posta üzerinden ilettim Deniz Bey."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, dönüş yapacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dileriz."
+    }
+  ]
+}

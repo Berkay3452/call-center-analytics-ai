@@ -1,0 +1,18 @@
+{
+  "call_id": "call_060",
+  "call_type": "bilgi",
+  "crm": {
+    "request_category": "diger",
+    "location": "Bodrum Milta Marina",
+    "problem": "Kışın teknede olunmayan dönemde haftalık kontrol ve motor ısıtma hizmeti sorgusu",
+    "service_mode": null,
+    "urgency": "dusuk",
+    "potential_job": "Kışlık tekne gözetim ve havalandırma paketi bilgilendirmesi",
+    "next_action": "bilgi_ver"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Bodrum Milta Marina Akdeniz teknesi için kış kontrol hizmeti danışıldı; şartname gönderildi."
+}

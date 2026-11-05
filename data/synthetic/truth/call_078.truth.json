@@ -1,0 +1,18 @@
+{
+  "call_id": "call_078",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "mekanik_hidrolik",
+    "location": "Bodrum Milta Marina",
+    "problem": "Baş pervane hidrolik hortum rekorundan yağ sızıntısı",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": "Hidrolik rekor sıkılması veya hortum değişimi",
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "diger"
+  },
+  "notes": "Bodrum Milta Marina Akdeniz teknesi; müşteri tekneyi bu hafta devredeceğini belirterek servisi iptal etti."
+}

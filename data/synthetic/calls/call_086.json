@@ -1,0 +1,65 @@
+{
+  "call_id": "call_086",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta donanım servisi, iyi günler. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Göcek D-Marin'de bağlı Fora katamaranımız için arıyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Mübetcel Hanım merhaba, nasıl yardımcı olabiliriz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Ana yelken tramola arabasının içindeki bilyalar dökülmüş, araba rayda kilitleniyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Torlon bilyaların komple sökülüp kanalın temizlenerek yeniden dizilmesi gerekir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Sadece bilya değişimi ve işçilik ne kadar tutar sizde?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Orijinal Torlon bilya seti ve araba sökme takma işçiliği dahil dört bin sekiz yüz lira tutar."
+    },
+    {
+      "speaker": "customer",
+      "text": "Dört bin sekiz yüz lira sadece bilya dizmek için bana çok pahalı geldi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Dilerseniz ilerleyen dönemde parça tedariği veya teknik danışmanlık konusunda her zaman yardımcı olabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, ihtiyaç olursa aklımda bulunsun."
+    },
+    {
+      "speaker": "rep",
+      "text": "Farklı bir konuda danışmak istediğiniz bir husus var mıydı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Şimdilik yok, teşekkür ederim ilginize."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rayın hassas toleransla temizlenip torklanması güvenlik açısından kritik önem taşır Mübetcel Hanım."
+    },
+    {
+      "speaker": "customer",
+      "text": "İnternetten bilyaları sipariş edip eşimle kendimiz takacağız, bu fiyata gerek yok. Kolay gelsin."
+    },
+    {
+      "speaker": "rep",
+      "text": "Siz bilirsiniz Mübetcel Hanım, iyi günler dileriz."
+    }
+  ]
+}

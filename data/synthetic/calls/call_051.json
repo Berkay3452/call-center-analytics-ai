@@ -1,0 +1,73 @@
+{
+  "call_id": "call_051",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta çağrı merkezi, iyi günler dilerim. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Alo, merhaba! Tuzla Marina'dan arıyorum, teknemde çok acil bir durum var."
+    },
+    {
+      "speaker": "rep",
+      "text": "Sakin olun lütfen, hemen yardımcı olalım. Teknenizin adı nedir?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yakamoz, Beneteau Swift Trawler 41. Sintinede su yükseliyor!"
+    },
+    {
+      "speaker": "rep",
+      "text": "Şu an sintine pompası çalışıyor mu, ses geliyor mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Pompanın otomatiği takılı kalmış, motor vızıldıyor ama suyu dışarı basmıyor. Su neredeyse akü seviyesine geldi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Manuel şalteri açmayı denediniz mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Açtım ama sigortayı attırıyor hemen, kısa devre yapıyor sanırım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anladım. Marina görevlilerine haber verdiniz mi, seyyar dalgıç pompa var mı yakında?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Marina personeli şimdi geldi ama elektrikçi ve sintine ustası lazım acil."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tuzla Marina içinde şu anda bir ekibimiz var. Hemen nöbetçi ustamızı sizin pontona yönlendiriyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok iyi olur, B pontonu 14 numaradayım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza konumu ve tekne adını iletiyorum, en geç on beş dakika içinde yanınızda olacak."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki ücreti ne şekilde yapıyoruz acil servis için?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Acil çağrı başlangıç bedelimiz iki bin lira, yedek parça ve işçilik ayrıca hesaplanır."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, hiç önemli değil, yeter ki usta hemen gelsin."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ekibimiz hareket etti, lütfen sintineye elektrik vermeyin. Geçmiş olsun."
+    }
+  ]
+}

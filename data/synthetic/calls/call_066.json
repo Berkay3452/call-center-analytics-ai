@@ -1,0 +1,65 @@
+{
+  "call_id": "call_066",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta çağrı merkezi, iyi günler. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Çeşme Marina'da İmbat teknesi için arıyorum ama biraz sitemkarım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Buyrun Temime Hanım, siteminizin sebebi nedir, yardımcı olalım?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Salı günü cenova furling arızası için arayıp usta talebi bırakmıştım, geri döneceğiz dediniz ama kimse aramadı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kayıtlarımıza bakıyorum hemen... Evet, yoğunluk sebebiyle arama sırası sarkmış görünüyor, çok özür dileriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Yarışımız var bu hafta sonu, ben üç gün sizden haber bekleyemezdim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Haklısınız Temime Hanım, gecikme için samimiyetle özür dileriz. Furling tamburuna hemen bugün ekip yönlendirebiliriz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Gerek kalmadı, Çeşme Marina'daki armacı ustayı çağırdım dün söktü bilyaları değiştirdi bile."
+    },
+    {
+      "speaker": "rep",
+      "text": "Dilerseniz ilerleyen dönemde parça tedariği veya teknik danışmanlık konusunda her zaman yardımcı olabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, ihtiyaç olursa aklımda bulunsun."
+    },
+    {
+      "speaker": "rep",
+      "text": "Farklı bir konuda danışmak istediğiniz bir husus var mıydı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Şimdilik yok, teşekkür ederim ilginize."
+    },
+    {
+      "speaker": "rep",
+      "text": "Süreçteki aksaklık adına gerçekten üzgünüz, şikayetinizi kalite birimimize iletiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Lütfen iletin, acil işlerde müşteriye aynı gün dönülmesi gerekir. Kolay gelsin."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geri bildiriminiz için teşekkür ederiz Temime Hanım, iyi yarışlar dileriz."
+    }
+  ]
+}

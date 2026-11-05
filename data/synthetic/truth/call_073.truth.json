@@ -1,0 +1,18 @@
+{
+  "call_id": "call_073",
+  "call_type": "acil",
+  "crm": {
+    "request_category": "makine",
+    "location": "Çeşme Marina",
+    "problem": "Sancak dıştan takma Mercury motor marş basmıyor, ana sigorta attırmış",
+    "service_mode": "yerinde_servis",
+    "urgency": "acil",
+    "potential_job": "Acil motor elektrik besleme rölesi ve ana marş sigortası değişimi",
+    "next_action": "usta_ata"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Çeşme Marina Zıpkın teknesinde motor marş basmama acil arızası; nöbetçi elektrikçi sevk edildi."
+}

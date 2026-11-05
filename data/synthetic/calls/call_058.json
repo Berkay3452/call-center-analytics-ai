@@ -1,0 +1,65 @@
+{
+  "call_id": "call_058",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta çağrı merkezi, merhaba. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Pendik Marinturk Marina'dan arıyorum. Yelkovan isimli teknemiz için."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ahmet Bey merhaba, arıza belirtilerini aktarabilir misiniz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Racor yakıt filtresinin alt haznesinde su birikmiş, gösterge paneli de su uyarısı veriyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Motor devrinde düşme veya tekleme hissettiniz mi seyir esnasında?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, bin beş yüz deviri geçince hafif silkeleme yapıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Filtre haznesindeki su tahliye edilip filtre elemanının acilen değişmesi gerekir, enjektörlere su gitmemeli."
+    },
+    {
+      "speaker": "customer",
+      "text": "Kesinlikle. Pendik Marinturk Marina'ya ne zaman gelebilirsiniz?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yarın öğleden önce saat on birde uygun teknisyenimiz var."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok iyi, yarın saat on birde teknedeyim ben de."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza iletmek üzere teknenin ponton numarasını ve anahtar durumunu teyit edebilir miyiz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknedeyim ben, ponton girişinde ekibinizi karşılayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Racor yedek kartuş filtreleri ve servis takımımızla geleceğiz. Randevunuzu açıyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, görüşmek üzere."
+    },
+    {
+      "speaker": "rep",
+      "text": "Görüşmek üzere Ahmet Bey, iyi günler."
+    }
+  ]
+}

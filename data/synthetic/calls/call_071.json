@@ -1,0 +1,69 @@
+{
+  "call_id": "call_071",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta çağrı merkezi, günaydın. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Günaydın, Ataköy Marina'dan Mehmet Deniz ben. Elan 45 teknemiz Pusula ile ilgili danışmak istedim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Mehmet Bey günaydın, Pusula'daki durum nedir?"
+    },
+    {
+      "speaker": "customer",
+      "text": "İskele taraftaki dümen dolabında neredeyse çeyrek tur boşluk oluştu, sancak dümen ise normal tepki veriyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Muhtemelen kuadrana giden çelik tel halat lif atmış ya da ayar liftini gevşemiş."
+    },
+    {
+      "speaker": "customer",
+      "text": "Kendimiz tornavidayla sıkabilir miyiz yoksa kuadran ayarı özel takım mı ister?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Kuadran senkronizasyonu her iki dümenin eşit açıda basması için hassas gergi torku gerektirir, ustanın bakması çok daha güvenlidir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ataköy Marina'da ne zaman müsaitsiniz, bir de yaklaşık maliyeti ne olur?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Teknik şefimiz Ataköy bölgesindeki iş programını kontrol edip yarım saat içinde sizi geri arasın, hem net saat hem fiyat versin."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, telefonum açık, teknik şefinizin aramasını bekliyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Detaylı parça ve işçilik dökümünü içeren teklif formunu sistemdeki e-postanıza da iletiyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamamdır, gelen kutumu ve spam klasörünü kontrol ederim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teklifimiz onaylandığı takdirde marinadaki palamar ve çekek planlamasını da biz koordine ediyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bunu öğrendiğim iyi oldu, koordinasyon kolaylaşır."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hemen notu iletiyorum Mehmet Bey, iyi günler dilerim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler, iyi günler."
+    }
+  ]
+}

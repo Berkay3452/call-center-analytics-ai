@@ -1,0 +1,18 @@
+{
+  "call_id": "call_058",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "makine",
+    "location": "Pendik Marinturk Marina",
+    "problem": "Racor ön filtreden su ikazı geldi, ana motor yüksek devirde silkeleme yapıyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "yuksek",
+    "potential_job": "Racor filtre su tahliyesi, filtre elemanı değişimi ve yakıt hattı havasının alınması",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Pendik Marinturk Marina Yelkovan teknesi yakıt sistemi bakımı için randevu kaydedildi."
+}

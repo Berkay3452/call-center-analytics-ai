@@ -1,0 +1,18 @@
+{
+  "call_id": "call_054",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "makine",
+    "location": "Kalamış Marina",
+    "problem": "Jeneratör on dakika çalıştıktan sonra hararet ikazı verip duruyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "yuksek",
+    "potential_job": "Jeneratör deniz suyu devridaim impellere ve kondenser temizliği",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Kalamış Marina Lodos teknesi jeneratör hararet arızası için randevu teyit edildi."
+}

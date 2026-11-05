@@ -1,0 +1,18 @@
+{
+  "call_id": "call_096",
+  "call_type": "bilgi",
+  "crm": {
+    "request_category": "tekne_guvenligi",
+    "location": "Bodrum Milta Marina",
+    "problem": "Otomatik şişen can yeleklerinin CO2 tüp gramaj ve tuz tableti son kullanma tarihi kontrolü danışması",
+    "service_mode": null,
+    "urgency": "dusuk",
+    "potential_job": "Şişme can yelekleri ve güvenlik ekipmanları servis bilgilendirmesi",
+    "next_action": "bilgi_ver"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "Bodrum Milta Marina Akdeniz teknesi için can yelekleri kiti kontrol bilgisi paylaşıldı."
+}

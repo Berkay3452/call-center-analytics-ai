@@ -1,0 +1,69 @@
+{
+  "call_id": "call_094",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta marin elektrik ve enerji sistemleri, merhaba. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Kalamış Marina'da bağlı Poyraz motoryatımız için lityum akü teklifinizi görüşecektim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ahmet Bey merhaba, gönderdiğimiz dört yüz amper saatlik lityum sistemi teklifini inceleme fırsatınız oldu mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet inceledim fakat marina içindeki komşu marin elektronik firması aynı Victron sistemi için yüzde yirmi daha düşük fiyat verdi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Bizim teklifimizde orijinal yanmaz marin kablolama, DC-DC akıllı şarjörler ve iki yıl yerinde servis garantisi dahildir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Onlar da iki yıl distribütör garantisi sunuyor ve montajı yarın başlatabileceklerini söylediler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum Ahmet Bey, fiyat ve takvim konusunda tercih sizin elbette."
+    },
+    {
+      "speaker": "customer",
+      "text": "Fiyat farkı oldukça belirgin olduğu için onlarla ilerlemeye karar verdim. Yine de teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Dilerseniz ilerleyen dönemde parça tedariği veya teknik danışmanlık konusunda her zaman yardımcı olabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, ihtiyaç olursa aklımda bulunsun."
+    },
+    {
+      "speaker": "rep",
+      "text": "Farklı bir konuda danışmak istediğiniz bir husus var mıydı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Şimdilik yok, teşekkür ederim ilginize."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza iletmek üzere teknenin ponton numarasını ve anahtar durumunu teyit edebilir miyiz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknedeyim ben, ponton girişinde ekibinizi karşılayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz Ahmet Bey, hayırlı olsun şimdiden."
+    },
+    {
+      "speaker": "customer",
+      "text": "Sağ olun, iyi günler."
+    }
+  ]
+}

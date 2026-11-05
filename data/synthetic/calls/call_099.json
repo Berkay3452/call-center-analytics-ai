@@ -1,0 +1,65 @@
+{
+  "call_id": "call_099",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta dizel makine servisi, iyi akşamlar. Ben [İSİM]."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi akşamlar, İstinye Tekne Park'tan Hasgül Çorlu ben. Yıldırım motoryatımızın iskele motorunda arıza var."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hasgül Bey iyi akşamlar, motordaki belirti nedir?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Boğazda seyre çıktık, iki bin devirden sonra motor gaz yemiyor, turbo ıslık sesi gelmiyor ve arkadan siyah duman basıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Turbo wastegate valfi takılı kalmış olabilir veya intercooler hava hortumu patlamış, hava emişi eksik kaldığı için yakıt yanmıyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Motor kendini korumaya alıyor gibi hissettim ben de."
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, hava basıncı düşüklüğünden korumaya geçmiştir. İstinye Tekne Park'a pazartesi sabah makine ustamızı yönlendirelim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Pazartesi sabah saat dokuz buçuk olsun lütfen."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamıza iletmek üzere teknenin ponton numarasını ve anahtar durumunu teyit edebilir miyiz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teknedeyim ben, ponton girişinde ekibinizi karşılayacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Servis sonrası yapılan testleri ve değişen parçaları fotoğraflı servis formuyla bilginize sunacağız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok memnun olurum, detaylı kayıt tutulması iyi olur."
+    },
+    {
+      "speaker": "rep",
+      "text": "Pazartesi sabah dokuz buçuğa randevunuzu kaydettim Hasgül Bey."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok teşekkürler, pazartesi görüşürüz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geçmiş olsun Hasgül Bey, iyi akşamlar."
+    }
+  ]
+}

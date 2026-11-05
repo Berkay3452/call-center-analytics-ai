@@ -1,0 +1,18 @@
+{
+  "call_id": "call_090",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "makine",
+    "location": "Kalamış Marina",
+    "problem": "Volvo Penta çift motor yüz saatlik periyodik yağ ve filtre bakım talebi",
+    "service_mode": "yerinde_servis",
+    "urgency": "normal",
+    "potential_job": "Motor yağları, yağ filtreleri, yakıt filtreleri ve karter tapaları değişimi",
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "takvim"
+  },
+  "notes": "Kalamış Marina Lodos teknesi motor bakımı; cumartesi günü için usta müsaitliği olmadığı için müşteri başka servise yöneldi."
+}

@@ -1,0 +1,18 @@
+{
+  "call_id": "call_070",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "su_sihhi_tesisat",
+    "location": "Göcek D-Marin",
+    "problem": "Hidrofor basınç şalteri takılı kaldı, pompa durmadan çalışıp su borusunu patlattı",
+    "service_mode": "yerinde_servis",
+    "urgency": "yuksek",
+    "potential_job": "Acil hidrofor basınç şalteri değişimi ve patlayan sıcak su hortumu onarımı",
+    "next_action": "usta_ata"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Göcek D-Marin Albatros teknesi hidrofor arızası için acil teknisyen sevk edildi."
+}
