@@ -209,8 +209,6 @@ export interface CallDetail {
 // CRM önerileri — GET /crm
 // ---------------------------------------------------------------------------
 export interface CrmRecordItem {
-  customer_id?: string | null;
-  boat_id?: string | null;
   call_id: string;
   started_at: IsoDateTime;
   customer_name: string | null;
