@@ -127,7 +127,7 @@ export function CrmSuggestionCard({
   );
 
   const [manualMatch, setManualMatch] = useState<boolean | null>(null);
-  const isMatched = manualMatch ?? Boolean(suggestion.customerId && suggestion.boatId);
+  const isMatched = manualMatch ?? Boolean(suggestion.matchMethod && suggestion.matchMethod !== "yok");
   const [matchedCustomerName, setMatchedCustomerName] = useState<string | null>(
     suggestion.matchedCustomerName ?? null,
   );

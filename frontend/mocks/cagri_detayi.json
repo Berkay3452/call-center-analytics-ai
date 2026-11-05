@@ -20,52 +20,38 @@
     "segments": [
       {
         "index": 0,
-        "speaker": "firma",
+        "speaker": "rep",
         "start_ms": 0,
         "end_ms": 4000,
         "text": "Miço Usta, buyurun."
       },
       {
         "index": 1,
-        "speaker": "firma",
-        "start_ms": 4000,
-        "end_ms": 4500,
-        "text": "Size nasıl yardımcı olabiliriz?"
-      },
-      {
-        "index": 2,
-        "speaker": "musteri",
+        "speaker": "customer",
         "start_ms": 4500,
         "end_ms": 8500,
         "text": "Merhaba, Tuzla Marina'da teknem var. Motor çalışıyor ama gaz verdiğimde devir yükselmiyor."
       },
       {
-        "index": 3,
-        "speaker": "firma",
+        "index": 2,
+        "speaker": "rep",
         "start_ms": 9000,
         "end_ms": 13000,
         "text": "Geçmiş olsun. Teknenin adını alabilir miyim?"
       },
       {
-        "index": 4,
-        "speaker": "musteri",
+        "index": 3,
+        "speaker": "customer",
         "start_ms": 13500,
         "end_ms": 17500,
         "text": "Rüzgar. Yarın bir usta gelebilir mi?"
       },
       {
-        "index": 5,
-        "speaker": "firma",
+        "index": 4,
+        "speaker": "rep",
         "start_ms": 18000,
         "end_ms": 22000,
         "text": "Usta uygunluğuna bakıp sizi bilgilendireceğiz."
-      },
-      {
-        "index": 6,
-        "speaker": "unknown",
-        "start_ms": 22000,
-        "end_ms": 23000,
-        "text": "[Anlaşılamayan konuşma]"
       }
     ]
   },
