@@ -234,7 +234,7 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
   // ──────────────────────────────────────────────────────────────────────────
   // Senaryo 4c: Servis Emirleri kart listesi (#173)
   // ──────────────────────────────────────────────────────────────────────────
-  test("Senaryo 4c (Servis Emirleri): kartlar, durum sekmeleri, marina filtresi, kaynak çağrı ve durum ilerletme", async ({
+  test("Senaryo 4c (Servis Emirleri): kartlar, durum sekmeleri, marina filtresi, detay bağlantıları ve durum ilerletme", async ({
     page,
   }) => {
     await page.goto("/admin/service-orders");
@@ -244,7 +244,7 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
     const cards = page.locator("ul > li").filter({ has: page.getByRole("button", { name: "Detay" }) });
     const first = cards.first();
     await expect(first.getByRole("heading")).toContainText("—");
-    await expect(first.getByRole("link", { name: "Kaynak çağrı" })).toHaveAttribute("href", /\/admin\/calls\//);
+    await expect(first.getByRole("link", { name: "Kaynak çağrı" })).toHaveCount(0);
 
     // Durum ilerletme: rozet değişir
     const advance = first.getByRole("button", { name: /→/ });
@@ -255,6 +255,8 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
     // Detay penceresi açılır ve Escape ile kapanır
     await first.getByRole("button", { name: "Detay" }).click();
     await expect(page.getByRole("dialog")).toBeVisible();
+    await expect(page.getByRole("dialog").getByRole("link", { name: /Çağrıyı Aç/i })).toHaveAttribute("href", /\/admin\/calls\//);
+    await expect(page.getByRole("dialog").getByRole("link", { name: /CRM Önerisine Git/i })).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(page.getByRole("dialog")).not.toBeVisible();
 
@@ -609,4 +611,37 @@ test("Issue #207: CRM grid, tarih sınırları, 10 kayıt ve Çağrıyı gör bu
   await expect(view).toHaveClass(/focus-visible:ring-2/);
   await view.click();
   await expect(page).toHaveURL(/\/admin\/calls\/[a-zA-Z0-9-]+$/);
+});
+
+
+test("Issue #210: gereksiz bağlantılar yok, 10 kayıt ve durum düğmelerinde etkileşim stilleri", async ({ page }) => {
+  test.skip(process.env.NEXT_PUBLIC_USE_MOCKS === "false", "Sabit mock servis geçmişi gerektirir.");
+  await page.goto("/admin/service-orders");
+  await expect(page.getByRole("link", { name: "CRM önerilerine git", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Kaynak çağrı", exact: true })).toHaveCount(0);
+  const cards = page.locator("ul > li").filter({ has: page.getByRole("button", { name: "Detay", exact: true }) });
+  const pagination = page.getByRole("navigation", { name: "Sayfalama", exact: true });
+  await expect(cards).toHaveCount(10);
+  await expect(pagination).toContainText(/Toplam \d+ kayıttan 1-10/);
+  await expect(pagination.getByRole("button", { name: "Önceki sayfaya git" })).toBeDisabled();
+  const advance = cards.first().getByRole("button", { name: /→/ });
+  await expect(advance).toHaveCSS("cursor", "pointer");
+  const background = await advance.evaluate((element) => getComputedStyle(element).backgroundColor);
+  await advance.hover();
+  await expect(advance).not.toHaveCSS("background-color", background);
+  await advance.focus();
+  await expect(advance).toBeFocused();
+  await expect(advance).toHaveClass(/focus-visible:ring-2/);
+  await expect(cards.first().getByTestId("service-order-status")).toHaveCSS("cursor", "default");
+  await pagination.getByRole("button", { name: "Sonraki sayfaya git" }).click();
+  await expect(page).toHaveURL(/page=2/);
+  await page.reload();
+  await expect(pagination.getByRole("button", { name: "Sayfa 2", exact: true })).toHaveAttribute("aria-current", "page");
+  await expect(pagination.getByRole("button", { name: "Sonraki sayfaya git" })).toBeDisabled();
+  await pagination.getByRole("button", { name: "Önceki sayfaya git" }).click();
+  await expect(cards).toHaveCount(10);
+  await cards.first().getByRole("button", { name: "Detay", exact: true }).click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog.getByRole("link", { name: /Çağrıyı Aç/i })).toBeVisible();
+  await expect(dialog.getByRole("link", { name: /CRM Önerisine Git/i })).toBeVisible();
 });

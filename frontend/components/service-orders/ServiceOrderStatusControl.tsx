@@ -63,7 +63,7 @@ export function ServiceOrderStatusControl({
   return (
     <div className={`space-y-2 ${className}`}>
       {nextStatus && nextActionLabel ? (
-        <Button size={compact ? "sm" : "md"} disabled={isLoading} onClick={() => handleAdvanceStatus(nextStatus)}>
+        <Button className="cursor-pointer hover:bg-brand-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2" size={compact ? "sm" : "md"} disabled={isLoading} onClick={() => handleAdvanceStatus(nextStatus)}>
           {isLoading ? "Güncelleniyor…" : `${nextActionLabel} → ${SERVICE_ORDER_STATUS_LABELS[nextStatus]}`}
         </Button>
       ) : (

@@ -333,6 +333,14 @@ const mockServiceOrdersStore: ServiceOrderDetail[] = [
       crm_reviewed_at: "2026-10-11T09:15:00Z",
     },
   },
+  // İkinci sayfayı da kapsayan deterministik servis geçmişi.
+  ...Array.from({ length: 6 }, (_, index): ServiceOrderDetail => ({
+    ...(mockServiceOrderDetail as unknown as ServiceOrderDetail),
+    id: `21000000-0000-4000-8000-${String(index + 1).padStart(12, "0")}`,
+    status: "tamamlandi",
+    description: `Periyodik bakım ve kontrol kaydı ${index + 1}`,
+    completed_at: "2026-10-15T15:00:00Z",
+  })),
 ];
 
 
@@ -2052,7 +2060,7 @@ export async function getServiceOrders(
 ): Promise<Page<ServiceOrderListItem>> {
   return apiFetch<Page<ServiceOrderListItem>>("/service-orders", {
     method: "GET",
-    params: filters as Record<string, string | number | boolean | null | undefined>,
+    params: { ...filters, page_size: filters?.page_size ?? 10, limit: filters?.page_size ?? 10 },
   });
 }
 

@@ -23,7 +23,7 @@ export function ServiceOrderStatusBadge({
 
   return (
     <span
-      className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${badgeCls} ${className}`}
+      className={`cursor-default inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium ${badgeCls} ${className}`}
     >
       {label}
     </span>
