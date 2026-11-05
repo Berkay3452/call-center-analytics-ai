@@ -5,9 +5,9 @@ export const MAX_PAGE_SIZE = 100;
 export const DEFAULT_PAGE_SIZE = 20;
 
 /** `?page_size=` değerini 1..MAX_PAGE_SIZE aralığına sıkıştırır; geçersizse varsayılan. */
-export function clampPageSize(raw: string | undefined): number {
+export function clampPageSize(raw: string | undefined, defaultSize = DEFAULT_PAGE_SIZE): number {
   const n = Number(raw);
-  if (!Number.isFinite(n) || n < 1) return DEFAULT_PAGE_SIZE;
+  if (!Number.isFinite(n) || n < 1) return defaultSize;
   return Math.min(Math.floor(n), MAX_PAGE_SIZE);
 }
 

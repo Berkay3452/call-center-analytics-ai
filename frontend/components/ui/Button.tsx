@@ -1,11 +1,12 @@
 import type { ButtonHTMLAttributes } from "react";
 import { cn } from "./cn";
 
-export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
+export type ButtonVariant = "primary" | "accent" | "secondary" | "ghost" | "danger";
 export type ButtonSize = "sm" | "md";
 
 const VARIANTS: Record<ButtonVariant, string> = {
   primary: "bg-brand-700 text-white hover:bg-brand-800 border border-transparent",
+  accent: "bg-brand-50 text-brand-800 border border-brand-300 hover:bg-brand-100",
   secondary: "bg-white text-brand-700 border border-slate-300 hover:bg-slate-50",
   ghost: "bg-transparent text-slate-600 border border-transparent hover:bg-slate-100",
   danger: "bg-red-600 text-white hover:bg-red-700 border border-transparent",

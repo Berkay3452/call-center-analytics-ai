@@ -511,3 +511,48 @@ test("Issue #204: müşteri sağda, Miço Usta solda; balonlarda süre yok", asy
     }
   }
 });
+
+
+test("Issue #203: 10 kayıt, kalıcı filtreler, duyarlı grid ve belirgin Detay butonu", async ({ page }) => {
+  test.skip(process.env.NEXT_PUBLIC_USE_MOCKS === "false", "Sabit mock çağrı listesi gerektirir.");
+  await page.goto("/admin/calls");
+  const rows = page.locator("table tbody tr");
+  const filters = page.getByRole("search", { name: "Çağrı filtreleri" });
+  const pagination = page.getByRole("navigation", { name: "Sayfalama", exact: true });
+  await expect(rows).toHaveCount(10);
+  await expect(pagination).toContainText(/Toplam \d+ kayıttan 1-10/);
+  await expect(pagination.getByRole("button", { name: "Önceki sayfaya git" })).toBeDisabled();
+  const firstCustomer = await rows.first().innerText();
+  await pagination.getByRole("button", { name: "Sayfa 2", exact: true }).click();
+  await expect(page).toHaveURL(/page=2/);
+  await expect(rows.first()).not.toHaveText(firstCustomer);
+  await page.reload();
+  await expect(pagination.getByRole("button", { name: "Sayfa 2", exact: true })).toHaveAttribute("aria-current", "page");
+  await expect(rows).toHaveCount(10);
+  await filters.getByLabel("Marina filtresi").selectOption("Tuzla Marina");
+  await expect(page).toHaveURL(/page=1/);
+  await expect(page).toHaveURL(/marina=Tuzla/);
+  await page.reload();
+  await expect(filters.getByLabel("Marina filtresi")).toHaveValue("Tuzla Marina");
+  await filters.getByRole("button", { name: "Temizle", exact: true }).click();
+  await expect(filters.getByLabel("Marina filtresi")).toHaveValue("all");
+  await expect(rows).toHaveCount(10);
+  const detail = rows.first().getByRole("link", { name: "Detay", exact: true });
+  await expect(detail).toHaveCSS("cursor", "pointer");
+  await expect(detail).toHaveCSS("border-top-width", "1px");
+  await detail.focus();
+  await expect(detail).toBeFocused();
+  await expect(detail).toHaveClass(/focus-visible:ring-2/);
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    const search = await filters.getByLabel("Arama kutusu").boundingBox();
+    const marina = await filters.getByLabel("Marina filtresi").boundingBox();
+    if (width === 1280) expect(Math.abs(search!.y - marina!.y)).toBeLessThan(4);
+    else expect(marina!.y).toBeGreaterThan(search!.y + search!.height);
+    const bounds = await filters.boundingBox();
+    expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width);
+    await expect(filters.getByLabel("Talep kategorisi")).toBeVisible();
+  }
+  await detail.click();
+  await expect(page).toHaveURL(/\/admin\/calls\/[a-zA-Z0-9-]+$/);
+});
