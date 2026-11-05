@@ -43,55 +43,62 @@ async function describe(page: Page, index: number) {
 }
 
 for (const path of PAGES) {
-  test(`Her görünür düğme sonuç verir: ${path}`, async ({ page }) => {
+  test(`Her görünür düğme sonuç verir: ${path}`, async ({ page: listingPage }) => {
     test.setTimeout(300_000);
-    await page.goto(path);
-    await page.waitForLoadState("domcontentloaded");
-    await page.waitForTimeout(800);
-    const count = await page.locator(SELECTOR).count();
+    await listingPage.goto(path);
+    await listingPage.waitForLoadState("domcontentloaded");
+    await listingPage.waitForTimeout(800);
+    const count = await listingPage.locator(SELECTOR).count();
     expect(count).toBeGreaterThan(0);
 
     const failures: string[] = [];
 
     for (let i = 0; i < count; i++) {
-      await page.goto(path);
-      await page.waitForLoadState("domcontentloaded");
-      await page.waitForTimeout(500);
-      if ((await page.locator(SELECTOR).count()) <= i) continue;
-
-      const { el, tag, name, disabled, current } = await describe(page, i);
-      if (disabled || current || SKIP_NAMES.some((re) => re.test(name))) continue;
-
-      const label = `${tag} "${name || "(adsız)"}"`;
-      const startUrl = page.url();
-
-      // Sonuçtan önce DOM değişimini izle
-      await page.evaluate(() => {
-        const w = window as unknown as { __mut?: number };
-        w.__mut = 0;
-        new MutationObserver((m) => {
-          (window as unknown as { __mut: number }).__mut += m.length;
-        }).observe(document.body, { childList: true, subtree: true, attributes: true, characterData: true });
-      });
-
-      const href = tag === "a" ? await el.getAttribute("href") : null;
+      // Her kontrol ayrı sayfada: önceki Next.js yönlendirmesi Firefox'ta
+      // sonraki goto isteğini NS_BINDING_ABORTED ile iptal etmesin.
+      const page = await listingPage.context().newPage();
       try {
-        await el.click({ timeout: 10000 });
-        if (href && !href.startsWith("#")) {
-          // Client navigation may need to compile its destination in development.
-          await expect(page).toHaveURL(new URL(href, startUrl).href, { timeout: 15000 });
-          expect(page.url(), label).not.toBe(startUrl);
-        } else {
-          await expect.poll(async () => {
-            if (page.url() !== startUrl) return true;
-            const mutated = await page.evaluate(() =>
-              (window as unknown as { __mut?: number }).__mut ?? 0,
-            ).catch(() => 1);
-            return mutated > 0 || await page.getByRole("dialog").count() > 0;
-          }, { message: label, timeout: 5000 }).toBe(true);
+        await page.goto(path);
+        await page.waitForLoadState("domcontentloaded");
+        await page.waitForTimeout(500);
+        if ((await page.locator(SELECTOR).count()) <= i) continue;
+
+        const { el, tag, name, disabled, current } = await describe(page, i);
+        if (disabled || current || SKIP_NAMES.some((re) => re.test(name))) continue;
+
+        const label = `${tag} "${name || "(adsız)"}"`;
+        const startUrl = page.url();
+
+        // Sonuçtan önce DOM değişimini izle
+        await page.evaluate(() => {
+          const w = window as unknown as { __mut?: number };
+          w.__mut = 0;
+          new MutationObserver((m) => {
+            (window as unknown as { __mut: number }).__mut += m.length;
+          }).observe(document.body, { childList: true, subtree: true, attributes: true, characterData: true });
+        });
+
+        const href = tag === "a" ? await el.getAttribute("href") : null;
+        try {
+          await el.click({ timeout: 10000 });
+          if (href && !href.startsWith("#")) {
+            // Client navigation may need to compile its destination in development.
+            await expect(page).toHaveURL(new URL(href, startUrl).href, { timeout: 15000 });
+            expect(page.url(), label).not.toBe(startUrl);
+          } else {
+            await expect.poll(async () => {
+              if (page.url() !== startUrl) return true;
+              const mutated = await page.evaluate(() =>
+                (window as unknown as { __mut?: number }).__mut ?? 0,
+              ).catch(() => 1);
+              return mutated > 0 || await page.getByRole("dialog").count() > 0;
+            }, { message: label, timeout: 5000 }).toBe(true);
+          }
+        } catch (error) {
+          failures.push(`${label}: ${error instanceof Error ? error.message : String(error)}`);
         }
-      } catch (error) {
-        failures.push(`${label}: ${error instanceof Error ? error.message : String(error)}`);
+      } finally {
+        await page.close();
       }
     }
 
