@@ -298,8 +298,8 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
     if (await existingSession.isVisible()) {
       await existingSession.click();
 
-      // Kaynaklar varsayılan kapalıdır; açınca kart görünür
-      await page.getByText(/^Kaynaklar \(\d+\)$/).first().click();
+      // Kaynaklar varsayılan açıktır; ayrıca açma adımı gerekmez.
+      await expect(page.locator("details").first()).toHaveAttribute("open", "");
       const citationCard = page.getByRole("region", { name: /Kaynak:/i }).first();
       await expect(citationCard).toBeVisible();
       await expect(

@@ -123,7 +123,7 @@ export function AnalysisTracker({ children }: { children: React.ReactNode }) {
   return (
     <Context.Provider value={{ entries, observe, track }}>
       {children}
-      <div className="fixed bottom-4 right-4 z-50 max-w-sm space-y-2" aria-label="Analiz bildirimleri">
+      <div className="fixed bottom-4 right-4 z-50 max-w-sm space-y-2" role="region" aria-label="Analiz bildirimleri">
         {notices.map((notice) => (
           <div key={notice.id} role="status" className="flex items-start gap-3 rounded-xl border border-brand-200 bg-white p-4 text-sm text-brand-900 shadow-lg">
             <Link href={`/admin/calls/${notice.id}`} className="underline">{notice.message}</Link>
