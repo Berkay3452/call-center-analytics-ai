@@ -11,11 +11,10 @@ import {
   Card,
   CardHeader,
   PageHeader,
-  ProgressBar,
   Select,
   StatCard,
-  type Tone,
 } from "@/components/ui";
+import { DistributionDonut, type DistributionRow } from "@/components/ui/DistributionDonut";
 import { AnalyticsDashboardSkeleton } from "@/components/skeletons";
 import {
   EMPTY_LABEL,
@@ -25,6 +24,8 @@ import {
   MARINA_OPTIONS,
   REQUEST_CATEGORY_LABELS,
   RequestCategory,
+  URGENCY_LABELS,
+  type Urgency,
 } from "@/lib/types";
 
 // Tarih aralığı opsiyonları (Sentetik seed verileri 5-13 Ekim 2026 arasındadır)
@@ -64,46 +65,6 @@ function formatDayLabel(dateStr: string): string {
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return dateStr;
   return d.toLocaleDateString("tr-TR", { day: "2-digit", month: "short" });
-}
-
-interface DistributionRow {
-  key: string;
-  label: string;
-  count: number;
-}
-
-/** Yatay ilerleme çubuklu dağılım listesi: etiket, yüzde ve adet. */
-function DistributionList({
-  rows,
-  tone,
-  emptyText,
-}: {
-  rows: DistributionRow[];
-  tone: Tone;
-  emptyText: string;
-}) {
-  const total = rows.reduce((acc, r) => acc + r.count, 0);
-  if (rows.length === 0 || total === 0) {
-    return <p className="py-6 text-center text-sm text-slate-500">{emptyText}</p>;
-  }
-  return (
-    <ul className="space-y-3">
-      {rows.map((row) => {
-        const pct = Math.round((row.count / total) * 100);
-        return (
-          <li key={row.key} className="space-y-1">
-            <div className="flex justify-between gap-2 text-sm">
-              <span className="truncate text-slate-700">{row.label}</span>
-              <span className="shrink-0 font-semibold text-brand-800">
-                {row.count} <span className="font-normal text-slate-500">(%{pct})</span>
-              </span>
-            </div>
-            <ProgressBar value={row.count} max={total} tone={tone} label={`${row.label}: %${pct}`} />
-          </li>
-        );
-      })}
-    </ul>
-  );
 }
 
 export default function AnalyticsDashboard() {
@@ -196,6 +157,8 @@ export default function AnalyticsDashboard() {
     .filter(([, count]) => count > 0)
     .map(([key, count]) => ({ key, label: labelOf(LOSS_REASON_LABELS, key), count }))
     .sort((a, b) => b.count - a.count);
+  const urgencyRows: DistributionRow[] = Object.entries(data?.by_urgency ?? {})
+    .map(([key, count]) => ({ key, label: labelOf(URGENCY_LABELS, key as Urgency), count }));
   const totalLost = lossRows.reduce((acc, r) => acc + r.count, 0);
 
   const fmt = (n: number) => n.toLocaleString("tr-TR");
@@ -363,73 +326,53 @@ export default function AnalyticsDashboard() {
             />
           </div>
 
-          <Card>
-            <CardHeader
-              title="Günlük Çağrı Sayısı Trendi"
-              description={`Dönem: ${data.period_start} — ${data.period_end}`}
-            />
-            {dailyCalls.length === 0 ? (
-              <p className="py-10 text-center text-sm text-slate-500">
-                Bu tarih aralığında günlük çağrı verisi bulunamadı.
-              </p>
-            ) : (
-              <div
-                role="region"
-                aria-label="Günlük çağrı sayısı grafiği (yatay kaydırılabilir)"
-                tabIndex={0}
-                className="flex h-44 items-end gap-2 overflow-x-auto border-b border-slate-100 pb-2 pt-4"
-              >
-                {dailyCalls.map((day) => {
-                  const heightPct =
-                    day.count === 0
-                      ? 3
-                      : Math.max(Math.round((day.count / maxDailyCount) * 100), 8);
-                  return (
-                    <div
-                      key={day.day}
-                      className="flex h-full min-w-[2.5rem] flex-1 flex-col items-center justify-end gap-1"
-                    >
-                      <span className="text-xs font-semibold text-brand-800">{day.count}</span>
-                      <div className="flex w-full flex-1 items-end">
-                        <div
-                          style={{ height: `${heightPct}%` }}
-                          className={`w-full rounded-t ${day.count === 0 ? "bg-slate-200" : "bg-brand-600"}`}
-                          title={`${day.day}: ${day.count} çağrı`}
-                        />
-                      </div>
-                      <span className="max-w-full truncate text-[11px] text-slate-500">
-                        {formatDayLabel(day.day)}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </Card>
-
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-            <Card>
-              <CardHeader title="Talep Kategorisi" description="Arıza ve talep türüne göre dağılım" />
-              <DistributionList rows={categoryRows} tone="brand" emptyText="Kategori verisi bulunmuyor" />
-            </Card>
-            <Card>
-              <CardHeader title="En Yoğun Marinalar" description="Çağrı sayısına göre ilk marinalar" />
-              <DistributionList
-                rows={marinaRows.slice(0, 5)}
-                tone="brand"
-                emptyText="Marina verisi bulunmuyor"
-              />
-            </Card>
-            <Card>
+          <div data-testid="analytics-charts" className="grid grid-cols-1 items-start gap-4 md:grid-cols-2 xl:grid-cols-3">
+            <DistributionDonut title="Talep Kategorisi" rows={categoryRows} emptyText="Kategori verisi bulunmuyor" />
+            <DistributionDonut title="Aciliyet Dağılımı" rows={urgencyRows} emptyText="Aciliyet verisi bulunmuyor" />
+            <DistributionDonut title="En Yoğun Marinalar" rows={marinaRows} emptyText="Marina verisi bulunmuyor" />
+            <DistributionDonut title="Satış Kaçırma Sebepleri" rows={lossRows} emptyText="Kayıp satış kaydı bulunmuyor" />
+            <Card className="min-w-0 md:col-span-2">
               <CardHeader
-                title="Satış Kaçırma Sebepleri"
-                description={`Kaybedilen ${totalLost} satışın nedenleri`}
+                title="Günlük Çağrı Sayısı Trendi"
+                description={`Dönem: ${data.period_start} — ${data.period_end}`}
               />
-              <DistributionList
-                rows={lossRows}
-                tone="accent"
-                emptyText="Kayıp satış kaydı bulunmuyor"
-              />
+              {dailyCalls.length === 0 ? (
+                <p className="py-10 text-center text-sm text-slate-500">
+                  Bu tarih aralığında günlük çağrı verisi bulunamadı.
+                </p>
+              ) : (
+                <div
+                  role="region"
+                  aria-label="Günlük çağrı sayısı grafiği (yatay kaydırılabilir)"
+                  tabIndex={0}
+                  className="flex h-44 items-end gap-2 overflow-x-auto border-b border-slate-100 pb-2 pt-4"
+                >
+                  {dailyCalls.map((day) => {
+                    const heightPct =
+                      day.count === 0
+                        ? 3
+                        : Math.max(Math.round((day.count / maxDailyCount) * 100), 8);
+                    return (
+                      <div
+                        key={day.day}
+                        className="flex h-full min-w-[2.5rem] flex-1 flex-col items-center justify-end gap-1"
+                      >
+                        <span className="text-xs font-semibold text-brand-800">{day.count}</span>
+                        <div className="flex w-full flex-1 items-end">
+                          <div
+                            style={{ height: `${heightPct}%` }}
+                            className={`w-full rounded-t ${day.count === 0 ? "bg-slate-200" : "bg-brand-600"}`}
+                            title={`${day.day}: ${day.count} çağrı`}
+                          />
+                        </div>
+                        <span className="max-w-full truncate text-[11px] text-slate-500">
+                          {formatDayLabel(day.day)}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </Card>
           </div>
         </div>

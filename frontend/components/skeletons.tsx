@@ -182,29 +182,16 @@ export function AnalyticsDashboardSkeleton() {
           </div>
         ))}
       </div>
-      <div className="h-56 rounded-xl border border-slate-200 bg-white p-5">
-        <div className="mb-6 h-4 w-44 rounded bg-slate-200" />
-        <div className="flex h-28 items-end gap-3">
-          {Array.from({ length: 7 }).map((_, i) => (
-            <div
-              key={i}
-              className="flex-1 rounded-t bg-slate-200"
-              style={{ height: `${30 + ((i * 12) % 60)}%` }}
-            />
-          ))}
-        </div>
-      </div>
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        {Array.from({ length: 3 }).map((_, i) => (
-          <div key={i} className="h-56 space-y-4 rounded-xl border border-slate-200 bg-white p-5">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="space-y-3 rounded-xl border border-slate-200 bg-white p-5">
             <div className="h-4 w-36 rounded bg-slate-200" />
-            <div className="space-y-4 pt-2">
-              <div className="h-3 w-full rounded bg-slate-200" />
-              <div className="h-3 w-full rounded bg-slate-200" />
-              <div className="h-3 w-full rounded bg-slate-200" />
-            </div>
+            <div className="mx-auto h-32 w-32 rounded-full border-[22px] border-slate-200" />
+            <div className="h-3 rounded bg-slate-200" />
+            <div className="h-3 rounded bg-slate-200" />
           </div>
         ))}
+        <div className="h-56 rounded-xl border border-slate-200 bg-slate-100 md:col-span-2" />
       </div>
     </div>
   );
