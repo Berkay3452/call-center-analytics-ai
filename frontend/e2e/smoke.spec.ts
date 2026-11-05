@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { AxeBuilder } from "@axe-core/playwright";
 
 test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
   // ──────────────────────────────────────────────────────────────────────────
@@ -644,4 +645,47 @@ test("Issue #210: gereksiz bağlantılar yok, 10 kayıt ve durum düğmelerinde 
   const dialog = page.getByRole("dialog");
   await expect(dialog.getByRole("link", { name: /Çağrıyı Aç/i })).toBeVisible();
   await expect(dialog.getByRole("link", { name: /CRM Önerisine Git/i })).toBeVisible();
+});
+
+
+test("Issue #202: erişilebilir halka grafikler, altı dilim sınırı ve canlı filtreler", async ({ page }) => {
+  test.skip(process.env.NEXT_PUBLIC_USE_MOCKS === "false", "Deterministik mock analitik verisi gerektirir.");
+  await page.clock.setFixedTime(new Date("2026-11-05T12:00:00+03:00"));
+  await page.goto("/admin/analytics");
+  const date = page.getByLabel("Tarih aralığı", { exact: true });
+  await expect(date).toBeEnabled();
+  await date.selectOption("oct2026");
+  const charts = page.getByTestId("distribution-chart");
+  await expect(charts).toHaveCount(4);
+  for (const title of ["Talep Kategorisi", "Aciliyet Dağılımı", "En Yoğun Marinalar", "Satış Kaçırma Sebepleri"]) {
+    const chart = charts.filter({ has: page.getByRole("heading", { name: title, exact: true }) });
+    await expect(chart.getByRole("img")).toHaveAttribute("aria-label", new RegExp(title));
+    const slices = chart.getByTestId("donut-slice");
+    expect(await slices.count()).toBeGreaterThan(0);
+    expect(await slices.count()).toBeLessThanOrEqual(6);
+    await expect(chart.getByRole("list")).toContainText(/\d+.*%\d+,\d/);
+    const colors = await slices.evaluateAll((nodes) => nodes.map((node) => node.getAttribute("stroke")));
+    expect(new Set(colors).size).toBe(colors.length);
+  }
+  const result = await new AxeBuilder({ page }).include('[data-testid="analytics-charts"]').withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
+  expect(result.violations).toEqual([]);
+  for (const width of [1280, 820, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    const first = await charts.nth(0).boundingBox();
+    const second = await charts.nth(1).boundingBox();
+    if (width >= 768) expect(Math.abs(first!.y - second!.y)).toBeLessThan(4);
+    else expect(second!.y).toBeGreaterThan(first!.y + first!.height);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  }
+  const marinaChart = charts.filter({ has: page.getByRole("heading", { name: "En Yoğun Marinalar", exact: true }) });
+  const before = await marinaChart.getByRole("img").getAttribute("aria-label");
+  await page.getByLabel("Marina filtresi", { exact: true }).selectOption("Tuzla Marina");
+  await expect(marinaChart.getByTestId("donut-slice")).toHaveCount(1);
+  await expect(marinaChart.getByRole("img")).not.toHaveAttribute("aria-label", before!);
+  await expect(marinaChart.getByRole("list")).toContainText("%100,0");
+  await date.selectOption("7");
+  await expect(page.getByRole("heading", { name: "Henüz çağrı verisi bulunmuyor" })).toBeVisible();
+  await expect(charts).toHaveCount(0);
+  await date.selectOption("oct2026");
+  await expect(charts).toHaveCount(4);
 });

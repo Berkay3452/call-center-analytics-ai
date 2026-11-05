@@ -47,7 +47,7 @@ import mockCallDetail from "@/mocks/cagri_detayi.json";
 import mockCallAccepted from "@/mocks/cagri_kabul.json";
 import mockCallsList from "@/mocks/cagri_listesi.json";
 import mockCrmList from "@/mocks/crm_listesi.json";
-import mockKpiSummary from "@/mocks/kpi_ozeti.json";
+import { buildMockKpi } from "./mock-analytics";
 import mockChatReply from "@/mocks/sohbet_cevabi.json";
 import mockChatSessionDetail from "@/mocks/sohbet_oturumu.json";
 import mockServiceOrderDetail from "@/mocks/servis_emri_detayi.json";
@@ -1088,7 +1088,7 @@ async function handleMockRequest<T>(
 
   // 8. GET /analytics/summary
   if (method === "GET" && path === "/analytics/summary") {
-    return mockKpiSummary as unknown as T;
+    return buildMockKpi(options.params ?? {}) as unknown as T;
   }
 
   // 9. POST /chat/messages
