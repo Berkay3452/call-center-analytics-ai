@@ -506,7 +506,7 @@ export function CrmSuggestionCard({
           )}
           {reviewStatus === "reddedildi" && <span>Bu öneri reddedildi.</span>}
           {variant === "list" && (
-            <Link href={`/admin/calls/${suggestion.callId}`} className="text-brand-700 underline">
+            <Link href={`/admin/calls/${suggestion.callId}`} className={buttonClasses("accent", "sm", "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2")}>
               Çağrıyı gör
             </Link>
           )}
