@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import type { ServiceOrderListItem } from "@/lib/api/types";
 import {
   formatOrderCode,
@@ -11,7 +10,7 @@ import {
   type RequestCategory,
   type ServiceOrderStatus,
 } from "@/lib/types";
-import { Badge, Button, Card, buttonClasses, cn, type Tone } from "@/components/ui";
+import { Badge, Button, Card, cn, type Tone } from "@/components/ui";
 import { TONE_BAR } from "@/components/ui/tone";
 import { ServiceOrderDetailModal } from "./ServiceOrderDetailModal";
 import { ServiceOrderStatusControl } from "./ServiceOrderStatusControl";
@@ -73,7 +72,7 @@ export function ServiceOrdersList({ orders }: { orders: ServiceOrderListItem[] }
                 </div>
 
                 <div className="flex shrink-0 flex-col items-start gap-3 sm:items-end">
-                  <Badge tone={tone}>{SERVICE_ORDER_STATUS_LABELS[status] ?? status}</Badge>
+                  <Badge tone={tone} className="cursor-default" data-testid="service-order-status">{SERVICE_ORDER_STATUS_LABELS[status] ?? status}</Badge>
                   <ServiceOrderStatusControl
                     orderId={order.id}
                     currentStatus={status}
@@ -81,14 +80,6 @@ export function ServiceOrdersList({ orders }: { orders: ServiceOrderListItem[] }
                     compact
                   />
                   <div className="flex items-center gap-2">
-                    {order.source_call_id && (
-                      <Link
-                        href={`/admin/calls/${order.source_call_id}`}
-                        className={buttonClasses("ghost", "sm")}
-                      >
-                        Kaynak çağrı
-                      </Link>
-                    )}
                     <Button variant="secondary" size="sm" onClick={() => setSelectedOrderId(order.id)}>
                       Detay
                     </Button>

@@ -29,7 +29,7 @@ export function ServiceOrderWorkflowSteps({
   const currentIndex = SERVICE_ORDER_STATUS_ORDER.indexOf(currentStatus);
 
   return (
-    <div className={`w-full py-2 ${className}`}>
+    <div className={`cursor-default w-full py-2 ${className}`}>
       <div className="relative flex items-center justify-between">
         {/* Arka plan çizgisi */}
         <div className="absolute left-6 right-6 top-1/2 -translate-y-1/2 h-1 bg-slate-200 -z-0" />

@@ -10,7 +10,7 @@ import {
 import { ServiceOrdersTableSkeleton } from "@/components/skeletons";
 import { Pagination } from "@/components/Pagination";
 import { EmptyState } from "@/components/EmptyState";
-import { PageHeader, buttonClasses } from "@/components/ui";
+import { PageHeader } from "@/components/ui";
 import {
   ServiceOrdersList,
   ServiceOrdersFilterBar,
@@ -46,7 +46,7 @@ export default async function ServiceOrdersPage({
   const params = searchParams ? await searchParams : {};
   const queryFilters: ServiceOrderFilters = {
     page: Math.max(1, Number(params?.page) || 1),
-    page_size: clampPageSize(params?.page_size),
+    page_size: clampPageSize(params?.page_size, 10),
     status:
       params?.status && params.status !== "all"
         ? (params.status as ServiceOrderStatus)
@@ -84,11 +84,7 @@ export default async function ServiceOrdersPage({
       <PageHeader
         title="Servis Emirleri"
         description="CRM önerilerinden onaylanıp servise aktarılan iş emirleri."
-        actions={
-          <Link href="/admin/crm" className={buttonClasses("secondary", "sm")}>
-            CRM önerilerine git
-          </Link>
-        }
+
       />
 
       <nav aria-label="Servis emri durumu" className="mb-4 flex flex-wrap gap-1 border-b border-slate-200 pb-3">
@@ -157,7 +153,7 @@ async function ServiceOrdersListContent({
   const items = data?.items ?? [];
   const total = data?.total ?? 0;
   const page = data?.page ?? 1;
-  const pageSize = data?.page_size ?? 20;
+  const pageSize = data?.page_size ?? 10;
 
   // Sayfa aralık kontrolü: kayıt var ama istenen sayfa boş ise son sayfaya yönlendir (#108 kuralı)
   const lastPage = lastPageIfOutOfRange(items.length, total, page, pageSize);
