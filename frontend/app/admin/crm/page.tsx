@@ -46,7 +46,7 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
   const params = searchParams ? await searchParams : {};
   const queryFilters: CallQueryFilters = {
     page: Math.max(1, Number(params?.page) || 1),
-    page_size: clampPageSize(params?.page_size),
+    page_size: clampPageSize(params?.page_size, 10),
     q: params?.q?.trim() || undefined,
     urgency: params?.urgency?.trim() || undefined,
     call_type: params?.call_type?.trim() || undefined,
@@ -57,6 +57,10 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
     date_from: params?.date_from?.trim() || undefined,
     date_to: params?.date_to?.trim() || undefined,
   };
+
+  if (queryFilters.date_from && queryFilters.date_to && queryFilters.date_to < queryFilters.date_from) {
+    redirect(listUrl("/admin/crm", { ...queryFilters, date_to: undefined }, 1));
+  }
 
   const hasActiveFilters = Boolean(
     queryFilters.q ||
@@ -92,34 +96,35 @@ export default async function CrmPage({ searchParams }: CrmPageProps) {
         description="Çağrılardan çıkarılan servis kayıtlarını inceleyin; onaylarsanız servis emri açılır."
       />
 
-      <nav aria-label="Öneri durumu" className="mb-4 flex flex-wrap gap-1 border-b border-slate-200 pb-3">
-        {TABS.map((tab) => {
-          const active = activeStatus === tab.status;
-          return (
-            <Link
-              key={tab.status}
-              href={getStatusTabUrl(tab.status)}
-              aria-current={active ? "page" : undefined}
-              className={`whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
-                active
-                  ? "bg-brand-700 text-white"
-                  : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              }`}
-            >
-              {tab.label}
-              {counts[tab.status] !== null && <span className="ml-1.5 opacity-80">({counts[tab.status]})</span>}
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* Arama ve Filtre Kontrolleri (#108, #113) */}
       <CallsFilterBar
+        crmLayout
         showCallType={false}
         showState={false}
         showStatus={false}
+        className="mb-4"
         placeholder="Müşteri, tekne veya problem ara..."
-      />
+      >
+        <nav aria-label="Öneri durumu" className="flex flex-wrap gap-1 sm:col-span-2 xl:col-span-2">
+          {TABS.map((tab) => {
+            const active = activeStatus === tab.status;
+            return (
+              <Link
+                key={tab.status}
+                href={getStatusTabUrl(tab.status)}
+                aria-current={active ? "page" : undefined}
+                className={`whitespace-nowrap rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                  active
+                    ? "bg-brand-700 text-white"
+                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                }`}
+              >
+                {tab.label}
+                {counts[tab.status] !== null && <span className="ml-1.5 opacity-80">({counts[tab.status]})</span>}
+              </Link>
+            );
+          })}
+        </nav>
+      </CallsFilterBar>
 
       {/* CRM Listesi ve Sayfalama */}
       <Suspense key={suspenseKey} fallback={<CrmSuggestionsSkeleton />}>
@@ -139,7 +144,7 @@ async function CrmContent({
   let suggestions: CrmSuggestion[] = [];
   let total = 0;
   let page = filters.page ?? 1;
-  let pageSize = filters.page_size ?? 20;
+  let pageSize = filters.page_size ?? 10;
   let errorMsg: string | null = null;
 
   try {

@@ -1461,7 +1461,7 @@ export async function getCrmRecords(
 ): Promise<Page<CrmRecordItem>> {
   const result = await apiFetch<Page<CrmRecordItem>>("/crm", {
     method: "GET",
-    params: filters as Record<string, string | number | boolean | null | undefined>,
+    params: { ...filters, page_size: filters?.page_size ?? 10, limit: filters?.page_size ?? 10 },
   });
   // Older CRM responses omit linkage IDs; read the call rather than infer from names.
   const items = await Promise.all(result.items.map(async (item) => {

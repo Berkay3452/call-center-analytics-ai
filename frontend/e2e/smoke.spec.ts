@@ -556,3 +556,57 @@ test("Issue #203: 10 kayıt, kalıcı filtreler, duyarlı grid ve belirgin Detay
   await detail.click();
   await expect(page).toHaveURL(/\/admin\/calls\/[a-zA-Z0-9-]+$/);
 });
+
+
+test("Issue #207: CRM grid, tarih sınırları, 10 kayıt ve Çağrıyı gör butonu", async ({ page }) => {
+  test.skip(process.env.NEXT_PUBLIC_USE_MOCKS === "false", "Sabit mock CRM listesi gerektirir.");
+  await page.goto("/admin/crm");
+  const filters = page.getByRole("search", { name: "CRM filtreleri" });
+  const links = page.getByRole("link", { name: "Çağrıyı gör", exact: true });
+  const pagination = page.getByRole("navigation", { name: "Sayfalama", exact: true });
+  await expect(links).toHaveCount(10);
+  await expect(pagination).toContainText(/Toplam \d+ kayıttan 1-10/);
+  await pagination.getByRole("button", { name: "Sonraki sayfaya git" }).click();
+  await expect(page).toHaveURL(/page=2/);
+  await page.reload();
+  await expect(pagination.getByRole("button", { name: "Sayfa 2", exact: true })).toHaveAttribute("aria-current", "page");
+  const from = filters.getByLabel("Başlangıç tarihi", { exact: true });
+  const to = filters.getByLabel("Bitiş tarihi", { exact: true });
+  await expect(filters.locator('label[for="filter-date-from"]')).toBeVisible();
+  await expect(filters.locator('label[for="filter-date-to"]')).toBeVisible();
+  await expect(from).toHaveAttribute("placeholder", "gg.aa.yyyy");
+  await expect(to).toHaveAttribute("placeholder", "gg.aa.yyyy");
+  await from.fill("2026-10-01");
+  await expect(page).toHaveURL(/date_from=2026-10-01/);
+  await expect(page).toHaveURL(/page=1/);
+  await expect(to).toHaveAttribute("min", "2026-10-01");
+  await to.fill("2026-10-31");
+  await expect(page).toHaveURL(/date_to=2026-10-31/);
+  await expect(from).toHaveAttribute("max", "2026-10-31");
+  await to.fill("2026-09-30");
+  await expect(filters.getByRole("alert")).toContainText("Bitiş tarihi başlangıç tarihinden önce olamaz");
+  await expect(page).toHaveURL(/date_to=2026-10-31/);
+  await page.reload();
+  await expect(from).toHaveValue("2026-10-01");
+  await expect(to).toHaveValue("2026-10-31");
+  for (const width of [1280, 390]) {
+    await page.setViewportSize({ width, height: 900 });
+    const bounds = await filters.boundingBox();
+    expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width);
+    const startBounds = await from.boundingBox();
+    const endBounds = await to.boundingBox();
+    if (width === 1280) expect(Math.abs(startBounds!.y - endBounds!.y)).toBeLessThan(4);
+    else expect(endBounds!.y).toBeGreaterThan(startBounds!.y + startBounds!.height);
+  }
+  await filters.getByRole("button", { name: "Temizle", exact: true }).click();
+  await expect(from).toHaveValue("");
+  await expect(to).toHaveValue("");
+  const view = links.first();
+  await expect(view).toHaveCSS("cursor", "pointer");
+  await expect(view).toHaveCSS("border-top-width", "1px");
+  await view.focus();
+  await expect(view).toBeFocused();
+  await expect(view).toHaveClass(/focus-visible:ring-2/);
+  await view.click();
+  await expect(page).toHaveURL(/\/admin\/calls\/[a-zA-Z0-9-]+$/);
+});

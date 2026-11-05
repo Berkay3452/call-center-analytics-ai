@@ -186,7 +186,7 @@ export async function fetchCrmSuggestions(
   filters?: CallQueryFilters,
 ): Promise<Page<CrmSuggestion>> {
   const res = await getApiCrmRecords({
-    page_size: 20,
+    page_size: 10,
     ...filters,
   });
   return {

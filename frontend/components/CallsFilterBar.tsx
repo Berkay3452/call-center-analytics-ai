@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useState, useTransition } from "react";
+import { useCallback, useEffect, useState, useTransition, type ReactNode } from "react";
 import {
   CALL_TYPE_LABELS,
   MARINA_OPTIONS,
@@ -25,6 +25,8 @@ const STATE_OPTIONS: { value: string; label: string }[] = [
 export interface CallsFilterBarProps {
   /** Sade görünüm: arama, marina, aciliyet, kategori ve durum (tarihler gizlenir). */
   compact?: boolean;
+  crmLayout?: boolean;
+  children?: ReactNode;
   showCallType?: boolean;
   showState?: boolean;
   showStatus?: boolean;
@@ -34,6 +36,8 @@ export interface CallsFilterBarProps {
 
 export function CallsFilterBar({
   compact = false,
+  crmLayout = false,
+  children,
   showCallType = true,
   showState = true,
   showStatus = false,
@@ -43,6 +47,7 @@ export function CallsFilterBar({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const [dateError, setDateError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   const urlQ = searchParams.get("q") ?? "";
@@ -76,6 +81,14 @@ export function CallsFilterBar({
           params.delete(key);
         }
       }
+
+      const from = params.get("date_from");
+      const to = params.get("date_to");
+      if (from && to && to < from) {
+        setDateError("Bitiş tarihi başlangıç tarihinden önce olamaz.");
+        return;
+      }
+      setDateError(null);
 
       // Herhangi bir filtre değiştiğinde 1. sayfaya dön
       params.set("page", "1");
@@ -114,6 +127,7 @@ export function CallsFilterBar({
 
   const handleReset = () => {
     setSearchVal("");
+    setDateError(null);
     const params = new URLSearchParams(searchParams.toString());
     const filterKeys = [
       "q",
@@ -135,7 +149,7 @@ export function CallsFilterBar({
     });
   };
 
-  const sel = compact ? "w-full min-w-0" : "w-auto min-w-40";
+  const sel = compact || crmLayout ? "w-full min-w-0" : "w-auto min-w-40";
   const categoryFilter = (
     <>
       <label className="sr-only" htmlFor="filter-category">
@@ -160,12 +174,13 @@ export function CallsFilterBar({
   );
 
   return (
-    <div role="search" aria-label="Çağrı filtreleri" className={`rounded-xl border border-slate-200 bg-white p-4 space-y-3 ${className}`}>
-      <div className={compact ? "grid grid-cols-1 items-center gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6" : "flex flex-wrap items-center gap-2"}>
+    <div role="search" aria-label={crmLayout ? "CRM filtreleri" : "Çağrı filtreleri"} className={`rounded-xl border border-slate-200 bg-white p-4 ${crmLayout ? "grid grid-cols-1 items-end gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6" : "space-y-3"} ${className}`}>
+      {children}
+      <div className={crmLayout ? "contents" : compact ? "grid grid-cols-1 items-center gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6" : "flex flex-wrap items-center gap-2"}>
         <label htmlFor="calls-filter-search-input" className="sr-only">
           Arama kutusu
         </label>
-        <div className={compact ? "relative min-w-0" : "relative min-w-60 flex-1"}>
+        <div className={compact || crmLayout ? "relative min-w-0" : "relative min-w-60 flex-1"}>
           <Input
             id="calls-filter-search-input"
             type="search"
@@ -247,7 +262,7 @@ export function CallsFilterBar({
       </div>
 
       {!compact && (
-        <div className="flex flex-wrap items-center gap-2">
+        <div className={crmLayout ? "contents" : "flex flex-wrap items-center gap-2"}>
           {showCallType && (
             <>
               <label className="sr-only" htmlFor="filter-call-type">
@@ -294,32 +309,48 @@ export function CallsFilterBar({
             </>
           )}
 
-          <label className="sr-only" htmlFor="filter-date-from">
-            Başlangıç Tarihi
-          </label>
-          <Input
-            id="filter-date-from"
-            type="date"
-            value={urlDateFrom}
-            onChange={(e) => applyFilterChanges({ date_from: e.target.value || null })}
-            disabled={isPending}
-            title="Başlangıç tarihi (dahil)"
-            aria-label="Başlangıç tarihi"
-            className="w-auto"
-          />
-          <label className="sr-only" htmlFor="filter-date-to">
-            Bitiş Tarihi
-          </label>
-          <Input
-            id="filter-date-to"
-            type="date"
-            value={urlDateTo}
-            onChange={(e) => applyFilterChanges({ date_to: e.target.value || null })}
-            disabled={isPending}
-            title="Bitiş tarihi (dahil)"
-            aria-label="Bitiş tarihi"
-            className="w-auto"
-          />
+          <div className="min-w-0">
+            <label className="mb-1 block text-xs font-medium text-slate-700" htmlFor="filter-date-from">
+              Başlangıç tarihi
+            </label>
+            <Input
+              id="filter-date-from"
+              type="date"
+              lang="tr"
+              placeholder="gg.aa.yyyy"
+              value={urlDateFrom}
+              max={urlDateTo || undefined}
+              onChange={(e) => applyFilterChanges({ date_from: e.target.value || null })}
+              disabled={isPending}
+              aria-label="Başlangıç tarihi"
+              aria-describedby="filter-date-format filter-date-error"
+              className={crmLayout ? "w-full min-w-0" : "w-auto"}
+            />
+          </div>
+          <div className="min-w-0">
+            <label className="mb-1 block text-xs font-medium text-slate-700" htmlFor="filter-date-to">
+              Bitiş tarihi
+            </label>
+            <Input
+              id="filter-date-to"
+              type="date"
+              lang="tr"
+              placeholder="gg.aa.yyyy"
+              value={urlDateTo}
+              min={urlDateFrom || undefined}
+              onChange={(e) => applyFilterChanges({ date_to: e.target.value || null })}
+              disabled={isPending}
+              aria-label="Bitiş tarihi"
+              aria-describedby="filter-date-format filter-date-error"
+              className={crmLayout ? "w-full min-w-0" : "w-auto"}
+            />
+          </div>
+          <p id="filter-date-format" className={crmLayout ? "col-span-full text-xs text-slate-500" : "text-xs text-slate-500"}>
+            Tarih biçimi: gg.aa.yyyy
+          </p>
+          <p id="filter-date-error" role={dateError ? "alert" : undefined} className={crmLayout ? "col-span-full text-xs text-red-700 empty:hidden" : "text-xs text-red-700 empty:hidden"}>
+            {dateError}
+          </p>
         </div>
       )}
     </div>
