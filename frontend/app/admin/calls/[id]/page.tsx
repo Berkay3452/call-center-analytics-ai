@@ -62,22 +62,16 @@ const SALES_OUTCOME_TONE: Record<SalesOutcomeType, Tone> = {
   beklemede: "warning",
 };
 
-/**
- * Konuşma metnindeki "rep: ...", "customer: ...", "Temsilci: ..." vb. önekleri temizler.
- */
-function cleanSpeakerPrefix(text: string): string {
-  return text.replace(/^(rep|customer|temsilci|müşteri|musteri)\s*:\s*/i, "").trim();
+type TranscriptSpeaker = "firma" | "musteri" | "unknown";
+
+function normalizeSpeaker(speaker: string): TranscriptSpeaker {
+  if (/^(customer|musteri|müşteri)$/i.test(speaker)) return "musteri";
+  if (/^(rep|firma|temsilci|miço usta)$/i.test(speaker)) return "firma";
+  return "unknown";
 }
 
-/**
- * Milisaniyeyi "dk:sn" biçimine çevirir.
- */
-function formatMs(ms: number | null | undefined): string | null {
-  if (ms == null) return null;
-  const totalSec = Math.floor(ms / 1000);
-  const m = Math.floor(totalSec / 60);
-  const s = totalSec % 60;
-  return `${m}:${String(s).padStart(2, "0")}`;
+function cleanSpeakerPrefix(text: string): string {
+  return text.replace(/^(rep|customer|firma|temsilci|müşteri|musteri|miço usta)\s*:\s*/i, "").trim();
 }
 
 export default function CallDetailPage({ params }: Props) {
@@ -177,34 +171,25 @@ async function CallDetailContent({ params }: Props) {
 
   const isPartial = analysisStatus !== "tamam" || errorEntries.length > 0;
 
-  // Transkript segmentleri (Öncelikle segments dizisi, yoksa raw text)
-  const segments = (call.transcript?.segments && call.transcript.segments.length > 0)
-    ? call.transcript.segments.map((seg, idx) => {
-        const isCustomer = seg.speaker === "customer";
-        const cleanText = cleanSpeakerPrefix(seg.text);
-        const timeFormatted = formatMs(seg.start_ms);
-        return {
-          id: idx,
-          isCustomer,
-          text: cleanText,
-          time: timeFormatted,
-        };
-      })
-    : (call.transcript?.text
-        ? call.transcript.text
-            .split("\n")
-            .filter((l) => l.trim().length > 0)
-            .map((line, idx) => {
-              const isCustomer = /^(müşteri|musteri|customer)\s*:/i.test(line);
-              const cleanText = cleanSpeakerPrefix(line);
-              return {
-                id: idx,
-                isCustomer,
-                text: cleanText,
-                time: null,
-              };
-            })
-        : []);
+  // API, transcript_segments kayıtlarını transcript.segments olarak sunar.
+  const sourceSegments = call.transcript?.segments?.length
+    ? call.transcript.segments
+    : (call.transcript?.text ?? "").split("\n").filter((line) => line.trim()).map((text) => ({
+        speaker: text.match(/^([^:]+)\s*:/)?.[1]?.trim() ?? "unknown",
+        text,
+      }));
+  const segments: Array<{ speaker: TranscriptSpeaker; text: string }> = [];
+  for (const segment of sourceSegments) {
+    const speaker = normalizeSpeaker(segment.speaker);
+    const text = cleanSpeakerPrefix(segment.text);
+    if (!text) continue;
+    const previous = segments.at(-1);
+    if (previous?.speaker === speaker && speaker !== "unknown") {
+      previous.text += `\n${text}`;
+    } else {
+      segments.push({ speaker, text });
+    }
+  }
 
   const analysisBadge = inProgress
     ? { tone: "brand" as Tone, text: "Analiz sürüyor" }
@@ -390,30 +375,26 @@ async function CallDetailContent({ params }: Props) {
       />
 
       <Card>
-        <CardHeader
-          title="Konuşma Metni"
-          action={<span className="text-xs text-slate-500">{segments.length} segment</span>}
-        />
+        <CardHeader title="Konuşma Metni" />
         {segments.length > 0 ? (
-          <div className="space-y-3">
-            {segments.map((seg) => (
-              <div key={seg.id} className={`flex ${seg.isCustomer ? "justify-start" : "justify-end"}`}>
+          <div className="space-y-3" role="region" aria-label="Konuşma metni">
+            {segments.map((seg, index) => (
+              <div key={index} className={`flex ${seg.speaker === "musteri" ? "justify-end" : seg.speaker === "firma" ? "justify-start" : "justify-center"}`}>
                 <div
-                  className={`max-w-[85%] rounded-xl p-3 text-sm ${
-                    seg.isCustomer
-                      ? "border border-slate-200 bg-slate-50 text-slate-800"
-                      : "bg-brand-700 text-white"
+                  data-testid="transcript-bubble"
+                  data-speaker={seg.speaker}
+                  className={`min-w-0 max-w-[75%] rounded-xl p-3 text-sm ${
+                    seg.speaker === "musteri"
+                      ? "bg-brand-700 text-white"
+                      : seg.speaker === "firma"
+                        ? "border border-sky-200 bg-sky-50 text-sky-950"
+                        : "border border-slate-200 bg-slate-100 text-slate-700"
                   }`}
                 >
-                  <div
-                    className={`mb-1 flex items-center justify-between gap-3 text-xs font-semibold ${
-                      seg.isCustomer ? "text-slate-600" : "text-brand-100"
-                    }`}
-                  >
-                    <span>{seg.isCustomer ? "Müşteri" : "Temsilci (Miço Usta)"}</span>
-                    {seg.time && <span className="font-mono font-normal">{seg.time}</span>}
-                  </div>
-                  <p className="whitespace-pre-wrap leading-relaxed">{seg.text}</p>
+                  <p className="mb-1 text-xs font-semibold">
+                    {seg.speaker === "musteri" ? "Müşteri" : seg.speaker === "firma" ? "Miço Usta" : "Bilinmeyen konuşmacı"}
+                  </p>
+                  <p className="whitespace-pre-wrap break-words leading-relaxed">{seg.text}</p>
                 </div>
               </div>
             ))}
