@@ -60,7 +60,7 @@ export async function fetchCalls(
   filters?: CallQueryFilters,
 ): Promise<Page<Call>> {
   const page = await getApiCalls({
-    page_size: 20,
+    page_size: 10,
     ...filters,
   });
   return {

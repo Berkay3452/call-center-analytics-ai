@@ -85,7 +85,7 @@ export default async function CallsPage({ searchParams }: CallsPageProps) {
   const params = searchParams ? await searchParams : {};
   const queryFilters: CallQueryFilters = {
     page: Math.max(1, Number(params?.page) || 1),
-    page_size: clampPageSize(params?.page_size),
+    page_size: clampPageSize(params?.page_size, 10),
     q: params?.q?.trim() || undefined,
     urgency: params?.urgency?.trim() || undefined,
     call_type: params?.call_type?.trim() || undefined,
@@ -143,7 +143,7 @@ async function CallsListContent({
   let calls: Call[] = [];
   let total = 0;
   let page = filters.page ?? 1;
-  let pageSize = filters.page_size ?? 20;
+  let pageSize = filters.page_size ?? 10;
   let errorMsg: string | null = null;
 
   try {
@@ -232,7 +232,7 @@ async function CallsListContent({
               <Td className="whitespace-nowrap text-right">
                 <Link
                   href={`/admin/calls/${call.id}`}
-                  className="font-medium text-brand-700 hover:underline"
+                  className={buttonClasses("accent", "sm", "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2")}
                 >
                   Detay
                 </Link>

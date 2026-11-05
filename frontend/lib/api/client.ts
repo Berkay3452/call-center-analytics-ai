@@ -1387,7 +1387,8 @@ export async function getCalls(
 ): Promise<Page<CallListItem>> {
   return apiFetch<Page<CallListItem>>("/calls", {
     method: "GET",
-    params: filters as Record<string, string | number | boolean | null | undefined>,
+    // page_size mevcut backend sözleşmesi; limit sayfa boyutunu açıkça belirtir.
+    params: { ...filters, page_size: filters?.page_size ?? 10, limit: filters?.page_size ?? 10 },
   });
 }
 

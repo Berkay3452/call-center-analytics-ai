@@ -23,7 +23,7 @@ const STATE_OPTIONS: { value: string; label: string }[] = [
 ];
 
 export interface CallsFilterBarProps {
-  /** Sade görünüm: yalnızca arama, marina, aciliyet ve durum (tarih ve kategori gizlenir). */
+  /** Sade görünüm: arama, marina, aciliyet, kategori ve durum (tarihler gizlenir). */
   compact?: boolean;
   showCallType?: boolean;
   showState?: boolean;
@@ -135,15 +135,37 @@ export function CallsFilterBar({
     });
   };
 
-  const sel = "w-auto min-w-40";
+  const sel = compact ? "w-full min-w-0" : "w-auto min-w-40";
+  const categoryFilter = (
+    <>
+      <label className="sr-only" htmlFor="filter-category">
+        Talep Kategorisi
+      </label>
+      <Select
+        id="filter-category"
+        value={urlRequestCategory || "all"}
+        onChange={(e) => applyFilterChanges({ request_category: e.target.value })}
+        disabled={isPending}
+        aria-label="Talep kategorisi"
+        className={sel}
+      >
+        <option value="all">Kategori (tümü)</option>
+        {(Object.keys(REQUEST_CATEGORY_LABELS) as RequestCategory[]).map((c) => (
+          <option key={c} value={c}>
+            {REQUEST_CATEGORY_LABELS[c]}
+          </option>
+        ))}
+      </Select>
+    </>
+  );
 
   return (
-    <div className={`rounded-xl border border-slate-200 bg-white p-4 space-y-3 ${className}`}>
-      <div className="flex flex-wrap items-center gap-2">
+    <div role="search" aria-label="Çağrı filtreleri" className={`rounded-xl border border-slate-200 bg-white p-4 space-y-3 ${className}`}>
+      <div className={compact ? "grid grid-cols-1 items-center gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6" : "flex flex-wrap items-center gap-2"}>
         <label htmlFor="calls-filter-search-input" className="sr-only">
           Arama kutusu
         </label>
-        <div className="relative min-w-60 flex-1">
+        <div className={compact ? "relative min-w-0" : "relative min-w-60 flex-1"}>
           <Input
             id="calls-filter-search-input"
             type="search"
@@ -215,6 +237,8 @@ export function CallsFilterBar({
           </>
         )}
 
+        {compact && categoryFilter}
+
         {hasActiveFilters && (
           <Button variant="ghost" onClick={handleReset} disabled={isPending}>
             Temizle
@@ -247,24 +271,7 @@ export function CallsFilterBar({
             </>
           )}
 
-          <label className="sr-only" htmlFor="filter-category">
-            Talep Kategorisi
-          </label>
-          <Select
-            id="filter-category"
-            value={urlRequestCategory || "all"}
-            onChange={(e) => applyFilterChanges({ request_category: e.target.value })}
-            disabled={isPending}
-            aria-label="Talep kategorisi"
-            className={sel}
-          >
-            <option value="all">Kategori (tümü)</option>
-            {(Object.keys(REQUEST_CATEGORY_LABELS) as RequestCategory[]).map((c) => (
-              <option key={c} value={c}>
-                {REQUEST_CATEGORY_LABELS[c]}
-              </option>
-            ))}
-          </Select>
+          {categoryFilter}
 
           {showStatus && (
             <>
