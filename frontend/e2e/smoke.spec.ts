@@ -689,3 +689,78 @@ test("Issue #202: erişilebilir halka grafikler, altı dilim sınırı ve canlı
   await date.selectOption("oct2026");
   await expect(charts).toHaveCount(4);
 });
+
+
+test("Issue #205: dikey ses, klavye, önceki seviye ve oynatıcı kontrolleri", async ({ page }) => {
+  test.skip(process.env.NEXT_PUBLIC_USE_MOCKS === "false", "Mock çağrı detayı gerektirir.");
+  // Gerçek HTMLAudioElement davranışını ağdaki bir ses dosyasına bağımlı olmadan sına.
+  const wav = Buffer.alloc(44 + 8000 * 30 * 2);
+  wav.write("RIFF", 0); wav.writeUInt32LE(wav.length - 8, 4); wav.write("WAVEfmt ", 8);
+  wav.writeUInt32LE(16, 16); wav.writeUInt16LE(1, 20); wav.writeUInt16LE(1, 22);
+  wav.writeUInt32LE(8000, 24); wav.writeUInt32LE(16000, 28);
+  wav.writeUInt16LE(2, 32); wav.writeUInt16LE(16, 34);
+  wav.write("data", 36); wav.writeUInt32LE(wav.length - 44, 40);
+  await page.route("**/api/backend/calls/*/audio", (route) => {
+    const range = /^bytes=(\d+)-(\d*)$/.exec(route.request().headers()["range"] ?? "");
+    const start = range ? Number(range[1]) : 0;
+    const end = range?.[2] ? Math.min(Number(range[2]), wav.length - 1) : wav.length - 1;
+    return route.fulfill({ status: range ? 206 : 200, contentType: "audio/wav",
+      headers: { "Accept-Ranges": "bytes", ...(range ? { "Content-Range": `bytes ${start}-${end}/${wav.length}` } : {}) },
+      body: wav.subarray(start, end + 1) });
+  });
+  await page.addInitScript(() => {
+    if (!localStorage.getItem("mico-audio-volume")) localStorage.setItem("mico-audio-volume", JSON.stringify({ volume: 70, previous: 70 }));
+  });
+  await page.goto("/admin/calls/11111111-1111-4111-8111-111111111111");
+  const player = page.getByRole("region", { name: "Ses Kaydı Oynatıcı", exact: true });
+  const audio = player.locator("audio");
+  const volume = player.getByRole("slider", { name: "Ses seviyesi", exact: true });
+  await expect(audio).toHaveJSProperty("volume", 0.7);
+  await player.getByRole("button", { name: "Sesi Kapat", exact: true }).hover();
+  await expect(volume).toBeVisible();
+  await expect(volume).toHaveValue("70");
+  await expect(volume).toHaveAttribute("aria-valuemin", "0");
+  await expect(volume).toHaveAttribute("aria-valuemax", "100");
+  await expect(volume).toHaveAttribute("aria-orientation", "vertical");
+  const bounds = await volume.boundingBox();
+  expect(bounds!.height).toBeGreaterThan(bounds!.width);
+  await volume.focus();
+  await volume.press("Home");
+  await expect(audio).toHaveJSProperty("muted", true);
+  await expect(player.locator('[data-volume-level="muted"]')).toBeVisible();
+  await player.getByRole("button", { name: "Sesi Aç", exact: true }).click();
+  await expect(volume).toHaveValue("70");
+  await expect(audio).toHaveJSProperty("muted", false);
+  await volume.press("End");
+  await expect(player.locator('[data-volume-level="high"]')).toBeVisible();
+  await volume.press("Home");
+  for (let i = 0; i < 6; i++) await volume.press("ArrowUp");
+  await expect(volume).toHaveAttribute("aria-valuenow", "30");
+  await expect(audio).toHaveJSProperty("volume", 0.3);
+  await expect(player.locator('[data-volume-level="low"]')).toBeVisible();
+  const result = await new AxeBuilder({ page }).include('[aria-label="Ses Kaydı Oynatıcı"]').withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
+  expect(result.violations).toEqual([]);
+  await volume.press("Escape");
+  await expect(volume).toHaveCount(0);
+  await expect(player.getByRole("button", { name: "Sesi Kapat", exact: true })).toBeFocused();
+  await page.reload();
+  await expect(audio).toHaveJSProperty("volume", 0.3);
+  await player.getByRole("button", { name: "Sesi Kapat", exact: true }).click();
+  await expect(audio).toHaveJSProperty("muted", true);
+  await page.reload();
+  await expect(audio).toHaveJSProperty("muted", true);
+  await player.getByRole("button", { name: "Sesi Aç", exact: true }).click();
+  await expect(audio).toHaveJSProperty("volume", 0.3);
+  await player.getByRole("button", { name: "Oynatma hızı 1x", exact: true }).click();
+  await expect(audio).toHaveJSProperty("playbackRate", 1.25);
+  await expect(audio).toHaveJSProperty("duration", 30);
+  await player.getByRole("slider", { name: "Ses ilerleme çubuğu", exact: true }).press("ArrowRight");
+  await player.getByRole("button", { name: "5 saniye ileri", exact: true }).click();
+  await expect.poll(() => audio.evaluate((element: HTMLAudioElement) => element.currentTime)).toBeGreaterThan(5);
+  await player.getByRole("button", { name: "5 saniye geri", exact: true }).click();
+  await expect.poll(() => audio.evaluate((element: HTMLAudioElement) => element.currentTime)).toBeLessThan(1);
+  await player.getByRole("button", { name: "Oynat", exact: true }).click();
+  await expect(player.getByRole("button", { name: "Duraklat", exact: true })).toBeVisible();
+  await player.getByRole("button", { name: "Duraklat", exact: true }).click();
+  await expect(audio).toHaveJSProperty("paused", true);
+});
