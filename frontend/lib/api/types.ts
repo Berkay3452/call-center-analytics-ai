@@ -52,6 +52,9 @@ export type TranscriptSegmentOut = Schema["TranscriptSegmentOut"];
 export type TranscriptOut = Schema["TranscriptOut"];
 export type CallDetail = Schema["CallDetail"];
 export type CallMatchIn = Schema["CallMatchIn"];
+export type MatchMethod = Schema["MatchMethod"];
+export type CustomerBoatOut = Schema["CustomerBoatOut"];
+export type CustomerSearchItem = Schema["CustomerSearchItem"];
 export type SegmentIn = Schema["SegmentIn"];
 export type CallCreate = Schema["CallCreate"];
 export type CallAccepted = Schema["CallAccepted"];
@@ -60,6 +63,8 @@ export type CallStatus = Schema["CallStatus"];
 // CRM ve KPI Modelleri
 export type CrmReviewStatus = Schema["CrmReviewStatus"];
 export type CrmRecordItem = Omit<Schema["CrmRecordItem"], "edited_fields"> & {
+  customer_id?: string | null;
+  boat_id?: string | null;
   edited_fields?: Record<string, unknown>;
 };
 export type CrmApproveIn = Schema["CrmApproveIn"];

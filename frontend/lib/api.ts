@@ -14,6 +14,8 @@ export {
   DEFAULT_OWNER_ID,
   getChatSessions,
   getChatSessionDetail,
+  matchCall,
+  searchCustomers,
   apiFetch,
 } from "./api/client";
 export type { StreamChatCallbacks } from "./api/client";
@@ -192,6 +194,9 @@ export async function fetchCrmSuggestions(
       callId: item.call_id,
       caller: item.customer_name ?? "İsimsiz",
       boatName: item.boat_name ?? undefined,
+      matchMethod: item.match_method ?? null,
+      matchedCustomerName: item.matched_customer_name ?? null,
+      matchedBoatName: item.matched_boat_name ?? null,
       requestCategory: item.request_category ?? null,
       location: item.location ?? null,
       problem: item.problem ?? null,

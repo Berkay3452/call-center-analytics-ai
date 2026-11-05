@@ -187,7 +187,16 @@ export const CRM_REVIEW_STATUS_LABELS: Record<CrmReviewStatus, string> = {
 // ---------------------------------------------------------------------------
 // CRM Önerisi Kartı (Sayfalar ve API için)
 // ---------------------------------------------------------------------------
+export type MatchMethod = "telefon" | "ad_tekne" | "elle" | "yok";
+
 export interface CrmSuggestion extends CrmRecord {
+  callerPhone?: string;
+  boatModel?: string;
+  customerId?: string | null;
+  boatId?: string | null;
+  matchMethod?: MatchMethod | null;
+  matchedCustomerName?: string | null;
+  matchedBoatName?: string | null;
   callId: string;
   caller: string;
   boatName?: string;

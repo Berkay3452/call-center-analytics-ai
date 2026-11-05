@@ -29,7 +29,7 @@ const WELCOME_MESSAGE: ChatMessage = {
   role: "assistant",
   content:
     "Merhaba! Ben Miço Usta Tekne Asistanı. Teknenizin servis geçmişi, marina faturaları, periyodik bakım takvimi ve acil durum prosedürleri hakkında size yardımcı olabilirim.",
-  timestamp: new Date().toISOString(),
+  timestamp: "",
   citations: [],
   found: true,
 };

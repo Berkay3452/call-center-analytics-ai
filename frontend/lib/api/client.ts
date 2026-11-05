@@ -37,6 +37,7 @@ import type {
   ServiceMode,
   Urgency,
   NextAction,
+  CustomerSearchItem,
 } from "./types";
 
 export type { ServiceOrderStatusUpdate };
@@ -60,6 +61,48 @@ interface MockAnalysisProgress {
 }
 const MOCK_UNMATCHED_CALL_ID = "22222222-2222-4222-8222-222222222222";
 const mockMatchedCalls = new Set<string>();
+const mockCustomersList: CustomerSearchItem[] = [
+  {
+    id: "11111111-2222-4111-8111-111111111111",
+    name: "Fatma Kaya",
+    phone: "+90 533 333 44 55",
+    boats: [
+      { id: "22222222-3333-4222-8222-222222222222", name: "Albatros", model: "Beneteau 45" },
+    ],
+  },
+  {
+    id: "11111111-1111-4111-8111-111111111111",
+    name: "Burak Çelik",
+    phone: "+90 532 111 22 33",
+    boats: [
+      { id: "22222222-1111-4222-8222-222222222222", name: "Rüzgar", model: "Jeanneau Merry Fisher 795" },
+    ],
+  },
+  {
+    id: "11111111-3333-4111-8111-111111111111",
+    name: "Mehmet Deniz",
+    phone: "+90 532 555 66 77",
+    boats: [
+      { id: "22222222-4444-4222-8222-222222222222", name: "Poseidon", model: "Jeanneau 54" },
+    ],
+  },
+  {
+    id: "11111111-4444-4111-8111-111111111111",
+    name: "Kemal Aydoğan",
+    phone: "+90 533 888 99 00",
+    boats: [
+      { id: "22222222-5555-4222-8222-222222222222", name: "Lodos", model: "Hanse 418" },
+    ],
+  },
+  {
+    id: "11111111-5555-4111-8111-111111111111",
+    name: "Ayşe Demir",
+    phone: "+90 532 999 88 77",
+    boats: [
+      { id: "22222222-6666-4222-8222-222222222222", name: "Yakamoz", model: "Bavaria 42" },
+    ],
+  },
+];
 const MOCK_CHAT_SESSION_IDS = [
   "5e8c2a40-3f1b-4d6e-9a7c-0b1d2e3f4a5b",
   "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
@@ -616,13 +659,77 @@ async function handleMockRequest<T>(
     return mockCallStatus as unknown as T;
   }
 
+  // GET /customers (Müşteri ve tekne arama, #209)
+  if (method === "GET" && path === "/customers") {
+    const q = typeof options.params?.q === "string" ? options.params.q.trim() : "";
+    const limit = Math.min(50, Math.max(1, Number(options.params?.limit) || 20));
+    if (!q) {
+      return mockCustomersList.slice(0, limit) as unknown as T;
+    }
+    const foldText = (str: string) =>
+      str
+        .replace(/İ/g, "i")
+        .replace(/I/g, "ı")
+        .toLowerCase()
+        .replace(/[ığüşöçâîû]/g, (ch) => ({ ı: "i", ğ: "g", ü: "u", ş: "s", ö: "o", ç: "c", â: "a", î: "i", û: "u" }[ch] || ch))
+        .replace(/[^a-z0-9\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+
+    const foldedQ = foldText(q);
+    const digitsQ = q.replace(/\D/g, "");
+
+    const filtered = mockCustomersList.filter((c) => {
+      const foldedName = foldText(c.name);
+      if (foldedQ && foldedName.includes(foldedQ)) return true;
+      if (digitsQ.length >= 3 && c.phone && c.phone.replace(/\D/g, "").includes(digitsQ)) return true;
+      if (foldedQ && c.boats?.some((b) => foldText(b.name).includes(foldedQ))) return true;
+      return false;
+    });
+
+    return filtered.slice(0, limit) as unknown as T;
+  }
+
   // PUT /calls/:id/match (elle müşteri/tekne eşleştirme, #119)
   if (method === "PUT" && /^\/calls\/[^/]+\/match$/.test(path)) {
     const id = path.split("/")[2];
+    let payload: CallMatchIn = { customer_id: "" };
+    try {
+      if (typeof options.body === "string") {
+        payload = JSON.parse(options.body);
+      }
+    } catch {
+      // ignore
+    }
+    const matchedCustomer = mockCustomersList.find((c) => c.id === payload.customer_id);
+    const matchedBoat = matchedCustomer?.boats?.find((b) => b.id === payload.boat_id);
+
+    if (!matchedCustomer || !matchedBoat) {
+      throw new ApiError({ status: 400, code: "INVALID_MATCH", message: "Müşteri ve tekne seçimi geçersiz.", requestId: null });
+    }
     mockMatchedCalls.add(id);
+    const crmItem = mockSeedCrm.find((c) => c.call_id === id);
+    if (crmItem) {
+      crmItem.customer_id = payload.customer_id;
+      crmItem.boat_id = payload.boat_id;
+      crmItem.match_method = "elle";
+      if (matchedCustomer) {
+        crmItem.matched_customer_name = matchedCustomer.name;
+        crmItem.customer_name = matchedCustomer.name;
+      }
+      if (matchedBoat) {
+        crmItem.matched_boat_name = matchedBoat.name;
+        crmItem.boat_name = matchedBoat.name;
+      }
+    }
+
     return {
       ...mockCallDetail,
       id,
+      customer_id: payload.customer_id,
+      boat_id: payload.boat_id ?? null,
+      customer_name: matchedCustomer?.name ?? mockCallDetail.customer_name,
+      boat_name: matchedBoat?.name ?? mockCallDetail.boat_name,
       match_method: "elle",
     } as unknown as T;
   }
@@ -630,6 +737,18 @@ async function handleMockRequest<T>(
   // 6. GET /calls/:id (Tekil çağrı detayı)
   if (method === "GET" && /^\/calls\/[^/]+$/.test(path)) {
     const id = path.split("/")[2];
+    if (id === MOCK_UNMATCHED_CALL_ID) {
+      const isMatched = mockMatchedCalls.has(id);
+      return {
+        ...mockCallDetail,
+        id,
+        customer_id: isMatched ? "11111111-2222-4111-8111-111111111111" : null,
+        boat_id: isMatched ? "22222222-3333-4222-8222-222222222222" : null,
+        customer_name: "Fatma Kaya",
+        boat_name: "Albatros",
+        match_method: isMatched ? "elle" : "yok",
+      } as unknown as T;
+    }
     if (mockCallDetail.id === id) {
       return mockCallDetail as unknown as T;
     }
@@ -933,7 +1052,22 @@ async function handleMockRequest<T>(
     const page = Math.max(1, Number(params?.page) || 1);
     const pageSize = Math.max(1, Number(params?.page_size) || 20);
     const start = (page - 1) * pageSize;
-    const pagedItems = list.slice(start, start + pageSize);
+    const pagedItems = list.slice(start, start + pageSize).map((item) => {
+      const isMatched = item.call_id === MOCK_UNMATCHED_CALL_ID
+        ? mockMatchedCalls.has(item.call_id)
+        : (item.match_method ? item.match_method !== "yok" : true);
+      const matchMethod = isMatched
+        ? (item.call_id === MOCK_UNMATCHED_CALL_ID ? "elle" : (item.match_method ?? "telefon"))
+        : "yok";
+      return {
+        ...item,
+        customer_id: isMatched ? (item.customer_id ?? mockCustomersList.find((c) => c.name === item.customer_name)?.id ?? mockCustomersList[1].id) : null,
+        boat_id: isMatched ? (item.boat_id ?? mockCustomersList.find((c) => c.name === item.customer_name)?.boats?.[0]?.id ?? mockCustomersList[1].boats?.[0]?.id) : null,
+        match_method: matchMethod,
+        matched_customer_name: isMatched ? (item.matched_customer_name ?? item.customer_name) : null,
+        matched_boat_name: isMatched ? (item.matched_boat_name ?? item.boat_name) : null,
+      };
+    });
 
     return {
       items: pagedItems,
@@ -1323,10 +1457,17 @@ export function getCallAudioUrl(callId: string): string {
 export async function getCrmRecords(
   filters?: CallQueryFilters,
 ): Promise<Page<CrmRecordItem>> {
-  return apiFetch<Page<CrmRecordItem>>("/crm", {
+  const result = await apiFetch<Page<CrmRecordItem>>("/crm", {
     method: "GET",
     params: filters as Record<string, string | number | boolean | null | undefined>,
   });
+  // Older CRM responses omit linkage IDs; read the call rather than infer from names.
+  const items = await Promise.all(result.items.map(async (item) => {
+    if (item.customer_id !== undefined && item.boat_id !== undefined) return item;
+    const call = await apiFetch<CallDetail>(`/calls/${item.call_id}`, { method: "GET" });
+    return { ...item, customer_id: call.customer_id, boat_id: call.boat_id };
+  }));
+  return { ...result, items };
 }
 
 /**
@@ -1415,6 +1556,17 @@ const MOCK_KNOWLEDGE: Record<
   string,
   { reply: string; sources: SourceRef[]; found: boolean }
 > = {
+  "Kaç bakım hakkım kaldı?": {
+    reply: "Poyraz teknenizin bakım paketi kapsamında 2 bakım hakkınız kaldı.",
+    sources: [{
+      kind: "subscription",
+      record_id: "mock-maintenance-package",
+      title: "Poyraz bakım paketi",
+      date: "2026-10-01",
+      excerpt: "Yıllık paket: 4 bakım, kullanılan: 2, kalan: 2.",
+    }],
+    found: true,
+  },
   "Son motor bakımım ne zaman yapıldı?": {
     reply:
       "Tekneniz Poyraz (Motoryat 42) için son periyodik motor bakımı 15 Ağustos 2026 tarihinde Kalamış Marina'da usta Mehmet Şimşek tarafından yapılmıştır. Motor yağı, yakıt filtreleri ve impeller değişimi tamamlanmıştır.",
@@ -1805,6 +1957,22 @@ export async function matchCall(
   return apiFetch<CallDetail>(`/calls/${callId}/match`, {
     method: "PUT",
     body: JSON.stringify(payload),
+  });
+}
+
+/**
+ * GET /customers - Elle eşleştirme için müşteri ve tekneleri arar (#209)
+ */
+export async function searchCustomers(
+  query?: string,
+  limit: number = 20,
+): Promise<CustomerSearchItem[]> {
+  return apiFetch<CustomerSearchItem[]>("/customers", {
+    method: "GET",
+    params: {
+      ...(query ? { q: query } : {}),
+      limit,
+    },
   });
 }
 

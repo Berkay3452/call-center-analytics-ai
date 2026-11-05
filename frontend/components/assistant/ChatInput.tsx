@@ -1,5 +1,7 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, useSyncExternalStore } from "react";
 import { Button } from "@/components/ui";
+
+const subscribeToHydration = () => () => {};
 
 interface ChatInputProps {
   onSendMessage: (content: string) => void;
@@ -16,6 +18,7 @@ export function ChatInput({
   onStopStreaming,
   isStreaming = false,
 }: ChatInputProps) {
+  const hydrated = useSyncExternalStore(subscribeToHydration, () => true, () => false);
   const [text, setText] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -54,7 +57,7 @@ export function ChatInput({
         onChange={(e) => setText(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        disabled={disabled || isStreaming}
+        disabled={!hydrated || disabled || isStreaming}
         className="max-h-[140px] min-h-[38px] flex-1 resize-none bg-transparent px-2 py-1.5 text-sm text-slate-900 placeholder:text-slate-500 focus:outline-none disabled:opacity-50"
       />
       {isStreaming && onStopStreaming ? (
