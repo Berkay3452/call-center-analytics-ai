@@ -12,7 +12,7 @@ Planlayıcı soruyu cevaplamaz ve `owner_id` ile ilgilenmez; yetki araçlarda ve
 from datetime import UTC, datetime, timedelta, timezone
 from typing import Literal
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from app.agents.grounding import normalize
 from app.assistant.formatting import MONTHS
@@ -35,6 +35,16 @@ class Plan(BaseModel):
         default_factory=list,
         description="get_job_expenses için iş/parça anahtar sözcükleri (ör. ['akü']).",
     )
+
+    @field_validator("topics", mode="before")
+    @classmethod
+    def _topics_lenient(cls, value: object) -> object:
+        """Küçük model `null`, boş metin veya tek metin dönebilir; liste olarak oku."""
+        if value is None or value == "":
+            return []
+        if isinstance(value, str):
+            return [value]
+        return value
 
     @model_validator(mode="after")
     def _tool_only_for_numeric(self) -> "Plan":
