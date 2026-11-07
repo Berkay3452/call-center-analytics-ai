@@ -7,7 +7,7 @@
     "problem": "Motor sıcaklık alarmı çalıyor, sıcaklık yükseliyor",
     "service_mode": "yerinde_servis",
     "urgency": "yuksek",
-    "potential_job": null,
+    "potential_job": "Motor ve makine arıza tespiti",
     "next_action": "servis_randevusu_olustur"
   },
   "sales": {

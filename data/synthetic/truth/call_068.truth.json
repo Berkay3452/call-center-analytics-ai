@@ -7,7 +7,7 @@
     "problem": "Akü bölmesinden duman ve yanık kokusu geliyor",
     "service_mode": "yerinde_servis",
     "urgency": "acil",
-    "potential_job": null,
+    "potential_job": "Elektrik arıza tespiti",
     "next_action": "usta_ata"
   },
   "sales": {

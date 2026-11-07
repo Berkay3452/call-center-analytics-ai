@@ -7,7 +7,7 @@
     "problem": "Gulet motorunun soğutma suyu sıcaklığı yükseliyor",
     "service_mode": "yerinde_servis",
     "urgency": "yuksek",
-    "potential_job": null,
+    "potential_job": "Motor ve makine arıza tespiti",
     "next_action": "aksiyon_yok"
   },
   "sales": {

@@ -7,7 +7,7 @@
     "problem": "Yağ basıncı alarmı, iki motor da kapatıldı, tekne denizde sürükleniyor",
     "service_mode": "yerinde_servis",
     "urgency": "acil",
-    "potential_job": null,
+    "potential_job": "Motor ve makine arıza tespiti",
     "next_action": "usta_ata"
   },
   "sales": {

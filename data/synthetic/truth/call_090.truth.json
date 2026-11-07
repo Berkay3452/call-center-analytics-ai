@@ -7,7 +7,7 @@
     "problem": "Sol motorun yağ seviyesi sürekli düşüyor",
     "service_mode": "yerinde_servis",
     "urgency": "normal",
-    "potential_job": null,
+    "potential_job": "Motor ve makine arıza tespiti",
     "next_action": "geri_ara"
   },
   "sales": {

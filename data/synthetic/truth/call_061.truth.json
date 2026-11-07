@@ -7,7 +7,7 @@
     "problem": "Hidrofor sık sık devreye giriyor, musluk basıncı düşük",
     "service_mode": "yerinde_servis",
     "urgency": "normal",
-    "potential_job": null,
+    "potential_job": "Arıza tespiti ve onarım",
     "next_action": "geri_ara"
   },
   "sales": {

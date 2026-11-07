@@ -7,7 +7,7 @@
     "problem": "Sintine alarmı çalıyor, tekne su alıyor",
     "service_mode": "yerinde_servis",
     "urgency": "acil",
-    "potential_job": null,
+    "potential_job": "Arıza tespiti ve onarım",
     "next_action": "usta_ata"
   },
   "sales": {

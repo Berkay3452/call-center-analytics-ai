@@ -7,7 +7,7 @@
     "problem": "Sahil elektriği fişinde ısınma, inverter uyarı veriyor",
     "service_mode": "yerinde_servis",
     "urgency": "normal",
-    "potential_job": null,
+    "potential_job": "Elektrik arıza tespiti",
     "next_action": "geri_ara"
   },
   "sales": {
