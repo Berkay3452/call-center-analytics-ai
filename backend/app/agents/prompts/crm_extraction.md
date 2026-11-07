@@ -24,7 +24,7 @@ Alanlar:
   - atolyede: tekne veya parça atölyeye/tersaneye getirilecek
   - uzaktan_destek: telefonda yönlendirme veya bilgiyle çözülecek
   - Görüşmede bir iş konuşulduysa, satış kaybedilse veya müşteri teklif aşamasında kalsa da işin doğası gereği hizmet biçimini doldur: usta tekneye/marinaya gidecekse yerinde_servis; karaya çekme, karina/osmoz, parça veya ekipmanın atölyeye alınması atolyede.
-  - Yalnızca genel bilgi sorulduysa (iş konuşulmadı) null bırak.
+  - Yalnızca genel bilgi sorulduysa (iş konuşulmadı), mevcut işin durumu soruldu veya yalnızca fiyat/teklif isteniyor ve hizmetin nasıl verileceği konuşulmadıysa null bırak (hizmet biçimini tahmin etme).
 - urgency: Aciliyet.
   - acil: can, tekne veya çevre için hemen risk (su alma, batma riski, yangın, duman, yakıt kaçağı, denizde kalma)
   - yuksek: tekne kullanılamıyor veya müşteri kısa sürede (bugün/yarın) çözüm istiyor
