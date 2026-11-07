@@ -1,7 +1,11 @@
 # Sistem Mimarisi v4
 
 **Proje:** Yapay Zekâ Destekli Sesli Asistan ve Çağrı Merkezi Analitiği Sistemi
-**Sürüm:** v4 · **Tarih:** 2026-10-17 · **Durum:** Güncel · **Önceki sürümler:** v1, v2, v3.0, v3.1 (git geçmişinde)
+**Sürüm:** v4.2 · **Tarih:** 2026-11-07 · **Durum:** Güncel · **Önceki sürümler:** v1, v2, v3.0, v3.1, v4, v4.1 (git geçmişinde)
+
+**v4.2'de değişenler (7 Kasım, 8. hafta):** Elle müşteri/tekne eşleştirme arayüzü ve arama ucu, analiz durumu şeridi (çağrı aşaması; süren çağrıda yeniden analiz hata vermez), CRM alan adları Türkçe, güven skorları, tek işin tutarı sorularına Miço AI cevabı, Miço AI sohbet kalitesi ölçümü, dayanıklılık ve yük ölçümleri, yetki matrisi testleri, saat dilimi tutarlılığı, Docker'da uçtan uca duman testi, çağrı ve CRM listelerinde filtre ve sayfalama düzenlemeleri. §5, §6, §7, §11, §12 güncellendi.
+
+**v4.1'de değişenler (28 Ekim):** CRM onay arayüzü, Servis Emirleri, çağrı yükleme akışı, çağrı–müşteri/tekne eşleştirme, STT kararı, 50 çağrılık veri ve doğruluk ölçümü, Docker ile tek komutla çalıştırma, ses depolama soyutlaması, E2E ve erişilebilirlik testleri tamamlandı. §6.1, §6.3, §7, §10, §11, §12 güncellendi.
 
 **v4'te değişenler:** v3.1'den bu yana sistem çalışır hale geldi; bu sürüm belgeyi gerçek duruma getirir. Çağrı analizi, CRM onay akışı, KPI ekranları ve Miço AI sohbeti gerçek veriyle uçtan uca çalışıyor. Seçilen teknolojiler (LLM, STT, embedding), takılı çağrı kurtarma, LLM yedek modeli ve çok turlu sohbet bağlamı eklendi. Diyagramlar yenilendi. Ayrıntılar §13'te.
 
@@ -21,7 +25,8 @@
 | Tarih | Olay |
 |-------|------|
 | 12–18 Ekim (5. hafta) | Eksik parçalar tamamlandı: CRM onay akışı, yeniden analiz, takılı çağrı kurtarma, LLM dayanıklılığı, çok turlu sohbet |
-| 19–25 Ekim (6. hafta) | Vize demosunu işlevsel olarak tamamlama (CRM onay arayüzü, servis emirleri, çağrı yükleme akışı, doğruluk ve veri) |
+| 19–25 Ekim (6. hafta) | Vize demosu işlevsel olarak tamamlandı (CRM onay arayüzü, servis emirleri, çağrı yükleme akışı, doğruluk ve veri, Docker) |
+| 26 Ekim–8 Kasım (7.–8. hafta) | Demo provası, Miço Usta uygulamasına entegrasyon yöntemi, ölçümlerin tamamlanması, kod dondurma |
 | 16 Kasım 23:59 | Vize sunumu yükleme (sunum: 17–19 Kasım) |
 | 14 Aralık | Final sunumu yükleme (sunum: 15–17 Aralık); **canlıya alma final zamanı** |
 | 28 Aralık | Demo ve tez son teslim |
@@ -32,11 +37,11 @@
 ## 3. Temel Kararlar
 
 - **Hazır uygulamaya entegrasyon.** Miço Usta (Next.js arayüz, .NET 10 backend, PostgreSQL, Redis, Google Cloud) olduğu gibi kalır; biz ona yeni sayfalar ekleriz.
-- **AI servisimiz ayrı bir Python servisi (FastAPI) olarak çalışır** ve REST (JSON) üzerinden konuşur. Bugün arayüz, sunucu tarafı bir proxy ve servis anahtarıyla doğrudan bizim servisimizi çağırıyor; .NET API ile entegrasyon yöntemi hocadan bekleniyor. *(Hocaya soruldu.)*
+- **AI servisimiz ayrı bir Python servisi (FastAPI) olarak çalışır** ve REST (JSON) üzerinden konuşur. Bugün arayüz, sunucu tarafı bir proxy ve servis anahtarıyla doğrudan bizim servisimizi çağırıyor; .NET API ile entegrasyon yöntemi hocayla konuşulacak. *(Açık karar, §12.)*
 - **Orkestratör LangGraph ile kurulu.** Önce Çağrı Sınıflandırma, sonra diğer üç agent paralel çalışır. Yeni agent eklemek akışı değiştirmez.
-- **LLM sağlayıcısı ayardan seçilir.** Geliştirmede NVIDIA'nın ücretsiz modelleri (hızlı ve güçlü katman) kullanılıyor; Gemini/Vertex AI uyumluluğu korunuyor. Geçici hatada (zaman aşımı, kota, sunucu hatası) bir kez **yedek modele** geçilir; istek ve agent süreleri sınırlıdır.
+- **LLM sağlayıcısı ayardan seçilir.** Geliştirmede NVIDIA'nın ücretsiz modelleri (hızlı: `nemotron-3.5-lightning-30b`, güçlü: `nemotron-3.5-super-vl-120b`) kullanılıyor; Gemini/Vertex AI uyumluluğu korunuyor. Geçici hatada (zaman aşımı, kota, sunucu hatası) bir kez **yedek modele** geçilir; istek ve agent süreleri sınırlıdır.
 - **Yapılandırılmış çıktı:** Her agent şemaya uygun JSON döner; çıktı doğrulanmadan kayda yazılmaz.
-- **Veritabanı:** Standart PostgreSQL + pgvector; şema **Alembic** migration'larıyla kurulur (Supabase Auth ve RLS'e bağımlılık yok). Geliştirmede Docker ile yerel PostgreSQL 17 çalışır; canlıda büyük ihtimalle kendi PostgreSQL'imiz. *(Hocaya sorulacak.)*
+- **Veritabanı:** Standart PostgreSQL + pgvector; şema **Alembic** migration'larıyla kurulur (Supabase Auth ve RLS'e bağımlılık yok). Geliştirmede ve demoda Docker ile yerel PostgreSQL 17 çalışır (Supabase kullanılmıyor); canlıda kendi PostgreSQL'imiz veya Cloud SQL. *(Hocaya sorulacak.)*
 - **Veri tamamen sentetiktir** (gerçek müşteri verisi yok, KVKK). LLM'e giden metin kişisel veriden arındırılır.
 - **Tekne sahibi yalnızca kendi teknesinin verisini görür.** Asistan, oturumdaki kullanıcının yetkisiyle çalışır; sohbet geçmişi de yalnızca sahibin kendi oturumundan okunur.
 - **Cevaplar kaynaklıdır.** Miço AI cevabındaki her iddia bir kayda dayanır; sayılar kodla hesaplanır, LLM sayı uydurmaz.
@@ -56,16 +61,16 @@ Not: Gezdiğimiz örnek site (Figma Make ile hazırlanmış bir prototip) arayü
 | Katman | Miço Usta (hazır) | Bizim AI servisimiz |
 |--------|-------------------|---------------------|
 | Backend | .NET 10 | Python 3.12 + FastAPI |
-| Arayüz | Next.js | Next.js 16 (Ahmet, hazır uygulamaya sayfa ekler), Tailwind |
+| Arayüz | Next.js | Next.js 16 + React 19 + TypeScript, Tailwind; Playwright (E2E) |
 | Veritabanı | PostgreSQL | PostgreSQL 17 + pgvector; migration'lar Alembic |
 | Kuyruk / önbellek | Redis | Celery + Redis; Beat ile periyodik görevler |
 | Bulut | Google Cloud | Google Cloud'da canlıya alma (final) |
 | LLM | Vertex AI / Gemini | Sağlayıcı arayüzü; geliştirmede NVIDIA ücretsiz modelleri, yedek model |
-| Konuşma tanıma | — | faster-whisper (yerel), Whisper API, stub; sağlayıcı kararı #124'te |
+| Konuşma tanıma | — | faster-whisper (yerel; varsayılan `small`, doğruluk için `medium`), stereo kayıtta temsilci sol / müşteri sağ kanal; Whisper API ve stub yedek (karar: `docs/stt_karari.md`) |
 | Embedding | — | bge-m3, TEI konteynerinde (Docker) |
 | Ses üretimi (seed) | — | Piper (çevrimdışı Türkçe) |
 | Agent orkestrasyonu | — | LangGraph + LangChain |
-| Geliştirme | — | uv, ruff, mypy, pytest; GitHub Actions CI (duman testi dahil) |
+| Geliştirme | — | uv, ruff, mypy, pytest (~1.250 test); GitHub Actions CI (duman testi dahil); Docker Compose |
 
 Kilit dosyaları (`uv.lock`, `package-lock.json`) repoda tutulur; `requirements.txt` `uv.lock`'tan üretilir.
 
@@ -81,6 +86,7 @@ Kilit dosyaları (`uv.lock`, `package-lock.json`) repoda tutulur; `requirements.
 - Sonuç iki yere gider: **CRM** (müşteri ve servis emri önerisi) ve **Çağrı Analitiği** (KPI).
 - **CRM onayı:** Admin öneriyi onaylar, reddeder veya alanları düzenleyerek onaylar. Servis emri yalnızca ilk onayda ve çağrının müşteri ile teknesi eşleşmişse oluşur. Onay analiz sürümüne bağlıdır; çağrı yeniden analiz edilirse yeni sürüm yeniden "bekliyor" olur.
 - **Yeniden analiz:** Arayüzdeki düğmeyle çağrı için yeni bir analiz sürümü üretilir; eski sürümler saklanır.
+- **Müşteri ve tekne eşleştirme:** Çağrı önce telefon (kesin), sonra müşteri adı + tekne adı ile kayıtlı müşteri ve tekneye bağlanır (`calls.match_method`: telefon, ad_tekne, elle, yok). Birden fazla aday varsa bağlanmaz. Eşleşmeyen çağrıda CRM kartı "Müşteri ve tekne seç" düğmesini gösterir: yönetici ad, telefon veya tekne adıyla arar (`GET /customers`), seçimi `PUT /calls/{id}/match` ile kaydeder; sonra öneri onaylanabilir. `GET /crm` satırı eşleşme durumunu (`match_method`, bağlı müşteri ve tekne adı) verir.
 - **Dayanıklılık:** Çağrı durumları: beklemede, yazıya çevriliyor, işleniyor, tamam, kısmi, başarısız. İşçi ölür veya görev takılırsa Beat dakikada bir tarar; takılı çağrı bir kez yeniden kuyruğa alınır, ikinci kez takılırsa "başarısız" olur ve yeniden analiz düğmesi devreye girir. LLM zaman aşımında yedek modele geçilir. Bir agent çökerse diğerlerinin sonucu korunur ve kayıt "kısmi" tamamlanır.
 - Hocanın örneği: "Motor çalışıyor ama gaz verdiğimde devir yükselmiyor, Tuzla Marina'da, yarın usta gelebilir mi?" → müşteri talebi: motor arızası, lokasyon: Tuzla Marina, problem: motor devir almıyor, talep: yerinde servis, aciliyet: yüksek, potansiyel iş: motor arıza tespiti, sonraki aksiyon: servis randevusu oluştur.
 
@@ -91,7 +97,7 @@ Kilit dosyaları (`uv.lock`, `package-lock.json`) repoda tutulur; `requirements.
 - **Satış Analiz Agent'ı:** satış sonucu ve kayıp nedeni (fiyat, geç dönüş).
 - **Özetleme Agent'ı:** kısa görüşme özeti.
 - **Orkestratör:** agent'ları çalıştırır, her çıktıyı şemasıyla yeniden doğrular ve sonucu yazar. Doğrulama hatasında agent'a bir kez düzeltme şansı verir; her agent için toplam süre bütçesi vardır. Her agent çalışması (süre, deneme sayısı, kullanılan model, yedek modele geçip geçmediği, hata) kaydedilir.
-- **Ölçülen doğruluk (sentetik veri, 30 çağrı):** genel yaklaşık %88; aciliyet ve problem alanları yaklaşık %70, sonraki aksiyon yaklaşık %77. Hedef ≥ %85 (6. hafta, dokunulmaz test setiyle).
+- **Ölçülen doğruluk (sentetik veri, 50 çağrı: 30 geliştirme, 20 dokunulmaz test; her ölçüm 3 tekrar):** test setinde genel **%93,2** (ilk ölçüm %87,8). Aciliyet %91,7, problem %100, talep kategorisi %95, hizmet biçimi %90, satış sonucu %100. Hedef ≥ %85 tutmayan tek alan **sonraki aksiyon (%80)**. Ayrıntı: `docs/agent_dogrulugu.md`.
 
 **KPI'ların kaynağı**
 
@@ -125,7 +131,7 @@ KPI'lar İstanbul saatine göre günlere ayrılır.
 - **Çağrı verisi:** Senaryo matrisinden (arıza türü, marina, aciliyet, sonuç) LLM ile Türkçe müşteri-usta diyalogları üretilir, doğru etiketler ve çağrı bilgisi (zaman, cevap süresi, sonuç) ayrıca kaydedilir. Seed çağrılarının sesi Piper ile üretilir.
 - **Tekne verisi:** Miço Usta şemasına uygun tekne, müşteri, servis kaydı, gider, abonelik ve usta notları üretilir (Miço AI'nin cevap kaynağı).
 - Doğru etiketler baştan bilindiği için sistemin doğruluğu otomatik ölçülür (`scripts.evaluate`).
-- Bugün 30 çağrı var. Hedef: 90 çağrıya çıkarmak (içinde dokunulmaz test seti ve sesler); finale doğru yaklaşık 150.
+- Bugün **50 çağrı** var (30 geliştirme, 20 dokunulmaz test; ses dosyaları stereo). Çağrı sayısını 90–150'ye çıkarmak ertelendi.
 
 ## 7. Arayüz: Hazır Uygulamaya Eklenen Ekranlar
 
@@ -133,9 +139,9 @@ KPI'lar İstanbul saatine göre günlere ayrılır.
 |-------|-------|-------|
 | Admin | **Çağrı Analitiği:** KPI kartları, grafikler, kaybedilen satış nedenleri, tarih ve marina filtresi | Çalışıyor |
 | Admin | **Çağrılar:** sayfalı liste, arama ve filtreler; **çağrı detayı:** transkript, ses oynatıcı, CRM önerisi, yeniden analiz | Çalışıyor |
-| Admin | **Çağrı yükleme** ve ilerleme göstergesi | Çalışıyor; baştan sona akış 6. haftada (#115) |
-| Admin | **CRM önerisi:** liste çalışıyor; onayla, reddet, düzenle arayüzü | 6. hafta (#113) |
-| Admin | **Servis Emirleri** sayfası | 6. hafta (#114) |
+| Admin | **Çağrı yükleme** ve ilerleme göstergesi (sayfa yenilenince izleme sürer, aynı ses ikinci kez yüklenirse mevcut çağrıya yönlenir) | Çalışıyor |
+| Admin | **CRM önerisi:** Bekliyor / Onaylandı / Reddedildi sekmeleri; onayla, reddet, düzenle | Çalışıyor |
+| Admin | **Servis Emirleri:** liste, filtre, kaynak çağrıya bağlantı, sıralı durum ilerletme | Çalışıyor |
 | Tekne Sahibi | **Asistan:** sohbet penceresi, kaynak kartları, oturum geçmişi | Çalışıyor |
 | Usta | Değişiklik yok | — |
 
@@ -164,43 +170,48 @@ Arayüz ile AI servisi arasındaki sözleşme `docs/api.md` ve `frontend/openapi
 ## 10. Canlıya Alma
 
 - Hedef: **Google Cloud**; hoca "final zamanında canlıya alırız" dedi.
-- Hazırlık (6. hafta): servisler için Dockerfile'lar ve tek komutla tüm sistem (docker compose) (#120), ses depolama soyutlaması (#121).
+- Hazırlık tamamlandı: servisler için Dockerfile'lar ve tek komutla tüm sistem (docker compose, 6 parça) (#120); ses depolama soyutlaması: yerel klasör ve Google Cloud Storage sağlayıcısı (#121). Gerçek Google Cloud hesabında henüz denenmedi. Rehber: `docs/canliya_alma.md`.
 - Çalıştırma biçimi (konteyner, VM) ve veritabanı yönetimi netleşecek. LLM tarafında Vertex AI/Gemini uyumluluğu önemlidir; sağlayıcı arayüzümüz bunu destekler.
 - Geliştirmede tek komutla başlatıcı vardır: `uv run python -m scripts.dev` (altyapı, migration, seed, indeks, işçi, zamanlayıcı, API). Rehber: `docs/calistirma.md`.
 
-## 11. Mevcut Durum (17 Ekim)
+## 11. Mevcut Durum (28 Ekim)
 
 | Alan | Durum |
 |------|-------|
-| Backend iskeleti, CI (lint, tip, ~740 test, duman testi) | **Hazır** |
-| Dört analiz agent'ı + orkestratör, gerçek LLM ile ölçüm | **Hazır** (genel ~%88; aciliyet ve problem iyileştirilecek) |
-| STT (faster-whisper, Whisper API, stub) ve seed sesleri | **Hazır**; gerçekçi telefon sesiyle deneme ve sağlayıcı kararı bekliyor (#124) |
-| CRM onay akışı (onayla, reddet, düzenle, servis emri) | **Backend hazır**; arayüz 6. hafta |
-| KPI ve çağrı ekranları, ses oynatıcı, yeniden analiz | **Hazır** |
-| Miço AI: planlayıcı, hibrit arama, araçlar, takip soruları, SSE, oturum geçmişi | **Hazır** |
-| LLM dayanıklılığı (zaman aşımı, yedek model, gecikme kaydı) ve takılı çağrı kurtarma | **Hazır** |
-| Tek komutla başlatıcı ve çalıştırma rehberi | **Hazır** |
-| Çağrı → müşteri ve tekne eşleştirme | **Yapılacak** (6. hafta, #119) |
-| Dockerfile ve docker compose, bulut ses depolama | **Yapılacak** (6. hafta) |
-| Uçtan uca zincir testi (ses → analiz → CRM/KPI → sohbet) | **Takımca test edilecek** (#59) |
+| Backend (FastAPI, 22 API işlemi, 16 tablo), CI (lint, tip, ~1.250 test, duman testi) | **Hazır** |
+| Dört analiz agent'ı + orkestratör, gerçek LLM ile ölçüm | **Hazır** (test setinde genel %93; sonraki aksiyon %80) |
+| STT (faster-whisper stereo, seed sesleri) | **Hazır**; karar `docs/stt_karari.md`; gerçek santral kaydıyla denenmedi |
+| CRM onay akışı ve arayüzü (onayla, reddet, düzenle, servis emri) | **Hazır** |
+| Çağrı → müşteri ve tekne eşleştirme | **Hazır** (otomatik + elle eşleştirme arayüzü) |
+| Analiz durumu şeridi (kuyruk, yazıya çevirme, analiz), süren çağrıda yeniden analiz isteği hata vermez | **Hazır** |
+| Servis Emirleri, KPI ve çağrı ekranları, çağrı yükleme, ses oynatıcı, yeniden analiz | **Hazır** |
+| Miço AI: planlayıcı, hibrit arama, araçlar, yaklaşan bakım, takip soruları, SSE, oturum geçmişi | **Hazır** |
+| LLM dayanıklılığı (zaman aşımı, yedek model) ve takılı çağrı kurtarma | **Hazır** |
+| Docker ile tek komutla çalıştırma, ses depolama soyutlaması (yerel, GCS) | **Hazır**; konteynerde seed sesleri ilk açılışta Piper ile üretilir, uçtan uca duman testi var (#157) |
+| Dayanıklılık, yük ve güvenlik ölçümleri | **Hazır**: `docs/dayaniklilik.md`, `docs/guvenlik_yuk.md`, yetki matrisi testleri |
+| Erişilebilirlik (axe, klavye, pencere daraltma), Playwright E2E testleri | **Hazır** |
+| Miço Usta uygulamasına entegrasyon, kimlik doğrulama, Google Cloud'a canlıya alma | **Yapılmadı** (hocayla yöntem netleşecek) |
+| Demo senaryosu ve prova | Ekip provası: `docs/ekip_test_senaryosu.md`; hoca demosu: `docs/hoca_demo_akisi.md`; Miço AI soruları: `docs/test_senaryosu.md`; prova turu Berkay ile yapılacak |
 
-**Bilinen sorunlar:** NVIDIA'nın hızlı modeli zaman zaman zaman aşımına düşüyor; yedek modele geçiş çalışıyor ama çağrı başına süre uzuyor (hızlı katmanı güçlü modele çevirmek veya başka model denemek düşünülüyor). Çağrı listesinin tarih sınırları UTC, KPI ise İstanbul saatiyle günlere ayırıyor; gece 00:00–03:00 arası çağrılarda fark çıkabilir.
+**Bilinen sorunlar:** Ücretsiz LLM kotası canlı demoda yavaşlığa yol açabilir (429'da bekleyip yeniden denenir). Ortak geliştirme veritabanında önceki denemelerden kalan veri bazı entegrasyon testlerini düşürebiliyor (temiz veritabanında geçer). Seed'de çağrı sayısı 50; 100'e çıkarma #148'de.
 
 ## 12. Açık Kararlar
 
 | Karar | Durum |
 |-------|-------|
-| .NET ile Python servisi entegrasyon yöntemi | Hocaya soruldu, yanıt bekleniyor |
-| Canlı veritabanı: kendi PostgreSQL'imiz mi, Miço Usta'nınki mi? | Büyük ihtimalle kendi |
+| .NET ile Python servisi entegrasyon yöntemi; entegrasyonu vizeye almak | Hocayla konuşulacak |
+| Canlı veritabanı: kendi PostgreSQL'imiz mi, Miço Usta'nınki mi? | Hocayla konuşulacak |
 | Miço Usta veri şeması / örnek veri | Hocadan istenecek |
-| STT sağlayıcısı: yerel faster-whisper mı, bulut servisi mi? | #124'te gerçekçi sesle karşılaştırılacak |
-| Hızlı LLM katmanı: mevcut ücretsiz model mi, güçlü model mi? | Ölçümlerle karar verilecek (#122) |
-| Miço AI'da LLM kullanımı (geçmiş/öneri cevaplarında) | Doğruluk ölçümüne göre netleşecek |
-| Canlıya alma ortamı ve biçimi (Google Cloud) | Final öncesi netleşecek |
+| Canlıya alma ortamı ve biçimi (Google Cloud) | Entegrasyon kararından sonra |
+| Çağrı sayısını artırma (90–150) ve toplu ölçümler (20 sayısal soru, 30 çağrı) | Vize öncesi |
 | Admin'deki mevcut AI Asistan'ın iyileştirilmesi kapsama dahil mi? | Hocaya sorulacak |
+
+**Karara bağlananlar:** STT: yerel faster-whisper, stereo; varsayılan `small`, doğruluk için `medium` (#124). Hızlı LLM katmanı: NVIDIA lightning-30b, 404'te yedek model (#122). Veritabanı geliştirmede yerel PostgreSQL, Supabase yok.
 
 ## 13. Değişiklik Günlüğü
 
+- **v4.2 (2026-11-07):** Belge 8. haftanın birleşen işleriyle hizalandı: elle eşleştirme arayüzü ve arama ucu (#209), analiz durumu şeridi (#217, #218), CRM Türkçe alan adları (#208), güven skorları (#206), tek işin tutarı (#152), sohbet kalitesi (#213), dayanıklılık ve yük ölçümleri (#216, #158), Docker duman testi (#157), saat dilimi tutarlılığı (#156); bilinen sorunlar ve açık kararlar yenilendi.
+- **v4.1 (2026-10-28):** Belge gerçek duruma getirildi: CRM onay arayüzü, Servis Emirleri, çağrı yükleme, eşleştirme, STT kararı, 50 çağrı ve %93 doğruluk, Docker ve ses depolama, E2E ve erişilebilirlik testleri; durum ve açık kararlar yenilendi. ER diyagramı (`docs/diagrams/er_diagram.png`) canlı veritabanından yeniden üretildi.
 - **v4 (2026-10-17):** Belge gerçek duruma getirildi. Seçilen teknolojiler (NVIDIA ücretsiz LLM, bge-m3/TEI, faster-whisper, Piper); CRM onay akışı ve servis emri; yeniden analiz; takılı çağrı kurtarma ve Beat; LLM yedek modeli ve süre bütçesi; çok turlu Miço AI ve hibrit arama; sohbet oturumları; tek komutla başlatıcı. Genel mimari, çağrı analitiği ve Miço AI diyagramları yenilendi. Durum ve açık kararlar güncellendi.
 - **v3.1 (2026-10-08):** Orkestratör baştan LangGraph (paralel aşamalar, doğrulama ve tek düzeltme); geliştirmede Supabase + Alembic; STT kararı 5. haftaya; 4. hafta issue'ları güncellendi.
 - **v3.0 (2026-10-07):** Hazır Miço Usta uygulamasına entegrasyon; sektör tekne servisi; üç iş (CRM kaydı, Çağrı Analitiği, Miço AI); yeni agent seti; servis anahtarı ile kimlik doğrulama; Google Cloud'a canlıya alma; şemalar yeniden çizildi.

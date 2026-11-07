@@ -1,7 +1,7 @@
 # Veritabanı Tablo Şeması
 
-**Issue:** #5 · **Sürüm:** Taslak v1 · **Tarih:** 2026-10-11
-**Kaynak:** Sistem mimarisi v4 §9, agent çıktı şemaları (#14), enum listeleri (#7)
+**Issue:** #5 · **Sürüm:** v2 · **Tarih:** 2026-10-28
+**Kaynak:** Sistem mimarisi v4.1 §9, agent çıktı şemaları (#14), enum listeleri (#7)
 **Uygulama:** modeller `backend/app/db/models/`, migration `backend/migrations/versions/` (#6). Bu belge ile modeller arasındaki fark testlerle yakalanır (`tests/test_db_schema.py`).
 
 > Sütun adları **İngilizce**, açıklamalar **Türkçe**'dir.
@@ -29,65 +29,45 @@ Enum değerlerinin tam listesi [§7'de](#7-enum-değerleri-referansı) verilmiş
 
 ```mermaid
 erDiagram
-    customers ||--o{ calls : "called_by"
-    boats ||--o{ calls : "about"
-    customers ||--o{ rag_chunks : "owner_of"
-    calls ||--o| transcripts : "has"
-    transcripts ||--|{ transcript_segments : "contains"
+    analysis_results ||--o{ agent_runs : "produced_by"
     calls ||--o{ analysis_results : "analyzed_by"
-    analysis_results ||--|{ agent_runs : "produced_by"
-    chat_sessions ||--|{ chat_messages : "contains"
-    customers ||--o{ boats : "owns"
-    customers ||--o{ chat_sessions : "chats"
-    customers ||--o{ subscriptions : "subscribes"
-    boats ||--o{ service_orders : "serviced_by"
-    boats ||--o{ boat_notes : "has_notes"
-    boats ||--o{ expenses : "costs"
-    boats ||--o{ rag_chunks : "indexed_in"
-    boats ||--o{ subscriptions : "covered_by"
-    craftsmen ||--o{ service_orders : "assigned_to"
     craftsmen ||--o{ boat_notes : "authored_by"
+    boats ||--o{ boat_notes : "has_notes"
+    customers ||--o{ boats : "owns"
+    boats ||--o{ calls : "about"
+    customers ||--o{ calls : "called_by"
+    chat_sessions ||--o{ chat_messages : "contains"
+    customers ||--o{ chat_sessions : "chats"
+    analysis_results ||--o{ crm_reviews : "reviews"
+    calls ||--o{ crm_reviews : "reviewed_call"
+    service_orders ||--o{ crm_reviews : "creates"
+    boats ||--o{ expenses : "costs"
     service_orders ||--o{ expenses : "incurs"
+    boats ||--o{ rag_chunks : "indexed_in"
+    customers ||--o{ rag_chunks : "owner_of"
+    boats ||--o{ service_orders : "serviced_by"
+    craftsmen ||--o{ service_orders : "assigned_to"
+    customers ||--o{ service_orders : "orders"
+    calls ||--o{ service_orders : "opened_from"
+    boats ||--o{ subscriptions : "covered_by"
+    customers ||--o{ subscriptions : "subscribes"
+    transcripts ||--o{ transcript_segments : "contains"
+    calls ||--o{ transcripts : "has"
 
-    calls {
+    agent_runs {
         uuid id PK
-        timestamptz started_at
-        int answer_delay_s
-        int duration_s
-        text switchboard_outcome
-        text audio_path
-        uuid customer_id FK
-        uuid boat_id FK
-        char64 audio_sha256
-        text customer_name
-        text customer_phone
-        text boat_name
-        text boat_model
-        text marina
-        text state
+        uuid analysis_id FK
+        text agent_name
+        text status
+        smallint attempts
+        int latency_ms
         text error
-        text match_method
+        text error_kind
+        text model
+        text prompt_version
+        int tokens_in
+        int tokens_out
         timestamptz created_at
-        timestamptz updated_at
-    }
-
-    transcripts {
-        uuid id PK
-        uuid call_id FK
-        text full_text
-        text masked_text
-        timestamptz created_at
-    }
-
-    transcript_segments {
-        uuid id PK
-        uuid transcript_id FK
-        smallint segment_index
-        text speaker
-        int start_ms
-        int end_ms
-        text text
-        text masked_text
     }
 
     analysis_results {
@@ -116,19 +96,55 @@ erDiagram
         timestamptz created_at
     }
 
-    agent_runs {
+    boat_notes {
         uuid id PK
-        uuid analysis_id FK
-        text agent_name
-        text status
-        smallint attempts
-        int latency_ms
-        text error
-        text error_kind
+        uuid boat_id FK
+        uuid author_id FK
+        text content
+        date note_date
+        timestamptz created_at
+    }
+
+    boats {
+        uuid id PK
+        uuid owner_id FK
+        text name
         text model
-        text prompt_version
-        int tokens_in
-        int tokens_out
+        smallint year
+        text marina
+        timestamptz created_at
+    }
+
+    calls {
+        uuid id PK
+        timestamptz started_at
+        int answer_delay_s
+        int duration_s
+        text switchboard_outcome
+        text audio_path
+        varchar audio_sha256
+        uuid customer_id FK
+        uuid boat_id FK
+        text customer_name
+        text customer_phone
+        text boat_name
+        text boat_model
+        text marina
+        timestamptz created_at
+        timestamptz updated_at
+        text state
+        text error
+        text match_method
+    }
+
+    chat_messages {
+        uuid id PK
+        uuid session_id FK
+        text role
+        text content
+        text question_type
+        jsonb sources
+        bool found
         timestamptz created_at
     }
 
@@ -140,28 +156,25 @@ erDiagram
         timestamptz updated_at
     }
 
-    chat_messages {
+    craftsmen {
         uuid id PK
-        uuid session_id FK
-        text role
-        text content
-        text question_type
-        jsonb sources
-        boolean found
+        text full_name
+        text specialty
+        text phone
         timestamptz created_at
     }
 
-    rag_chunks {
+    crm_reviews {
         uuid id PK
-        text source_kind
-        uuid source_id
-        uuid boat_id FK
-        uuid owner_id
-        smallint chunk_index
-        text content
-        vector1024 embedding
-        tsvector tsv
+        uuid analysis_id FK
+        uuid call_id FK
+        text status
+        jsonb edited_fields
+        text note
+        timestamptz reviewed_at
+        uuid service_order_id FK
         timestamptz created_at
+        timestamptz updated_at
     }
 
     customers {
@@ -173,13 +186,27 @@ erDiagram
         timestamptz created_at
     }
 
-    boats {
+    expenses {
         uuid id PK
+        uuid boat_id FK
+        uuid service_order_id FK
+        numeric amount
+        varchar currency
+        text description
+        date expense_date
+        timestamptz created_at
+    }
+
+    rag_chunks {
+        uuid id PK
+        text source_kind
+        uuid source_id
+        uuid boat_id FK
         uuid owner_id FK
-        text name
-        text model
-        smallint year
-        text marina
+        smallint chunk_index
+        text content
+        vector1024 embedding
+        tsvector tsv
         timestamptz created_at
     }
 
@@ -194,34 +221,7 @@ erDiagram
         timestamptz scheduled_at
         timestamptz completed_at
         timestamptz created_at
-    }
-
-    craftsmen {
-        uuid id PK
-        text full_name
-        text specialty
-        text phone
-        timestamptz created_at
-    }
-
-    boat_notes {
-        uuid id PK
-        uuid boat_id FK
-        uuid author_id FK
-        text content
-        date note_date
-        timestamptz created_at
-    }
-
-    expenses {
-        uuid id PK
-        uuid boat_id FK
-        uuid service_order_id FK
-        numeric amount
-        varchar3 currency
-        text description
-        date expense_date
-        timestamptz created_at
+        uuid source_call_id FK
     }
 
     subscriptions {
@@ -233,6 +233,25 @@ erDiagram
         int used_services
         date starts_at
         date expires_at
+        timestamptz created_at
+    }
+
+    transcript_segments {
+        uuid id PK
+        uuid transcript_id FK
+        smallint segment_index
+        text speaker
+        int start_ms
+        int end_ms
+        text text
+        text masked_text
+    }
+
+    transcripts {
+        uuid id PK
+        uuid call_id FK
+        text full_text
+        text masked_text
         timestamptz created_at
     }
 ```

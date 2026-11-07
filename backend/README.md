@@ -16,7 +16,7 @@ Komutlar `backend/` klasöründe çalıştırılır.
 1. Python 3.12'yi ve bağımlılıkları `.venv` içine kurun: `uv sync --extra ai`
 2. Ortam dosyasını oluşturun: `.env.example` dosyasını `.env` olarak kopyalayıp doldurun.
 3. Yerel veritabanı ve Redis'i başlatın (repo kökünden): `docker compose -f infra/docker-compose.yml up -d`
-4. Veritabanı şemasını kurun: `uv run alembic upgrade head` (Supabase için `.env`'deki `DATABASE_URL`'i değiştirmeniz yeterli). Şema tasarımı: `docs/db_schema.md`; model değişince `uv run alembic revision --autogenerate -m "aciklama"` ile yeni migration üretip gözden geçirin.
+4. Veritabanı şemasını kurun: `uv run alembic upgrade head` (başka bir PostgreSQL'e geçmek için `.env`'deki `DATABASE_URL`'i değiştirmeniz yeterli; pgvector eklentisi açılabilmeli). Şema tasarımı: `docs/db_schema.md`; model değişince `uv run alembic revision --autogenerate -m "aciklama"` ile yeni migration üretip gözden geçirin.
 
 STT (ses → metin, #15) için: `uv sync --extra ai --extra stt` (faster-whisper; CPU'da çalışır, torch gerekmez). Model ilk kullanımda indirilir (`small` ≈ 500 MB). Sağlayıcı `.env`'deki `STT_PROVIDER` ile seçilir:
 
@@ -131,7 +131,7 @@ Analiz arka planda Celery işçisinde çalışır (`-Q default,analysis,index`);
 |--------|--------|
 | `app/core` | Ayarlar, loglama, hata yönetimi, servis anahtarı doğrulama, istek kimliği ara katmanı |
 | `app/api` | Route'lar ve bağımlılıklar (oturum, servis anahtarı, kullanıcı kimliği) |
-| `app/db` | Async SQLAlchemy motoru, oturumlar, model tabanı (şema Supabase migration'larından gelir) |
+| `app/db` | Async SQLAlchemy motoru, oturumlar, model tabanı (şema Alembic migration'larından gelir) |
 | `app/schemas` | API istek/yanıt şemaları |
 | `app/storage` | Ses depolama soyutlaması (`base.py`), yerel (`local.py`) ve GCS (`gcs.py`) sağlayıcıları (#121) |
 | `app/services` | İş mantığı; `analysis_store.py`: transkript ve analiz sonuçlarını veritabanına yazma/okuma, `DbRunRecorder` |
@@ -147,5 +147,5 @@ Analiz arka planda Celery işçisinde çalışır (`-Q default,analysis,index`);
 
 - Kod yorumları Türkçe; değişken, fonksiyon ve tablo adları İngilizce.
 - Route'lar iş mantığı içermez; servisler HTTP bilmez.
-- Veritabanı şeması yalnızca `supabase/migrations` ile değişir.
+- Veritabanı şeması yalnızca `backend/migrations` (Alembic) ile değişir.
 - Gizli anahtarlar `.env`'de durur ve asla commit edilmez.
