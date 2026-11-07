@@ -55,8 +55,49 @@ Bulut sağlayıcı (OpenAI uyumlu Whisper API, ör. Groq) ölçülmedi: API anah
 - İki kanalı paralel çözmek CPU'da kazanç getirmez (CTranslate2 zaten tüm çekirdekleri kullanır, modelde kilit var). Bulut Whisper (Groq) anahtar olmadığı için ölçülmedi.
 - **Sonuç:** 1 dk'lık çağrıda STT ≈ 11-13 sn (hedef ≤ 30 sn tutuyor). Not: ölçüm sırasında bellek daraldığında RTF 1'e fırladı (aynı dosyada 0,2 → 1,19); STT sırasında RAM boş olmalı, Docker'da `stt` kuyruğu tek eşzamanlılıkla çalışmalı.
 
+## Ses üretim yöntemi: Piper ve Edge TTS (#214)
+
+**Tarih:** 2026-11-07 · **Ses:** `call_001, 005, 010, 017, 023, 031` (stereo, temsilci sol; 6 çağrı, Edge ~9,5 dk / Piper ~6,3 dk) · **Model:** `small`, beam 1, VAD 0,2, CPU int8 · **Komut:** `python -m scripts.stt_benchmark --audio <klasör> --providers faster_whisper --model small --beam 1 --layout stereo_rep_left`
+
+Telefon bozulması: `scripts.telephone_audio` (8 kHz dar bant, SNR 18 dB). Edge sesleri: temsilci `tr-TR-EmelNeural`, müşteri `tr-TR-AhmetNeural` (iki ayrı nöral ses; Piper'da tek ses, müşteri perdesi 1,15 ile ayrılıyor).
+
+| TTS | Ses | WER | Konuşmacı WER | Toplam RTF | Tepe bellek | Model yükleme |
+|---|---|---|---|---|---|---|
+| Piper (tr_TR-dfki-medium) | temiz | %20,0 | %19,1 | 0,19 | 726 MB | 2,7 sn |
+| Piper | telefon | %29,1 | %27,9 | 0,19 | 1061 MB | 1,9 sn |
+| **Edge TTS** | temiz | **%16,4** | **%16,2** | 0,17 | 1067 MB | 5,3 sn |
+| **Edge TTS** | telefon | **%28,6** | **%27,4** | 0,25 | 1043 MB | 2,9 sn |
+
+- Edge sesleri daha doğal ve daha yavaş/akıcı (aynı çağrı ~%40 daha uzun: 103 sn / 73 sn); temiz seste WER 3,6 puan daha iyi, telefonda fark yok (0,5 puan). Yani Edge, Piper'a göre kolay bir test değil; "daha gerçekçi ses" beklentisi karşılandı.
+- Tepe bellek sürecin çalışma kümesi tepesidir ve ölçüm sırasındaki bellek baskısına göre dalgalanıyor (726-1067 MB); `small` için ~1,1 GB'a göre planlayın.
+- RTF dalgalanması (0,10 - 0,66, tek dosyalarda) ölçüm sırasında diğer süreçlerin bellek baskısındandır; toplam RTF 0,17-0,25: 1 dk'lık çağrı için ~10-15 sn.
+- Telefon kalitesinde WER ~%29 (her iki TTS): yalnızca sentetik, dar bant bozulmalı ses; gerçek santral kaydı için aşağıdaki betik kullanılacak.
+
+**Karar:**
+- Model **değişmiyor**: faster-whisper `small`, beam 1, stereo. Medium/large bu ölçümde çalıştırılmadı (bellek kısıtı); önceki ölçüm (#124/#163) geçerli. `distil-whisper` yalnızca İngilizce olduğu için Türkçede uygun değil; bulut STT için API anahtarı yok.
+- **Seed/demo sesleri için Edge TTS önerilir** (iki ayrı nöral ses, daha gerçekçi tempo). Piper çevrimdışı yedek olarak kalır ve varsayılan motordur: `uv run --extra stt --with edge-tts python -m scripts.generate_audio --engine edge`. Edge internet gerektirir; üretilen `.wav` dosyaları üretildikten sonra çevrimdışı çalışır, dolayısıyla demo internetsiz de çalışır.
+- Üretim akışı değişmedi: STT hâlâ yerel faster-whisper; yalnızca sentetik ses üretim aracına bir motor seçeneği eklendi.
+
+## Gerçek ekip kayıtları (#150): betik hazır, kayıt bekleniyor
+
+Gerçek kayıtlar henüz yok; üretilmiş seslerle yetinilmiyor, issue açık kalır. Kayıt geldiğinde (kişisel veri: repoya koymayın, repo dışı bir klasör, ör. `D:\gercek_kayitlar`):
+
+```
+kayit_01.wav          # stereo ise temsilci sol kanal
+kayit_01.txt          # isteğe bağlı: elle yazılmış doğru metin ("Temsilci: ..." / "Müşteri: ..." satırları) -> WER/CER
+kayit_01.truth.json   # isteğe bağlı: beklenen alanlar (data/synthetic/truth ile aynı biçim) -> 7 alan doğruluğu
+```
+
+```
+cd backend
+uv run --extra stt python -m scripts.real_recordings_eval --dir D:\gercek_kayitlar --out D:\gercek_kayitlar\sonuc.json
+uv run --extra stt python -m scripts.real_recordings_eval --dir D:\gercek_kayitlar --stt-only   # LLM kullanmadan yalnızca STT
+```
+
+Betik her kayıt için WER/CER, RTF, STT ve analiz süresini ve (truth varsa) 7 CRM alanının doğruluğunu (`request_category`, `location`, `problem`, `service_mode`, `urgency`, `potential_job`, `next_action`) yazdırır; sonda Markdown tabloyu bu belgeye yapıştırılabilir biçimde basar. Mono kayıtlarda `--layout mono` kullanın (konuşmacı ayrımı olmaz; WER geçerli, konuşmacıya göre alanlar etkilenir).
+
 ## Sınırlar
 
-- Sesler sentetik (tek Türkçe Piper sesi, perdesi değiştirilmiş). Gerçek santral kaydında aksan, üst üste konuşma ve yankı WER'i artırır.
+- Sesler sentetik (Piper tek ses, perdesi değiştirilmiş; Edge TTS iki nöral ses). Gerçek santral kaydında aksan, üst üste konuşma ve yankı WER'i artırır.
 - 12 çağrı küçük bir örneklem; çağrı başına WER %8 ile %30 arasında değişiyor.
 - Kişi adları ve telefon numaraları maskeli referans metinde olmadığı için WER'e katkı yapar (her iki taraf için aynı).
