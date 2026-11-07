@@ -131,7 +131,7 @@ KPI'lar İstanbul saatine göre günlere ayrılır.
 - **Çağrı verisi:** Senaryo matrisinden (arıza türü, marina, aciliyet, sonuç) LLM ile Türkçe müşteri-usta diyalogları üretilir, doğru etiketler ve çağrı bilgisi (zaman, cevap süresi, sonuç) ayrıca kaydedilir. Seed çağrılarının sesi Piper ile üretilir.
 - **Tekne verisi:** Miço Usta şemasına uygun tekne, müşteri, servis kaydı, gider, abonelik ve usta notları üretilir (Miço AI'nin cevap kaynağı).
 - Doğru etiketler baştan bilindiği için sistemin doğruluğu otomatik ölçülür (`scripts.evaluate`).
-- Bugün **50 çağrı** var (30 geliştirme, 20 dokunulmaz test; ses dosyaları stereo). Çağrı sayısını 90–150'ye çıkarmak ertelendi.
+- Bugün **100 çağrı** var (60 geliştirme, 40 dokunulmaz test: `call_011-030` ve `call_051-070`; ses dosyaları stereo; `call_051-100` sesleri Edge TTS, ilk 50 Piper). Çağrı başına 6-7 alan etiketli doğru cevap `data/synthetic/truth/` altındadır (#148).
 
 ## 7. Arayüz: Hazır Uygulamaya Eklenen Ekranlar
 

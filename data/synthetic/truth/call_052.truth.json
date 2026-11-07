@@ -1,0 +1,18 @@
+{
+  "call_id": "call_052",
+  "call_type": "bilgi",
+  "crm": {
+    "request_category": "makine",
+    "location": "Ataköy Marina",
+    "problem": null,
+    "service_mode": null,
+    "urgency": "dusuk",
+    "potential_job": null,
+    "next_action": "bilgi_ver"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "İş durumu sorgusu: iş bitince firma mesaj atacak: bilgi_ver. Yeni iş yok: beklemede, hizmet biçimi null."
+}

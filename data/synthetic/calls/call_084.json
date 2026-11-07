@@ -1,0 +1,73 @@
+{
+  "call_id": "call_084",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Üç gündür arıyorum, kimse dönmedi. Çapariz'in motoru ısınıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Çok özür dilerim. Bodrum'daki gulet mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet. Salı günü mesaj bıraktım, dün iki kez aradım, açan yok."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yoğunluk yüzünden olmuş, kusura bakmayın. Şimdi ustamıza bakıyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ben pazartesi sefere çıkacaktım, artık yetişmez."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yarın sabah usta gönderebilirim, motor soğutmasına bakar."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bu kadar beklettikten sonra yarın ne fark eder, ben başka ustaya sordum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Başka ustayı bulabildiniz mi? Biz yarın sabah yetişebiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bulduk, bugün öğleden sonra geliyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum. Gecikme için yeniden özür dilerim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bu kadar geç dönen bir firmayla çalışmak zor, kusura bakmayın."
+    },
+    {
+      "speaker": "rep",
+      "text": "Haklısınız. Notumu aldım, ekibe ileteceğim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki, iyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "Kolay gelsin."
+    },
+    {
+      "speaker": "rep",
+      "text": "Size de."
+    }
+  ]
+}

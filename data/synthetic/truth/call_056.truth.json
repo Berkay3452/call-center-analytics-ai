@@ -1,0 +1,18 @@
+{
+  "call_id": "call_056",
+  "call_type": "yeni_musteri",
+  "crm": {
+    "request_category": "makine",
+    "location": "Çeşme Marina",
+    "problem": null,
+    "service_mode": null,
+    "urgency": "dusuk",
+    "potential_job": "Motor kışlama paketi",
+    "next_action": "geri_ara"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "İlk kez arayan kayıtsız müşteri, paketleri soruyor: yeni_musteri. Karar vermedi, haftaya aranacak: geri_ara, beklemede."
+}

@@ -1,0 +1,18 @@
+{
+  "call_id": "call_073",
+  "call_type": "acil",
+  "crm": {
+    "request_category": "mekanik_hidrolik",
+    "location": "Bodrum Milta Marina",
+    "problem": "Pervaneye ağ dolandı, motor çalıştırılamıyor, tekne sürükleniyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "acil",
+    "potential_job": "Arıza tespiti ve onarım",
+    "next_action": "usta_ata"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Denizde kalma riski (sürükleniyor): acil. Usta hemen yönlendirildi: usta_ata."
+}

@@ -1,0 +1,73 @@
+{
+  "call_id": "call_055",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, Akdeniz'in salon kliması soğutmuyor, üflüyor ama sıcak."
+    },
+    {
+      "speaker": "rep",
+      "text": "Bodrum Milta'daki Ferretti mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet."
+    },
+    {
+      "speaker": "rep",
+      "text": "Gaz eksikliği olabilir. Ne zamandır böyle?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yaz boyunca iyiydi, iki haftadır zayıfladı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Servis için ustamıza bakıyorum. En erken önümüzdeki ayın ikinci haftası uygun görünüyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bu hafta sonu olmaz mı? Misafirlerim gelecek."
+    },
+    {
+      "speaker": "rep",
+      "text": "Maalesef klima ustamız bu hafta başka teknelerde."
+    },
+    {
+      "speaker": "customer",
+      "text": "Cumartesi gelen olmaz mı, ek ücretle olur?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Cumartesi için de ustalarımız dolu, haftaya salıdan önce kimse çıkamıyor."
+    },
+    {
+      "speaker": "customer",
+      "text": "Salı bana çok geç. Misafirler cuma gelecek."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anlıyorum, kusura bakmayın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Başka bir firmaya soracağım o zaman, zamanım yok."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii, size zahmet verdik. İhtiyacınız olursa tekrar arayın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, iyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler dilerim."
+    }
+  ]
+}

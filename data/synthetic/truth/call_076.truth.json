@@ -1,0 +1,18 @@
+{
+  "call_id": "call_076",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "iklimlendirme",
+    "location": "Göcek D-Marin",
+    "problem": "Klima çalışmıyor, misafir salonu sıcak",
+    "service_mode": "yerinde_servis",
+    "urgency": "yuksek",
+    "potential_job": "Arıza tespiti ve onarım",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Yarın misafir gelecek, bugün/yarın çözüm istiyor: yuksek. Randevu verildi."
+}

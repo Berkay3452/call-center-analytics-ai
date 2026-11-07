@@ -30,8 +30,8 @@ def truths() -> dict[str, dict[str, Any]]:
     return {cid: load(DATA / "truth" / f"{cid}.truth.json") for cid in CALL_IDS}
 
 
-def test_fifty_calls_with_matching_files() -> None:
-    assert len(CALL_IDS) == 50
+def test_hundred_calls_with_matching_files() -> None:
+    assert len(CALL_IDS) == 100
     assert (
         sorted(p.name.removesuffix(".truth.json") for p in (DATA / "truth").glob("*.json"))
         == CALL_IDS
@@ -102,22 +102,22 @@ def test_distribution_covers_every_class() -> None:
     t = truths()
 
     assert Counter(x["call_type"] for x in t.values()) == {
-        "acil": 7,
-        "servis": 18,
-        "teklif": 12,
-        "yeni_musteri": 6,
-        "bilgi": 7,
+        "acil": 13,
+        "servis": 38,
+        "teklif": 25,
+        "yeni_musteri": 9,
+        "bilgi": 15,
     }
     assert Counter(x["sales"]["outcome"] for x in t.values()) == {
-        "satisa_donustu": 18,
-        "kaybedildi": 16,
-        "beklemede": 16,
+        "satisa_donustu": 38,
+        "kaybedildi": 25,
+        "beklemede": 37,
     }
     lost = Counter(
         x["sales"]["loss_reason"] for x in t.values() if x["sales"]["outcome"] == "kaybedildi"
     )
     # Altı kayıp nedeninin hepsi temsil ediliyor.
-    assert lost == {"fiyat": 4, "gec_donus": 3, "rakip": 3, "takvim": 3, "guven": 2, "diger": 1}
+    assert lost == {"fiyat": 6, "gec_donus": 4, "rakip": 6, "takvim": 4, "guven": 3, "diger": 2}
 
 
 def test_every_request_category_and_urgency_is_represented() -> None:
@@ -138,13 +138,15 @@ def test_every_request_category_and_urgency_is_represented() -> None:
 
 
 def test_split_marks_untouchable_test_set() -> None:
-    """Geliştirme çağrıları (001-010, 031-050) prompt ayarında kullanılabilir; test (011-030)
-    çağrılarına bakılmaz."""
+    """Geliştirme çağrıları (001-010, 031-050, 071-100) prompt ayarında kullanılabilir; test
+    (011-030 ve 051-070) çağrılarına bakılmaz."""
     split = {m["call_id"]: m["split"] for m in load(DATA / "calls_meta.json")}
 
     assert set(split.values()) == {"gelistirme", "test"}
-    assert {c for c, v in split.items() if v == "gelistirme"} == set(CALL_IDS[:10] + CALL_IDS[30:])
-    assert len([v for v in split.values() if v == "test"]) == 20
+    assert {c for c, v in split.items() if v == "gelistirme"} == set(
+        CALL_IDS[:10] + CALL_IDS[30:50] + CALL_IDS[70:]
+    )
+    assert {c for c, v in split.items() if v == "test"} == set(CALL_IDS[10:30] + CALL_IDS[50:70])
 
 
 def test_hoca_scenario_is_first_call() -> None:

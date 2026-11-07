@@ -1,0 +1,73 @@
+{
+  "call_id": "call_066",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, teknenin kıç tarafında iskeleye sürtünmekten jelkot çatlamış, onarım için fiyat öğrenebilir miyim?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Elbette. Tekne hangi marinada?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Ataköy'deyiz. Motoryat, Jeanneau Merry Fisher."
+    },
+    {
+      "speaker": "rep",
+      "text": "Çatlak ne kadar büyük?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yaklaşık kırk santim, derin değil, sadece boya ve jelkot gibi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Laminat görünüyor mu, yani elyaf?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Hayır, elyaf görünmüyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "O zaman yüzey onarımı. Bir fotoğraf gönderebilirseniz daha net teklif çıkarırız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Hemen çekip WhatsApp'tan atabilirim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tamam, numaramızı SMS ile gönderelim. Fotoğrafı görünce teklifi hazırlarız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tekneyi atölyeye getirmek gerekiyor mu?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Küçük onarımı yerinde yaparız ama boyayı eşleştirmek için atölye daha iyi."
+    },
+    {
+      "speaker": "customer",
+      "text": "Anladım. Önce teklifi göreyim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tabii, fotoğraftan sonra teklifi göndereceğiz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz."
+    }
+  ]
+}

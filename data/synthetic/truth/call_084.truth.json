@@ -1,0 +1,18 @@
+{
+  "call_id": "call_084",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "makine",
+    "location": "Bodrum Milta Marina",
+    "problem": "Gulet motorunun soğutma suyu sıcaklığı yükseliyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "yuksek",
+    "potential_job": "Motor ve makine arıza tespiti",
+    "next_action": "aksiyon_yok"
+  },
+  "sales": {
+    "outcome": "kaybedildi",
+    "loss_reason": "gec_donus"
+  },
+  "notes": "Müşteri geç dönüşten şikâyet edip vazgeçti: kaybedildi, neden gec_donus. Yapılacak bir şey yok: aksiyon_yok."
+}

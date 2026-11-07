@@ -1,0 +1,18 @@
+{
+  "call_id": "call_097",
+  "call_type": "acil",
+  "crm": {
+    "request_category": "makine",
+    "location": "Kalamış Marina",
+    "problem": "Yağ basıncı alarmı, iki motor da kapatıldı, tekne denizde sürükleniyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "acil",
+    "potential_job": "Motor ve makine arıza tespiti",
+    "next_action": "usta_ata"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "İki motor da devre dışı, tekne denizde sürükleniyor: acil (denizde kalma). Usta hemen yönlendirildi: usta_ata."
+}

@@ -1,0 +1,18 @@
+{
+  "call_id": "call_096",
+  "call_type": "yeni_musteri",
+  "crm": {
+    "request_category": null,
+    "location": "Kuşadası Setur Marina",
+    "problem": null,
+    "service_mode": null,
+    "urgency": "dusuk",
+    "potential_job": "Yıllık bakım paketi",
+    "next_action": "bilgi_ver"
+  },
+  "sales": {
+    "outcome": "beklemede",
+    "loss_reason": null
+  },
+  "notes": "İlk kez arayan, paketleri soruyor: yeni_musteri. Broşür ve fiyat listesini mesajla iletecek: bilgi_ver. Karar yok: beklemede."
+}

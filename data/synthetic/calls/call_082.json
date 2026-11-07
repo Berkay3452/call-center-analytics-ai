@@ -1,0 +1,73 @@
+{
+  "call_id": "call_082",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi akşamlar."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi akşamlar, Meltem'in bimini tentesi güneşten bozuldu, yenisini yaptırmak istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ataköy'deki Dufour mu? Sprayhood da yıpranmış mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Sprayhood'un da fermuarları gitti, ikisini birlikte düşünüyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kumaş seçeneğiniz var mı, renk veya marka?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Mevcut lacivert olsun, dayanıklı bir kumaş."
+    },
+    {
+      "speaker": "rep",
+      "text": "Olefin ya da akrilik kumaşlarımız var, akrilik daha uzun ömürlü."
+    },
+    {
+      "speaker": "customer",
+      "text": "Akrilik olsun. Yaklaşık fiyat?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Ölçü almadan kesin söyleyemem. Ustamız ölçüye gelsin, sonra yazılı teklif verelim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ölçüye ne zaman gelebilir?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Önümüzdeki hafta perşembe sabah Ataköy'de olabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Perşembe olur ama teklifi görmeden kesin iş vermem."
+    },
+    {
+      "speaker": "rep",
+      "text": "Elbette, ölçüden sonra teklif hazırlarız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler, görüşürüz."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi akşamlar."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi akşamlar."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kolay gelsin."
+    }
+  ]
+}

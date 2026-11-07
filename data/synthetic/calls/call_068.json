@@ -1,0 +1,73 @@
+{
+  "call_id": "call_068",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, buyurun."
+    },
+    {
+      "speaker": "customer",
+      "text": "İmbat'ın akü bölmesinden duman çıkıyor, yanık plastik kokusu var!"
+    },
+    {
+      "speaker": "rep",
+      "text": "Tekneden hemen çıkın, ana şalteri kapatabiliyorsanız kapatın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Şalteri kapattım, duman azaldı ama koku sürüyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yangın söndürücünüz hazırda mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet yanımda, kullanmadım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Çeşme'de misiniz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Çeşme Marina'dayım, tekne bağlı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamızı hemen yönlendiriyorum, on beş dakikada orada."
+    },
+    {
+      "speaker": "customer",
+      "text": "Aküyü ben çıkarayım mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Hayır, dokunmayın, sıcak olabilir. Sadece uzak durun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam. Marina görevlisine de söyleyeyim mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, söyleyin, yangın yoksa da kontrol etsinler."
+    },
+    {
+      "speaker": "customer",
+      "text": "Söylüyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Usta size ulaşacak, yoldadır."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geçmiş olsun."
+    }
+  ]
+}

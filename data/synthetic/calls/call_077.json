@@ -1,0 +1,73 @@
+{
+  "call_id": "call_077",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, geçen hafta Karayel'de akü şarj cihazını bırakmıştım, durumu ne?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Bakıyorum. Tuzla'daki Fairline, değil mi? Ustamız yeni şarj cihazını sipariş etmiş."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ne zaman gelir?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Tedarikçi perşembe diyor. Gelince hemen takacağız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Cuma öğleden sonra tekneyle çıkmak istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Perşembe gelirse cumaya yetişir. Parça gelince size haber vereceğiz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Nasıl haber vereceksiniz, arayacak mısınız?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Ustamız takınca sizi arayacak, parça gecikirse de mesaj atarız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam. Sipariş edilen cihaz aynı marka mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Aynı marka, aynı amper."
+    },
+    {
+      "speaker": "customer",
+      "text": "Süper. O zaman bekliyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Başka bir sorunuz var mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Hayır, teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Görüşürüz."
+    }
+  ]
+}

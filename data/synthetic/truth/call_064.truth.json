@@ -1,0 +1,18 @@
+{
+  "call_id": "call_064",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "mekanik_hidrolik",
+    "location": "İstinye Tekne Park",
+    "problem": "Dümen sertleşti, direksiyon zor dönüyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "yuksek",
+    "potential_job": "Arıza tespiti ve onarım",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Tekne direksiyon sorunuyla kullanılamıyor, yarın seyir planı var: yuksek. Randevu verildi."
+}

@@ -1,0 +1,73 @@
+{
+  "call_id": "call_083",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, günaydın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Günaydın, Bora'nın vites geçişleri sertleşti, şanzıman yağı da bulanık görünüyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Pendik'teki Absolute mu? Yağın rengi süt gibi mi?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, açık kahve süt gibi."
+    },
+    {
+      "speaker": "rep",
+      "text": "Süt gibi ise içine su karışmış olabilir, soğutucu sorunu olabilir. Ustamız bakmalı."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok ciddi mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Erken yakalandı, şimdi bakılırsa yağ değişimi ve soğutucu kontrolüyle çözülebilir."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tekneyi kullanmayayım mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Mümkünse birkaç gün kullanmayın, ustamızı bu hafta gönderelim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Perşembe olabilir mi?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Perşembe sabah dokuzda Pendik'te olur."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam. Yedek yağ lazım mı?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yağ ve filtre bizde olur."
+    },
+    {
+      "speaker": "customer",
+      "text": "Anlaştık."
+    },
+    {
+      "speaker": "rep",
+      "text": "Perşembe dokuza yazdım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler."
+    }
+  ]
+}

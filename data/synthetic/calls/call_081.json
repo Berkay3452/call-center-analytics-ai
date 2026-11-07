@@ -1,0 +1,73 @@
+{
+  "call_id": "call_081",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, iyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, Bodrum'daki Akdeniz için seyir ekranı ve radar teklifi gelmişti, onu görüştük."
+    },
+    {
+      "speaker": "rep",
+      "text": "Evet, iki ekran, radar ve montajı içeren teklifimiz. Ne düşündünüz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Cihazlar iyi ama toplam çok yüksek çıkıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Cihaz fiyatları üreticinin liste fiyatıdır. İşçilikte pay bırakabilirim."
+    },
+    {
+      "speaker": "customer",
+      "text": "İşçilikte indirim olsa bile toplam beklediğimin çok üstünde."
+    },
+    {
+      "speaker": "rep",
+      "text": "Radarı sonraya bırakıp önce ekranları yaptıralım mı?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Hayır, ikisi birlikte değilse anlamı yok, uyumsuz olur."
+    },
+    {
+      "speaker": "rep",
+      "text": "Doğru. Peki ödemeyi iki taksite bölebiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Taksit çözüm olmaz, rakam benim için fazla."
+    },
+    {
+      "speaker": "rep",
+      "text": "Anladım, o zaman şimdilik teklifi askıya alalım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Evet, bu yıl yapmayacağım. Zahmet verdim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hiç zahmet değil, ihtiyaç olursa tekrar arayın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, iyi günler."
+    },
+    {
+      "speaker": "rep",
+      "text": "İyi günler."
+    },
+    {
+      "speaker": "customer",
+      "text": "Sağ olun."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kolay gelsin."
+    }
+  ]
+}

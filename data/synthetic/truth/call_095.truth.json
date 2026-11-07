@@ -1,0 +1,18 @@
+{
+  "call_id": "call_095",
+  "call_type": "yeni_musteri",
+  "crm": {
+    "request_category": "makine",
+    "location": "Ayvalık Marina",
+    "problem": "Motor soğuk havada zor çalışıyor",
+    "service_mode": "atolyede",
+    "urgency": "dusuk",
+    "potential_job": "Motor ve makine arıza tespiti",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "İlk kez arayan müşteri kayıt açtırdı ve randevu aldı: yeni_musteri, servis_randevusu_olustur, satisa_donustu. Tekne atölyeye alınacak: atolyede."
+}

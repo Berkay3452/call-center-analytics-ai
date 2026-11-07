@@ -1,0 +1,77 @@
+{
+  "call_id": "call_095",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, günaydın."
+    },
+    {
+      "speaker": "customer",
+      "text": "Günaydın, sizi ilk kez arıyorum. Arkadaşım tavsiye etti, teknemin motoru soğukta zor çalışıyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Hoş geldiniz. Tekneniz nerede, ne tip?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Ayvalık Marina'da, Sea Ray, tek motorlu."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ayvalık'a hizmet veriyoruz. Motor kaç yaşında?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Dokuz yaşında, hiç büyük bakım yapılmadı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Kızdırma bujisi ya da yakıt sistemi olabilir. Önce kayıt açalım. Adınız?"
+    },
+    {
+      "speaker": "customer",
+      "text": "[İSİM], numaram [TELEFON]."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teşekkürler, kaydınızı açtım. Tekneyi atölyeye alıp detaylı bakmak en doğrusu."
+    },
+    {
+      "speaker": "customer",
+      "text": "Atölye nerede, tekne oraya nasıl gelecek?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Marinanızın vinci tekneyi alır, taşıma bizden. Ayvalık'ta atölyemiz var."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ne zaman getirebilirim?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Gelecek hafta çarşamba müsait."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çarşamba olur."
+    },
+    {
+      "speaker": "rep",
+      "text": "Çarşamba sabaha yazdım, öncesinde ustamız sizi arayacak."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok teşekkürler."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz, hoş geldiniz."
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler."
+    }
+  ]
+}

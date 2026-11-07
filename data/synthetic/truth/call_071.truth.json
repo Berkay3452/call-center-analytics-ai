@@ -1,0 +1,18 @@
+{
+  "call_id": "call_071",
+  "call_type": "servis",
+  "crm": {
+    "request_category": "makine",
+    "location": "Tuzla Marina",
+    "problem": "Sağ motor tekliyor, siyah duman çıkarıyor",
+    "service_mode": "yerinde_servis",
+    "urgency": "yuksek",
+    "potential_job": "Motor ve makine arıza tespiti",
+    "next_action": "servis_randevusu_olustur"
+  },
+  "sales": {
+    "outcome": "satisa_donustu",
+    "loss_reason": null
+  },
+  "notes": "Motorlardan biri kullanılamıyor, hafta sonu çıkış var: yuksek. Randevu verildi: servis_randevusu_olustur."
+}
