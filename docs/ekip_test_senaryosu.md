@@ -115,7 +115,7 @@ Sağ üstten rolü **Tekne Sahibi** yapın.
 | Yakıt filtresi ne zaman değişti? | Tekne notlarından, kaynaklı cevap |
 | (takip) Peki ne yapılmıştı? | Önceki soruyu hatırlayıp cevaplar |
 | Hava nasıl olacak? | Kibarca reddeder |
-| Akü değişimine ne kadar ödedim? | **Bilinen sınır:** tutar uydurmaz, kaydı gösterir |
+| Akü değişimine ne kadar ödedim? | Gider kaydından tutar ve tarih, gider kaynak kartı (#152); tutarı kod hesaplar |
 
 - [ ] Her cevapta kaynak kartı var
 - [ ] Geçmiş sohbetler listesinde bu oturum görünüyor

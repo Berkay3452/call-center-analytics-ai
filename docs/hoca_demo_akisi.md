@@ -39,7 +39,7 @@ Toplam süre: yaklaşık 20–25 dakika.
 ## Konuşmada dikkat
 
 - "Gerçek veri yok, her şey sentetik" diye başta açıkça söyleyin
-- Bilinen sınır: tek işin ücreti gibi sorularda tutar uydurmaz, kaydı gösterir
+- Tek işin tutarı ("Akü değişimine ne kadar ödedim?") gider kaydından tutar, tarih ve kaynak kartıyla cevaplanır (#152); kayıt yoksa "bulamadım" der
 - Rol seçici gerçek giriş değil, simülasyon
 
 ## Toplantı sonrası
