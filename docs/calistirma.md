@@ -97,6 +97,8 @@ uv run celery -A app.workers.celery_app worker -Q default,stt,analysis,index --p
 uv run celery -A app.workers.celery_app beat -l info
 ```
 
+**Not:** `scripts.seed` RAG parçalarını yazar ama gömme vektörlerini yüklemez; seed (özellikle `--reset`) sonrasında `scripts.rag_index` çalıştırılmalıdır, aksi halde Miço AI geçmiş sorularında kaynak bulamaz (146 parça gömülür).
+
 (Son üç komut ayrı terminallerde çalışır. `beat` zamanlayıcısı dakikada bir takılı kalan çağrıları tarayıp kurtarır [#107]; işçi de açılışında bir kez tarar. Windows'ta `worker -B` çalışmaz, bu yüzden `beat` ayrı süreçtir.)
 
 ## 3. Ortam değişkenleri (backend/.env)

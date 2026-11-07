@@ -116,6 +116,15 @@ def test_job_expense_plan_requires_topics() -> None:
 
 
 @pytest.mark.parametrize(
+    ("raw", "expected"), [(None, []), ("", []), ("akü", ["akü"]), (["akü"], ["akü"])]
+)
+def test_plan_topics_accepts_loose_llm_output(raw: object, expected: list[str]) -> None:
+    """Hızlı model `topics: null` veya metin dönebilir; plan yine geçerli olmalı."""
+    plan = Plan.model_validate({"question_type": "gecmis_oneri", "topics": raw})
+    assert plan.topics == expected
+
+
+@pytest.mark.parametrize(
     "question",
     [
         "Yakıt filtresi ne zaman değişti?",
