@@ -19,6 +19,8 @@ Karar kuralları:
 - Görüşme bir soruyla başlasa da sonunda bir iş/randevu kabul edildiyse (ör. yıllık kontrol için gün ayarlanacak) "servis"tir.
 - İlk kez arayan biri fiyat, teklif veya seçenek istiyorsa öncelik kuralı gereği "teklif"tir; "yeni_musteri" yalnızca hizmet ve paketleri tanımaya çalışan, fiyat/teklif istemeyen veya paket satın alan ilk görüşmelerdir.
 - "bilgi" yalnızca mevcut bir işin durumu ve genel sorular içindir (çalışma saatleri, kalan hak gibi); yeni bir arıza veya iş talebi yoktur.
+- Su alma, batma, yangın/duman, yakıt kaçağı veya denizde sürüklenme/kalma bildirimi varsa usta hemen yönlendirilse ya da randevu verilse bile "acil" seç; "servis" seçme.
+- Mevcut işin ilerlemesini soran görüşme (iş bitti mi, parça geldi mi, usta ne zaman gelecek, bitince haber verecek misiniz) yeni bir arıza veya iş talebi içermiyorsa "servis" değil "bilgi"dir.
 - Hiçbiri açıkça uymuyorsa "bilgi" seç ve güveni düşük tut.
 
 Alanlar:

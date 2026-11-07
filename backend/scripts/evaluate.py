@@ -31,6 +31,14 @@ from app.schemas.analysis import AnalysisResult
 
 DATA = Path(__file__).parents[2] / "data" / "synthetic"
 
+# Alan -> alanı üreten agent (rapordaki "Agent bazında" tablosu için).
+AGENT_OF_FIELD = {
+    "call_type": "call_classifier",
+    "sales_outcome": "sales_analyzer",
+    "loss_reason": "sales_analyzer",
+    "summary (üretildi)": "summarizer",
+}
+
 ENUM_FIELDS = ["request_category", "service_mode", "urgency", "next_action"]
 TEXT_FIELDS = ["problem", "potential_job"]
 
@@ -152,6 +160,16 @@ def report(rows: list[dict[str, Any]], settings: Settings) -> str:
         measured = sum(1 for v in vals if v is not None)
         rate = f"%{round(100 * ok / measured)}" if measured else "-"
         lines.append(f"| {f} | {ok} | {measured} | {len(vals) - measured} | {rate} |")
+    per_agent: dict[str, list[bool | None]] = {}
+    for r in rows:
+        for f, v in r["scores"].items():
+            per_agent.setdefault(AGENT_OF_FIELD.get(f, "crm_extraction"), []).append(v)
+    lines += ["", "| Agent | Doğru | Ölçülen | Oran |", "|---|---|---|---|"]
+    for agent, vals in per_agent.items():
+        ok = sum(1 for v in vals if v is True)
+        measured = sum(1 for v in vals if v is not None)
+        rate = f"%{round(100 * ok / measured)}" if measured else "-"
+        lines.append(f"| {agent} | {ok} | {measured} | {rate} |")
     all_vals = [v for r in rows for v in r["scores"].values()]
     total_ok = sum(1 for v in all_vals if v is True)
     measured = sum(1 for v in all_vals if v is not None)

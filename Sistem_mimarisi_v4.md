@@ -97,7 +97,7 @@ Kilit dosyaları (`uv.lock`, `package-lock.json`) repoda tutulur; `requirements.
 - **Satış Analiz Agent'ı:** satış sonucu ve kayıp nedeni (fiyat, geç dönüş).
 - **Özetleme Agent'ı:** kısa görüşme özeti.
 - **Orkestratör:** agent'ları çalıştırır, her çıktıyı şemasıyla yeniden doğrular ve sonucu yazar. Doğrulama hatasında agent'a bir kez düzeltme şansı verir; her agent için toplam süre bütçesi vardır. Her agent çalışması (süre, deneme sayısı, kullanılan model, yedek modele geçip geçmediği, hata) kaydedilir.
-- **Ölçülen doğruluk (sentetik veri, 50 çağrı: 30 geliştirme, 20 dokunulmaz test; her ölçüm 3 tekrar):** test setinde genel **%93,2** (ilk ölçüm %87,8). Aciliyet %91,7, problem %100, talep kategorisi %95, hizmet biçimi %90, satış sonucu %100. Hedef ≥ %85 tutmayan tek alan **sonraki aksiyon (%80)**. Ayrıntı: `docs/agent_dogrulugu.md`.
+- **Ölçülen doğruluk (sentetik veri, 100 çağrı: 60 geliştirme, 40 dokunulmaz test; 2 tekrar):** test setinde genel **%94,3-94,5** (agent bazında: çağrı sınıflandırıcı %85, CRM çıkarımı %94, satış analizi %99, özetleyici %100). **Sonraki aksiyon %92** (hedef ≥ %85 karşılandı). Ayrıntı: `docs/agent_dogrulugu.md`.
 
 **KPI'ların kaynağı**
 

@@ -134,3 +134,60 @@ Ek gözlem: ilk deneme (50 çağrı × 3 tekrar, `LLM_REQUESTS_PER_MINUTE=30`, a
 
 **Yapılamayanlar.** Asistan sorularının (82 soru × 3 tekrar) tek model ile ölçümü kota ve embedding servisi (bellek baskısıyla kapalıydı) nedeniyle yapılamadı; asistan tarafında yalnızca iki iyileştirme yapıldı: `AssistantLLM` artık ajanlarla aynı dakikalık kota sırasını (`llm_rate_limiter`) kullanıyor (daha önce yalnızca eşzamanlılık sınırı vardı), ve genel cevap güçlü modele alındı (#213). 50 çağrılık tam küme yerine 20 çağrılık test kümesi kullanıldı.
 
+
+
+## 100 çağrıda yeniden ölçüm (#149)
+
+**Tarih:** 2026-11-07 · **Veri:** 100 sentetik çağrı (#148): 60 geliştirme, 40 dokunulmaz test (`call_011-030`, `call_051-070`) · **Model:** hızlı `nvidia/nemotron-3.5-lightning-30b-a3b`, güçlü `nvidia/nemotron-3.5-super-vl-120b-a12b` (karma, #215 kararı) · **Komut:** `python -m scripts.evaluate --split test` (rapora artık "Agent bazında" tablosu da yazılıyor)
+
+**Önce bir etiket düzeltmesi.** İlk ölçümde `potential_job` (dolu/boş) test kümesinde %75, geliştirme kümesinde %60 çıktı. Hataların 18/24'ü modelin "iş" yazıp etiketin boş olduğu çağrılardı: yeni 50 çağrıda arıza/servis/acil çağrılarında `potential_job` boş bırakılmıştı, oysa ilk 50 çağrıda bu alan iş doğan her çağrıda dolu (41/50), yalnızca bilgi çağrılarında boş. Bu bir model hatası değil, #148'de yazdığım etiketlerin eski kuralla tutarsızlığıydı. Kural eski etiketlerden çıkarıldı, 27 çağrıya model çıktısına bakmadan uygulandı (`call_051-100`); sonra aynı model çıktıları yeni etiketlerle yeniden puanlandı. Bu, test kümesinde etiket değişikliğidir ve aşağıdaki tabloda ayrı sütunla görünür.
+
+### Agent bazında doğruluk: test kümesi (40 çağrı)
+
+| Agent (alanlar) | İlk ölçüm, eski etiket | İlk ölçüm, düzeltilmiş etiket | Prompt sonrası (2 tekrar ort.) |
+|---|---|---|---|
+| `call_classifier` (çağrı tipi) | %88 (35/40) | %88 (35/40) | %85 (34/40) |
+| `crm_extraction` (7 alan) | %90 (252/280) | %94 (262/280) | %94 (262/280) |
+| `sales_analyzer` (satış sonucu, kayıp nedeni) | %99 (79/80) | %99 (79/80) | %99 (79-80/80) |
+| `summarizer` (özet üretildi) | %100 | %100 | %100 |
+| **Genel (11 alan)** | **%92 (406/440)** | **%94,5 (416/440)** | **%94,3-94,5 (415-416/440)** |
+
+Orkestratör (4 agent birleşimi): 40/40 çağrıda durum `tamam` (3 koşuda da), zaman aşımı 0, yedek modele geçen 0.
+
+### Alan bazında: test kümesi
+
+| Alan | İlk (düzeltilmiş etiket) | Prompt sonrası (tekrar 1 / 2) |
+|---|---|---|
+| call_type | %88 | %85 / %85 |
+| request_category | %95 | %95 / %95 |
+| service_mode | %80 | %82 / %82 |
+| urgency | %95 | %95 / %92 |
+| **next_action (sonraki aksiyon)** | **%92** | **%92 / %92** |
+| location | %100 | %100 / %100 |
+| problem (dolu/boş) | %92 | %95 / %98 |
+| potential_job (dolu/boş) | %100 | %95 / %95 |
+| sales_outcome | %100 | %100 / %100 |
+| loss_reason | %98 | %98 / %100 |
+| summary (üretildi) | %100 | %100 / %100 |
+
+### Prompt iyileştirmesi (yalnızca geliştirme kümesine bakılarak)
+
+Geliştirme kümesindeki (60 çağrı) hatalar incelendi; test kümesi hata listelerine bakılmadı. İki kural eklendi:
+- `call_classifier.md`: su alma, batma, yangın/duman, yakıt kaçağı, denizde sürüklenme bildirimi usta yönlendirilse de **acil**; mevcut işin ilerlemesini soran, yeni arıza/iş içermeyen çağrı **bilgi** (geliştirmede 6 çağrı yanlıştı).
+- `crm_extraction.md`: hizmet biçimi (`service_mode`) iş konuşulmadıysa, yalnızca durum veya fiyat soruluyorsa null (tahmin etme).
+
+| Geliştirme kümesi (60 çağrı) | Önce | Sonra |
+|---|---|---|
+| call_type | %85 | **%97** |
+| service_mode | %83 | %87 |
+| potential_job (düzeltilmiş etiket) | %85 | %90 |
+| next_action | %97 | %93 |
+| Genel | %93,3 | **%94,7** |
+
+### Sonuç ve hedef
+
+- **Hedef "sonraki aksiyon" ≥ %85: karşılandı.** Test kümesinde ilk ölçümde de (%92, 37/40) sonrasında da %92; geliştirmede %93-97. #213'te görülen %80, 20 çağrılık küçük kümenin gürültüsüydü, 40 çağrıda ortaya çıkmıyor. Kalan 3 hata (`call_013`, `call_018`, `call_029`) iki ardışık koşuda aynı: müşteri fiyatı pahalı bulup vazgeçtiği (`call_013`) veya rakibe gittiği (`call_018`) çağrılarda model `teklif_hazirla` öneriyor (doğrusu `aksiyon_yok`); randevu saati teyidinde (`call_029`) `servis_randevusu_olustur` öneriyor (doğrusu `aksiyon_yok`). Yani müşteri vazgeçtiğinde veya yeni iş olmadığında 'aksiyon yok' demek yerine bir sonraki adım uyduruluyor.
+- **Prompt değişikliği geliştirmede işe yaradı (call_type %85 → %97) ama test kümesine genellenmedi** (genel %94,5 → %94,3-94,5; çağrı tipi %88 → %85, yani 1 çağrı; `call_020` yeni hata). Dürüst yorum: kazanç gürültü sınırında, kurallar zararsız ama test kümesinde ölçülebilir iyileşme göstermedi.
+- **Kalan hata türleri (test):** `service_mode` %82: kaybedilen/ertelenen çağrılarda etiket ile model "hizmet biçimi var/yok" konusunda ayrışıyor (etiketler arasında da tutarsızlık var: kayıp çağrılarda `yerinde_servis` yazılmış); `call_type` %85: acil/servis ve servis/bilgi sınırı; `urgency` ±1 basamak kayması.
+- **Cevap hızı (test, 40 çağrı):** çağrı başına ortalama 4,5-6,1 sn (tamamı: 4 agent, süre `ajan_ort` 2,4-2,8 sn, p95 5,8-7,0 sn, en uzun 10-34 sn tek yavaş LLM çağrısı); toplam ~390 bin token / 40 çağrı. Zaman aşımı yok.
+- **Sınırlar:** test kümesinde 40 çağrı = alan başına ±%5 duyarlılık; prompt sonrası 2 tekrar (3 değil: kota/süre). İlk ölçüm tek tekrar. `potential_job` yeniden etiketlemesi test kümesinde de yapıldı (yukarıda açıklandı).
