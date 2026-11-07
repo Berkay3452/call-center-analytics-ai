@@ -80,7 +80,7 @@ async def test_seeded_data_is_consistent() -> None:
             "servis_randevusu_olustur",
         )
 
-        # Kayıtlı müşteriler çağrılarına bağlanmış olmalı; yalnızca ilk kez arayan üç kişi
+        # Kayıtlı müşteriler çağrılarına bağlanmış olmalı; yalnızca ilk kez arayan dokuz kişi
         # (yeni müşteri senaryoları) eşleşmemiş kalır.
         unmatched = {
             r["customer_name"]
@@ -95,6 +95,9 @@ async def test_seeded_data_is_consistent() -> None:
             "Hakan Özdemir",
             "Engin Taşkıran",
             "Serkan Bulut",
+            "Gökhan Polat",
+            "Levent Sarıkaya",
+            "Pınar Duran",
         }
 
         # RAG parçalarının sahibi, teknenin sahibiyle aynı olmalı (yetkilendirme verisi).

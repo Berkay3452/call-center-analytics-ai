@@ -68,7 +68,7 @@ Not: Gezdiğimiz örnek site (Figma Make ile hazırlanmış bir prototip) arayü
 | LLM | Vertex AI / Gemini | Sağlayıcı arayüzü; geliştirmede NVIDIA ücretsiz modelleri, yedek model |
 | Konuşma tanıma | — | faster-whisper (yerel; varsayılan `small`, doğruluk için `medium`), stereo kayıtta temsilci sol / müşteri sağ kanal; Whisper API ve stub yedek (karar: `docs/stt_karari.md`) |
 | Embedding | — | bge-m3, TEI konteynerinde (Docker) |
-| Ses üretimi (seed) | — | Piper (çevrimdışı Türkçe) |
+| Ses üretimi (seed) | — | Piper (çevrimdışı Türkçe, varsayılan) veya Edge TTS (iki nöral Türkçe ses, daha gerçekçi; `--engine edge`); karar: `docs/stt_karari.md` |
 | Agent orkestrasyonu | — | LangGraph + LangChain |
 | Geliştirme | — | uv, ruff, mypy, pytest (~1.250 test); GitHub Actions CI (duman testi dahil); Docker Compose |
 
