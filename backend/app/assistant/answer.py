@@ -6,7 +6,7 @@
 """
 
 import calendar
-from datetime import date
+from datetime import date, timedelta
 from typing import Literal
 
 from pydantic import BaseModel, Field
@@ -25,6 +25,25 @@ def not_found(question_type: QuestionType, message: str = NOT_FOUND_MESSAGE) -> 
     return AssistantAnswer(answer=message, question_type=question_type, found=False)
 
 
+def period_range(period: str, today: date) -> tuple[date | None, date | None, str]:
+    """Dönemin (başlangıç, bitiş, cümle başı) değeri; "tumu" için sınır yoktur."""
+    if period == "bu_ay":
+        start = today.replace(day=1)
+        end = today.replace(day=calendar.monthrange(today.year, today.month)[1])
+        return start, end, f"{MONTHS[today.month - 1]} {today.year} döneminde"
+    if period == "gecen_ay":
+        last_end = today.replace(day=1) - timedelta(days=1)
+        return (
+            last_end.replace(day=1),
+            last_end,
+            f"{MONTHS[last_end.month - 1]} {last_end.year} döneminde",
+        )
+    return None, None, "Kayıtlı tüm dönemde"
+
+
+NO_EXPENSE_HINT = ' Tüm kayıtlı dönemi görmek için "Toplam ne kadar harcadım?" diye sorabilirsiniz.'
+
+
 async def numeric_answer(
     plan: Plan,
     owner_id: str,
@@ -37,16 +56,16 @@ async def numeric_answer(
     start: date | None
     end: date | None
     if plan.tool == AssistantTool.GET_EXPENSE_TOTAL:
-        if plan.period == "bu_ay":
-            start = today.replace(day=1)
-            end = today.replace(day=calendar.monthrange(today.year, today.month)[1])
-            label = f"{MONTHS[today.month - 1]} {today.year} döneminde"
-        else:
-            start = end = None
-            label = "Kayıtlı tüm dönemde"
+        start, end, label = period_range(plan.period, today)
         result = await tools.get_expense_total(owner_id, start=start, end=end, session=session)
         if result.item_count == 0:
-            return not_found(qt, "Bu dönem için kayıtlı bir gider bulamadım.")
+            if plan.period == "tumu":
+                return not_found(qt, "Kayıtlarınızda gider bulamadım.")
+            return not_found(
+                qt,
+                f"{label.removesuffix(' döneminde')} için kayıtlı bir gider bulamadım."
+                + NO_EXPENSE_HINT,
+            )
         return AssistantAnswer(
             answer=(
                 f"{label} toplam giderleriniz {format_try(result.total_try)} "
@@ -56,11 +75,7 @@ async def numeric_answer(
             sources=result.sources,
         )
     if plan.tool == AssistantTool.GET_JOB_EXPENSES:
-        if plan.period == "bu_ay":
-            start = today.replace(day=1)
-            end = today.replace(day=calendar.monthrange(today.year, today.month)[1])
-        else:
-            start = end = None
+        start, end, _ = period_range(plan.period, today)
         jobs = await tools.get_job_expenses(
             owner_id, plan.topics, start=start, end=end, session=session
         )

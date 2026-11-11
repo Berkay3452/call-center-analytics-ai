@@ -126,6 +126,11 @@ class Settings(BaseSettings):
     whisper_beam_size: int = Field(default=1, ge=1)
     # Ses etkinliği (VAD) eşiği: 0,5 dar bant telefon sesinde konuşmayı sessizlik sanıp atıyor
     # (#124 ölçümü: 97 kelimeden 28'i kalıyordu); 0,2 hem temiz hem telefon sesinde güvenli.
+    # Alan sözcükleri: Whisper'a bağlam verir; teknik terim ve özel adların yanlış yazımını azaltır.
+    whisper_initial_prompt: str | None = (
+        "Miço Usta tekne servisi. Tekne bakımı, motor, şaft, pervane, impeller, yakıt filtresi, "
+        "akü, sintine, kışlama, marina, Volvo Penta, Yanmar, Mercury, antifouling, bakım randevusu."
+    )
     whisper_vad_threshold: float = Field(default=0.2, gt=0, lt=1)
     # Modelin indirileceği klasör; boşsa Hugging Face varsayılanı (~/.cache/huggingface).
     whisper_download_root: str | None = None

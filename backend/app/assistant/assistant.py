@@ -15,7 +15,6 @@ from app.assistant import safety, tools
 from app.assistant.answer import general_answer, history_answer, numeric_answer
 from app.assistant.llm import AssistantLLM
 from app.assistant.planner import (
-    EXAMPLE_QUESTIONS,
     mentions_topic,
     plan_by_rules,
     plan_question,
@@ -27,11 +26,7 @@ from app.schemas.assistant import AssistantAnswer, AssistantRequest, QuestionTyp
 
 log = structlog.get_logger(__name__)
 
-REFUSAL_MESSAGE = (
-    "Ben Miço Usta'nın tekne asistanıyım; teknenizin bakım geçmişi, giderleriniz ve "
-    "aboneliğiniz hakkında yardımcı olabilirim. Bu konuda size yardımcı olamıyorum. "
-    f"{EXAMPLE_QUESTIONS}"
-)
+MAX_PROCESSED_CHARS = 1000
 
 
 async def answer_question(
@@ -54,6 +49,10 @@ async def answer_question(
         log.info("assistant.smalltalk")
         return AssistantAnswer(answer=reply, question_type=QuestionType.GENEL_SOHBET)
 
+    # Çok uzun metin: ilk 1000 karakter işlenir (planlayıcı ve arama için yeterli, maliyet sınırlı).
+    if len(request.question) > MAX_PROCESSED_CHARS:
+        request = request.model_copy(update={"question": request.question[:MAX_PROCESSED_CHARS]})
+
     # Güvenlik katmanı (#213): küfür/cinsel/tehdit/kendine zarar ve harfsiz mesajlar LLM'e gitmez.
     question_text = request.question
     if (verdict := safety.moderate(question_text)) is not None:
@@ -69,15 +68,29 @@ async def answer_question(
                 verdict.violation, repeat=safety.is_repeat_offense(request.history)
             )
             return AssistantAnswer(answer=reply, question_type=QuestionType.GENEL_SOHBET)
-    elif safety.has_no_words(question_text):
+    elif safety.has_no_words(question_text) or safety.looks_like_gibberish(question_text):
         return AssistantAnswer(
             answer=safety.NOT_UNDERSTOOD_REPLY, question_type=QuestionType.GENEL_SOHBET
+        )
+    if safety.is_injection_attempt(question_text):
+        log.info("assistant.injection_attempt")
+        return AssistantAnswer(
+            answer=safety.pick_reply(safety.INJECTION_REPLIES, question_text),
+            question_type=QuestionType.KAPSAM_DISI,
+        )
+    if safety.asks_other_party(question_text):
+        return AssistantAnswer(
+            answer=safety.pick_reply(safety.OTHER_PARTY_REPLIES, question_text),
+            question_type=QuestionType.KAPSAM_DISI,
         )
     if safety.mentions_other_customer(
         question_text, await tools.other_customer_names(request.owner_id, session=session)
     ):
         log.info("assistant.other_party_name")
-        return AssistantAnswer(answer=REFUSAL_MESSAGE, question_type=QuestionType.KAPSAM_DISI)
+        return AssistantAnswer(
+            answer=safety.pick_reply(safety.OTHER_PARTY_REPLIES, question_text),
+            question_type=QuestionType.KAPSAM_DISI,
+        )
 
     question = await standalone_question(question_text, request.history, llm)
     plan = await plan_question(question, llm)
@@ -85,7 +98,10 @@ async def answer_question(
 
     if plan.question_type == QuestionType.KAPSAM_DISI:
         # Ret, "bulamadım" durumu değildir (found=True): arayüz düz mesajı gösterir.
-        return AssistantAnswer(answer=REFUSAL_MESSAGE, question_type=plan.question_type)
+        return AssistantAnswer(
+            answer=safety.pick_reply(safety.OUT_OF_SCOPE_REPLIES, question),
+            question_type=plan.question_type,
+        )
     if plan.question_type == QuestionType.GENEL_SOHBET:
         return await general_answer(question, llm)
     if plan.question_type == QuestionType.SAYISAL:

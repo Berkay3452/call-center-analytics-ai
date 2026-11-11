@@ -15,6 +15,7 @@ export function analysisIsRunning(state?: CallState) {
 type Snapshot = Pick<CallStatus, "call_id" | "state"> & Omit<Partial<CallStatus>, "updated_at"> & { updated_at?: string | null };
 type Entry = { status: Snapshot; connectionError?: string };
 type Notice = { id: string; message: string };
+const NOTICE_TIMEOUT_MS = 5000;
 const STORAGE_KEY = "active-call-analyses";
 const Context = createContext<{
   entries: Record<string, Entry>;
@@ -79,6 +80,15 @@ export function AnalysisTracker({ children }: { children: React.ReactNode }) {
       requests.current.delete(id);
     }
   }, [persist, router]);
+
+  // Bildirim 5 sn sonra kendiliğinden kapanır (kullanıcı ✕ ile de kapatabilir).
+  useEffect(() => {
+    if (notices.length === 0) return;
+    const timers = notices.map((notice) =>
+      setTimeout(() => setNotices((previous) => previous.filter((item) => item.id !== notice.id)), NOTICE_TIMEOUT_MS),
+    );
+    return () => timers.forEach(clearTimeout);
+  }, [notices]);
 
   const track = useCallback((snapshot: Snapshot) => {
     generations.current.set(snapshot.call_id, (generations.current.get(snapshot.call_id) ?? 0) + 1);

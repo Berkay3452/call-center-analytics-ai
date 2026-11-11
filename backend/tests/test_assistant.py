@@ -10,13 +10,13 @@ from pydantic import ValidationError
 
 from app.assistant import tools
 from app.assistant.answer import NOT_IN_RECORDS_PREFIX, format_date, format_try
-from app.assistant.assistant import REFUSAL_MESSAGE, answer_question
+from app.assistant.assistant import answer_question
 from app.assistant.grounding import NOT_FOUND_MESSAGE, AnswerDraft, Claim, ground_draft
 from app.assistant.llm import AssistantLLM, AssistantLLMError, load_prompt
 from app.assistant.planner import Plan, plan_by_rules, plan_question, smalltalk_reply
 from app.assistant.retrieval import Passage
+from app.assistant.safety import INJECTION_REPLIES, OUT_OF_SCOPE_REPLIES
 from app.schemas.assistant import (
-    AssistantAnswer,
     AssistantRequest,
     AssistantTool,
     HistoryTurn,
@@ -62,7 +62,7 @@ def test_request_without_owner_field_is_rejected() -> None:
         AssistantRequest.model_validate({"question": "Son bakım ne zaman?"})
 
 
-@pytest.mark.parametrize("question", ["", "   ", "x" * 1001])
+@pytest.mark.parametrize("question", ["", "   ", "x" * 5001])
 def test_request_with_bad_question_is_rejected(question: str) -> None:
     with pytest.raises(ValidationError):
         AssistantRequest(question=question, owner_id=OWNER_A)
@@ -422,7 +422,8 @@ async def test_out_of_scope_question_gets_polite_refusal() -> None:
 
     answer = await answer_question(ask("Bana bir kek tarifi ver."), llm=llm, today=TODAY)
 
-    assert answer == AssistantAnswer(answer=REFUSAL_MESSAGE, question_type=QuestionType.KAPSAM_DISI)
+    assert answer.answer in OUT_OF_SCOPE_REPLIES
+    assert answer.question_type == QuestionType.KAPSAM_DISI
     assert answer.found and answer.sources == []  # ret, "bulamadım" durumu değildir
     assert len(model.calls) == 1
 
@@ -435,8 +436,9 @@ async def test_prompt_injection_in_question_does_not_change_flow() -> None:
 
     answer = await answer_question(ask(question, OWNER_A), llm=llm, today=TODAY)
 
-    # Kurallar soruyu sayısal sınıflar; araç yalnızca oturumdaki sahibin verisini okur.
-    assert "41.950,00 TL" in answer.answer and "6.400" not in answer.answer
+    # Kural aşma girişimi geri çevrilir; başka sahibin verisi hiçbir koşulda gelmez.
+    assert answer.answer in INJECTION_REPLIES
+    assert "6.400" not in answer.answer
 
 
 def test_grounding_does_not_repeat_identical_claims_from_different_sources() -> None:
@@ -492,7 +494,6 @@ def test_smalltalk_gets_canned_reply(question: str, needle: str) -> None:
         "Merhaba, yakıt filtresi için usta ne önermişti?",
         "Teşekkürler ama motor yağı ne zaman değişti?",
         "Bu ay ne kadar harcadım?",
-        "Hava nasıl olacak?",
         "",
     ],
 )
@@ -527,8 +528,9 @@ async def test_smalltalk_skips_history_rewrite() -> None:
     assert "Rica ederim" in answer.answer and model.calls == []
 
 
-def test_refusal_message_offers_example_questions() -> None:
-    assert "Örneğin" in REFUSAL_MESSAGE
+def test_refusal_messages_point_to_what_the_assistant_can_do() -> None:
+    for reply in OUT_OF_SCOPE_REPLIES:
+        assert "tekne" in reply.lower()
 
 
 # --- Kapsam genişletme: genel sohbet ve "kayıtta yok, genel olarak" (#177) ---

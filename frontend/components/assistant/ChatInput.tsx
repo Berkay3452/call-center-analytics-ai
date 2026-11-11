@@ -1,5 +1,13 @@
-import React, { useState, useRef, useEffect, useCallback, useSyncExternalStore } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useSyncExternalStore,
+} from "react";
 import { Button } from "@/components/ui";
+
+export const MAX_QUESTION_LENGTH = 5000;
 
 const subscribeToHydration = () => () => {};
 
@@ -18,7 +26,11 @@ export function ChatInput({
   onStopStreaming,
   isStreaming = false,
 }: ChatInputProps) {
-  const hydrated = useSyncExternalStore(subscribeToHydration, () => true, () => false);
+  const hydrated = useSyncExternalStore(
+    subscribeToHydration,
+    () => true,
+    () => false,
+  );
   const [text, setText] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -57,15 +69,29 @@ export function ChatInput({
         onChange={(e) => setText(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
-        disabled={!hydrated || disabled || isStreaming}
+        disabled={!hydrated || disabled}
+        maxLength={MAX_QUESTION_LENGTH}
         className="max-h-[140px] min-h-[38px] min-w-0 flex-1 resize-none bg-transparent px-2 py-1.5 text-sm text-slate-900 placeholder:text-slate-500 focus:outline-none disabled:opacity-50"
       />
+      {text.length > MAX_QUESTION_LENGTH * 0.8 && (
+        <span className="self-center text-xs text-slate-500" aria-live="polite">
+          {text.length}/{MAX_QUESTION_LENGTH}
+        </span>
+      )}
       {isStreaming && onStopStreaming ? (
-        <Button variant="secondary" onClick={onStopStreaming} aria-label="Akışı Durdur">
+        <Button
+          variant="secondary"
+          onClick={onStopStreaming}
+          aria-label="Akışı Durdur"
+        >
           Durdur
         </Button>
       ) : (
-        <Button onClick={handleSubmit} disabled={disabled || !text.trim()} aria-label="Mesajı Gönder">
+        <Button
+          onClick={handleSubmit}
+          disabled={disabled || !text.trim()}
+          aria-label="Mesajı Gönder"
+        >
           Gönder
         </Button>
       )}
