@@ -98,7 +98,14 @@ jobs:
         run: npm ci
 
       - name: Playwright tarayıcısını kur (Chromium)
-        run: npx playwright install --with-deps chromium
+        # Runner'ın apt sunucularına ağ erişimi ara sıra düşüyor (kod 100); 3 kez dener.
+        run: |
+          for i in 1 2 3; do
+            sudo apt-get update && npx playwright install --with-deps chromium && exit 0
+            echo "Kurulum denemesi $i başarısız, tekrar deneniyor..."
+            sleep 20
+          done
+          exit 1
 
       - name: E2E testleri (mock veri; Chromium)
         run: npx playwright test --project=chromium
