@@ -440,7 +440,6 @@ export default function AssistantPage() {
           />
           <ChatInput
             onSendMessage={(content) => void sendMessage(content)}
-            disabled={isLoading}
             isStreaming={isLoading}
             onStopStreaming={handleStopStreaming}
           />
