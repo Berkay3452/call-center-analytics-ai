@@ -323,6 +323,29 @@ function CallUploadContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Analiz sürerken kenar çubuğundan "Çağrı Yükle"ye tıklanırsa URL ?call_id= olmadan aynı sayfaya
+  // döner; bileşen yeniden kurulmadığı için eski ilerleme ekranı takılı kalırdı. Formu sıfırla.
+  const previousUrlCallId = useRef(initialUrlCallId);
+  useEffect(() => {
+    const previous = previousUrlCallId.current;
+    previousUrlCallId.current = initialUrlCallId;
+    if (previous && !initialUrlCallId) {
+      stopPolling();
+      if (redirectTimerRef.current !== null) {
+        clearTimeout(redirectTimerRef.current);
+        redirectTimerRef.current = null;
+      }
+      setIsSubmitting(false);
+      setAnalysisState(null);
+      setProgressPercent(0);
+      setStatusMessage("");
+      setErrorMessage(null);
+      setBackendError(null);
+      setConflictInfo(null);
+      setCreatedCallId(null);
+    }
+  }, [initialUrlCallId, stopPolling]);
+
   // Dosya seçimi — istemci tarafı doğrulama
   const handleFileChange = (file: File) => {
     const validationError = validateAudioFile(file);
