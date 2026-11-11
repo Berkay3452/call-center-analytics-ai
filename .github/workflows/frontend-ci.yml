@@ -1,10 +1,16 @@
 # Frontend CI — her PR'da frontend kodunun doğru ve hatasız çalıştığını kontrol eder.
 #
 # İşler (job'lar):
-#   1. frontend : Lint (ESLint) + Build (Next.js — TypeScript tip kontrolü dahil).
+#   1. frontend : Lint (ESLint) + TypeScript tip kontrolü + API tipleri güncel mi? + Build (Next.js)
+#                 + bağımlılık güvenlik denetimi (yüksek/kritik açık varsa kırılır).
+#   2. e2e      : Playwright (Chromium, mock veriyle): sayfa akışları, buton denetimi, ekran okuyucu
+#                 erişilebilirliği (axe) ve Miço AI yerleşimi.
+#   3. docker   : Üretim imajı derlenebiliyor mu (Dockerfile, standalone çıktı)?
+#   4. frontend-ci : Tüm sonuçları toplayan tek kontrol. Branch korumasında "zorunlu kontrol"
+#                 olarak `frontend` ve `frontend-ci` seçilir.
 #
-# Tetiklenme: Yalnızca `frontend/**` yolunu etkileyen PR'larda çalışır.
-# Branch korumasında "zorunlu kontrol" olarak `frontend` job'ı seçilir.
+# Tetiklenme: `frontend/**` yolunu veya paylaşılan sözleşmeleri (API örnekleri) etkileyen PR'larda.
+# Not: Firefox ve Edge projeleri (`npm run e2e` ile) yerelde koşulur; CI'da yalnızca Chromium var.
 
 name: Frontend CI
 
@@ -12,6 +18,7 @@ on:
   pull_request:
     paths:
       - 'frontend/**'
+      - 'docs/ornekler/**'
       - '.github/workflows/frontend-ci.yml'
 
 # Aynı PR'a yeni commit gelirse eski çalışma iptal edilir (zaman ve dakika kotası tasarrufu).
@@ -48,5 +55,96 @@ jobs:
       - name: Lint kontrolü (ESLint)
         run: npm run lint
 
+      - name: TypeScript tip kontrolü
+        run: npx tsc --noEmit
+
+      - name: API tipleri openapi.json ile güncel mi?
+        # openapi.json değişip `npm run gen:api` çalıştırılmadıysa burada kırılır.
+        run: |
+          npm run gen:api
+          if ! git diff --exit-code -- lib/api/schema.ts; then
+            echo "::error::lib/api/schema.ts, openapi.json ile uyumsuz. frontend/ içinde 'npm run gen:api' çalıştırıp sonucu commit'leyin."
+            exit 1
+          fi
+
+      - name: Bağımlılık güvenlik denetimi (yüksek ve kritik, yalnızca üretim bağımlılıkları)
+        run: npm audit --omit=dev --audit-level=high
+
       - name: Build (Next.js — TypeScript tip kontrolü dahil)
         run: npm run build
+
+  e2e:
+    name: e2e (Playwright, Chromium)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      NEXT_PUBLIC_USE_MOCKS: 'true'
+
+    steps:
+      - name: Kodları çek
+        uses: actions/checkout@v7
+
+      - name: Node.js kur (LTS 22)
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Bağımlılıkları kur (npm ci)
+        run: npm ci
+
+      - name: Playwright tarayıcısını kur (Chromium)
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E testleri (mock veri; Chromium)
+        run: npx playwright test --project=chromium
+
+      - name: Test raporunu sakla
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-raporu
+          path: |
+            frontend/playwright-report/
+            frontend/test-results/
+          retention-days: 7
+
+  docker:
+    name: docker (üretim imajı derlenir mi?)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Kodları çek
+        uses: actions/checkout@v7
+
+      - name: Docker Buildx kur
+        uses: docker/setup-buildx-action@v3
+
+      - name: Frontend imajını derle (gönderilmez)
+        uses: docker/build-push-action@v6
+        with:
+          context: frontend
+          push: false
+          load: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  frontend-ci:
+    # Tüm işlerin sonucunu tek kontrolde toplar (branch korumasında bu seçilebilir).
+    name: Frontend CI sonucu
+    needs: [frontend, e2e, docker]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sonuçları değerlendir
+        run: |
+          echo "frontend=${{ needs.frontend.result }} e2e=${{ needs.e2e.result }} docker=${{ needs.docker.result }}"
+          if [[ "${{ join(needs.*.result, ' ') }}" =~ (failure|cancelled) ]]; then
+            echo "::error::Frontend CI başarısız. Kırmızı olan işe tıklayıp hatanın yerini görün."
+            exit 1
+          fi
+          echo "Frontend CI başarılı."

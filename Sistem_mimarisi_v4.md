@@ -38,7 +38,7 @@
 
 - **Hazır uygulamaya entegrasyon.** Miço Usta (Next.js arayüz, .NET 10 backend, PostgreSQL, Redis, Google Cloud) olduğu gibi kalır; biz ona yeni sayfalar ekleriz.
 - **AI servisimiz ayrı bir Python servisi (FastAPI) olarak çalışır** ve REST (JSON) üzerinden konuşur. Bugün arayüz, sunucu tarafı bir proxy ve servis anahtarıyla doğrudan bizim servisimizi çağırıyor; .NET API ile entegrasyon yöntemi hocayla konuşulacak. *(Açık karar, §12.)*
-- **Orkestratör LangGraph ile kurulu.** Önce Çağrı Sınıflandırma, sonra diğer üç agent paralel çalışır. Yeni agent eklemek akışı değiştirmez.
+- **Orkestratör LangGraph ile kurulu.** Dört agent (sınıflandırma, CRM, satış, özet) tek aşamada paralel çalışır; `ANALYSIS_CLASSIFIER_FIRST=true` eski "önce sınıflandırma" sırasını geri getirir (#162). Yeni agent eklemek akışı değiştirmez.
 - **LLM sağlayıcısı ayardan seçilir.** Geliştirmede NVIDIA'nın ücretsiz modelleri (hızlı: `nemotron-3.5-lightning-30b`, güçlü: `nemotron-3.5-super-vl-120b`) kullanılıyor; Gemini/Vertex AI uyumluluğu korunuyor. Geçici hatada (zaman aşımı, kota, sunucu hatası) bir kez **yedek modele** geçilir; istek ve agent süreleri sınırlıdır.
 - **Yapılandırılmış çıktı:** Her agent şemaya uygun JSON döner; çıktı doğrulanmadan kayda yazılmaz.
 - **Veritabanı:** Standart PostgreSQL + pgvector; şema **Alembic** migration'larıyla kurulur (Supabase Auth ve RLS'e bağımlılık yok). Geliştirmede ve demoda Docker ile yerel PostgreSQL 17 çalışır (Supabase kullanılmıyor); canlıda kendi PostgreSQL'imiz veya Cloud SQL. *(Hocaya sorulacak.)*
@@ -70,7 +70,7 @@ Not: Gezdiğimiz örnek site (Figma Make ile hazırlanmış bir prototip) arayü
 | Embedding | — | bge-m3, TEI konteynerinde (Docker) |
 | Ses üretimi (seed) | — | Piper (çevrimdışı Türkçe, varsayılan) veya Edge TTS (iki nöral Türkçe ses, daha gerçekçi; `--engine edge`); karar: `docs/stt_karari.md` |
 | Agent orkestrasyonu | — | LangGraph + LangChain |
-| Geliştirme | — | uv, ruff, mypy, pytest (~1.250 test); GitHub Actions CI (duman testi dahil); Docker Compose |
+| Geliştirme | — | uv, ruff, mypy, pytest (~1.400 test); GitHub Actions CI (duman testi dahil); Docker Compose |
 
 Kilit dosyaları (`uv.lock`, `package-lock.json`) repoda tutulur; `requirements.txt` `uv.lock`'tan üretilir.
 
@@ -191,7 +191,7 @@ Arayüz ile AI servisi arasındaki sözleşme `docs/api.md` ve `frontend/openapi
 | Dayanıklılık, yük ve güvenlik ölçümleri | **Hazır**: `docs/dayaniklilik.md`, `docs/guvenlik_yuk.md`, yetki matrisi testleri |
 | Erişilebilirlik (axe, klavye, pencere daraltma), Playwright E2E testleri | **Hazır** |
 | Miço Usta uygulamasına entegrasyon, kimlik doğrulama, Google Cloud'a canlıya alma | **Yapılmadı** (hocayla yöntem netleşecek) |
-| Demo senaryosu ve prova | Ekip provası: `docs/ekip_test_senaryosu.md`; hoca demosu: `docs/hoca_demo_akisi.md`; Miço AI soruları: `docs/test_senaryosu.md`; prova turu Berkay ile yapılacak |
+| Demo senaryosu ve prova | Ekip provası: `docs/ekip_test_senaryosu.md`; Miço AI soruları: `docs/test_senaryosu.md`; prova turu Berkay ile yapılacak |
 
 **Bilinen sorunlar:** Ücretsiz LLM kotası canlı demoda yavaşlığa yol açabilir (429'da bekleyip yeniden denenir). Ortak geliştirme veritabanında önceki denemelerden kalan veri bazı entegrasyon testlerini düşürebiliyor (temiz veritabanında geçer). Seed'de çağrı sayısı 50; 100'e çıkarma #148'de.
 

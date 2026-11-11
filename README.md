@@ -38,6 +38,5 @@ Geliştirme için: backend klasöründe `uv run python -m scripts.dev`, frontend
 | [`docs/stt_karari.md`](docs/stt_karari.md) | Konuşma tanıma kararı ve ölçümü |
 | [`docs/canliya_alma.md`](docs/canliya_alma.md) | Canlıya alma rehberi |
 | [`docs/ekip_test_senaryosu.md`](docs/ekip_test_senaryosu.md) | Ekip içi test senaryosu (Miço AI örnek soruları: `docs/test_senaryosu.md`) |
-| [`docs/hoca_demo_akisi.md`](docs/hoca_demo_akisi.md) | Hoca toplantısı demo akışı |
 | [`docs/calistirma.md`](docs/calistirma.md) | Çalıştırma rehberi ve sorun giderme |
 | [`docs/dayaniklilik.md`](docs/dayaniklilik.md), [`docs/guvenlik_yuk.md`](docs/guvenlik_yuk.md) | Dayanıklılık, yük ve güvenlik ölçümleri |
