@@ -1,6 +1,6 @@
 """Hazır araçlar: sayısal sorular için hesabı kod yapar, LLM sayı uydurmaz (#27).
 
-Gerçek veritabanı sorguları (PostgreSQL / Supabase):
+Gerçek veritabanı sorguları (PostgreSQL):
 - `get_expense_total`: Tarih aralığı ve isteğe bağlı tekneye göre gider toplamı.
 - `get_remaining_package`: Abonelik/paketteki kalan bakım hakkı ve bitiş tarihi.
 - `get_last_maintenance`: En son tamamlanan servis kaydı (isteğe bağlı tekne/kategoriyle).

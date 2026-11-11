@@ -31,6 +31,8 @@ Admin/tekne sahibi rol ayrımını .NET uygulaması yapar. Tekne sahibi uçları
 
 | Yöntem ve yol | Kim | Gövde / parametre | Yanıt | Issue |
 |---|---|---|---|---|
+| `GET /me` | Servis anahtarı | `X-Service-Key` (başlık), isteğe bağlı `X-User-Id` | `ServiceCaller`; anahtar yanlışsa 401 | — |
+| `GET /me/owner` | Tekne sahibi | `X-Service-Key` + zorunlu `X-User-Id` | `ServiceCaller`; `X-User-Id` yoksa 400, anahtar yanlışsa 401 | — |
 | `GET /calls` | Admin | `CallFilters` (sorgu) | `Page` of `CallListItem` | #51 |
 | `GET /calls/{call_id}` | Admin | — | `CallDetail` | #51 |
 | `PUT /calls/{call_id}/match` | Admin | `CallMatchIn` | `CallDetail` | #119 |

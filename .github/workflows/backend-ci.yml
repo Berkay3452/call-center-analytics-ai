@@ -8,7 +8,13 @@
 #   5. smoke     : Gerçek PostgreSQL + Redis ile migration'ı uygular, veritabanı testlerini çalıştırır,
 #                  API ve Celery işçisini ayağa kaldırıp uçtan uca dener.
 #   6. dependencies: Bağımlılık sürümleri tutarlı mı (pyproject.toml, uv.lock, requirements.txt)?
-#   7. backend-ci: Tüm sonuçları toplayan tek kontrol. Branch korumasında "zorunlu kontrol" olarak bu seçilir.
+#   7. docker    : Docker Compose dosyaları geçerli mi, backend imajı (API, Celery, STT) derleniyor mu?
+#   8. security  : Bağımlılıklarda bilinen güvenlik açığı var mı (pip-audit)? Yalnızca uyarır, PR'ı kırmaz.
+#   9. backend-ci: Tüm sonuçları toplayan tek kontrol. Branch korumasında "zorunlu kontrol" olarak bu seçilir.
+#
+# `test` işi ayrıca belge/kod tutarlılığını denetler (tests/test_docs_consistency.py): bozuk bağlantı,
+# `docs/api.md` içinde olmayan uç nokta, `docs/db_schema.md` içinde olmayan tablo, mimari belgede
+# eksik teknoloji, `frontend/openapi.json` ve API örnekleriyle ayrışma (tests/test_api_contract.py).
 
 name: Backend CI
 
@@ -49,9 +55,13 @@ jobs:
               - '.github/workflows/backend-ci.yml'
               # Backend testlerinin denetlediği paylaşılan sözleşmeler (enum tutarlılığı, sentetik veri)
               - 'data/synthetic/**'
-              - 'docs/enums.md'
-              - 'docs/db_schema.md'
+              - 'docs/**'
+              - 'README.md'
+              - 'Sistem_mimarisi_v4.md'
               - 'frontend/lib/types.ts'
+              - 'frontend/lib/api-types.ts'
+              - 'frontend/openapi.json'
+              - 'frontend/mocks/**'
 
   lint:
     name: Lint (ruff)
@@ -255,28 +265,66 @@ jobs:
       - name: requirements dosyalarını uv.lock'tan yeniden üret
         # Komutlar dosyaların başlığındaki komutla birebir aynıdır (README'de de yazıyor).
         run: |
-          uv export --frozen --no-hashes --no-emit-project --no-dev --extra ai -o requirements.txt
+          uv export --frozen --no-hashes --no-emit-project --no-dev --extra ai --extra stt -o requirements.txt
           uv export --frozen --no-hashes --no-emit-project --only-dev -o requirements-dev.txt
       - name: requirements dosyaları güncel mi?
         run: |
           if ! git diff --exit-code -- requirements.txt requirements-dev.txt; then
             echo "::error::requirements dosyaları uv.lock ile uyumsuz. backend/ içinde şu komutları çalıştırıp sonucu commit'leyin (ayrıntı: backend/README.md):"
-            echo "uv export --frozen --no-hashes --no-emit-project --no-dev --extra ai -o requirements.txt"
+            echo "uv export --frozen --no-hashes --no-emit-project --no-dev --extra ai --extra stt -o requirements.txt"
             echo "uv export --frozen --no-hashes --no-emit-project --only-dev -o requirements-dev.txt"
             exit 1
           fi
+
+  docker:
+    name: Docker (compose geçerli mi, backend imajı derlenir mi?)
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+      - name: Compose dosyalarını doğrula
+        run: |
+          docker compose -f infra/docker-compose.yml --profile app config --quiet
+          docker compose -f infra/docker-compose.yml -f infra/docker-compose.smoke.yml --profile app config --quiet
+      - uses: docker/setup-buildx-action@v3
+      - name: Backend imajını derle (gönderilmez; STT ekstrası dahil)
+        uses: docker/build-push-action@v6
+        with:
+          context: backend
+          push: false
+          load: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  security:
+    name: Güvenlik taraması (pip-audit, bilgi amaçlı)
+    needs: changes
+    if: needs.changes.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    # Yeni açık bildirimi PR ile ilgisiz olabilir; bu yüzden PR'ı kırmaz, yalnızca iş sayfasında görünür.
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.2.0
+        with:
+          version: ${{ env.UV_VERSION }}
+      - name: Bilinen açıklar (requirements.txt)
+        working-directory: backend
+        run: uvx pip-audit --requirement requirements.txt --no-deps --disable-pip
 
   backend-ci:
     # Branch korumasında yalnızca bu kontrol "zorunlu" yapılır. Backend'e dokunmayan PR'larda
     # diğer işler atlanır ve bu kontrol yine geçer; böylece dokümantasyon PR'ları takılı kalmaz.
     name: Backend CI sonucu
-    needs: [changes, lint, typecheck, test, smoke, dependencies]
+    needs: [changes, lint, typecheck, test, smoke, dependencies, docker]
     if: always()
     runs-on: ubuntu-latest
     steps:
       - name: Sonuçları değerlendir
         run: |
-          echo "lint=${{ needs.lint.result }} typecheck=${{ needs.typecheck.result }} test=${{ needs.test.result }} smoke=${{ needs.smoke.result }} dependencies=${{ needs.dependencies.result }}"
+          echo "lint=${{ needs.lint.result }} typecheck=${{ needs.typecheck.result }} test=${{ needs.test.result }} smoke=${{ needs.smoke.result }} dependencies=${{ needs.dependencies.result }} docker=${{ needs.docker.result }}"
           if [ "${{ needs.changes.result }}" != "success" ] || \
              [[ "${{ join(needs.*.result, ' ') }}" =~ (failure|cancelled) ]]; then
             echo "::error::Backend CI başarısız. Kırmızı olan işe tıklayıp hatanın yerini görün."

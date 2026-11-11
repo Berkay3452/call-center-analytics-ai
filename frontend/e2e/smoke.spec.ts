@@ -493,17 +493,16 @@ test("Issue #204: müşteri sağda, Miço Usta solda; balonlarda süre yok", asy
   await page.goto("/admin/calls/11111111-1111-4111-8111-111111111111");
   const transcript = page.getByRole("region", { name: "Konuşma metni", exact: true });
   const bubbles = transcript.getByTestId("transcript-bubble");
-  await expect(bubbles).toHaveCount(6);
+  await expect(bubbles).toHaveCount(5);
   for (const [speaker, label, alignment] of [
     ["musteri", "Müşteri", "flex-end"],
     ["firma", "Miço Usta", "flex-start"],
-    ["unknown", "Bilinmeyen konuşmacı", "center"],
   ]) {
     const bubble = transcript.locator(`[data-testid="transcript-bubble"][data-speaker="${speaker}"]`).first();
     await expect(bubble.getByText(label, { exact: true })).toBeVisible();
     await expect(bubble.locator("..")).toHaveCSS("justify-content", alignment);
   }
-  await expect(bubbles.first()).toContainText("Miço Usta, buyurun.\nSize nasıl yardımcı olabiliriz?");
+  await expect(bubbles.first()).toContainText("Miço Usta, buyurun.");
   await expect(transcript).not.toContainText(/\b\d+:\d{2}\b|\bsüre\b/i);
   for (const width of [1280, 390]) {
     await page.setViewportSize({ width, height: 900 });

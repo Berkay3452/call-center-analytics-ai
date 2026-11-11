@@ -36,9 +36,10 @@ test.describe("Canlı analiz takibi (#217)", () => {
     const finalCount = statusRequests;
     await page.waitForTimeout(5000);
     expect(statusRequests).toBe(finalCount);
+    await expect(result).toBeHidden(); // bildirim 5 sn sonra kendiliğinden kapanır
     await page.getByRole("navigation", { name: "Ana gezinme" }).getByRole("link", { name: "Çağrılar", exact: true }).click();
     await expect(row.getByText("Analiz sürüyor", { exact: true })).toHaveCount(0);
-    await result.click();
+    await row.locator(`a[href="/admin/calls/${id}"]`).first().click();
     await expect(page.getByText(/Yeni analiz tamamlandı \(sürüm/).first()).toBeVisible();
     await expect(page.getByRole("button", { name: "Çağrıyı yeniden analiz et", exact: true })).toBeEnabled();
   });

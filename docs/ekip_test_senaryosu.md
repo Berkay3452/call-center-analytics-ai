@@ -1,6 +1,6 @@
 # Test senaryosu (ekip içi prova)
 
-Amaç: toplantıdan önce **her sayfayı üç kişi kendi bilgisayarında** gerçekten denemek. Herkes yalnızca kendi bölümlerini yapar, sonuçları [`test_sonuclari.md`](test_sonuclari.md) dosyasına yazar. Hocaya göstereceğimiz akış ayrı dosyada: [`hoca_demo_akisi.md`](hoca_demo_akisi.md).
+Amaç: toplantıdan önce **her sayfayı üç kişi kendi bilgisayarında** gerçekten denemek. Herkes yalnızca kendi bölümlerini yapar, sonuçları [`test_sonuclari.md`](test_sonuclari.md) dosyasına yazar.
 
 ## Kim hangi bölümü test eder?
 

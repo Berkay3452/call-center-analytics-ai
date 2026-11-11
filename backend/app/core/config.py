@@ -34,16 +34,17 @@ class Settings(BaseSettings):
     # Virgülle ayrılmış izinli origin listesi (ör. "http://localhost:3000,https://app.example.com")
     cors_origins: str = "http://localhost:3000"
 
-    # --- Veritabanı (Supabase PostgreSQL + pgvector) ---
+    # --- Veritabanı (PostgreSQL 17 + pgvector) ---
     database_url: str = "postgresql+asyncpg://postgres:postgres@localhost:15432/call_center"
     db_pool_size: int = 5
     db_max_overflow: int = 10
     db_echo: bool = False
-    # Supabase pooler (transaction mode) arkasında asyncpg hazır ifade önbelleği kapatılmalı (0).
+    # Bağlantı havuzlayıcı (pgbouncer transaction mode) arkasında asyncpg hazır ifade
+    # önbelleği kapatılmalı (0).
     db_statement_cache_size: int = 0
 
     # --- Redis / Celery ---
-    redis_url: str = "redis://localhost:6379/0"
+    redis_url: str = "redis://127.0.0.1:6379/0"
     celery_broker_url: str | None = None  # boşsa redis_url kullanılır
     celery_result_backend: str | None = None  # boşsa redis_url kullanılır
     # Takılı kalan çağrı zaman aşımı (dakika). Bu süreden uzun süredir
@@ -53,7 +54,7 @@ class Settings(BaseSettings):
     # --- Sağlık kontrolü ---
     health_check_timeout_s: float = 2.0
 
-    # --- Servis Anahtarı / Supabase Storage ---
+    # --- Servis anahtarı ve ses depolama ---
     # .NET API'nin Python servisini çağırırken `X-Service-Key` ile gönderdiği paylaşılan anahtar.
     service_api_key: SecretStr | None = None
     supabase_url: str | None = None
