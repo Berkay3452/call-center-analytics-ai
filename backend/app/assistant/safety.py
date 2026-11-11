@@ -181,3 +181,107 @@ def mentions_other_customer(question: str, other_names: set[str]) -> bool:
     """Soruda başka bir müşterinin tam adı (normalize edilmiş) geçiyor mu?"""
     text = f" {normalize(question)} "
     return any(f" {name} " in text for name in other_names)
+
+
+# --- Kural aşma girişimi, başkasının verisi, anlamsız metin: duruma özel cevaplar ---
+
+_INJECTION_PHRASES = (
+    "ignore previous",
+    "ignore all",
+    "ignore the above",
+    "disregard previous",
+    "previous instructions",
+    "system prompt",
+    "reveal your prompt",
+    "show your prompt",
+    "developer mode",
+    "jailbreak",
+    "onceki talimat",
+    "onceki komut",
+    "talimatlari unut",
+    "talimatlarini unut",
+    "kurallari unut",
+    "talimatlarini yaz",
+    "talimatlarini goster",
+    "talimatlarini soyle",
+    "sistem talimat",
+    "sistem komut",
+    "sistem mesaj",
+    "sistem prompt",
+    "promptunu",
+    "prompt u goster",
+    "rolunu unut",
+    "kuralsiz",
+    "tum verileri goster",
+    "butun verileri goster",
+    "tum veriyi goster",
+    "butun veriyi goster",
+    "show all data",
+    "dump the database",
+    "veritabanini goster",
+    "veritabanini dok",
+    "api anahtar",
+    "api key",
+    "gizli anahtar",
+    "owner id",
+    "ownerid",
+)  # fmt: skip
+
+INJECTION_REPLIES = (
+    "Sistem talimatlarımı, ayarlarımı veya gizli bilgileri paylaşamam ve kurallarımı "
+    f'değiştiremem. {CAPABILITIES} Örneğin: "Kaç bakım hakkım kaldı?" diye sorabilirsiniz.',
+    "Bu isteği yerine getiremem: iç ayarlarım ve verilerin tamamı paylaşılmaz. Yalnızca kendi "
+    f"teknenizin kayıtlarına bakabilirim. {CAPABILITIES}",
+    "Talimatlarımı değiştirmem veya sistem bilgilerini göstermem mümkün değil. Teknenizle ilgili "
+    "bir şey öğrenmek isterseniz buradayım: bakım geçmişi, giderler, paket hakkınız.",
+)
+OTHER_PARTY_REPLIES = (
+    "Başka müşterilerin bilgilerini paylaşamam; gizlilik gereği yalnızca kendi teknenizin ve "
+    f"hesabınızın kayıtlarına bakabilirim. {CAPABILITIES}",
+    "Diğer müşterilere ait gider veya kayıtları gösteremem. Kendi giderlerinizi görmek için "
+    '"Bu ay ne kadar harcadım?" diye sorabilirsiniz.',
+    "Bu bilgi başka bir müşteriye ait olduğu için erişemiyorum. Kendi teknenizin bakım geçmişi "
+    "ve giderleri hakkında yardımcı olabilirim.",
+)
+OUT_OF_SCOPE_REPLIES = (
+    "Bu konu benim alanımın dışında kalıyor. Teknenizin bakım geçmişi, giderleriniz ve "
+    "aboneliğiniz hakkında yardımcı olabilirim.",
+    "Bu isteğe yardımcı olamıyorum; ben Miço Usta'nın tekne asistanıyım. Bakım kayıtlarınızı, "
+    "giderlerinizi veya paket hakkınızı sorabilirsiniz.",
+    "Maalesef bu konuda yardımcı olamıyorum. Teknenizle ilgili kayıtlar, giderler ve bakım "
+    "önerileri konusunda buradayım.",
+)  # fmt: skip
+
+
+def pick_reply(options: tuple[str, ...], question: str) -> str:
+    """Aynı soruya hep aynı, farklı sorulara farklı cevap (deterministik çeşitleme)."""
+    return options[sum(ord(c) for c in question) % len(options)]
+
+
+def is_injection_attempt(question: str) -> bool:
+    """Talimatları unutturma, sistem istemini veya tüm veriyi isteme gibi kural aşma girişimi."""
+    text = f" {normalize(question)} "
+    return any(f" {p}" in text for p in _INJECTION_PHRASES)
+
+
+_VOWELS = frozenset("aeiou")
+_CONSONANT_RUN = re.compile(r"[bcdfghjklmnpqrstvwxyz]{5,}")
+
+
+def _bad_token(token: str) -> bool:
+    letters = [c for c in token if c.isalpha()]
+    if not letters:
+        return False
+    if len(letters) >= 20:
+        return True
+    vowels = sum(1 for c in letters if c in _VOWELS)
+    return bool(_CONSONANT_RUN.search(token)) or (len(letters) >= 3 and vowels == 0)
+
+
+def looks_like_gibberish(question: str) -> bool:
+    """Klavye rastgeleliği ("asdfgh jkl", "asdıuyasasjhjh...") gibi anlamsız harf dizileri."""
+    tokens = [t for t in normalize(question).split() if any(c.isalpha() for c in t)]
+    if not tokens:
+        return False
+    bad = sum(1 for t in tokens if _bad_token(t))
+    return bad > 0 and bad * 2 >= len(tokens)

@@ -20,7 +20,7 @@ from app.assistant.llm import AssistantLLM, load_prompt
 from app.assistant.safety import asks_other_party
 from app.schemas.assistant import AssistantTool, QuestionType
 
-Period = Literal["bu_ay", "tumu"]
+Period = Literal["bu_ay", "gecen_ay", "tumu"]
 
 
 class Plan(BaseModel):
@@ -79,17 +79,28 @@ def topics_in(tokens: list[str]) -> list[str]:
     return [p for p in _TOPIC_PREFIXES if any(t.startswith(p) for t in tokens)]
 
 
+def detect_period(text: str) -> Period:
+    """Normalize edilmiş soruda dönem: "bu ay", "geçen ay" (ya da "önceki ay"), yoksa tümü."""
+    if "gecen ay" in text or "onceki ay" in text or "gecen ayki" in text:
+        return "gecen_ay"
+    if "bu ay" in text:
+        return "bu_ay"
+    return "tumu"
+
+
 def plan_by_rules(question: str) -> Plan | None:
     """Net sayısal sorular için plan; belirsizse None (LLM'e bırakılır)."""
     text = normalize(question)
     tokens = text.split()
     if asks_other_party(question):
         return Plan(question_type=QuestionType.KAPSAM_DISI)  # başkasının verisi: ret
-    period: Period = "bu_ay" if "bu ay" in text else "tumu"
+    period = detect_period(text)
 
     spent = _has(tokens, "harca", "masraf", "gider", "odeme", "odedi", "fatura")
     if mentions_topic(tokens) and (
-        spent or ("ne kadar" in text and _has(tokens, "ucret", "tutar"))
+        spent
+        or ("ne kadar" in text and _has(tokens, "ucret", "tutar", "tuttu", "fiyat", "maliyet"))
+        or _has(tokens, "tuttu", "maliyet")
     ):
         # "Akü değişimine ne ödedim?": tek işin tutarı, genel toplam değil (#152)
         return Plan(
@@ -146,6 +157,11 @@ IDENTITY_REPLY = (
     "Ben Miço Usta'nın tekne asistanı Miço AI'yım. Teknenizin bakım geçmişi, giderleriniz ve "
     f"aboneliğiniz hakkında kayıtlarınıza dayanarak cevap veririm. {EXAMPLE_QUESTIONS}"
 )
+WEATHER_REPLY = (
+    "Hava durumu bilgisine erişimim yok. Denize çıkmadan önce güncel hava ve deniz tahminine "
+    "(ör. meteoroloji) bakmanızı öneririm. Teknenizin bakım kayıtları, giderleri veya "
+    "aboneliğiniz hakkında yardımcı olabilirim."
+)
 GOODBYE_REPLY = "Görüşmek üzere! Teknenizle ilgili sorularınız olursa tekrar yazabilirsiniz."
 
 _ADDRESS_WORDS = frozenset({"mico", "usta", "ai", "asistan", "asistani", "bey", "hanim"})
@@ -183,6 +199,11 @@ _DATE_PHRASES = (
     "gunlerden ne", "bugun gunlerden", "bugun ayin kaci", "bugunun tarihi", "bugun tarih",
     "tarih ne", "tarih kac", "hangi gundeyiz", "bugun ne gunu", "bugun hangi gun",
 )  # fmt: skip
+_WEATHER_PHRASES = (
+    "hava durumu", "hava nasil", "hava tahmin", "havalar nasil", "yarin hava", "bugun hava",
+    "yagmur yagacak", "ruzgar nasil", "ruzgar tahmin", "dalga nasil", "deniz nasil",
+    "firtina var mi", "hava nasil olacak",
+)  # fmt: skip
 _WEEKDAYS = ["Pazartesi", "Salı", "Çarşamba", "Perşembe", "Cuma", "Cumartesi", "Pazar"]
 TURKEY_TZ = timezone(timedelta(hours=3), "TSİ")  # Türkiye 2016'dan beri sabit UTC+3
 _MAX_SMALLTALK_TOKENS = 7
@@ -208,6 +229,8 @@ def smalltalk_reply(question: str, now: datetime | None = None) -> str | None:
             f"Bugün {local.day} {MONTHS[local.month - 1]} {local.year} "
             f"{_WEEKDAYS[local.weekday()]}."
         )
+    if any(f" {p}" in padded for p in _WEATHER_PHRASES):
+        return WEATHER_REPLY
     if any(f" {p} " in f" {text} " for p in _IDENTITY_PHRASES):
         return IDENTITY_REPLY
     if any(f" {p} " in f" {text} " for p in _GOODBYE_PHRASES):

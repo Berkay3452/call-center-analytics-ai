@@ -53,7 +53,7 @@ class HistoryTurn(BaseModel):
 class AssistantRequest(BaseModel):
     """Tekne sahibinin sorusu. `owner_id` .NET API'nin doğruladığı oturum kullanıcısıdır."""
 
-    question: str = Field(min_length=1, max_length=1000)
+    question: str = Field(min_length=1, max_length=5000)
     owner_id: str = Field(min_length=1, description="Oturumdaki tekne sahibi; zorunlu.")
     history: list[HistoryTurn] = Field(
         default_factory=list,

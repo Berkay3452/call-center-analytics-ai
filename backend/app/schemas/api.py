@@ -396,7 +396,7 @@ class CallStatus(BaseModel):
 class ChatQuestion(BaseModel):
     """`POST /chat/messages`. `session_id` boşsa yeni oturum açılır."""
 
-    question: str = Field(min_length=1, max_length=1000)
+    question: str = Field(min_length=1, max_length=5000)
     session_id: UUID | None = None
 
 
