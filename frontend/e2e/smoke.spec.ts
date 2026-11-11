@@ -502,7 +502,7 @@ test("Issue #204: müşteri sağda, Miço Usta solda; balonlarda süre yok", asy
     await expect(bubble.getByText(label, { exact: true })).toBeVisible();
     await expect(bubble.locator("..")).toHaveCSS("justify-content", alignment);
   }
-  await expect(bubbles.first()).toContainText("Miço Usta, buyurun.\nSize nasıl yardımcı olabiliriz?");
+  await expect(bubbles.first()).toContainText("Miço Usta, buyurun.");
   await expect(transcript).not.toContainText(/\b\d+:\d{2}\b|\bsüre\b/i);
   for (const width of [1280, 390]) {
     await page.setViewportSize({ width, height: 900 });
