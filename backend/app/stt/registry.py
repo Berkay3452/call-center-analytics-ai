@@ -20,6 +20,7 @@ def build_transcriber(settings: Settings, provider: str | None = None) -> Transc
             beam_size=settings.whisper_beam_size,
             vad_threshold=settings.whisper_vad_threshold,
             download_root=settings.whisper_download_root,
+            initial_prompt=settings.whisper_initial_prompt,
         )
     if name == "openai_compatible":
         return OpenAICompatibleTranscriber(
