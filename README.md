@@ -17,6 +17,7 @@
 - [Yapılandırma](#yapılandırma)
 - [Proje yapısı](#proje-yapısı)
 - [Test ve kalite](#test-ve-kalite)
+- [Başarı kriterleri](#başarı-kriterleri)
 - [Ölçülen sonuçlar](#ölçülen-sonuçlar)
 - [Güvenlik ve gizlilik](#güvenlik-ve-gizlilik)
 - [Katkı süreci](#katkı-süreci)
@@ -156,6 +157,21 @@ npm run e2e                        # Playwright (önce: npx playwright install)
 ```
 
 **CI (GitHub Actions):** Backend: değişiklik tespiti, ruff, mypy, pytest, bağımlılık sürümü uyumu, Docker imajı, güvenlik taraması (pip-audit), Docker Compose ile uçtan uca duman testi (API + Celery + DB + Redis), belge tutarlılığı. Frontend: ESLint + build, Playwright e2e (Chromium), Docker imajı. `main` dalı ruleset ile korunur; `Backend CI sonucu` ve `Frontend CI sonucu` kontrolleri zorunludur.
+
+## Başarı kriterleri
+
+Proje başında belirlediğimiz hedefler ve 11 Kasım 2026 itibarıyla ölçülen durum:
+
+| # | Kriter | Nasıl ölçülür | Hedef | Şu anki durum |
+|---|---|---|---|---|
+| 1 | STT doğruluğu | Telefon sesi simüleli sentetik test setinde WER | WER ≤ %15 | ⚠️ `medium` **%15,4** (hedefe çok yakın), varsayılan `small` %24,8. Hedef için `medium` gerekir; bellek ve süre dengesi sürüyor ([`docs/stt_karari.md`](docs/stt_karari.md)) |
+| 2 | Şikayet tespiti | 30 çağrılık test setinde etiketlerle karşılaştırma | Recall ≥ %90, Precision ≥ %80 | ⏳ Ölçülmedi: şikayet/duygu agent'ı yok, **vize sonrası** (duygu analizi planı hazır) |
+| 3 | Konu ve niyet sınıflandırma | Aynı test setinde doğruluk; duygu için makro F1 | Doğruluk ≥ %80, F1 ≥ 0,70 | ✅ / ⏳ Doğruluk: test kümesinde genel **%94**, çağrı tipi %85, talep kategorisi %95 ([`docs/agent_dogrulugu.md`](docs/agent_dogrulugu.md)). Duygu F1: duygu agent'ı olmadığı için ölçülmedi |
+| 4 | Sayısal soru doğruluğu | 20 sayısal soru: sohbet = SQL sonucu = dashboard | %100 tutarlı | ✅ **20/20** sohbet cevabı = SQL sonucu ([`docs/dayaniklilik.md`](docs/dayaniklilik.md)) |
+| 5 | Uçtan uca süre | 5 dakikalık çağrı: yüklemeden analiz sonucuna | ≤ 3 dakika | ⚠️ Tahmini 1,5–2 dk (STT 60–90 sn + analiz ~10 sn), ancak bu makinede `small` ile ölçülemedi; manuel testte yazıya çevirme 2–3 dk görüldü, **yeniden ölçülecek** |
+| 6 | Güvenilirlik | 30 test çağrısının işlenmesi | ≥ %95 hatasız tamamlanma | ✅ **55/55** geçerli çağrı hatasız (%100), 40 çağrılık toplu koşu dahil |
+
+Durum: ✅ karşılandı · ⚠️ kısmen / sınırda · ⏳ ölçülmedi.
 
 ## Ölçülen sonuçlar
 

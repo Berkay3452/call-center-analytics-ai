@@ -19,6 +19,7 @@ Istanbul Gedik University, MFK420 Graduation Project. An AI-powered call analyti
 - [Configuration](#configuration)
 - [Repository layout](#repository-layout)
 - [Testing and quality](#testing-and-quality)
+- [Success criteria](#success-criteria)
 - [Measured results](#measured-results)
 - [Security and privacy](#security-and-privacy)
 - [Contribution workflow](#contribution-workflow)
@@ -158,6 +159,21 @@ npm run e2e                        # Playwright (first: npx playwright install)
 ```
 
 **CI (GitHub Actions):** Backend: change detection, ruff, mypy, pytest, dependency-pin consistency, Docker image build, security scan (pip-audit), an end-to-end smoke test with Docker Compose (API + Celery + DB + Redis), and a documentation-consistency test. Frontend: ESLint + build, Playwright e2e (Chromium), Docker image build. The `main` branch is protected by a ruleset; the `Backend CI sonucu` and `Frontend CI sonucu` checks are required.
+
+## Success criteria
+
+The targets we set at the start of the project, and the measured status as of 11 November 2026:
+
+| # | Criterion | How it is measured | Target | Current status |
+|---|---|---|---|---|
+| 1 | STT accuracy | WER on a synthetic test set simulating phone audio | WER ≤ 15% | ⚠️ `medium` **15.4%** (very close), default `small` 24.8%. `medium` is needed to hit the target; the memory/time trade-off is still open ([`docs/stt_karari.md`](docs/stt_karari.md)) |
+| 2 | Complaint detection | Comparison with labels on a 30-call test set | Recall ≥ 90%, Precision ≥ 80% | ⏳ Not measured: there is no complaint/sentiment agent yet, planned **after the midterm** (the sentiment-analysis plan is ready) |
+| 3 | Topic and intent classification | Accuracy on the same test set; macro F1 for sentiment | Accuracy ≥ 80%, F1 ≥ 0.70 | ✅ / ⏳ Accuracy: **94%** overall on the test set, call type 85%, request category 95% ([`docs/agent_dogrulugu.md`](docs/agent_dogrulugu.md)). Sentiment F1: not measured, no sentiment agent yet |
+| 4 | Numeric-question accuracy | 20 numeric questions: chat = SQL result = dashboard | 100% consistent | ✅ **20/20** chat answers equal the SQL result ([`docs/dayaniklilik.md`](docs/dayaniklilik.md)) |
+| 5 | End-to-end time | 5-minute call: upload to analysis result | ≤ 3 minutes | ⚠️ Estimated 1.5–2 min (STT 60–90 s + analysis ~10 s), but it could not be measured with `small` on this machine; manual testing showed 2–3 min for transcription, **to be re-measured** |
+| 6 | Reliability | Processing of 30 test calls | ≥ 95% error-free completion | ✅ **55/55** valid calls without error (100%), including a 40-call bulk run |
+
+Status: ✅ met · ⚠️ partially / borderline · ⏳ not measured.
 
 ## Measured results
 
