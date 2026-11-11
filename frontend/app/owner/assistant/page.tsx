@@ -2,7 +2,12 @@
 
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import type { ChatMessage, CitationCard } from "@/lib/types";
-import type { StreamStage, SourceRef, ChatReply, ChatSessionOut } from "@/lib/api/types";
+import type {
+  StreamStage,
+  SourceRef,
+  ChatReply,
+  ChatSessionOut,
+} from "@/lib/api/types";
 import {
   streamAssistantChat,
   getChatSessions,
@@ -58,7 +63,9 @@ function mapSourceRefsToCitationCards(sources?: SourceRef[]): CitationCard[] {
 export default function AssistantPage() {
   // ── Sohbet durumu ──────────────────────────────────────────────────────────
   const [messages, setMessages] = useState<ChatMessage[]>(INITIAL_MESSAGES);
-  const [currentStage, setCurrentStage] = useState<StreamStage | "yaziyor" | null>(null);
+  const [currentStage, setCurrentStage] = useState<
+    StreamStage | "yaziyor" | null
+  >(null);
   const [isLoading, setIsLoading] = useState(false);
   const [lastQuestion, setLastQuestion] = useState<string | null>(null);
 
@@ -180,7 +187,8 @@ export default function AssistantPage() {
           ...copy[lastIndex],
           isStreaming: false,
           content: copy[lastIndex].content.trim()
-            ? copy[lastIndex].content + "\n\n(Yanıt kullanıcı tarafından durduruldu)"
+            ? copy[lastIndex].content +
+              "\n\n(Yanıt kullanıcı tarafından durduruldu)"
             : "Yanıt kullanıcı tarafından durduruldu.",
         };
       }
@@ -372,7 +380,10 @@ export default function AssistantPage() {
         onClose={closeSidebar}
       />
 
-      <div inert={sidebarOpen} className="flex min-w-0 flex-1 flex-col overflow-hidden">
+      <div
+        inert={sidebarOpen}
+        className="flex min-w-0 flex-1 flex-col overflow-hidden"
+      >
         <header className="flex flex-shrink-0 items-center justify-between gap-3 border-b border-slate-200 px-4 py-3">
           <div className="flex min-w-0 items-center gap-2.5">
             <Button
@@ -388,22 +399,26 @@ export default function AssistantPage() {
             </Button>
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="text-base font-semibold text-brand-800">Miço AI</h1>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  aria-label="Yeni sohbet başlat"
-                  onClick={handleNewChat}
-                  disabled={isLoading || (isFreshChat && !activeSessionId)}
-                  title="Mevcut sohbet geçmişte kalır, boş bir sohbet açılır"
-                  className="shrink-0 focus-visible:ring-2 focus-visible:ring-brand-500"
-                >
-                  Yeni sohbet
-                </Button>
+                <h1 className="text-base font-semibold text-brand-800">
+                  Miço AI
+                </h1>
               </div>
-              <p className="truncate text-xs text-slate-500">Poyraz (Motoryat 42) · Kalamış Marina</p>
+              <p className="truncate text-xs text-slate-500">
+                Tüm tekneleriniz ve kayıtlarınız hakkında soru sorabilirsiniz
+              </p>
             </div>
           </div>
+          <Button
+            variant="secondary"
+            size="sm"
+            aria-label="Yeni sohbet başlat"
+            onClick={handleNewChat}
+            disabled={isLoading || (isFreshChat && !activeSessionId)}
+            title="Mevcut sohbet geçmişte kalır, boş bir sohbet açılır"
+            className="ml-auto shrink-0 focus-visible:ring-2 focus-visible:ring-brand-500"
+          >
+            Yeni sohbet
+          </Button>
         </header>
 
         <div className="min-h-0 flex-1 bg-slate-50">
@@ -415,8 +430,14 @@ export default function AssistantPage() {
           />
         </div>
 
-        <section aria-label="Mesaj yazma alanı" className="min-w-0 flex-shrink-0 space-y-2 border-t border-slate-200 bg-white p-3">
-          <SuggestedPrompts disabled={isLoading} onSelectPrompt={(prompt) => void sendMessage(prompt)} />
+        <section
+          aria-label="Mesaj yazma alanı"
+          className="min-w-0 flex-shrink-0 space-y-2 border-t border-slate-200 bg-white p-3"
+        >
+          <SuggestedPrompts
+            disabled={isLoading}
+            onSelectPrompt={(prompt) => void sendMessage(prompt)}
+          />
           <ChatInput
             onSendMessage={(content) => void sendMessage(content)}
             disabled={isLoading}
