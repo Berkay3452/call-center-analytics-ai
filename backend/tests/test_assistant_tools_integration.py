@@ -300,7 +300,10 @@ async def test_answer_question_numeric_with_real_db_session(
         )
         assert res1.question_type == QuestionType.SAYISAL
         assert res1.found is True
-        assert "Ekim 2026 döneminde toplam giderleriniz 14.250,00 TL (1 kalem)." in res1.answer
+        assert (
+            "Ekim 2026 döneminde tüm teknelerinizde toplam giderleriniz 14.250,00 TL (1 kalem)."
+            in res1.answer
+        )
         assert len(res1.sources) == 1
 
         # 2. Kaç bakım hakkım kaldı?

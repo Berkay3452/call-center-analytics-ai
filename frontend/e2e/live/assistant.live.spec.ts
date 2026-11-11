@@ -74,9 +74,26 @@ test.describe("Miço AI (canlı backend)", () => {
     await expect(page.getByText(/4100\/5000/)).toBeVisible();
   });
 
-  // Bulunan hata: soruda belirtilen tekne (Yelkovan) yok sayılıp Poyraz'ın kaydı cevap olarak veriliyor.
-  test.fixme("sorulan teknenin adı cevapta korunur (Yelkovan)", async ({ page }) => {
+  // Ahmet Yılmaz'ın iki teknesi var (Poyraz, Yelkovan): soruda adı geçen tekneye daraltılır.
+  test("sorulan teknenin adı cevapta korunur (Yelkovan)", async ({ page }) => {
     const answer = await ask(page, "Yelkovan teknesinin son bakımı ne zaman yapıldı?");
-    expect(answer).not.toMatch(/^Poyraz için/);
+    expect(answer).toMatch(/^Yelkovan için son bakım/);
+    expect(answer).not.toContain("Poyraz");
+  });
+
+  test("tekne bazlı gider: Yelkovan toplamı tüm teknelerin toplamı değildir", async ({ page }) => {
+    const yelkovan = await ask(page, "Yelkovan teknesinin giderleri");
+    expect(yelkovan).toContain("Yelkovan teknesi için");
+    expect(yelkovan).not.toContain("164.900");
+    const all = await ask(page, "Toplam ne kadar harcadım?");
+    expect(all).toContain("tüm teknelerinizde");
+    expect(all).toContain("164.900");
+  });
+
+  test("başkasının teknesi sorulursa hesapta görünmediği söylenir", async ({ page }) => {
+    const answer = await ask(page, "Zıpkın teknesinin bakım geçmişi nedir?");
+    expect(answer).toContain("hesabınızda görünmüyor");
+    expect(answer).toMatch(/Poyraz/);
+    expect(answer).toMatch(/Yelkovan/);
   });
 });

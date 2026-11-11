@@ -85,6 +85,7 @@ WITH vec AS (
            1 - (embedding <=> CAST(:qvec AS vector)) AS sim
     FROM rag_chunks
     WHERE owner_id = :owner AND :use_vec AND embedding IS NOT NULL
+      AND (CAST(:boat AS uuid) IS NULL OR boat_id = CAST(:boat AS uuid))
     ORDER BY embedding <=> CAST(:qvec AS vector)
     LIMIT :cand
 ),
@@ -92,6 +93,7 @@ fts AS (
     SELECT id, row_number() OVER (ORDER BY ts_rank_cd(tsv, q) DESC, id) AS rnk
     FROM rag_chunks, to_tsquery('simple', :tsq) AS q
     WHERE owner_id = :owner AND :use_fts AND tsv @@ q
+      AND (CAST(:boat AS uuid) IS NULL OR boat_id = CAST(:boat AS uuid))
     ORDER BY ts_rank_cd(tsv, q) DESC, id
     LIMIT :cand
 )
@@ -141,11 +143,13 @@ async def hybrid_search(
     limit: int = 3,
     min_similarity: float = 0.0,
     mode: SearchMode = "hybrid",
+    boat_id: UUID | None = None,
 ) -> list[SearchHit]:
     """Sahibin tekne karnesinde en ilgili parçalar (en iyiden başlayarak); yoksa boş liste.
 
     `min_similarity`: yalnızca vektör listesinden gelen (tam metinde eşleşmeyen) parçalar için
     alt sınır; ilgisiz notların kaynak gösterilmesini önler. Tam metin eşleşmesi her zaman kalır.
+    `boat_id`: verilirse yalnızca o teknenin kayıtları (sahiplik yine `owner_id` ile denetlenir).
     `mode`: karşılaştırma için yalnızca `vector` veya yalnızca `text` listesi kullanılabilir.
     """
     if not query.strip():
@@ -159,6 +163,7 @@ async def hybrid_search(
             {
                 "qvec": _vector_literal(qvec),
                 "owner": owner_id,
+                "boat": boat_id,
                 "tsq": tsq or "x",  # kullanılmaz: use_fts=false
                 "use_fts": tsq is not None,
                 "use_vec": use_vec,

@@ -13,6 +13,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.agents.grounding import normalize
 from app.assistant import safety, tools
 from app.assistant.answer import general_answer, history_answer, numeric_answer
+from app.assistant.boats import foreign_boat_reply, resolve_boat
 from app.assistant.llm import AssistantLLM
 from app.assistant.planner import (
     mentions_topic,
@@ -93,6 +94,15 @@ async def answer_question(
         )
 
     question = await standalone_question(question_text, request.history, llm)
+    own_boats = await tools.owner_boats(request.owner_id, session=session)
+    match = resolve_boat(
+        question, own_boats, await tools.other_boat_names(request.owner_id, session=session)
+    )
+    if match.foreign:
+        log.info("assistant.other_boat_name")
+        return AssistantAnswer(
+            answer=foreign_boat_reply(own_boats), question_type=QuestionType.KAPSAM_DISI
+        )
     plan = await plan_question(question, llm)
     log.info("assistant.planned", question_type=plan.question_type, tool=plan.tool)
 
@@ -105,6 +115,18 @@ async def answer_question(
     if plan.question_type == QuestionType.GENEL_SOHBET:
         return await general_answer(question, llm)
     if plan.question_type == QuestionType.SAYISAL:
-        return await numeric_answer(plan, request.owner_id, today, session=session)
-    passages = await search_boat_notes(request.owner_id, question, session=session)
-    return await history_answer(question, passages, llm)
+        return await numeric_answer(
+            plan,
+            request.owner_id,
+            today,
+            session=session,
+            boat=match.boat,
+            boat_count=len(own_boats),
+        )
+    passages = await search_boat_notes(
+        request.owner_id,
+        question,
+        boat_id=match.boat.id if match.boat else None,
+        session=session,
+    )
+    return await history_answer(question, passages, llm, match.boat)
