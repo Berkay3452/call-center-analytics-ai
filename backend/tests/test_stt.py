@@ -440,3 +440,12 @@ def test_whisper_model_is_loaded_once_per_process(monkeypatch: pytest.MonkeyPatc
     first._get_model()
     assert loads == ["small"]
     providers._load_whisper.cache_clear()
+
+
+async def test_faster_whisper_passes_initial_prompt(tmp_path: Path) -> None:
+    model = _FakeWhisperModel()
+    transcriber = FasterWhisperTranscriber(
+        "small", model=model, initial_prompt="impeller, Volvo Penta"
+    )
+    await transcriber.transcribe(tmp_path / "a.wav")
+    assert model.kwargs.get("initial_prompt") == "impeller, Volvo Penta"
