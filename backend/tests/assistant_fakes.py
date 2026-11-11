@@ -157,6 +157,38 @@ _OWNERS: dict[str, OwnerData] = {
         ],
         subscription=None,
     ),
+    # Birden fazla teknesi olan sahip (Poyraz ve Yelkovan): tekne adı çözümleme testleri.
+    "owner-003": OwnerData(
+        boats=[Boat("boat-031", "Poyraz", "Motoryat 42"), Boat("boat-032", "Yelkovan", "Gulet 60")],
+        services=[
+            ServiceRecord(
+                "srv-311",
+                "boat-031",
+                date(2026, 8, 15),
+                "makine",
+                "Periyodik bakım",
+                "Mehmet Şimşek",
+            ),
+            ServiceRecord(
+                "srv-321", "boat-032", date(2026, 9, 20), "makine", "Jeneratör bakımı", "Selim Kaya"
+            ),
+        ],
+        notes=[
+            BoatNote("note-311", "boat-031", date(2026, 8, 15), "Poyraz için impeller yenilendi."),
+            BoatNote(
+                "note-321", "boat-032", date(2026, 9, 20), "Yelkovan jeneratörü bakıma alındı."
+            ),
+        ],
+        expenses=[
+            Expense(
+                "exp-311", "boat-031", date(2026, 8, 15), Decimal("10000.00"), "Periyodik bakım"
+            ),
+            Expense(
+                "exp-321", "boat-032", date(2026, 9, 20), Decimal("40000.00"), "Jeneratör bakımı"
+            ),
+        ],
+        subscription=None,
+    ),
 }
 
 
@@ -213,10 +245,12 @@ async def get_job_expenses(
     *,
     start: date | None = None,
     end: date | None = None,
+    boat_id: str | None = None,
     session: object = None,
 ) -> tools.JobExpenses:
     data = require_owner(owner_id)
-    boats = {b.boat_id: b for b in data.boats}
+    allowed = _own_boat_ids(data, boat_id)
+    boats = {b.boat_id: b for b in data.boats if b.boat_id in allowed}
     items = [
         tools.JobExpense(
             on=e.on,
@@ -314,6 +348,7 @@ async def search_boat_notes(
     query: str,
     *,
     limit: int = 3,
+    boat_id: str | None = None,
     session: object = None,
     embedder: object = None,
 ) -> list[Passage]:
@@ -322,6 +357,8 @@ async def search_boat_notes(
     wanted = {t[:5] for t in _tokens(query)}
     scored: list[tuple[int, Passage]] = []
     for note in data.notes:
+        if boat_id is not None and note.boat_id != boat_id:
+            continue
         score = len(wanted & {t[:5] for t in _tokens(note.text)})
         if score:
             scored.append(
@@ -344,7 +381,7 @@ async def search_boat_notes(
 
 
 async def get_upcoming_maintenance(
-    owner_id: str, *, today: date, session: object = None
+    owner_id: str, *, today: date, boat_id: str | None = None, session: object = None
 ) -> list[object]:
     """Çevrimdışı testlerde yaklaşan iş yoktur; kurallar gerçek veritabanında denenir (#125)."""
     require_owner(owner_id)
@@ -356,6 +393,15 @@ async def other_customer_names(owner_id: str, *, session: object | None = None) 
     return set()
 
 
+async def owner_boats(owner_id: str, *, session: object | None = None) -> list[tools.BoatRef]:
+    return [tools.BoatRef(b.boat_id, b.name) for b in require_owner(owner_id).boats]
+
+
+async def other_boat_names(owner_id: str, *, session: object | None = None) -> set[str]:
+    mine = str(owner_id).strip()
+    return {normalize(b.name) for oid, d in _OWNERS.items() if oid != mine for b in d.boats}
+
+
 def install(monkeypatch: pytest.MonkeyPatch) -> None:
     """Araçların ve aramanın yerine sahte sürümlerini koyar (yalnızca bu test oturumunda)."""
     monkeypatch.setattr(tools, "get_expense_total", get_expense_total)
@@ -364,4 +410,6 @@ def install(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(tools, "get_last_maintenance", get_last_maintenance)
     monkeypatch.setattr(tools, "get_upcoming_maintenance", get_upcoming_maintenance)
     monkeypatch.setattr(tools, "other_customer_names", other_customer_names)
+    monkeypatch.setattr(tools, "owner_boats", owner_boats)
+    monkeypatch.setattr(tools, "other_boat_names", other_boat_names)
     monkeypatch.setattr(assistant_module, "search_boat_notes", search_boat_notes)

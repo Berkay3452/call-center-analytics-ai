@@ -25,9 +25,9 @@
 
 | # | Önem | Bulgu | Nasıl yeniden üretilir |
 |---|---|---|---|
-| 1 | Yüksek | **Miço AI sorulan teknenin adını yok sayıyor.** "Yelkovan teknesinin son bakımı?" sorusuna Poyraz'ın kaydı cevap olarak geliyor; cevap hangi tekneden bahsettiğini söylemiyor veya yanlış söylüyor. | Miço AI'ye "Yelkovan teknesinin son bakımı ne zaman yapıldı?" yaz. `e2e/live/assistant.live.spec.ts` içinde `test.fixme` |
-| 2 | Yüksek | **Tekne bazlı sorularda filtre yok:** "Yelkovan teknesinin giderleri" tüm teknelerin toplamını (164.900 TL, 8 kalem) "toplam giderleriniz" diye veriyor. | Miço AI'ye "Yelkovan teknesinin giderleri" yaz |
-| 3 | Orta | **Başka müşterinin tekne adı yanlış eşleniyor:** "Zıpkın teknesinin bakım geçmişi" (Zıpkın başka müşterinin teknesi) sorusuna kullanıcının kendi teknesinin notu veriliyor. Veri sızmıyor ama cevap yanıltıcı; "bu tekne sizin değil" denmeli. | Miço AI'ye "Zıpkın teknesinin bakım geçmişi nedir?" yaz |
+| 1 | ✅ Düzeltildi | **Miço AI sorulan teknenin adını yok sayıyor.** "Yelkovan teknesinin son bakımı?" sorusuna Poyraz'ın kaydı cevap olarak geliyor; cevap hangi tekneden bahsettiğini söylemiyor veya yanlış söylüyor. | Miço AI'ye "Yelkovan teknesinin son bakımı ne zaman yapıldı?" yaz. `e2e/live/assistant.live.spec.ts` içinde `test.fixme` |
+| 2 | ✅ Düzeltildi | **Tekne bazlı sorularda filtre yok:** "Yelkovan teknesinin giderleri" tüm teknelerin toplamını (164.900 TL, 8 kalem) "toplam giderleriniz" diye veriyor. | Miço AI'ye "Yelkovan teknesinin giderleri" yaz |
+| 3 | ✅ Düzeltildi | **Başka müşterinin tekne adı yanlış eşleniyor:** "Zıpkın teknesinin bakım geçmişi" (Zıpkın başka müşterinin teknesi) sorusuna kullanıcının kendi teknesinin notu veriliyor. Veri sızmıyor ama cevap yanıltıcı; "bu tekne sizin değil" denmeli. | Miço AI'ye "Zıpkın teknesinin bakım geçmişi nedir?" yaz |
 | 4 | Orta | **Anlamsız ya da saldırı benzeri girdide önceki cevap tekrarlanıyor:** `DROP TABLE customers; --` yazınca bir önceki sorunun (motor yağı) cevabı geliyor. Sorgu çalıştırılmıyor (parametreli), ama cevap alakasız. Takip sorusu yeniden yazımı geçmişi yanlış bağlıyor olabilir. | Önce "Motor yağı kaç saatte bir değişir?", sonra `DROP TABLE customers; --` yaz |
 | 5 | Orta | **`/admin/calls` 390 px genişlikte yatay kaydırma** (sayfa düzeyinde). Asistan ve analitik sayfalarında yok. | Pencereyi 390 px yap, Çağrılar sayfasını aç |
 | 6 | Düşük | **Varsayılan "Son 30 gün" analitikte 102 çağrının 75'ini gösterir.** Sentetik veri Ekim başında; seçici "Ekim 2026 (demo verisi)" ile 100'e çıkıyor. Demoda varsayılan dönemi bilinçli seçmek gerekir. | Analitik sayfasını aç |
@@ -46,7 +46,7 @@
 
 ## Önerilen sıra
 
-1. #1, #2, #3: Miço AI'de soruda geçen tekne adını çözümle; kullanıcının teknesi değilse söyle; giderleri tekne bazında filtrele.
+1. ~~#1, #2, #3~~ (yapıldı, feat/asistan-tekne-cozumleme): Miço AI'de soruda geçen tekne adını çözümle; kullanıcının teknesi değilse söyle; giderleri tekne bazında filtrele.
 2. #4: Takip sorusu yeniden yazımını sınırla; anlamsız girdide geçmişi bağlama.
 3. #5: `/admin/calls` için küçük ekran düzeni.
 4. #6: Demo için varsayılan dönemi sentetik veri dönemine ayarla.

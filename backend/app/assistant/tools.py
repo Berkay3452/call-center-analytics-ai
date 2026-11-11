@@ -182,6 +182,7 @@ async def _get_job_expenses_db(
     *,
     start: date | None,
     end: date | None,
+    boat_uuid: UUID | None = None,
 ) -> JobExpenses:
     stmt = (
         select(Expense, Boat.name)
@@ -189,6 +190,8 @@ async def _get_job_expenses_db(
         .where(Boat.owner_id == owner_uuid)
         .order_by(Expense.expense_date.desc(), Expense.created_at.desc())
     )
+    if boat_uuid is not None:
+        stmt = stmt.where(Expense.boat_id == boat_uuid)
     if start is not None:
         stmt = stmt.where(Expense.expense_date >= start)
     if end is not None:
@@ -379,17 +382,23 @@ async def get_job_expenses(
     *,
     start: date | None = None,
     end: date | None = None,
+    boat_id: str | None = None,
     session: AsyncSession | None = None,
 ) -> JobExpenses:
     """İş açıklamasına göre (ör. "akü") sahibin gider kayıtları; tutarı kod toplar (#152)."""
     clean_owner = require_owner(owner_id)
     owner_uuid = _parse_uuid(clean_owner)
-    if owner_uuid is None or not topics:
+    boat_uuid = _parse_uuid(boat_id)
+    if owner_uuid is None or not topics or (boat_id is not None and boat_uuid is None):
         return JobExpenses(items=[])
     if session is not None:
-        return await _get_job_expenses_db(session, owner_uuid, topics, start=start, end=end)
+        return await _get_job_expenses_db(
+            session, owner_uuid, topics, start=start, end=end, boat_uuid=boat_uuid
+        )
     async with worker_session(Settings()) as sess:
-        return await _get_job_expenses_db(sess, owner_uuid, topics, start=start, end=end)
+        return await _get_job_expenses_db(
+            sess, owner_uuid, topics, start=start, end=end, boat_uuid=boat_uuid
+        )
 
 
 async def get_remaining_package(
@@ -513,10 +522,12 @@ def _order_source(order: ServiceOrder, on: date | None, title: str) -> SourceRef
 
 
 async def _get_upcoming_maintenance_db(
-    session: AsyncSession, owner_uuid: UUID, today: date
+    session: AsyncSession, owner_uuid: UUID, today: date, boat_uuid: UUID | None = None
 ) -> list[UpcomingItem]:
-    boat_rows = (await session.scalars(select(Boat).where(Boat.owner_id == owner_uuid))).all()
-    boats = {b.id: b.name for b in boat_rows}
+    boat_stmt = select(Boat).where(Boat.owner_id == owner_uuid)
+    if boat_uuid is not None:
+        boat_stmt = boat_stmt.where(Boat.id == boat_uuid)
+    boats = {b.id: b.name for b in (await session.scalars(boat_stmt)).all()}
     if not boats:
         return []
     items: list[UpcomingItem] = []
@@ -654,17 +665,19 @@ async def get_upcoming_maintenance(
     owner_id: str,
     *,
     today: date,
+    boat_id: str | None = None,
     session: AsyncSession | None = None,
 ) -> list[UpcomingItem]:
     """Sahibin teknelerinde yakında (veya gecikmiş) yapılması gerekenler; LLM yok, kurallar."""
     clean_owner = require_owner(owner_id)
     owner_uuid = _parse_uuid(clean_owner)
-    if owner_uuid is None:
+    boat_uuid = _parse_uuid(boat_id)
+    if owner_uuid is None or (boat_id is not None and boat_uuid is None):
         return []
     if session is not None:
-        return await _get_upcoming_maintenance_db(session, owner_uuid, today)
+        return await _get_upcoming_maintenance_db(session, owner_uuid, today, boat_uuid)
     async with worker_session(Settings()) as sess:
-        return await _get_upcoming_maintenance_db(sess, owner_uuid, today)
+        return await _get_upcoming_maintenance_db(sess, owner_uuid, today, boat_uuid)
 
 
 async def other_customer_names(owner_id: str, *, session: AsyncSession | None = None) -> set[str]:
@@ -678,6 +691,49 @@ async def other_customer_names(owner_id: str, *, session: AsyncSession | None = 
     async def _query(sess: AsyncSession) -> set[str]:
         rows = await sess.scalars(select(Customer.full_name).where(Customer.id != owner_uuid))
         return {n for name in rows if (n := normalize(name)) and " " in n}
+
+    if session is not None:
+        return await _query(session)
+    async with worker_session(Settings()) as sess:
+        return await _query(sess)
+
+
+@dataclass(frozen=True)
+class BoatRef:
+    """Sahibin teknesi: soruda adı geçen tekneyi bulmak için (kimlik + ad)."""
+
+    id: str
+    name: str
+
+
+async def owner_boats(owner_id: str, *, session: AsyncSession | None = None) -> list[BoatRef]:
+    """Yalnızca bu sahibin tekneleri (ada göre sıralı)."""
+    owner_uuid = _parse_uuid(require_owner(owner_id))
+    if owner_uuid is None:
+        return []
+
+    async def _query(sess: AsyncSession) -> list[BoatRef]:
+        rows = await sess.execute(
+            select(Boat.id, Boat.name).where(Boat.owner_id == owner_uuid).order_by(Boat.name)
+        )
+        return [BoatRef(id=str(i), name=n) for i, n in rows.all()]
+
+    if session is not None:
+        return await _query(session)
+    async with worker_session(Settings()) as sess:
+        return await _query(sess)
+
+
+async def other_boat_names(owner_id: str, *, session: AsyncSession | None = None) -> set[str]:
+    """Bu sahibin DIŞINDAki tekne adları (normalize edilmiş); yalnızca ad karşılaştırması içindir.
+
+    Soruda başkasının teknesi geçerse asistan "bu tekne hesabınızda yok" der; kayıt aranmaz.
+    """
+    owner_uuid = _parse_uuid(require_owner(owner_id))
+
+    async def _query(sess: AsyncSession) -> set[str]:
+        rows = await sess.scalars(select(Boat.name).where(Boat.owner_id != owner_uuid))
+        return {n for name in rows if (n := normalize(name))}
 
     if session is not None:
         return await _query(session)

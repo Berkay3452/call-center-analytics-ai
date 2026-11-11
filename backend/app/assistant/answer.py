@@ -6,6 +6,7 @@
 """
 
 import calendar
+import re
 from datetime import date, timedelta
 from typing import Literal
 
@@ -50,25 +51,40 @@ async def numeric_answer(
     today: date,
     *,
     session: AsyncSession | None = None,
+    boat: tools.BoatRef | None = None,
+    boat_count: int = 0,
 ) -> AssistantAnswer:
-    """Hazır aracı çalıştırıp cevabı kodla kurar."""
+    """Hazır aracı çalıştırıp cevabı kodla kurar.
+
+    `boat`: soruda adı geçen tekne (araçlar ona daraltılır, cevap adını söyler). Sahibin birden
+    fazla teknesi varsa ve tekne belirtilmediyse cevap "tüm teknelerinizde" kapsamını yazar.
+    """
     qt = QuestionType.SAYISAL
     start: date | None
     end: date | None
+    boat_id = boat.id if boat else None
+    if boat is not None:
+        scope = f" {boat.name} teknesi için"
+    elif boat_count > 1:
+        scope = " tüm teknelerinizde"
+    else:
+        scope = ""
     if plan.tool == AssistantTool.GET_EXPENSE_TOTAL:
         start, end, label = period_range(plan.period, today)
-        result = await tools.get_expense_total(owner_id, start=start, end=end, session=session)
+        result = await tools.get_expense_total(
+            owner_id, start=start, end=end, boat_id=boat_id, session=session
+        )
         if result.item_count == 0:
             if plan.period == "tumu":
-                return not_found(qt, "Kayıtlarınızda gider bulamadım.")
+                return not_found(qt, f"Kayıtlarınızda{scope} gider bulamadım.")
             return not_found(
                 qt,
-                f"{label.removesuffix(' döneminde')} için kayıtlı bir gider bulamadım."
+                f"{label.removesuffix(' döneminde')}{scope} için kayıtlı bir gider bulamadım."
                 + NO_EXPENSE_HINT,
             )
         return AssistantAnswer(
             answer=(
-                f"{label} toplam giderleriniz {format_try(result.total_try)} "
+                f"{label}{scope} toplam giderleriniz {format_try(result.total_try)} "
                 f"({result.item_count} kalem)."
             ),
             question_type=qt,
@@ -77,7 +93,7 @@ async def numeric_answer(
     if plan.tool == AssistantTool.GET_JOB_EXPENSES:
         start, end, _ = period_range(plan.period, today)
         jobs = await tools.get_job_expenses(
-            owner_id, plan.topics, start=start, end=end, session=session
+            owner_id, plan.topics, start=start, end=end, boat_id=boat_id, session=session
         )
         label = ", ".join(plan.topics)
         if not jobs.items:
@@ -115,7 +131,7 @@ async def numeric_answer(
             sources=pkg.sources,
         )
     if plan.tool == AssistantTool.GET_LAST_MAINTENANCE:
-        last = await tools.get_last_maintenance(owner_id, session=session)
+        last = await tools.get_last_maintenance(owner_id, boat_id=boat_id, session=session)
         if last is None:
             return not_found(qt, "Kayıtlarda yapılmış bir bakım bulamadım.")
         return AssistantAnswer(
@@ -127,7 +143,9 @@ async def numeric_answer(
             sources=last.sources,
         )
     if plan.tool == AssistantTool.GET_UPCOMING_MAINTENANCE:
-        upcoming = await tools.get_upcoming_maintenance(owner_id, today=today, session=session)
+        upcoming = await tools.get_upcoming_maintenance(
+            owner_id, today=today, boat_id=boat_id, session=session
+        )
         if not upcoming:
             return not_found(qt, NO_UPCOMING_MESSAGE)
         shown = upcoming[:MAX_UPCOMING_ITEMS]
@@ -135,7 +153,12 @@ async def numeric_answer(
         more = len(upcoming) - len(shown)
         tail = f"\n(ve {more} iş daha)" if more > 0 else ""
         return AssistantAnswer(
-            answer="Teknelerinizde yakında yapılması gerekenler:\n" + "\n".join(lines) + tail,
+            answer=(
+                (f"{boat.name} teknesinde" if boat else "Teknelerinizde")
+                + " yakında yapılması gerekenler:\n"
+                + "\n".join(lines)
+                + tail
+            ),
             question_type=qt,
             sources=[src for item in shown for src in item.sources],
         )
@@ -187,8 +210,16 @@ async def general_answer(question: str, llm: AssistantLLM) -> AssistantAnswer:
     return AssistantAnswer(answer=text, question_type=QuestionType.GENEL_SOHBET)
 
 
+def without_boat_name(question: str, boat: tools.BoatRef | None) -> str:
+    """Genel bilgi için tekne adı çıkarılır: LLM "Yelkovan" gibi adı marka sanmasın."""
+    if boat is None:
+        return question
+    pattern = re.compile(rf"\b{re.escape(boat.name)}\w*(['’]\w+)?", re.IGNORECASE)
+    return pattern.sub("teknem", question)
+
+
 async def not_found_with_general_info(
-    question: str, llm: AssistantLLM, qt: QuestionType
+    question: str, llm: AssistantLLM, qt: QuestionType, boat: tools.BoatRef | None = None
 ) -> AssistantAnswer:
     """Kayıt gerektiren ama kayıtta bulunamayan soru: "bulamadım" + ayrı genel bilgi.
 
@@ -199,7 +230,7 @@ async def not_found_with_general_info(
         reply = await llm.ask(
             "fast",
             load_prompt("general_fallback"),
-            f"## Tekne sahibinin sorusu\n{question}",
+            f"## Tekne sahibinin sorusu\n{without_boat_name(question, boat)}",
             GeneralReply,
             max_fix_attempts=0,
         )
@@ -212,7 +243,10 @@ async def not_found_with_general_info(
 
 
 async def history_answer(
-    question: str, passages: list[Passage], llm: AssistantLLM
+    question: str,
+    passages: list[Passage],
+    llm: AssistantLLM,
+    boat: tools.BoatRef | None = None,
 ) -> AssistantAnswer:
     """Bulunan kayıtlardan kaynaklı cevap üretir ve kaynak kontrolünden geçirir.
 
@@ -220,7 +254,7 @@ async def history_answer(
     """
     qt = QuestionType.GECMIS_ONERI
     if not passages:
-        return await not_found_with_general_info(question, llm, qt)
+        return await not_found_with_general_info(question, llm, qt, boat)
     records = "\n".join(f"[{p.source.record_id}] ({p.source.title}) {p.text}" for p in passages)
     draft = await llm.ask(
         "smart",
@@ -230,6 +264,6 @@ async def history_answer(
     )
     grounded = ground_draft(draft, passages)
     if grounded is None:
-        return await not_found_with_general_info(question, llm, qt)
+        return await not_found_with_general_info(question, llm, qt, boat)
     text, sources = grounded
     return AssistantAnswer(answer=text, question_type=qt, sources=sources)

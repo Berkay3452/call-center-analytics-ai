@@ -33,10 +33,21 @@ class Passage:
 
 
 async def _search(
-    session: AsyncSession, embedder: Embedder, owner_uuid: UUID, query: str, limit: int
+    session: AsyncSession,
+    embedder: Embedder,
+    owner_uuid: UUID,
+    query: str,
+    limit: int,
+    boat_uuid: UUID | None = None,
 ) -> list[Passage]:
     hits = await hybrid_search(
-        session, embedder, owner_uuid, query, limit=limit, min_similarity=MIN_SIMILARITY
+        session,
+        embedder,
+        owner_uuid,
+        query,
+        limit=limit,
+        min_similarity=MIN_SIMILARITY,
+        boat_id=boat_uuid,
     )
     return [Passage(source=h.source, text=h.text) for h in hits]
 
@@ -46,6 +57,7 @@ async def search_boat_notes(
     query: str,
     *,
     limit: int = 3,
+    boat_id: str | None = None,
     session: AsyncSession | None = None,
     embedder: Embedder | None = None,
 ) -> list[Passage]:
@@ -55,10 +67,14 @@ async def search_boat_notes(
         owner_uuid = UUID(clean_owner)
     except ValueError:
         return []  # tanınmayan sahip: kimsenin kaydı dönmez
+    try:
+        boat_uuid = UUID(boat_id) if boat_id else None
+    except ValueError:
+        return []
 
     settings = Settings()
     embedder = embedder or build_embedder(settings)
     if session is not None:
-        return await _search(session, embedder, owner_uuid, query, limit)
+        return await _search(session, embedder, owner_uuid, query, limit, boat_uuid)
     async with worker_session(settings) as sess:
-        return await _search(sess, embedder, owner_uuid, query, limit)
+        return await _search(sess, embedder, owner_uuid, query, limit, boat_uuid)
