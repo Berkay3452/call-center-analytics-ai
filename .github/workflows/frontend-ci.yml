@@ -76,29 +76,25 @@ jobs:
   e2e:
     name: e2e (Playwright, Chromium)
     runs-on: ubuntu-latest
+    # Tarayıcılar ve sistem kütüphaneleri hazır imajda gelir: apt/ağ erişimine bağımlılık yok.
+    # İmaj sürümü package.json'daki @playwright/test sürümüyle aynı olmalıdır.
+    container:
+      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      options: --ipc=host
     timeout-minutes: 25
     defaults:
       run:
         working-directory: frontend
     env:
       NEXT_PUBLIC_USE_MOCKS: 'true'
+      HOME: /root
 
     steps:
       - name: Kodları çek
         uses: actions/checkout@v7
 
-      - name: Node.js kur (LTS 22)
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-
       - name: Bağımlılıkları kur (npm ci)
         run: npm ci
-
-      - name: Playwright tarayıcısını kur (Chromium)
-        run: npx playwright install --with-deps chromium
 
       - name: E2E testleri (mock veri; Chromium)
         run: npx playwright test --project=chromium
