@@ -1,5 +1,5 @@
 # Backend proje tanımı — bağımlılıklar `uv` ile yönetilir, kilit dosyası uv.lock.
-# Sürüm aralıkları Sistem_mimarisi_v4.md bölüm 4 doğrulanmış sürümlere göre seçildi.
+# Sürüm aralıkları Sistem_mimarisi_v5.md bölüm 5 doğrulanmış sürümlere göre seçildi.
 [project]
 name = "call-center-backend"
 version = "0.1.0"

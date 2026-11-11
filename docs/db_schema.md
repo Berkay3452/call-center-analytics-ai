@@ -1,7 +1,7 @@
 # Veritabanı Tablo Şeması
 
 **Issue:** #5 · **Sürüm:** v2 · **Tarih:** 2026-10-28
-**Kaynak:** Sistem mimarisi v4.1 §9, agent çıktı şemaları (#14), enum listeleri (#7)
+**Kaynak:** Sistem mimarisi v5 §9, agent çıktı şemaları (#14), enum listeleri (#7)
 **Uygulama:** modeller `backend/app/db/models/`, migration `backend/migrations/versions/` (#6). Bu belge ile modeller arasındaki fark testlerle yakalanır (`tests/test_db_schema.py`).
 
 > Sütun adları **İngilizce**, açıklamalar **Türkçe**'dir.
@@ -691,7 +691,7 @@ Bakım paketleri / abonelikler. Miço AI "kalan paket hakkım ne kadar" sorusunu
 
 ## 6. Yetkilendirme
 
-Tekne sahibi yalnızca kendi verisini görür (Sistem mimarisi v4 §3):
+Tekne sahibi yalnızca kendi verisini görür (Sistem mimarisi v5 §3):
 
 - `chat_sessions.owner_id` → tekne sahibinin sohbet oturumları
 - `rag_chunks.owner_id` → yalnızca sahibin teknelerine ait RAG parçaları döner
