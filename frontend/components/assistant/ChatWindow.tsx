@@ -84,7 +84,7 @@ export function ChatWindow({
                 </p>
               )}
 
-              {isNotFound && !msg.isStreaming && (
+              {isNotFound && !msg.isStreaming && !msg.content.trim() && (
                 <p className="mt-2 text-xs text-slate-500">
                   Servis kayıtlarında eşleşen belge bulunamadı.
                 </p>
