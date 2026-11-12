@@ -258,8 +258,19 @@ def pick_reply(options: tuple[str, ...], question: str) -> str:
     return options[sum(ord(c) for c in question) % len(options)]
 
 
+# SQL/betik benzeri girdiler: sorgu çalıştırılmaz ama "takip sorusu" sanılıp önceki cevabı
+# tekrarlatmamalı (web testi bulgusu #4).
+_CODE_LIKE = re.compile(
+    r"(\b(drop|truncate|alter|delete|insert|update|select)\b.{0,40}\b(table|from|into|set|database)\b"
+    r"|\bunion\s+select\b|\bor\s+1\s*=\s*1\b|;\s*--|<\s*script|\bexec(ute)?\s*\()",
+    re.IGNORECASE | re.DOTALL,
+)
+
+
 def is_injection_attempt(question: str) -> bool:
-    """Talimatları unutturma, sistem istemini veya tüm veriyi isteme gibi kural aşma girişimi."""
+    """Talimatları unutturma, sistem istemini veya tüm veriyi isteme, SQL/betik enjeksiyonu."""
+    if _CODE_LIKE.search(question):
+        return True
     text = f" {normalize(question)} "
     return any(f" {p}" in text for p in _INJECTION_PHRASES)
 

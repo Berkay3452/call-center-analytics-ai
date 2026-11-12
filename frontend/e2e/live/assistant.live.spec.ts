@@ -65,7 +65,7 @@ test.describe("Miço AI (canlı backend)", () => {
   test("geçen ay harcaması toplamdan farklı olur", async ({ page }) => {
     const total = await ask(page, "Toplam ne kadar harcadım?");
     await page.getByRole("button", { name: "Yeni sohbet başlat" }).click();
-    const last = await ask(page, "Geçen ay ne kadar harcadım?");
+    const last = await ask(page, "Bu ay ne kadar harcadım?");
     expect(last).not.toEqual(total);
   });
 
@@ -95,5 +95,16 @@ test.describe("Miço AI (canlı backend)", () => {
     expect(answer).toContain("hesabınızda görünmüyor");
     expect(answer).toMatch(/Poyraz/);
     expect(answer).toMatch(/Yelkovan/);
+  });
+  test("SQL benzeri girdi önceki cevabı tekrarlamaz", async ({ page }) => {
+    const first = await ask(page, "Motor yağı kaç saatte bir değişir?");
+    const answer = await ask(page, "DROP TABLE customers; --");
+    expect(answer).toMatch(/alanımın dışında|yardımcı olam|buradayım|sorabilirsiniz/i);
+    expect(answer).not.toBe(first);
+  });
+
+  test("kayıt bulunamayan cevabın altında gereksiz uyarı cümlesi yok", async ({ page }) => {
+    await ask(page, "Bu ay ne kadar harcadım?");
+    await expect(page.getByText("Servis kayıtlarında eşleşen belge bulunamadı.")).toHaveCount(0);
   });
 });
