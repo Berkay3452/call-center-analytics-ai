@@ -77,11 +77,14 @@ async def numeric_answer(
         if result.item_count == 0:
             if plan.period == "tumu":
                 return not_found(qt, f"Kayıtlarınızda{scope} gider bulamadım.")
-            return not_found(
-                qt,
-                f"{label.removesuffix(' döneminde')}{scope} için kayıtlı bir gider bulamadım."
-                + NO_EXPENSE_HINT,
-            )
+            period = label.removesuffix(" döneminde")
+            if scope.endswith(" için"):
+                msg = f"{period}{scope} kayıtlı bir gider bulamadım."
+            elif scope:
+                msg = f"{period} döneminde{scope} kayıtlı bir gider bulamadım."
+            else:
+                msg = f"{period} için kayıtlı bir gider bulamadım."
+            return not_found(qt, msg + NO_EXPENSE_HINT)
         return AssistantAnswer(
             answer=(
                 f"{label}{scope} toplam giderleriniz {format_try(result.total_try)} "

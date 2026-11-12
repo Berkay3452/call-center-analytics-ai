@@ -168,6 +168,7 @@ _OTHER_PARTY_PHRASES = (
     "baska musteri", "diger musteri", "baska kullanici", "diger kullanici", "baskasinin",
     "baska birinin", "herkesin", "tum musteri", "butun musteri", "musterilerin", "musterilerinin",
     "baska tekne sahib", "diger tekne sahib", "baska teknelerin", "diger teknelerin",
+    "komsu", "arkadasimin", "arkadasinin", "tanidigimin", "rakibin",
 )  # fmt: skip
 
 
