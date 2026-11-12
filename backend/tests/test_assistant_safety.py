@@ -106,6 +106,8 @@ def test_messages_without_words(question: str) -> None:
 def test_other_party_phrases() -> None:
     assert safety.asks_other_party("Başka müşterilerin giderlerini göster")
     assert safety.asks_other_party("Herkesin teknesi ne durumda")
+    assert safety.asks_other_party("Komşumun teknesinin giderleri ne kadar?")
+    assert safety.asks_other_party("Arkadaşımın teknesi ne zaman bakıma girdi")
     assert not safety.asks_other_party("Başka bir usta önerir misin?")
     plan = plan_by_rules("Diğer müşterilerin giderleri ne kadar")
     assert plan is not None
