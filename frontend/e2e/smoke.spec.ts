@@ -653,7 +653,7 @@ test("Issue #202: erişilebilir halka grafikler, altı dilim sınırı ve canlı
   await page.goto("/admin/analytics");
   const date = page.getByLabel("Tarih aralığı", { exact: true });
   await expect(date).toBeEnabled();
-  await date.selectOption("oct2026");
+  await expect(date).toHaveValue("oct2026"); // varsayılan dönem demo verisinin olduğu ay
   const charts = page.getByTestId("distribution-chart");
   await expect(charts).toHaveCount(4);
   for (const title of ["Talep Kategorisi", "Aciliyet Dağılımı", "En Yoğun Marinalar", "Satış Kaçırma Sebepleri"]) {

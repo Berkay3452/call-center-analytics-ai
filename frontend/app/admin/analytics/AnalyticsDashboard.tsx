@@ -71,7 +71,7 @@ export default function AnalyticsDashboard() {
   const [data, setData] = useState<KpiSummary | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<{ message: string; code?: string; requestId?: string | null } | null>(null);
-  const [dateRange, setDateRange] = useState<string>("30");
+  const [dateRange, setDateRange] = useState<string>("oct2026");
   const [selectedMarina, setSelectedMarina] = useState<string>("all");
   const [reloadKey, setReloadKey] = useState<number>(0);
 
