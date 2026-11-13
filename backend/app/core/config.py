@@ -119,6 +119,8 @@ class Settings(BaseSettings):
     # Mono kayıtta konuşmacı ayrılamaz ("unknown"); model tabanlı ayrım sonraki adımdır.
     # Santral kayıtları iki kanallıdır (temsilci sol); mono dosyalar otomatik mono işlenir.
     stt_channel_layout: Literal["mono", "stereo_rep_left", "stereo_rep_right"] = "stereo_rep_left"
+    # Mono kayıtta dil modeliyle metin tabanlı konuşmacı ayrımı (akustik ayrım değildir).
+    stt_llm_diarization: bool = True
     whisper_model: str = "small"  # CPU için small/medium; GPU varsa large-v3
     whisper_compute_type: str = "int8"  # CPU: int8; GPU varsa float16
     whisper_cpu_threads: int = Field(default=0, ge=0)  # 0: otomatik
