@@ -35,7 +35,7 @@ from app.storage.base import (  # noqa: F401 - hata sınıfları geriye uyumlulu
     UnsupportedAudioError,
 )
 from app.stt.base import SttError, Transcriber, redact_paths
-from app.stt.pipeline import ChannelLayout, transcribe_call
+from app.stt.pipeline import ChannelLayout, Diarizer, transcribe_call
 
 log = structlog.get_logger(__name__)
 
@@ -163,6 +163,7 @@ async def run_transcription(
     storage_dir: Path | str | None = None,
     layout: ChannelLayout = "mono",
     language: str = "tr",
+    diarizer: Diarizer | None = None,
 ) -> CallState:
     """Çağrının sesini AudioStorage üzerinden okuyarak yazıya çevirir.
 
@@ -198,7 +199,7 @@ async def run_transcription(
     try:
         with active_storage.open_local_path(audio_key) as audio_path:
             result = await transcribe_call(
-                audio_path, transcriber, layout=layout, language=language
+                audio_path, transcriber, layout=layout, language=language, diarizer=diarizer
             )
             if not result.turns:
                 raise SttError("Seste konuşma bulunamadı.")

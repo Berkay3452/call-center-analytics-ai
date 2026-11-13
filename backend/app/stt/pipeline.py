@@ -7,14 +7,15 @@ aynı konuşmacı parçaları tek tura birleştirilir. Çıktı, analiz akışı
 Konuşmacı ayrımı (`STT_CHANNEL_LAYOUT`):
 - `stereo_rep_left` / `stereo_rep_right`: santral kayıtları çoğunlukla iki kanallıdır; her kanal
   ayrı yazıya çevrilir, temsilcinin kanalı ayarla belirtilir. CPU'da en ucuz ve en doğru yöntem.
-- `mono`: tek kanal; sağlayıcı konuşmacıyı bilmiyorsa turlar `unknown` olur. Model tabanlı ayrım
-  (diarization) CPU'da yavaş olduğu için sonraki adımdır.
+- `mono`: tek kanal; sağlayıcı konuşmacıyı bilmiyorsa turlar `unknown` olur. Ayarlardan açıksa
+  metin tabanlı (dil modeli) ayrım uygulanır (`app/stt/diarize.py`).
 """
 
 import asyncio
 import tempfile
 import time
 import wave
+from collections.abc import Awaitable, Callable
 from pathlib import Path
 from typing import Any, Literal
 
@@ -27,6 +28,7 @@ from app.stt.base import SttError, SttSegment, Transcriber
 
 log = structlog.get_logger(__name__)
 
+Diarizer = Callable[[list[SttSegment]], Awaitable[list[SttSegment]]]
 ChannelLayout = Literal["mono", "stereo_rep_left", "stereo_rep_right"]
 SAMPLE_RATE = 16_000
 
@@ -146,6 +148,7 @@ async def transcribe_call(
     *,
     layout: ChannelLayout = "mono",
     language: str = "tr",
+    diarizer: Diarizer | None = None,
 ) -> CallTranscription:
     """Çağrı sesini konuşmacı turlarına çevirir. Hata durumunda `SttError`."""
     if not await asyncio.to_thread(audio_path.exists):
@@ -158,7 +161,10 @@ async def transcribe_call(
 
     if layout == "mono":
         result = await transcriber.transcribe(audio_path, language=language)
-        turns = merge_turns(result.segments)
+        segments = result.segments
+        if diarizer is not None:
+            segments = await diarizer(segments)  # mono: metin tabanlı konuşmacı ayrımı
+        turns = merge_turns(segments)
         duration, model = result.duration_sec, result.model
     else:
         left, right = await asyncio.to_thread(split_stereo, audio_path)

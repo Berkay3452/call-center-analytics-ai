@@ -14,7 +14,8 @@ from app.core.errors import NotFoundError
 from app.db.session import create_engine, create_session_factory
 from app.services.audio_ingest import run_transcription
 from app.storage.registry import build_audio_storage
-from app.stt.base import Transcriber
+from app.stt.base import SttSegment, Transcriber
+from app.stt.pipeline import Diarizer
 from app.stt.registry import build_transcriber
 from app.workers.celery_app import celery_app
 from app.workers.tasks.analysis import analyze_call
@@ -33,6 +34,18 @@ async def _transcribe(call_id: UUID) -> str:
     engine = create_engine(settings, null_pool=True)
     try:
         storage = build_audio_storage(settings)
+        diarizer: Diarizer | None = None
+        if settings.stt_llm_diarization:
+            from app.assistant.llm import AssistantLLM
+            from app.stt.diarize import label_speakers
+
+            llm = AssistantLLM(settings=settings)
+
+            async def _diarize(segments: list[SttSegment]) -> list[SttSegment]:
+                return await label_speakers(segments, llm)
+
+            diarizer = _diarize
+
         return await run_transcription(
             call_id,
             create_session_factory(engine),
@@ -40,6 +53,7 @@ async def _transcribe(call_id: UUID) -> str:
             storage=storage,
             layout=settings.stt_channel_layout,
             language=settings.stt_language,
+            diarizer=diarizer,
         )
     finally:
         await engine.dispose()
