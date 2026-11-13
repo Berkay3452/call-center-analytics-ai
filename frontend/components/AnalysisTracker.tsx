@@ -21,7 +21,10 @@ const Context = createContext<{
   entries: Record<string, Entry>;
   observe: (snapshot: Snapshot) => void;
   track: (snapshot: Snapshot) => void;
+  announce: (snapshot: Snapshot) => void;
 } | null>(null);
+/** Yükleme sayfası ilerlemeyi kendi gösterir; bildirimi sayfa bitişi gösterdikten sonra bu sayfa tetikler. */
+const UPLOAD_PATH = "/admin/calls/upload";
 
 /** The layout owns polling; closing a dialog or navigating cannot cancel it. */
 export function AnalysisTracker({ children }: { children: React.ReactNode }) {
@@ -34,11 +37,33 @@ export function AnalysisTracker({ children }: { children: React.ReactNode }) {
   const requests = useRef(new Set<string>());
   const generations = useRef(new Map<string, number>());
   const mounted = useRef(false);
+  const pathnameRef = useRef(pathname);
+  const pending = useRef(new Map<string, Snapshot>());
+  const announcedEarly = useRef(new Set<string>());
 
   const persist = useCallback(() => {
     if (!mounted.current) return;
     try { sessionStorage.setItem(STORAGE_KEY, JSON.stringify([...active.current])); } catch { /* Storage may be unavailable. */ }
   }, []);
+
+  const notifyDone = useCallback(async (id: string, status: Snapshot) => {
+    pending.current.delete(id);
+    let reason = status.error;
+    if (status.state === "kismi" && !reason) {
+      try {
+        const detail = await getCallById(id);
+        reason = Object.values(detail.analysis?.errors ?? {}).join("; ");
+      } catch { /* The status response is still authoritative. */ }
+    }
+    if (!mounted.current) return;
+    const message = status.state === "tamam"
+      ? "Analiz tamamlandı, sonucu gör"
+      : status.state === "kismi"
+        ? `Analiz kısmen tamamlandı: ${reason || "Bazı analiz bölümleri üretilemedi."}`
+        : `Analiz tamamlanamadı: ${reason || "Sunucu hata nedeni bildirmedi."}`;
+    setNotices((previous) => [...previous.filter((notice) => notice.id !== id), { id, message }]);
+    router.refresh();
+  }, [router]);
 
   const poll = useCallback(async (id: string) => {
     if (requests.current.has(id)) return;
@@ -51,21 +76,11 @@ export function AnalysisTracker({ children }: { children: React.ReactNode }) {
       if (analysisIsRunning(status.state)) {
         active.current.add(id);
       } else if (active.current.delete(id)) {
-        let reason = status.error;
-        if (status.state === "kismi" && !reason) {
-          try {
-            const detail = await getCallById(id);
-            reason = Object.values(detail.analysis?.errors ?? {}).join("; ");
-          } catch { /* The status response is still authoritative. */ }
+        if (pathnameRef.current === UPLOAD_PATH && !announcedEarly.current.delete(id)) {
+          pending.current.set(id, status); // sayfa adımları işaretleyince `announce` gösterir
+        } else {
+          await notifyDone(id, status);
         }
-        if (!mounted.current) return;
-        const message = status.state === "tamam"
-          ? "Analiz tamamlandı, sonucu gör"
-          : status.state === "kismi"
-            ? `Analiz kısmen tamamlandı: ${reason || "Bazı analiz bölümleri üretilemedi."}`
-            : `Analiz tamamlanamadı: ${reason || "Sunucu hata nedeni bildirmedi."}`;
-        setNotices((previous) => [...previous.filter((notice) => notice.id !== id), { id, message }]);
-        router.refresh();
       }
       persist();
     } catch (error) {
@@ -79,7 +94,19 @@ export function AnalysisTracker({ children }: { children: React.ReactNode }) {
     } finally {
       requests.current.delete(id);
     }
-  }, [persist, router]);
+  }, [persist, notifyDone]);
+
+  useEffect(() => {
+    pathnameRef.current = pathname;
+    if (pathname === UPLOAD_PATH) return;
+    for (const [id, status] of pending.current) void notifyDone(id, status);
+  }, [pathname, notifyDone]);
+
+  const announce = useCallback((snapshot: Snapshot) => {
+    const status = pending.current.get(snapshot.call_id);
+    if (status) void notifyDone(snapshot.call_id, status);
+    else announcedEarly.current.add(snapshot.call_id); // arka plan takibi henüz bitişi görmedi
+  }, [notifyDone]);
 
   // Bildirim 5 sn sonra kendiliğinden kapanır (kullanıcı ✕ ile de kapatabilir).
   useEffect(() => {
@@ -131,7 +158,7 @@ export function AnalysisTracker({ children }: { children: React.ReactNode }) {
   }, [pathname, poll]);
 
   return (
-    <Context.Provider value={{ entries, observe, track }}>
+    <Context.Provider value={{ entries, observe, track, announce }}>
       {children}
       <div className="fixed bottom-4 right-4 z-50 max-w-sm space-y-2" role="region" aria-label="Analiz bildirimleri">
         {notices.map((notice) => (
@@ -149,6 +176,12 @@ export function useTrackAnalysis() {
   const context = useContext(Context);
   if (!context) throw new Error("AnalysisTracker bulunamadı.");
   return context.track;
+}
+
+export function useAnnounceAnalysis() {
+  const context = useContext(Context);
+  if (!context) throw new Error("AnalysisTracker bulunamadı.");
+  return context.announce;
 }
 
 export function useAnalysis(snapshot: Snapshot) {

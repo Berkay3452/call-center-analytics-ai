@@ -9,7 +9,7 @@ import {
   createCallWithAudio,
   getCallStatus,
 } from "@/lib/api/client";
-import { useTrackAnalysis } from "@/components/AnalysisTracker";
+import { useAnnounceAnalysis, useTrackAnalysis } from "@/components/AnalysisTracker";
 import { ApiError } from "@/lib/api/errors";
 import type { CallCreate, CallState, CallStatus } from "@/lib/api/types";
 import { MARINA_OPTIONS } from "@/lib/types";
@@ -176,6 +176,7 @@ function validateAudioFile(file: File): string | null {
 
 function CallUploadContent() {
   const trackAnalysis = useTrackAnalysis();
+  const announceAnalysis = useAnnounceAnalysis();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -272,6 +273,7 @@ function CallUploadContent() {
             state === "basarisiz"
           ) {
             stopPolling();
+            announceAnalysis(res);
             if (state === "basarisiz") {
               setBackendError(
                 res.error ??
@@ -311,7 +313,7 @@ function CallUploadContent() {
       void poll();
       pollIntervalRef.current = setInterval(() => void poll(), POLL_INTERVAL_MS);
     },
-    [router, stopPolling, trackAnalysis],
+    [router, stopPolling, trackAnalysis, announceAnalysis],
   );
 
   // URL'de ?call_id=... varsa sayfa açılışında doğrudan izlemeye bağlan. Tüm state'ler lazy
