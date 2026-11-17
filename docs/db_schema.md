@@ -566,7 +566,7 @@ Denetim günlüğü (#267): kim, ne zaman, hangi nesneye ne yaptı. **Yalnızca 
 - Tetikleyici `audit_log_no_update_delete` (satır başına UPDATE/DELETE) ve `audit_log_no_truncate` (TRUNCATE): `insufficient_privilege` hatasıyla reddeder (migration `0006`).
 - İndeksler: `occurred_at`, `(action, occurred_at)`, `actor_id`, `(target_type, target_id)`
 
-**Kişisel veri kuralı:** ad, telefon, e-posta, transkript, soru metni, dosya adı, anahtar değeri yazılmaz; yalnızca kimlikler, türler ve sabit değerler. `record_audit_event` bu kuralı kodla uygular (serbest metin, `@`, boşluk, 9+ haneli sayı reddedilir). `ip` kişisel veri sayılabilir; saklama süresi #269 kapsamındadır.
+**Kişisel veri kuralı:** ad, telefon, e-posta, transkript, soru metni, dosya adı, anahtar değeri yazılmaz; yalnızca kimlikler, türler ve sabit değerler. `record_audit_event` bu kuralı kodla uygular (serbest metin, `@`, boşluk, 9+ haneli sayı reddedilir). `ip` kişisel veri sayılabilir; tablo eklemeli olduğu için saklama süresiyle silinmez (bkz. `docs/kisisel_veri_envanteri.md` §3, kalan risk).
 
 ### 3.11 `user_accounts`
 

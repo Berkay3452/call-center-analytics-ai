@@ -59,7 +59,11 @@ export interface paths {
         get: operations["getCallById"];
         put?: never;
         post?: never;
-        delete?: never;
+        /**
+         * Çağrıyı ve ses kaydını sil (KVKK)
+         * @description Çağrıyı, ses dosyasını, transkripti, analizi ve CRM önerisini siler. Servis emirleri kalır. Yalnızca yönetici bağlamı.
+         */
+        delete: operations["deleteCall"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1073,6 +1077,62 @@ export interface operations {
             };
             /** @description Çağrı bulunamadı */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    deleteCall: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                call_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Silindi */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Yetkisiz erişim */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Yalnızca yönetici bağlamı (X-User-Id olmadan) */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Çağrı bulunamadı */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Çağrı şu an işleniyor */
+            409: {
                 headers: {
                     [name: string]: unknown;
                 };
