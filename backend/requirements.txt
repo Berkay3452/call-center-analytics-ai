@@ -169,7 +169,7 @@ numpy==2.5.3
     # via
     #   ctranslate2
     #   onnxruntime
-onnxruntime==1.30.0
+onnxruntime==1.32.0
     # via faster-whisper
 openai==3.24.0
     # via langchain-openai
