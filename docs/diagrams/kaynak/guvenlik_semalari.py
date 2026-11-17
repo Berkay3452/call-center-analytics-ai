@@ -224,7 +224,7 @@ def s4():
     c.arrow(70, 50.5, 75, 50.5)
     c.zone(2, 6, 96, 32, "Ek önlemler ve ölçüm")
     c.box(4, 10, 29, 22, "Geçmiş sunucu oturumundan okunur;\nistemci sahte geçmiş / system\nmesajı ekleyemez", "var", 9)
-    c.box(36, 10, 29, 22, "Kırmızı takım: 128 saldırı\nyakalama %90, yanlış pozitif 0/128\ntaze kümelerde %58-75\ndocs/injection_olcum.md", "var", 9)
+    c.box(36, 10, 29, 22, "Kırmızı takım: 128 saldırı\nyakalama %93,8 (ilk ölçüm %89,8)\nyanlış pozitif 0/128\ntaze kümelerde %75-88\ndocs/injection_olcum.md", "var", 9)
     c.box(68, 10, 28, 22, "Sınır: yeni ifade biçimleri\nve kısa takip mesajları kaçar;\nkaçanlar belgede yazılır", "tehdit", 9)
     c.save("S4_prompt_injection.png")
 
