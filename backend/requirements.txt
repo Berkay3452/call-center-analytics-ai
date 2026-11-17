@@ -322,7 +322,7 @@ tzdata==2026.5
     #   faker
     #   kombu
     #   tzlocal
-tzlocal==5.4.4
+tzlocal==5.4.5
     # via celery
 urllib3==2.8.0
     # via requests
