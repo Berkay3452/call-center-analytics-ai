@@ -1,6 +1,8 @@
 # Yük testi, yetki ve güvenlik kontrol listesi (#158)
 
-**Tarih:** 2026-11-02 · **Betikler/testler:** `backend/scripts/yuk_testi.py`, `backend/tests/test_authorization_matrix.py`
+**Tarih:** 2026-11-02 (güncelleme 2026-11-17, #276) · **Betikler/testler:** `backend/scripts/yuk_testi.py`, `backend/tests/test_authorization_matrix.py`, `backend/scripts/guvenlik_testi.py` (saldırı paketi)
+
+> Saldırı odaklı otomatik paket, sonuç tablosu, OWASP LLM/API eşlemesi ve bilinen sınırlamalar: **`docs/guvenlik_testi.md`**. Bu belgedeki kontrol listesi o paketin kanıtlarıyla güncellenmiştir.
 
 ## 1. Hafif yük testi
 
@@ -48,7 +50,9 @@ Mevcut, kapsamı genişlemeden korunan testler: sohbet oturumu başka sahibe ait
 | Bağımlılıklar — backend (`pip-audit`) | düzeltildi | 4 dolaylı paket / 17 bulgu: `certifi` (CA kökü), `filelock` (13), `langgraph-sdk`, `opentelemetry-api`; `uv.lock` güncellendi (certifi 2026.10.23, filelock 4.2.6, langgraph-sdk 0.4.11, opentelemetry-api 1.45.2). Hiçbiri uygulamanın doğrudan kullandığı koddan değil |
 | Bağımlılıklar — frontend (`npm audit`) | **Kapatıldı (#272)** | `next@16.4.0` kritik bulgusu sonraki sürümlerle kapandı; 2026-11-17 `npm audit --omit=dev`: kritik/yüksek yok, 1 orta (`next` 16.3.0–16.4.4, `unstable_cache` kök parametre bilgi sızıntısı; düzeltme 16.4.6, bkz. §4). Geliştirme araçlarındaki orta bulgular üretime girmez |
 | Docker | ✓ / iyileştirildi | Kök olmayan kullanıcı; Postgres ve Redis portları artık yalnızca `127.0.0.1`'e bağlı (eskiden tüm arayüzler; varsayılan şifre `postgres`). Compose'taki `SERVICE_KEY` varsayılanı `change-me-in-local-env` yalnızca yerel içindir; canlıda Secret Manager (`docs/canliya_alma.md`) |
-| CORS / API belgesi | ✓ | İzinli origin listesi (`CORS_ORIGINS`); `/docs` prod'da kapalı |
+| CORS / API belgesi | ✓ / düzeltildi (#276) | İzinli origin listesi (`CORS_ORIGINS`); `/docs` prod'da kapalı. Saldırı paketi `/openapi.json`'ın prod'da kimliksiz açık kaldığını buldu (tüm uç envanteri görünüyordu); `openapi_url` prod'da kapatıldı |
+| İşlev düzeyi yetki (rol) | **kısmi** | Yönetici uçları (`/audit-log`, çağrı silme) tekne sahibi kimliğine 403 verir; 7 yazma ucu henüz rol denetimi yapmaz (BS-1, #275); `test_yetki_haritasi.py` açık uç kümesini sabitler |
+| Saldırı paketi (kimlik, IDOR, injection, sızıntı, hız sınırı, araç yetkisi) | ✓ | 327 test, 0 kalan, 2 belgelenmiş sınırlama; `docs/guvenlik_testi.md`, CI'da her PR'da |
 | API düzeyinde hız sınırı | **var** (#271) | Redis kayan pencere (kimlik kovası + kimlikten bağımsız IP tavanı: genel 600/dk, asistan 60/dk; `X-User-Id` döndürülerek kimlik kovası atlatılsa da IP tavanı geçerli kalır); bkz. §5 |
 | LLM'e giden veri | ✓ | Transkriptteki kişisel veriler maskelenir (`app/services/masking.py`); maskesiz metne düşülmez |
 
