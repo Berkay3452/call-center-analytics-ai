@@ -296,6 +296,11 @@ async def _one_call(
                 # Aynı ses daha önce yüklenmiş (tekrar koşu): mevcut çağrıyı yeniden işleme al.
                 existing = resp.json()["error"]["details"]["call_id"]
                 resp = await client.post(f"/api/v1/calls/{existing}/analyze")
+            if run.kind == "bozuk_ses" and resp.status_code == 415:
+                # İçerik doğrulaması (#270) bozuk sesi yüklemede reddeder: beklenen, doğru davranış.
+                run.final_state = "basarisiz"
+                run.submit_error = "415: bozuk ses yüklemede reddedildi (içerik doğrulaması)"
+                return
             if resp.status_code != 202:
                 run.submit_error = f"HTTP {resp.status_code}: {resp.text[:120]}"
                 return

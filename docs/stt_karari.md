@@ -33,7 +33,7 @@ Bulut sağlayıcı (OpenAI uyumlu Whisper API, ör. Groq) ölçülmedi: API anah
 - **Kanal düzeni: stereo, temsilci sol** (`STT_CHANNEL_LAYOUT=stereo_rep_left`, yeni varsayılan). Santral kayıtları iki kanallıdır; konuşmacı ayrımı yalnızca stereo ile mümkün (mono'da konuşmacı WER'i %100). Mono yüklenen dosyalar otomatik mono işlenir, konuşmacı "bilinmiyor" olur.
 - **Mono için ayrı bir konuşmacı ayrımı yöntemi şimdilik eklenmedi.** Sıra tahmini gibi basit yöntemler kısa ve üst üste binen konuşmalarda güvenilmez; demo ve santral senaryosu stereo.
 - **Model:** geliştirme ve demo için `small` varsayılan kalır (telefon sesinde RTF 0,2: 3 dakikalık çağrı ~40 sn). Doğruluk öncelikliyse `medium` (telefon sesinde WER %24,8 → %15,4, RTF 0,49: 3 dakikalık çağrı ~1,5 dk). Canlıda GPU varsa `large-v3` denenmeli.
-- **Yedek:** yerel model çalışmazsa `STT_PROVIDER=openai_compatible` (anahtar gerekir).
+- **Yedek:** yerel model çalışmazsa `STT_PROVIDER=openai_compatible` (anahtar ve `STT_ALLOW_EXTERNAL=true` gerekir). **Dikkat:** bu sağlayıcı ham sesi üçüncü tarafa gönderir; maskeleme sesten önce uygulanamaz, kişisel veri dışarı çıkar. Bu yüzden varsayılan kapalıdır (#270).
 - **Seed sesleri** artık varsayılan olarak stereo üretilir: `uv run --with piper-tts python -m scripts.generate_audio --force`.
 
 ## Hız ayarı ölçümü (#163)

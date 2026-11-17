@@ -48,10 +48,10 @@ Admin/tekne sahibi rol ayrımını .NET uygulaması yapar. Tekne sahibi uçları
 | `GET /analytics/summary` | Admin | `PeriodFilter` (sorgu) | `KpiSummary` | #52 |
 | `GET /audit-log` | Yönetici (`X-User-Id` yok; tekne sahibi kimliğiyle 403) | `AuditLogFilters` (sorgu) | `Page` of `AuditLogItem` | #267 |
 | `POST /calls` | Admin | `CallCreate` (JSON) | 202 `CallAccepted` | #48 |
-| `POST /calls/audio` | Admin | multipart: `file` (wav/mp3/m4a/ogg/flac/aac/webm, en fazla 25 MB) + `AudioCallMeta` alanları | 202 `CallAccepted`; aynı ses daha önce yüklendiyse 409 (`details.call_id`) | #49 |
+| `POST /calls/audio` | Admin | multipart: `file` (wav/mp3/m4a/ogg/flac/aac/webm, en fazla 25 MB) + `AudioCallMeta` alanları | 202 `CallAccepted`; aynı ses daha önce yüklendiyse 409 (`details.call_id`); içerik uzantıyla uyuşmuyor/bozuksa 415; süre 120 dk'yı aşarsa 413 `audio_too_long` (#270) | #49 |
 | `POST /calls/{call_id}/analyze` | Admin | — | 202 `CallAccepted` (yeni analiz sürümü); çağrı zaten işleniyorsa da 202, `already_running=true` (hata değil, #218) | #48 |
 | `GET /calls/{call_id}/status` | Admin | — | `CallStatus` | #48 |
-| `GET /calls/{call_id}/audio` | Admin | — | Ses dosyası akışı (Range destekli 200/206) | #80 |
+| `GET /calls/{call_id}/audio` | Admin | — | Ses dosyası akışı (Range destekli 200/206); `X-User-Id` ile gelen istek 403 (#270) | #80 |
 | `POST /chat/messages` | Tekne sahibi | `ChatQuestion` | `ChatReply` | #28 |
 | `POST /chat/messages/stream` | Tekne sahibi | `ChatQuestion` | SSE akışı (`ChatStreamEvent`, bkz. §4) | #28 |
 | `POST /assistant/chat` | Tekne sahibi | `ChatQuestion` | SSE akışı (`token` -> `sources` -> `done`) | #28 |

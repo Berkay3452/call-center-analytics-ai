@@ -24,6 +24,11 @@ class AudioTooLargeError(AppError):
     code = "payload_too_large"
 
 
+class AudioTooLongError(AppError):
+    status_code = status.HTTP_413_CONTENT_TOO_LARGE
+    code = "audio_too_long"
+
+
 class UnsupportedAudioError(AppError):
     status_code = status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
     code = "unsupported_media_type"

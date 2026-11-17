@@ -68,6 +68,8 @@ Konteynerler durumsuz (stateless) olduğundan, santralden gelen ses dosyaları y
 2. **Erişim ve Güvenlik:**
    * Ses oynatma uç noktası (`GET /api/v1/calls/{id}/audio`), bulut sağlayıcısından kısa ömürlü imzalı URL (Signed URL) üreterek istemciye yönlendirme (302 Redirect) yapar veya doğrudan akış sağlar (Range desteğiyle).
 3. **STT İşleme:**
+   * Şifreleme (at-rest): nesne deposu sunucu tarafı şifrelemesi (GCS varsayılan AES-256, isteğe bağlı CMEK) ve Cloud SQL disk şifrelemesi canlıda zorunludur; uygulama düzeyi şifreleme kararı ve gerekçesi `docs/guvenlik_mimarisi.md` §5'tedir (#270).
+   * Harici STT (`STT_ALLOW_EXTERNAL=true`) canlıda ham ses göndereceği için KVKK değerlendirmesi olmadan açılmamalıdır.
    * Celery STT işçisi ses dosyasını bulut deposundan geçici çalışma dizinine indirir (`/tmp`), transkripsiyonu tamamladıktan sonra geçici dosyayı temizler.
 
 ---

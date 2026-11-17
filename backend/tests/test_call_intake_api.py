@@ -16,9 +16,11 @@ from app.api.routes import call_intake
 from app.core.errors import NotFoundError
 from app.main import create_app
 from app.schemas.api import CallCreate, CallStatus
+from tests.audio_fixtures import make_wav
 from tests.conftest import TEST_SERVICE_KEY, _client_for, make_settings
 
 HEADERS = {"X-Service-Key": TEST_SERVICE_KEY}
+WAV = make_wav()
 CALL_ID = UUID("11111111-1111-4111-8111-111111111111")
 BODY = {
     "started_at": "2026-10-13T09:00:00Z",
@@ -273,14 +275,14 @@ async def test_audio_upload_stores_file_and_starts_stt(
     resp = await audio_api.post(
         "/api/v1/calls/audio",
         data=FORM,
-        files={"file": ("cagri.wav", b"RIFF-sahte-ses", "audio/wav")},
+        files={"file": ("cagri.wav", WAV, "audio/wav")},
         headers=HEADERS,
     )
 
     assert resp.status_code == 202, resp.text
     assert spy.kinds == ["stt"]
     stored = spy.stored  # type: ignore[attr-defined]
-    assert (tmp_path / stored.relative_path).read_bytes() == b"RIFF-sahte-ses"
+    assert (tmp_path / stored.relative_path).read_bytes() == WAV
     assert spy.audio_meta.customer_name == "Burak Çelik"  # type: ignore[attr-defined]
 
 
@@ -315,7 +317,7 @@ async def test_audio_upload_duplicate_returns_existing_call(
     resp = await audio_api.post(
         "/api/v1/calls/audio",
         data=FORM,
-        files={"file": ("cagri.wav", b"RIFF", "audio/wav")},
+        files={"file": ("cagri.wav", WAV, "audio/wav")},
         headers=HEADERS,
     )
 
@@ -335,3 +337,17 @@ async def test_audio_upload_requires_file_and_started_at(audio_api: httpx.AsyncC
 
     assert no_file.status_code == 422
     assert no_date.status_code == 422
+
+
+async def test_audio_upload_rejects_fake_content(audio_api: httpx.AsyncClient, spy: Spy) -> None:
+    """Uzantısı wav ama içeriği değil: 415, kayıt ve kuyruk görevi yok (#270)."""
+    resp = await audio_api.post(
+        "/api/v1/calls/audio",
+        data=FORM,
+        files={"file": ("cagri.wav", b"MZ\x90\x00" + b"\x00" * 64, "audio/wav")},
+        headers=HEADERS,
+    )
+
+    assert resp.status_code == 415
+    assert resp.json()["error"]["code"] == "unsupported_media_type"
+    assert spy.enqueued == []
