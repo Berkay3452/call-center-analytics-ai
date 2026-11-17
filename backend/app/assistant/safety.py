@@ -169,6 +169,10 @@ _OTHER_PARTY_PHRASES = (
     "baska birinin", "herkesin", "tum musteri", "butun musteri", "musterilerin", "musterilerinin",
     "baska tekne sahib", "diger tekne sahib", "baska teknelerin", "diger teknelerin",
     "komsu", "arkadasimin", "arkadasinin", "tanidigimin", "rakibin",
+    "disindaki tum", "haricindeki tum", "tum teknelerin", "butun teknelerin",
+    "other customer", "another customer", "all customers", "other users", "all users",
+    "every customer", "everyone s", "diger abone", "baska abone", "diger uye", "baska uye",
+    "other subscribers", "that are not mine", "that aren t mine",
 )  # fmt: skip
 
 
@@ -197,8 +201,6 @@ _INJECTION_PHRASES = (
     "show your prompt",
     "developer mode",
     "jailbreak",
-    "onceki talimat",
-    "onceki komut",
     "talimatlari unut",
     "talimatlarini unut",
     "kurallari unut",

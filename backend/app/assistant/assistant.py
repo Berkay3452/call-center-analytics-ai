@@ -11,7 +11,7 @@ import structlog
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.agents.grounding import normalize
-from app.assistant import safety, tools
+from app.assistant import injection, safety, tools
 from app.assistant.answer import general_answer, history_answer, numeric_answer
 from app.assistant.boats import foreign_boat_reply, resolve_boat
 from app.assistant.llm import AssistantLLM
@@ -50,6 +50,34 @@ async def _audit_safety(
     )
 
 
+async def _is_injection(
+    request: AssistantRequest, llm: AssistantLLM, session: AsyncSession | None
+) -> bool:
+    """Kural katmanı saldırı derse ret; şüphe varsa hızlı LLM sınıflandırıcı karar verir (#273)."""
+    detection = injection.inspect_input(request.question, request.history)
+    layer = "kural"
+    if detection.verdict is injection.Verdict.CLEAN:
+        return False
+    if detection.verdict is injection.Verdict.SUSPICIOUS:
+        if safety.moderate(request.question) is not None:
+            return False  # küfür/tehdit LLM çağırmadan hazır cevapla karşılanır
+        verdict = await injection.classify_suspicious(request.question, request.history, llm)
+        if verdict is None or not verdict.attack:
+            return False
+        layer = "llm"
+        detection.category = verdict.category if verdict.category != "yok" else detection.category
+    log.info("assistant.injection_attempt", layer=layer, category=detection.category)
+    await _audit_safety(
+        session,
+        request,
+        AuditAction.ASISTAN_INJECTION,
+        kural="girdi_deseni" if layer == "kural" else "llm_siniflandirici",
+        katman=layer,
+        kategori=detection.category or "yok",
+    )
+    return True
+
+
 async def answer_question(
     request: AssistantRequest,
     *,
@@ -74,6 +102,14 @@ async def answer_question(
     if len(request.question) > MAX_PROCESSED_CHARS:
         request = request.model_copy(update={"question": request.question[:MAX_PROCESSED_CHARS]})
 
+    # Prompt injection (#273): normalizasyon + kural katmanı; yalnızca şüphelide LLM sınıflandırıcı.
+    # Moderasyondan ve anlamsız-metin denetiminden ÖNCE: kodlanmış yük "anlamsız" görünebilir.
+    if await _is_injection(request, llm, session):
+        return AssistantAnswer(
+            answer=safety.pick_reply(safety.INJECTION_REPLIES, request.question),
+            question_type=QuestionType.KAPSAM_DISI,
+        )
+
     # Güvenlik katmanı (#213): küfür/cinsel/tehdit/kendine zarar ve harfsiz mesajlar LLM'e gitmez.
     question_text = request.question
     if (verdict := safety.moderate(question_text)) is not None:
@@ -95,13 +131,6 @@ async def answer_question(
     elif safety.has_no_words(question_text) or safety.looks_like_gibberish(question_text):
         return AssistantAnswer(
             answer=safety.NOT_UNDERSTOOD_REPLY, question_type=QuestionType.GENEL_SOHBET
-        )
-    if safety.is_injection_attempt(question_text):
-        log.info("assistant.injection_attempt")
-        await _audit_safety(session, request, AuditAction.ASISTAN_INJECTION, kural="girdi_deseni")
-        return AssistantAnswer(
-            answer=safety.pick_reply(safety.INJECTION_REPLIES, question_text),
-            question_type=QuestionType.KAPSAM_DISI,
         )
     if safety.asks_other_party(question_text):
         await _audit_safety(session, request, AuditAction.ASISTAN_BASKA_TARAF, kural="baska_taraf")
