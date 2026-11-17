@@ -239,6 +239,12 @@ INJECTION_REPLIES = (
     "Talimatlarımı değiştirmem veya sistem bilgilerini göstermem mümkün değil. Teknenizle ilgili "
     "bir şey öğrenmek isterseniz buradayım: bakım geçmişi, giderler, paket hakkınız.",
 )
+OUTPUT_BLOCKED_REPLIES = (
+    "Bu cevabı güvenlik nedeniyle gösteremiyorum. Sorunuzu biraz farklı sorarsanız teknenizin "
+    "kayıtlarından yardımcı olmaya çalışırım.",
+    "Hazırladığım cevap iç bilgi ya da kişisel veri içerdiği için paylaşılamıyor. Bakım geçmişi, "
+    "giderler veya paket hakkınız gibi bir konuda yeniden sorabilirsiniz.",
+)
 OTHER_PARTY_REPLIES = (
     "Başka müşterilerin bilgilerini paylaşamam; gizlilik gereği yalnızca kendi teknenizin ve "
     f"hesabınızın kayıtlarına bakabilirim. {CAPABILITIES}",
