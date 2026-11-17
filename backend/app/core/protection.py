@@ -36,9 +36,12 @@ def _request_id(scope: Scope) -> str | None:
 class RateLimitMiddleware:
     """IP + kimlik bazlı kayan pencere sınırı; aşımda 429 ve `Retry-After`.
 
-    Anahtar: `genel:{ip}:{X-User-Id}`. `X-User-Id` doğrulanmamış bir başlıktır (#266'ya kadar):
-    yalnızca UUID biçimindeyse kimlik olarak kullanılır, yoksa `-` sayılır. Asistan uçları ek
-    olarak kendi (daha sıkı) kovasına sayılır. `/health*` ve CORS ön uçuşu (OPTIONS) sayılmaz.
+    Anahtar: `genel:{ip}:{X-User-Id}` ve kimlikten bağımsız `ip-genel:{ip}` (asistan için
+    `ip-asistan`). `X-User-Id` doğrulanmamış bir başlıktır (#266'ya kadar): yalnızca UUID
+    biçimindeyse kimlik olarak kullanılır, yoksa `-` sayılır; her istekte yeni UUID gönderilerek
+    kimlik kovası atlatılabilir, bu yüzden IP-only (daha yüksek tavanlı) kovalar da uygulanır.
+    Asistan uçları ek olarak kendi (daha sıkı) kovasına sayılır.
+    `/health*` ve CORS ön uçuşu (OPTIONS) sayılmaz.
     """
 
     def __init__(
@@ -49,6 +52,8 @@ class RateLimitMiddleware:
         prefix: str,
         general_per_min: int,
         assistant_per_min: int,
+        ip_general_per_min: int,
+        ip_assistant_per_min: int,
         window_s: int = 60,
     ) -> None:
         self.app = app
@@ -56,6 +61,8 @@ class RateLimitMiddleware:
         self.prefix = prefix.rstrip("/")
         self.general = general_per_min
         self.assistant = assistant_per_min
+        self.ip_general = ip_general_per_min
+        self.ip_assistant = ip_assistant_per_min
         self.window_s = window_s
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
@@ -75,11 +82,17 @@ class RateLimitMiddleware:
         user = raw_user.lower() if _UUID.fullmatch(raw_user) else "-"
         who = f"{ip}:{user}"
 
-        checks = [("genel", self.general)]
-        if scope.get("method") == "POST" and path[len(self.prefix) :] in ASSISTANT_PATHS:
-            checks.append(("asistan", self.assistant))
-        for name, limit in checks:
-            decision = await self.limiter.hit(f"{name}:{who}", limit, self.window_s)
+        # (kova, anahtar, sınır). IP-only kovalar kimlikten bağımsızdır: istemci her istekte yeni
+        # UUID gönderse de IP tavanına takılır.
+        checks = [("genel", f"genel:{who}", self.general)]
+        is_assistant = scope.get("method") == "POST" and path[len(self.prefix) :] in ASSISTANT_PATHS
+        if is_assistant:
+            checks.append(("asistan", f"asistan:{who}", self.assistant))
+        checks.append(("ip-genel", f"ip-genel:{ip}", self.ip_general))
+        if is_assistant:
+            checks.append(("ip-asistan", f"ip-asistan:{ip}", self.ip_assistant))
+        for name, key, limit in checks:
+            decision = await self.limiter.hit(key, limit, self.window_s)
             if not decision.allowed:
                 response = error_json(
                     _request_id(scope),

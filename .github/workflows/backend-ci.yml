@@ -177,6 +177,7 @@ jobs:
       # Duman testi tek IP'den sık yoklar; sınır gerçek Redis'le açık ama geniş (davranış testleri
       # tests/test_protection*.py içinde).
       RATE_LIMIT_GENERAL_PER_MIN: "2000"
+      RATE_LIMIT_IP_GENERAL_PER_MIN: "5000"
     steps:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v10.2.0

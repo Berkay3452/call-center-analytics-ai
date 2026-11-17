@@ -89,6 +89,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         prefix=settings.api_v1_prefix,
         general_per_min=settings.rate_limit_general_per_min,
         assistant_per_min=settings.rate_limit_assistant_per_min,
+        ip_general_per_min=settings.rate_limit_ip_general_per_min,
+        ip_assistant_per_min=settings.rate_limit_ip_assistant_per_min,
         window_s=settings.rate_limit_window_s,
     )
     app.add_middleware(BodyLimitMiddleware, max_bytes=settings.max_json_body_kb * 1024)

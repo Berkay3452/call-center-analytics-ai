@@ -49,7 +49,7 @@ Mevcut, kapsamı genişlemeden korunan testler: sohbet oturumu başka sahibe ait
 | Bağımlılıklar — frontend (`npm audit`) | **Kapatıldı (#272)** | `next@16.4.0` kritik bulgusu sonraki sürümlerle kapandı; 2026-11-17 `npm audit --omit=dev`: kritik/yüksek yok, 1 orta (`next` 16.3.0–16.4.4, `unstable_cache` kök parametre bilgi sızıntısı; düzeltme 16.4.6, bkz. §4). Geliştirme araçlarındaki orta bulgular üretime girmez |
 | Docker | ✓ / iyileştirildi | Kök olmayan kullanıcı; Postgres ve Redis portları artık yalnızca `127.0.0.1`'e bağlı (eskiden tüm arayüzler; varsayılan şifre `postgres`). Compose'taki `SERVICE_KEY` varsayılanı `change-me-in-local-env` yalnızca yerel içindir; canlıda Secret Manager (`docs/canliya_alma.md`) |
 | CORS / API belgesi | ✓ | İzinli origin listesi (`CORS_ORIGINS`); `/docs` prod'da kapalı |
-| API düzeyinde hız sınırı | **var** (#271) | Redis kayan pencere; bkz. §5 |
+| API düzeyinde hız sınırı | **var** (#271) | Redis kayan pencere (kimlik kovası + kimlikten bağımsız IP tavanı: genel 600/dk, asistan 60/dk; `X-User-Id` döndürülerek kimlik kovası atlatılsa da IP tavanı geçerli kalır); bkz. §5 |
 | LLM'e giden veri | ✓ | Transkriptteki kişisel veriler maskelenir (`app/services/masking.py`); maskesiz metne düşülmez |
 
 ## 4. Tedarik zinciri taramaları (#272, 2026-11-17)

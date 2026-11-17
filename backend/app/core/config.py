@@ -81,6 +81,10 @@ class Settings(BaseSettings):
     rate_limit_window_s: int = Field(default=60, ge=1)
     rate_limit_general_per_min: int = Field(default=120, ge=1)  # IP + kimlik başına tüm uçlar
     rate_limit_assistant_per_min: int = Field(default=20, ge=1)  # LLM çağıran asistan uçları
+    # Kimlikten bağımsız IP tavanı: X-User-Id döndürülerek kimlik kovası atlatılamasın (#271).
+    # Next vekil arkasında IP ortaktır; bu yüzden kimlik kovasından yüksektir.
+    rate_limit_ip_general_per_min: int = Field(default=600, ge=1)
+    rate_limit_ip_assistant_per_min: int = Field(default=60, ge=1)
     rate_limit_auth_fail_per_min: int = Field(default=10, ge=1)  # IP başına kimlik hatası
     max_json_body_kb: int = Field(default=256, ge=1)  # multipart (ses) hariç gövde sınırı
 

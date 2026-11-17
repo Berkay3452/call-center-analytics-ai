@@ -7,6 +7,7 @@ sunucuyla (fail-open davranışı) denenir. Gerçek Redis testi: `test_protectio
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from typing import Any
+from uuid import uuid4
 
 import httpx
 import pytest
@@ -104,6 +105,40 @@ async def test_limit_is_per_identity_and_health_is_exempt(limited: httpx.AsyncCl
     for _ in range(10):
         assert (await limited.get("/health")).status_code == 200
         assert (await limited.options("/api/v1/me")).status_code != 429
+
+
+async def test_rotating_user_id_cannot_bypass_ip_ceiling() -> None:
+    """X-User-Id doğrulanmamış: her istekte yeni UUID gönderen yine IP tavanına takılır."""
+    async with _client(rate_limit_general_per_min=100, rate_limit_ip_general_per_min=30) as c:
+        codes = [
+            (await c.get("/api/v1/me", headers={**HEADERS, "X-User-Id": str(uuid4())}))
+            for _ in range(31)
+        ]
+        assert all(r.status_code != 429 for r in codes[:30])
+        assert codes[30].status_code == 429
+        assert codes[30].json()["error"]["details"]["bucket"] == "ip-genel"
+
+
+async def test_rotating_user_id_cannot_bypass_assistant_ip_ceiling() -> None:
+    async with _client(
+        rate_limit_general_per_min=1000,
+        rate_limit_assistant_per_min=10,
+        rate_limit_ip_general_per_min=1000,
+        rate_limit_ip_assistant_per_min=5,
+    ) as c:
+        resps = [
+            (
+                await c.post(
+                    "/api/v1/chat/messages",
+                    json={"question": "selam"},
+                    headers={**HEADERS, "X-User-Id": str(uuid4())},
+                )
+            )
+            for _ in range(6)
+        ]
+        assert all(r.status_code != 429 for r in resps[:5])
+        assert resps[5].status_code == 429
+        assert resps[5].json()["error"]["details"]["bucket"] == "ip-asistan"
 
 
 async def test_assistant_endpoints_have_tighter_limit() -> None:
