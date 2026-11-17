@@ -56,8 +56,9 @@ Savunma beş güven sınırında kurulur:
 
 | Savunma | Durum | Kanıt / issue |
 |---|---|---|
-| Transkriptteki e-posta, IBAN, TC kimlik no, telefon ve bilinen ad/soyadlar maskelenir; LLM'e yalnızca maskeli metin gider, maskesiz metne düşülmez | **Var** | `backend/app/services/masking.py` |
-| Maskeleme **ölçülmedi**; NER yok, listede olmayan ad, adres, plaka, kart no yakalanmaz | **Eksik** | #268 |
+| Transkriptteki e-posta, IBAN, TC kimlik no, telefon, kart (Luhn), vergi no, pasaport/ehliyet no, araç/tekne plakası, adres kalıpları, "Ben X / Adım X / X Bey" kalıbındaki adlar ve bilinen ad/soyadlar maskelenir; LLM'e yalnızca maskeli metin gider, maskesiz metne düşülmez | **Var** | `backend/app/services/masking.py` |
+| Maskeleme ölçüldü: 60 sentetik cümlede kalıp kapsamı geri çağırma %100 (kategori başına 3-11 örnek, kör test değil), kalıp dışı (yazıyla söylenen numara, küçük harfli adres, kalıpsız ad) 0/5; 1668 sentetik turda yanlış maskeleme 0. NER yapılmadı | **Var** (sınırlı) | `docs/maskeleme_olcum.md`, `backend/tests/test_masking_olcum.py` |
+| Günlükte, LLM isteğinde ve agent kayıtlarında ham kişisel veri bulunmaz (testle doğrulanır) | **Var** | `backend/tests/test_masking_olcum.py` |
 | STT yerel (faster-whisper); ses dışarı çıkmaz | **Var** (varsayılan) | `docs/stt_karari.md` |
 | Harici STT API seçilirse ham ses dışarı gider (maskeleme sesten önce uygulanamaz) | **Risk** → varsayılan kapalı + belge | #270 |
 | Yükleme: 25 MB sınırı (413), tür kontrolü (415), aynı ses 409, depolama adı içerik özeti | **Var** | `docs/guvenlik_yuk.md` §3 |
@@ -66,7 +67,7 @@ Savunma beş güven sınırında kurulur:
 | Ses ve transkript at-rest şifreleme | **Eksik** (disk/hacim şifrelemesi altyapıya bırakılmış) → değerlendirme | #269, #270 |
 | Veri envanteri (hangi tabloda/dosyada hangi kişisel veri) | **Planlanan** | #269 |
 
-**Dürüst sınır:** Maskeleme düzenli ifade ve bilinen listelerle çalışır; listede olmayan bir ad maskelenmeyebilir. Bu, #268'de ölçülüp raporlanacaktır.
+**Dürüst sınır:** Maskeleme düzenli ifade, kalıp ve bilinen listelerle çalışır (NER yok). Kalıba uymayan bir ad ("Mehmet'e söyleyin"), küçük harfli STT adresi/plakası ve yazıyla söylenen numara maskelenmez; ölçüm ve sayılar `docs/maskeleme_olcum.md` içindedir. Gerçek müşteri sesine geçilmeden önce gerçek transkriptlerde daha büyük bir sette ölçüm ve NER kıyası gerekir.
 
 ## 5. Güvenli API kullanımı
 
