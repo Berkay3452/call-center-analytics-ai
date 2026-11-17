@@ -3,11 +3,22 @@
  *
  * Servis anahtarı (SERVICE_KEY) yalnızca bu sunucu tarafında bulunur; tarayıcı kodu hiçbir
  * zaman görmez. Yalnızca API sözleşmesindeki yollar (docs/api.md) iletilir.
- * Gerçek sistemde tekne sahibi kimliğini (X-User-Id) Miço Usta .NET uygulaması belirler;
- * geliştirmede arayüzün gönderdiği başlık olduğu gibi iletilir.
+ * Tekne sahibi kimliği (X-User-Id) HMAC ile imzalanarak iletilir (#266): backend, imzasız veya
+ * süresi geçmiş kimliği reddeder. İmza anahtarı (USER_SIGNING_KEY) yalnızca bu sunucuda bulunur.
+ * Oturum/giriş akışı (#265) henüz yok; bu yüzden tarayıcının gönderdiği kimlik YALNIZCA
+ * ALLOW_BROWSER_USER_ID=true (yerel geliştirme) iken imzalanıp iletilir. Varsayılanda tarayıcı
+ * kimliği düşürülür: tarayıcı istediği kullanıcı kimliğini imzalatamaz.
  */
 
+import { createHmac } from "node:crypto";
 import type { NextRequest } from "next/server";
+
+/** `<unix_zaman>.<hex(HMAC-SHA256(user_id.zaman))>`: backend `sign_user_id` ile aynı biçim. */
+function signUserId(userId: string, key: string): string {
+  const ts = Math.floor(Date.now() / 1000);
+  const mac = createHmac("sha256", key).update(`${userId}.${ts}`).digest("hex");
+  return `${ts}.${mac}`;
+}
 
 // Yol → izinli HTTP yöntemleri (#271). Listede olmayan yöntem 405 döner.
 const R: Array<[RegExp, readonly string[]]> = [
@@ -88,7 +99,11 @@ async function forward(
   const contentType = req.headers.get("content-type");
   if (contentType) headers.set("content-type", contentType);
   const userId = req.headers.get("x-user-id");
-  if (userId) headers.set("x-user-id", userId);
+  if (userId && process.env.ALLOW_BROWSER_USER_ID === "true") {
+    headers.set("x-user-id", userId);
+    const signingKey = process.env.USER_SIGNING_KEY;
+    if (signingKey) headers.set("x-user-signature", signUserId(userId, signingKey));
+  }
   const range = req.headers.get("range");
   if (range) headers.set("range", range);
   const key = process.env.SERVICE_KEY;

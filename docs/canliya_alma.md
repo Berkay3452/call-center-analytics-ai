@@ -42,6 +42,8 @@ Sistemin bileşenleri:
 | Değişken Adı | Açıklama | Kullanıldığı Servis |
 |---|---|---|
 | `SERVICE_API_KEY` | Backend API'yi yetkisiz erişimden koruyan servis anahtarı | API, Worker, Init |
+| `USER_SIGNING_KEY` | `X-User-Id` imza anahtarı (≥ 32 karakter, servis anahtarından farklı); prod'da `USER_SIGNATURE_REQUIRED=true` | API, Worker, Web |
+| `ALLOW_BROWSER_USER_ID` | Canlıda `false` (varsayılan kapalı): tarayıcı kimliği iletilmez | Web |
 | `SERVICE_KEY` | Frontend sunucusunun Backend API ile haberleşirken kullandığı servis anahtarı | Web |
 | `DATABASE_URL` | PostgreSQL bağlantı adresi (`postgresql+asyncpg://...`) | API, Worker, Init |
 | `REDIS_URL` | Redis bağlantı adresi (`redis://...`) | API, Worker, Init |

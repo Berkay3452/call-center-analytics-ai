@@ -77,7 +77,7 @@ Siber güvenlik dersi kapsamında (**Ses Verisi Güvenliği ve Yapay Zekâ Güve
 | Tekne sahibi uçlarında `X-User-Id` zorunlu ve UUID doğrulamalı | **Var** |
 | Yeni bir uçta kimlik unutulursa yetki matrisi testi (83 test) kırılır | **Var** |
 | Tekne sahibi ve yönetici hesapları: `user_accounts`, kullanıcı adı + argon2id parola karması, deneme sayacı/kilit, seed (giriş ucu ve ekranı yok) | **Var** #278 (giriş ucu açılmadı; kimlik kaynağı hâlâ `X-User-Id`, #266) |
-| İmzalı `X-User-Id` (HMAC, kısa ömür), anahtar rotasyonu | **Planlanan** #266 |
+| İmzalı `X-User-Id` (HMAC-SHA256, 60 sn ömür, ayrı `USER_SIGNING_KEY`), süreli çift anahtarlı rotasyon, argon2 iş parçacığında, IP giriş bütçesi yardımcıları | **Var** #266 (giriş ucu ve oturum yok, #265; vekil rota e2e denenmedi) |
 | Giriş ekranı gerekir mi? | **Hocaya sorulacak** #265 |
 
 ### Kişisel verilerin ve ses verisinin korunması — `S2_kisisel_veri_ve_ses_guvenligi.png`
