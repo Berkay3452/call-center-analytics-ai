@@ -82,7 +82,7 @@ Savunma beş güven sınırında kurulur:
 | Pydantic ile girdi/çıktı doğrulama; tek tip hata biçimi | **Var** | `app/schemas/` |
 | Asistan sorusu ≤ 5000 karakter; sayfa boyutu ≤ 100 | **Var** | `schemas/assistant.py`, `schemas/common.py` |
 | Docker: kök olmayan kullanıcı; Postgres/Redis yalnızca `127.0.0.1` | **Var** | `backend/Dockerfile`, `frontend/Dockerfile`, `infra/docker-compose.yml` |
-| Hata iletisinde sunucu yolu sızıntısı | **Düzeltildi** (#221); LLM ham hata gövdesi `calls.error`'da kalıyor | #271 |
+| Hata iletisinde sunucu yolu / LLM ham hata sızıntısı | **Düzeltildi** (#221, #271): `calls.error` yalnızca sabit Türkçe iletiler içerir; ayrıntı `agent_runs`'ta | `core/public_errors.py` |
 | Vekil rotada yol izin listesi | **Var** | `route.ts` `ALLOWED` |
 | Gizli anahtarlar yalnızca ortam değişkeni; `.env` git'te yok; `.env.example` boş | **Var** | `.gitignore`, `docs/guvenlik_yuk.md` |
 | Backend `pip-audit` (bilinen açıkta PR'ı kırar), frontend `npm audit --audit-level=high` CI'da | **Var** | `backend-ci.yml` (`security`), `frontend-ci.yml` |
@@ -90,9 +90,12 @@ Savunma beş güven sınırında kurulur:
 | Gizli anahtar taraması (gitleaks, tüm geçmiş, her PR), Dependabot (uv, npm, actions, docker), ön-commit denetimi | **Var** | `gizli-anahtar-taramasi.yml`, `.github/dependabot.yml`, `.pre-commit-config.yaml` |
 | Docker imaj taraması (Trivy, yalnızca bilgi raporu; haftalık/elle/Dockerfile değişiminde) | **Var** | `imaj-taramasi.yml` |
 | Anahtarlar yalnızca ortam değişkeninden okunur, `SecretStr`, günlüğe/dökümlere düşmez | **Var** (testli) | `tests/test_secret_hygiene.py` |
-| Hız sınırlama, JSON gövde sınırı | **Eksik** (gateway'e bırakılmıştı) | #271 |
-| Aktarımda şifreleme (HTTPS zorunlu, HSTS) | **Eksik** (canlıya alma ortamına bırakılmış) | #271 |
-| Next güvenlik başlıkları (CSP, frame-ancestors, nosniff, Referrer-Policy) | **Eksik** | #271 |
+| Hız sınırı: Redis kayan pencere, IP + `X-User-Id` (UUID ise) anahtarı; genel 120/dk, asistan uçları ek 20/dk; ek olarak kimlikten bağımsız IP tavanı (genel 600/dk, asistan 60/dk; Next vekil arkasında IP ortak olduğundan yüksek). `X-User-Id` doğrulanmadığı için istemci her istekte yeni UUID göndererek yalnızca kimlik kovasını atlatabilir, IP tavanını atlatamaz; gerçek kimlik #266 ile gelince kimlik kovası anlam kazanır. 429 + `Retry-After`. Redis yoksa **açık bırakır** (fail-open, uyarı günlüğü); prod'da `off` yasak. Kimlik hatası: IP başına 10/dk, aşımda anonim denetim yazımı da durur | **Var** | `core/ratelimit.py`, `core/protection.py`, `api/deps.py` |
+| JSON gövde sınırı 256 KB (413, `Content-Length` ve chunked); ses yüklemesi kendi 25 MB sınırında | **Var** | `core/protection.py` |
+| API güvenlik başlıkları (nosniff, DENY, Referrer-Policy) | **Var** | `core/protection.py` |
+| Aktarımda şifreleme: HSTS başlığı (prod) uygulamada var; HTTPS zorunluluğu ve TLS sonlandırma canlı ortamın (Cloud Run/yük dengeleyici) işidir, ses ve kişisel veri yalnızca TLS ile taşınmalıdır | **Kısmen** (başlık var, TLS ortam) | `docs/canliya_alma.md` §6 |
+| Next güvenlik başlıkları: CSP (`frame-ancestors 'none'`, `object-src 'none'`, `connect-src 'self'`), nosniff, X-Frame-Options, Referrer-Policy, Permissions-Policy; HSTS yalnızca üretimde. Dev'de HMR için `'unsafe-eval'`/`ws:` eklenir. **Kalan risk:** script için `'unsafe-inline'` (nonce'lu CSP tüm sayfaları dinamik render ister) | **Var** | `frontend/next.config.ts`, `e2e/guvenlik-basliklari.spec.ts` |
+| Vekil rotada yol başına HTTP yöntemi kısıtı (405 + `Allow`) | **Var** | `route.ts` `R` |
 
 ## 6. Prompt injection koruması
 
@@ -141,8 +144,8 @@ Savunma beş güven sınırında kurulur:
 | LLM07 | Sistem istemi sızıntısı | Çıktı filtresi: istem parçası örtüşmesi (#274, var; parafraz yakalanmaz) |
 | API1 | Nesne düzeyi yetki (IDOR) | Zorunlu `owner_id` (var), #276 testleri |
 | API2 | Kırık kimlik doğrulama | §3 · #265, #266 |
-| API4 | Kaynak tüketimi | #271 hız sınırı |
-| API8 | Yanlış yapılandırma | CORS, `/docs` kapalı (var); başlıklar #271 |
+| API4 | Kaynak tüketimi | Hız sınırı, gövde sınırı (var, #271) |
+| API8 | Yanlış yapılandırma | CORS, `/docs` kapalı, güvenlik başlıkları (var) |
 | API9 | Envanter/bağımlılık | #272 |
 
 Satır satır kanıt tablosu #276 kapsamında test paketiyle birlikte tamamlanacaktır.

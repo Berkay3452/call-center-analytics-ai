@@ -134,3 +134,11 @@ Konteynerler durumsuz (stateless) olduğundan, santralden gelen ses dosyaları y
 * **Soğuk Başlangıç (Cold Start):** Python + ML kütüphaneleri (PyAV, faster-whisper) konteyner başlangıcında 5-10 saniye ek süre alabilir. Cloud Run'da API için `min-instances: 1` tutulması gecikmeyi engeller.
 * **Bellek Tahsisi:** Backend ve işçi konteynerleri için en az 2 GB RAM (STT veya RAG çalışacaksa 4 GB) yapılandırılmalıdır.
 * **Celery Timeout Sınırı:** Cloud Run maksimum istek süresi 60 dakikadır. Uzun ses dosyaları için bu süre yeterlidir ancak işçinin arka planda kesintisiz çalışması için Compute Engine VM veya kalıcı CPU tahsisi önerilir.
+
+---
+
+## 6. Aktarımda şifreleme (#271)
+
+* API, `APP_ENV=prod` iken `Strict-Transport-Security: max-age=63072000; includeSubDomains` başlığını gönderir; Next arayüzü de üretim derlemesinde aynısını gönderir. Yerel `http` geliştirmede gönderilmez (tarayıcıyı kilitlemesin).
+* **TLS sonlandırma uygulamada değil ortamdadır:** Cloud Run / yük dengeleyici yalnızca HTTPS kabul etmeli, HTTP'yi yönlendirmelidir. Ses dosyaları ve kişisel veri içeren istekler yalnızca TLS ile taşınmalıdır; .NET uygulaması ile bu servis arasındaki çağrı da `https://` adresiyle yapılmalıdır.
+* Arkada ters vekil varsa istemci IP'sinin doğru görünmesi için vekilin IP'yi iletmesi ve uvicorn'un `--proxy-headers`/`--forwarded-allow-ips` ile yapılandırılması gerekir; aksi halde hız sınırı tüm istekleri vekil IP'si altında sayar.

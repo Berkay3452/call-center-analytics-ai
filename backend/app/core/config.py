@@ -74,6 +74,20 @@ class Settings(BaseSettings):
     # olmayan birim testlerinde kapatılır; canlıda kapatılamaz.
     audit_auth_failures: bool = True
 
+    # --- Koruma (#271) ---
+    # Hız sınırı: redis (varsayılan, çok örnekli) | memory (tek süreç) | off (yalnızca local/test).
+    # Redis kapalıyken sınır uygulanmaz (fail-open), bkz. app/core/ratelimit.py.
+    rate_limit_backend: Literal["redis", "memory", "off"] = "redis"
+    rate_limit_window_s: int = Field(default=60, ge=1)
+    rate_limit_general_per_min: int = Field(default=120, ge=1)  # IP + kimlik başına tüm uçlar
+    rate_limit_assistant_per_min: int = Field(default=20, ge=1)  # LLM çağıran asistan uçları
+    # Kimlikten bağımsız IP tavanı: X-User-Id döndürülerek kimlik kovası atlatılamasın (#271).
+    # Next vekil arkasında IP ortaktır; bu yüzden kimlik kovasından yüksektir.
+    rate_limit_ip_general_per_min: int = Field(default=600, ge=1)
+    rate_limit_ip_assistant_per_min: int = Field(default=60, ge=1)
+    rate_limit_auth_fail_per_min: int = Field(default=10, ge=1)  # IP başına kimlik hatası
+    max_json_body_kb: int = Field(default=256, ge=1)  # multipart (ses) hariç gövde sınırı
+
     # --- LLM (ücretsiz, OpenAI-uyumlu API sağlayıcıları) ---
     llm_provider: Literal[
         "groq", "openrouter", "gemini", "nvidia", "ollama", "openai_compatible"
@@ -206,6 +220,12 @@ class Settings(BaseSettings):
         # Güvenlik: kimlik doğrulama atlatma yalnızca yerel geliştirme ve testte açılabilir.
         if self.auth_dev_bypass and self.app_env not in ("local", "test"):
             raise ValueError("AUTH_DEV_BYPASS yalnızca APP_ENV=local veya test iken açılabilir.")
+        return self
+
+    @model_validator(mode="after")
+    def _guard_rate_limit(self) -> "Settings":
+        if self.is_production and self.rate_limit_backend == "off":
+            raise ValueError("RATE_LIMIT_BACKEND canlıda 'off' olamaz.")
         return self
 
     @model_validator(mode="after")

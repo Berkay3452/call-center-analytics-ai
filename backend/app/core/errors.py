@@ -23,10 +23,17 @@ class AppError(Exception):
     status_code: int = status.HTTP_400_BAD_REQUEST
     code: str = "bad_request"
 
-    def __init__(self, message: str, *, details: dict[str, Any] | None = None) -> None:
+    def __init__(
+        self,
+        message: str,
+        *,
+        details: dict[str, Any] | None = None,
+        headers: dict[str, str] | None = None,
+    ) -> None:
         super().__init__(message)
         self.message = message
         self.details = details or {}
+        self.headers = headers or {}  # yanıt başlıkları (ör. Retry-After)
 
 
 class NotFoundError(AppError):
@@ -49,30 +56,73 @@ class ForbiddenError(AppError):
     code = "forbidden"
 
 
+class PayloadTooLargeError(AppError):
+    status_code = status.HTTP_413_CONTENT_TOO_LARGE
+    code = "payload_too_large"
+
+
+class TooManyRequestsError(AppError):
+    """Hız sınırı aşıldı (#271). `Retry-After` saniye cinsinden başlıkta ve ayrıntıdadır."""
+
+    status_code = status.HTTP_429_TOO_MANY_REQUESTS
+    code = "rate_limited"
+
+    def __init__(self, message: str, *, retry_after_s: int) -> None:
+        retry_after = max(1, int(retry_after_s))
+        super().__init__(
+            message,
+            details={"retry_after_s": retry_after},
+            headers={"Retry-After": str(retry_after)},
+        )
+
+
 class ServiceUnavailableError(AppError):
     status_code = status.HTTP_503_SERVICE_UNAVAILABLE
     code = "service_unavailable"
 
 
-def _error_response(
-    request: Request, status_code: int, code: str, message: str, details: Any = None
+def error_json(
+    request_id: str | None,
+    status_code: int,
+    code: str,
+    message: str,
+    details: Any = None,
+    headers: dict[str, str] | None = None,
 ) -> JSONResponse:
+    """Tek tip hata gövdesi; ara katmanlar (hız sınırı, gövde sınırı) de bunu kullanır."""
     body = {
         "error": {
             "code": code,
             "message": message,
             "details": details or {},
-            "request_id": getattr(request.state, "request_id", None),
+            "request_id": request_id,
         }
     }
-    headers = {"WWW-Authenticate": "Bearer"} if status_code == 401 else None
-    return JSONResponse(status_code=status_code, content=body, headers=headers)
+    out = dict(headers or {})
+    if status_code == 401:
+        out["WWW-Authenticate"] = "Bearer"
+    return JSONResponse(status_code=status_code, content=body, headers=out or None)
+
+
+def _error_response(
+    request: Request,
+    status_code: int,
+    code: str,
+    message: str,
+    details: Any = None,
+    headers: dict[str, str] | None = None,
+) -> JSONResponse:
+    return error_json(
+        getattr(request.state, "request_id", None), status_code, code, message, details, headers
+    )
 
 
 def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(AppError)
     async def _app_error(request: Request, exc: AppError) -> JSONResponse:
-        return _error_response(request, exc.status_code, exc.code, exc.message, exc.details)
+        return _error_response(
+            request, exc.status_code, exc.code, exc.message, exc.details, exc.headers
+        )
 
     @app.exception_handler(RequestValidationError)
     async def _validation_error(request: Request, exc: RequestValidationError) -> JSONResponse:

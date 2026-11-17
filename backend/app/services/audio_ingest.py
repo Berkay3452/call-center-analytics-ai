@@ -24,6 +24,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.core.config import Settings, get_settings
 from app.core.errors import ConflictError, NotFoundError
+from app.core.public_errors import UNEXPECTED, stt_error
 from app.db.models.ai import Call
 from app.schemas.api import AudioCallMeta, CallState
 from app.services.call_ingest import set_state, store_segments
@@ -34,7 +35,7 @@ from app.storage.base import (  # noqa: F401 - hata sınıfları geriye uyumlulu
     StoredAudio,
     UnsupportedAudioError,
 )
-from app.stt.base import SttError, Transcriber, redact_paths
+from app.stt.base import SttError, Transcriber
 from app.stt.pipeline import ChannelLayout, Diarizer, transcribe_call
 
 log = structlog.get_logger(__name__)
@@ -212,14 +213,13 @@ async def run_transcription(
         log.warning("stt.failed", call_id=str(call_id), error=str(exc), transient=exc.transient)
         async with session_factory() as session, session.begin():
             await set_state(
-                session, call_id, "basarisiz", f"Yazıya çevirme başarısız: {redact_paths(str(exc))}"
+                session, call_id, "basarisiz", stt_error(str(exc), transient=exc.transient)
             )
         return "basarisiz"
-    except Exception as exc:
+    except Exception:
         log.exception("stt.crashed", call_id=str(call_id))
         async with session_factory() as session, session.begin():
-            error = redact_paths(f"{type(exc).__name__}: {exc}")[:500]
-            await set_state(session, call_id, "basarisiz", error)
+            await set_state(session, call_id, "basarisiz", UNEXPECTED)
         return "basarisiz"
 
     save_started = time.perf_counter()

@@ -28,6 +28,8 @@ x-smoke-env: &smoke-env
   - SERVICE_API_KEY=duman-test-anahtari
   - APP_ENV=local
   - AUTH_DEV_BYPASS=false
+  - RATE_LIMIT_GENERAL_PER_MIN=2000
+  - RATE_LIMIT_IP_GENERAL_PER_MIN=5000
 
 services:
   init:

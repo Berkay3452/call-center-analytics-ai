@@ -100,8 +100,8 @@ def s0():
     c.box(2, 48, 14, 9, "Saldırgan\n(dış, başka sahip,\nkötü niyetli çağrı)", "tehdit")
     c.zone(20, 40, 18, 38, "1 · Giriş sınırı")
     c.box(21.5, 66, 15, 8, "Next vekil rota\nyol izin listesi\nSERVICE_KEY burada", "var", 8.8)
-    c.box(21.5, 54, 15, 8, "Güvenlik başlıkları\n(CSP, frame, nosniff)", "plan", 8.8)
-    c.box(21.5, 42, 15, 8, "Hız sınırı, gövde\nboyut sınırı  #271", "plan", 8.8)
+    c.box(21.5, 54, 15, 8, "Güvenlik başlıkları\n(CSP, frame, nosniff) ✔", "var", 8.8)
+    c.box(21.5, 42, 15, 8, "Hız sınırı, gövde\nboyut sınırı  #271 ✔", "var", 8.8)
     c.zone(41, 28, 27, 50, "2 · API (FastAPI)")
     c.box(42.5, 66, 24, 8, "Kimlik: X-Service-Key\n(compare_digest, prod ≥ 32)", "var", 8.8)
     c.box(42.5, 55, 24, 8, "İmzalı X-User-Id + rol\nrotasyon  #266", "plan", 8.8)
@@ -183,8 +183,8 @@ def s3():
                "İstek yolundaki kontroller ve tedarik zinciri (bağımlılık, gizli anahtar)")
     c.box(2, 62, 12, 10, "İstemci", "dis")
     xs = [(18, 15, "CORS izinli\norigin listesi", "var"),
-          (36, 15, "Hız sınırı\n429 + Retry-After\n#271", "plan"),
-          (54, 15, "Gövde/yükleme sınırı\n25 MB·415·409\n(JSON sınırı #271)", "var"),
+          (36, 15, "Hız sınırı (Redis)\n429 + Retry-After\n#271 ✔", "var"),
+          (54, 15, "Gövde/yükleme sınırı\n25 MB·415·409\nJSON 256 KB·413", "var"),
           (72, 13, "Kimlik: servis\nanahtarı (her uç)\nmatris testi 83", "var")]
     for x, w, t, k in xs:
         c.box(x, 62, w, 10, t, k, 9)
@@ -192,9 +192,9 @@ def s3():
     c.arrow(14, 67, 18, 67)
     for a, b in [(33, 36), (51, 54), (69, 72)]:
         c.arrow(a, 67, b, 67)
-    c.box(2, 44, 28, 10, "Hata gövdesi: iç yol yok (#221 ✔);\nLLM ham hatası sızıyor → #271", "plan", 9)
+    c.box(2, 44, 28, 10, "Hata gövdesi: iç yol yok (#221 ✔);\nLLM ham hatası gizli (#271 ✔)", "var", 9)
     c.box(34, 44, 30, 10, "SQL: parametreli sorgular\n/docs prod'da kapalı, /health sınırlı", "var", 9)
-    c.box(68, 44, 30, 10, "Next güvenlik başlıkları\nCSP, frame-ancestors, nosniff  #271", "plan", 9)
+    c.box(68, 44, 30, 10, "Next güvenlik başlıkları\nCSP, frame-ancestors, nosniff  #271 ✔", "var", 9)
     c.zone(2, 6, 96, 30, "Tedarik zinciri")
     c.box(4, 10, 29, 20, "pip-audit PR'ı kırar, npm audit\n(yüksek/kritik); next kritik\nbulgusu kapandı  #272 ✔", "var", 9)
     c.box(36, 10, 29, 20, "gitleaks (tüm geçmiş), Dependabot,\nTrivy imaj raporu (bilgi),\nön-commit denetimi  #272 ✔", "var", 9)

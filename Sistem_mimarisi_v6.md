@@ -104,7 +104,8 @@ Siber güvenlik dersi kapsamında (**Ses Verisi Güvenliği ve Yapay Zekâ Güve
 | Gizli anahtarlar yalnızca ortam değişkeninde; `.env` git dışında; canlıda Secret Manager | **Var** |
 | Docker: kök olmayan kullanıcı (backend, frontend); Postgres ve Redis yalnızca `127.0.0.1`'e açık | **Var** |
 | CI: backend `pip-audit` (açık bulguda PR kırılır), frontend `npm audit --audit-level=high` | **Var** |
-| Hız sınırı, JSON gövde sınırı, Next güvenlik başlıkları, HTTPS/HSTS, LLM ham hatasının gizlenmesi | **Planlanan** #271 |
+| Redis tabanlı kayan pencere hız sınırı (IP + kimlik; asistan uçlarında ayrıca daha sıkı; 429 + `Retry-After`), kimlik hatası sınırı, JSON gövde sınırı (256 KB, 413), API ve Next güvenlik başlıkları (CSP, nosniff, çerçeve yasağı), vekilde yöntem kısıtı (405), LLM/STT ham hatasının `calls.error`'dan gizlenmesi | **Var** (#271) |
+| Aktarımda şifreleme: HSTS başlığı prod'da gönderilir; TLS sonlandırma canlı ortamdadır (`docs/canliya_alma.md`) | **Var** (başlık) / ortam gereği (TLS) |
 | Gizli anahtar taraması (gitleaks, CI), Dependabot, Trivy imaj taraması (bilgi), açık bağımlılık bulgularının kapatılması, anahtar hijyeni testi | **Var** (#272) |
 
 ### Prompt injection koruması — `S4_prompt_injection.png`

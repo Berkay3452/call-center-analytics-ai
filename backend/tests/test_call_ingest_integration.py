@@ -22,6 +22,7 @@ from app.agents.base import AnalysisContext
 from app.agents.orchestrator import OrchestrationResult
 from app.core.config import Settings
 from app.core.errors import NotFoundError
+from app.schemas.analysis import AgentRun
 from app.schemas.api import CallCreate
 from app.services.analysis_store import get_latest_analysis
 from app.services.call_ingest import (
@@ -80,7 +81,18 @@ class FakeRunner:
         assert full.crm is not None
         if self.status == "basarisiz":
             return OrchestrationResult(
-                call_id=ctx.call_id, status="basarisiz", errors={"call_classifier": "LLM yok"}
+                call_id=ctx.call_id,
+                status="basarisiz",
+                errors={"call_classifier": "LLM yok"},
+                runs=[
+                    AgentRun(
+                        agent="call_classifier",
+                        status="failed",
+                        attempts=1,
+                        latency_ms=10,
+                        error="LLM yok",
+                    )
+                ],
             )
         return OrchestrationResult(
             call_id=ctx.call_id,
@@ -162,9 +174,15 @@ async def test_run_analysis_total_failure_sets_error(
     assert final == "basarisiz"
     async with factory() as session:
         status = await get_status(session, call_id)
+        analysis = await get_latest_analysis(session, call_id)
     assert status.state == "basarisiz"
     assert status.error is not None
-    assert "call_classifier" in status.error
+    assert analysis is not None
+    assert "call_classifier" in [r.agent for r in analysis.runs]  # ayrıntı agent_runs'ta
+    # Ham ajan/sağlayıcı hatası kullanıcıya gitmez (#271); ayrıntı agent_runs'tadır.
+    # İleti yalnızca başarısız ajanın adını söyler; sağlayıcının ham metni ("LLM yok") sızmaz.
+    assert "LLM yok" not in status.error
+    assert status.error.startswith("Analiz başarısız")
 
 
 async def test_run_analysis_crash_does_not_leave_call_stuck(
@@ -181,7 +199,8 @@ async def test_run_analysis_crash_does_not_leave_call_stuck(
         status = await get_status(session, call_id)
     assert status.state == "basarisiz"
     assert status.error is not None
-    assert "beklenmedik" in status.error
+    assert "beklenmedik" not in status.error  # ham istisna metni kullanıcıya gitmez (#271)
+    assert status.error.startswith("Beklenmeyen bir hata")
 
 
 async def test_request_analysis_rules(factory: async_sessionmaker[AsyncSession]) -> None:

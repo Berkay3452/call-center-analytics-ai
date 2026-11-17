@@ -9,27 +9,28 @@
 
 import type { NextRequest } from "next/server";
 
-const ALLOWED = [
-  /^calls$/,
-  /^calls\/[^/]+$/,
-  /^calls\/[^/]+\/analyze$/,
-  /^calls\/[^/]+\/status$/,
-  /^calls\/[^/]+\/match$/,
-  /^calls\/[^/]+\/audio$/,
-  /^calls\/audio$/,
-  /^crm$/,
-  /^crm\/[^/]+\/approve$/,
-  /^crm\/[^/]+\/reject$/,
-  /^crm\/suggestions\/[^/]+\/approve$/,
-  /^crm\/suggestions\/[^/]+\/reject$/,
-  /^crm\/suggestions\/[^/]+$/,
-  /^crm\/[^/]+$/,
-  /^service-orders$/,
-  /^service-orders\/[^/]+$/,
-  /^service-orders\/[^/]+\/status$/,
-  /^analytics\/summary$/,
-  /^chat\/.+$/,
-  /^assistant\/.+$/,
+// Yol → izinli HTTP yöntemleri (#271). Listede olmayan yöntem 405 döner.
+const R: Array<[RegExp, readonly string[]]> = [
+  [/^calls$/, ["GET", "POST"]],
+  [/^calls\/[^/]+$/, ["GET"]],
+  [/^calls\/[^/]+\/analyze$/, ["POST"]],
+  [/^calls\/[^/]+\/status$/, ["GET"]],
+  [/^calls\/[^/]+\/match$/, ["PUT"]],
+  [/^calls\/[^/]+\/audio$/, ["GET", "HEAD"]],
+  [/^calls\/audio$/, ["POST"]],
+  [/^crm$/, ["GET"]],
+  [/^crm\/[^/]+\/approve$/, ["POST"]],
+  [/^crm\/[^/]+\/reject$/, ["POST"]],
+  [/^crm\/suggestions\/[^/]+\/approve$/, ["POST"]],
+  [/^crm\/suggestions\/[^/]+\/reject$/, ["POST"]],
+  [/^crm\/suggestions\/[^/]+$/, ["GET"]],
+  [/^crm\/[^/]+$/, ["GET"]],
+  [/^service-orders$/, ["GET"]],
+  [/^service-orders\/[^/]+$/, ["GET"]],
+  [/^service-orders\/[^/]+\/status$/, ["PATCH"]],
+  [/^analytics\/summary$/, ["GET"]],
+  [/^chat\/.+$/, ["GET", "POST", "DELETE"]],
+  [/^assistant\/.+$/, ["GET", "POST", "DELETE"]],
 ];
 
 // Mock modunda veya servis kapalıyken dönecek geçerli minimal WAV ses verisi
@@ -44,10 +45,26 @@ async function forward(
 ): Promise<Response> {
   const { path } = await ctx.params;
   const joined = path.join("/");
-  if (!ALLOWED.some((re) => re.test(joined))) {
+  // Birden çok kural eşleşebilir (ör. calls/audio): izinli yöntemler birleşir.
+  const methods = R.filter(([re]) => re.test(joined)).flatMap(([, m]) => m);
+  if (methods.length === 0) {
     return Response.json(
       { error: { code: "not_found", message: "Bilinmeyen uç nokta.", details: {}, request_id: null } },
       { status: 404 },
+    );
+  }
+
+  if (req.method !== "OPTIONS" && !methods.includes(req.method)) {
+    return Response.json(
+      {
+        error: {
+          code: "method_not_allowed",
+          message: "Bu uç noktada bu yöntem desteklenmiyor.",
+          details: {},
+          request_id: null,
+        },
+      },
+      { status: 405, headers: { allow: [...new Set(methods)].join(", ") } },
     );
   }
 
@@ -109,6 +126,9 @@ async function forward(
     "accept-ranges",
     "content-range",
     "content-length",
+    "retry-after",
+    "x-ratelimit-limit",
+    "x-ratelimit-remaining",
   ]) {
     const v = upstream.headers.get(name);
     if (v) out.set(name, v);

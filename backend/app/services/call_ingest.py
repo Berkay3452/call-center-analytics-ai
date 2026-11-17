@@ -22,6 +22,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from app.agents.base import AnalysisContext, CallInfo, Segment
 from app.agents.orchestrator import OrchestrationResult
 from app.core.errors import ConflictError, NotFoundError
+from app.core.public_errors import UNEXPECTED, analysis_error
 from app.db.models.ai import AnalysisResult as AnalysisRow
 from app.db.models.ai import Call, Transcript, TranscriptSegment
 from app.schemas.api import CallCreate, CallState, CallStatus, SegmentIn, stage_of
@@ -235,11 +236,8 @@ async def run_call_analysis(
         outcome = await orchestrator.run(ctx)
         agents_s = time.perf_counter() - agents_started
         analysis = outcome.to_analysis_result()
-        error = (
-            "; ".join(f"{agent}: {msg}" for agent, msg in analysis.errors.items())
-            if analysis.status == "basarisiz"
-            else None
-        )
+        # Ham ajan/LLM hatası kullanıcıya gitmez (#271); ayrıntı agent_runs'ta kalır.
+        error = analysis_error(outcome.runs) if analysis.status == "basarisiz" else None
         save_started = time.perf_counter()
         async with session_factory() as session, session.begin():
             await save_analysis(session, analysis)
@@ -265,9 +263,9 @@ async def run_call_analysis(
             total_s=round(time.perf_counter() - started, 2),
         )
         return analysis.status
-    except Exception as exc:
+    except Exception:
         # Beklenmeyen hata (ör. yapılandırma, veritabanı): çağrı "isleniyor"da asılı kalmasın.
         log.exception("call.analysis_crashed", call_id=str(call_id))
         async with session_factory() as session, session.begin():
-            await set_state(session, call_id, "basarisiz", f"{type(exc).__name__}: {exc}"[:500])
+            await set_state(session, call_id, "basarisiz", UNEXPECTED)
         return "basarisiz"
