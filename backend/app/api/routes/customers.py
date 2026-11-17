@@ -7,7 +7,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Query
 
-from app.api.deps import ServiceCallerDep, SessionDep
+from app.api.deps import AdminCallerDep, SessionDep
 from app.schemas.api import CustomerSearchItem
 from app.schemas.common import ErrorResponse
 from app.services import customer_search
@@ -23,7 +23,7 @@ router = APIRouter(prefix="/customers", tags=["customers"])
     responses={401: {"model": ErrorResponse}},
 )
 async def search_customers(
-    _: ServiceCallerDep,
+    _: AdminCallerDep,
     session: SessionDep,
     q: Annotated[
         str | None,

@@ -26,8 +26,12 @@ Servisi yalnızca Miço Usta .NET uygulaması çağırır; tarayıcı doğrudan 
 |---|---|---|
 | `X-Service-Key` | Her istekte | Paylaşılan servis anahtarı. Eksik/yanlışsa 401. |
 | `X-User-Id` | Tekne sahibi uçlarında zorunlu | Oturumdaki tekne sahibinin kimliği (UUID, `customers.id`). Eksikse veya UUID değilse 400. |
+| `X-User-Signature` | `X-User-Id` ile (canlıda zorunlu) | `<unix_zaman>.<hex>` HMAC-SHA256 imzası (#266). Eksik/bozuk/süresi geçmişse 401. |
+| `X-User-Role` | İsteğe bağlı, yalnızca `X-User-Id` ile | `admin` veya `owner` (varsayılan `owner`); imza mesajına dahildir (#275). `X-User-Id` olmadan 400, bilinmeyen değer 400. |
 
-Admin/tekne sahibi rol ayrımını .NET uygulaması yapar. Tekne sahibi uçları **yalnızca** `X-User-Id`'deki kişinin verisini döndürür; gövdede kimlik alınmaz.
+**Rol denetimi (#275):** `X-User-Id` yoksa çağıran `admin` (servis/yönetici) bağlamıdır. Yönetici uçları (`/calls*`, `/crm*`, `/service-orders*`, `/analytics*`, `/customers`, `/audit-log`) tekne sahibi rolüyle 403 verir; tekne sahibi uçları (`/assistant*`, `/chat*`) yönetici kimliğiyle 403 verir.
+
+Admin/tekne sahibi rol ayrımını sunucu yukarıdaki başlıklarla yapar; kimliği veren taraf .NET uygulamasıdır. Tekne sahibi uçları **yalnızca** `X-User-Id`'deki kişinin verisini döndürür; gövdede kimlik alınmaz.
 
 ## 3. Uç listesi
 

@@ -12,7 +12,7 @@ import structlog
 from fastapi import APIRouter, Depends, File, Form, UploadFile, status
 from starlette.concurrency import run_in_threadpool
 
-from app.api.deps import AudioStorageDep, ServiceCallerDep, SessionDep, SettingsDep
+from app.api.deps import AdminCallerDep, AudioStorageDep, SessionDep, SettingsDep
 from app.core.errors import ServiceUnavailableError
 from app.domain.audit import AuditAction
 from app.domain.enums import SwitchboardOutcome
@@ -76,7 +76,7 @@ _ERRORS: dict[int | str, dict[str, Any]] = {
     responses={k: v for k, v in _ERRORS.items() if k != 404},
 )
 async def create_call(
-    payload: CallCreate, caller: ServiceCallerDep, session: SessionDep, enqueue: EnqueueDep
+    payload: CallCreate, caller: AdminCallerDep, session: SessionDep, enqueue: EnqueueDep
 ) -> CallAccepted:
     """Transkriptli çağrıyı kaydeder ve analizi arka planda başlatır."""
     call_id = await call_ingest.create_call(session, payload)
@@ -105,7 +105,7 @@ async def create_call(
 async def create_audio_call(
     file: Annotated[UploadFile, File(description="Çağrı ses kaydı (wav, mp3, m4a...)")],
     started_at: Annotated[datetime, Form()],
-    caller: ServiceCallerDep,
+    caller: AdminCallerDep,
     session: SessionDep,
     settings: SettingsDep,
     storage: AudioStorageDep,
@@ -166,7 +166,7 @@ async def create_audio_call(
 )
 async def analyze_call(
     call_id: UUID,
-    caller: ServiceCallerDep,
+    caller: AdminCallerDep,
     session: SessionDep,
     settings: SettingsDep,
     enqueue: EnqueueDep,
@@ -206,6 +206,6 @@ async def analyze_call(
     response_model=CallStatus,
     responses={401: {"model": ErrorResponse}, 404: {"model": ErrorResponse}},
 )
-async def call_status(call_id: UUID, _: ServiceCallerDep, session: SessionDep) -> CallStatus:
+async def call_status(call_id: UUID, _: AdminCallerDep, session: SessionDep) -> CallStatus:
     """İşlenme durumu; arayüz bitene kadar birkaç saniyede bir sorar."""
     return await call_ingest.get_status(session, call_id)

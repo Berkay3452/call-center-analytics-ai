@@ -7,7 +7,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Query
 
-from app.api.deps import ServiceCallerDep, SessionDep
+from app.api.deps import AdminCallerDep, SessionDep
 from app.schemas.analysis import KpiSummary
 from app.schemas.api import PeriodFilter
 from app.schemas.common import ErrorResponse
@@ -27,7 +27,7 @@ router = APIRouter(prefix="/analytics", tags=["analytics"])
     },
 )
 async def get_kpi_summary(
-    _: ServiceCallerDep,
+    _: AdminCallerDep,
     session: SessionDep,
     filter_params: Annotated[PeriodFilter, Query()],
 ) -> KpiSummary:
