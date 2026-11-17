@@ -146,11 +146,11 @@ def s1():
     c.arrow(61, 62, 61, 54)
     c.box(3, 38, 20, 12, "Saldırı: sızan anahtar ya da\nsahte X-User-Id ile başka\nsahibin verisine erişim", "tehdit")
     c.arrow(23, 44, 78, 62, "tehdit", "", (0, 0))
-    c.zone(3, 8, 94, 24, "Planlanan (Hafta 10)")
-    c.box(5, 12, 20, 13, "#266 Anahtar rotasyonu\n(çoklu anahtar, süreli)", "plan")
-    c.box(28, 12, 22, 13, "#266 İmzalı kullanıcı kimliği\nHMAC + zaman damgası,\nvekil rota tarayıcıya güvenmez", "plan")
+    c.zone(3, 8, 94, 24, "Planlanan (Hafta 10, en son yapılacak)")
+    c.box(5, 12, 20, 13, "#278 Hesaplar (DB)\nkullanıcı adı + argon2id\nkarma, deneme kilidi", "plan")
+    c.box(28, 12, 22, 13, "#266 İmzalı kullanıcı kimliği\nHMAC + zaman damgası,\nanahtar rotasyonu", "plan")
     c.box(53, 12, 20, 13, "#267 Denetim günlüğü\nkim/ne zaman/ne yaptı", "plan")
-    c.box(76, 12, 19, 13, "#265 KARAR\nA: servis düzeyi · B: login\n(JWT, parola) · C: karma", "plan")
+    c.box(76, 12, 19, 13, "#265 KARAR\ngiriş ekranı gerekir mi?\n(hocaya sorulacak)", "plan")
     c.save("S1_kimlik_dogrulama.png")
 
 
@@ -221,7 +221,7 @@ def s4():
     c.arrow(43, 50.5, 48, 50.5)
     c.arrow(70, 50.5, 75, 50.5)
     c.zone(2, 6, 96, 32, "Ek önlemler ve ölçüm")
-    c.box(4, 10, 29, 22, "İstemci geçmişi güvenilmez:\nrol yalnızca user/assistant,\nsunucu oturumundan oku  #274", "plan", 9)
+    c.box(4, 10, 29, 22, "Geçmiş sunucu oturumundan okunur;\nistemci sahte geçmiş / system\nmesajı ekleyemez", "var", 9)
     c.box(36, 10, 29, 22, "Kırmızı takım seti ≥ 60 saldırı\nyakalama ≥ %90, yanlış pozitif ≤ %2\n(rapor)  #273", "plan", 9)
     c.box(68, 10, 28, 22, "Sınır: anahtar listesi\nyeniden ifadeye karşı zayıf;\nkaçanlar belgede açıkça yazılır", "tehdit", 9)
     c.save("S4_prompt_injection.png")
@@ -233,8 +233,8 @@ def s5():
                "Yapay zekâ ne yapabilir? Yalnızca izinli, salt-okunur, sahip kapsamlı araçlar; yazma insan onayıyla")
     c.box(2, 62, 15, 10, "Kullanıcı / LLM\nistemi", "dis")
     c.box(22, 62, 18, 10, "Planlayıcı\nLLM araç seçimi\n(şema doğrulamalı)", "var", 9)
-    c.box(45, 62, 20, 10, "Araç izin listesi\nyoksa reddet + audit\n#275", "plan", 9)
-    c.box(70, 62, 28, 10, "owner_id sunucu bağlamından;\nLLM'in yazdığı UUID yok sayılır\n(test #275)", "plan", 9)
+    c.box(45, 62, 20, 10, "Araç izin listesi\n(AssistantTool, 5 araç)\nkanıt testi #275", "var", 9)
+    c.box(70, 62, 28, 10, "owner_id LLM'den gelmez,\nsunucudaki kimlik verilir\n(kanıt testi #275)", "var", 9)
     for a, b in [(17, 22), (40, 45), (65, 70)]:
         c.arrow(a, 67, b, 67)
     c.zone(2, 30, 60, 26, "Salt-okunur araçlar (var)")
@@ -247,7 +247,7 @@ def s5():
     c.arrow(82, 62, 82, 56)
     c.zone(2, 6, 96, 20, "Rol tabanlı yetki")
     c.box(4, 9, 44, 13, "Bugün: roller yalnız arayüzde simüle (sunucuda denetim YOK)\nSaldırı: anahtarı olan herkes yönetici uçlarını çağırabilir", "tehdit", 9)
-    c.box(52, 9, 44, 13, "#275 Yetki matrisi rol × uç × eylem;\nimzalı X-User-Role, yetkisiz → 403, audit log\n(kapsam #265 kararına bağlı)", "plan", 9)
+    c.box(52, 9, 44, 13, "#275 Yetki matrisi rol × uç × eylem;\nimzalı X-User-Role, yetkisiz → 403, audit log\n(kimlik doğrulama aşamasında, #278 ve #266'dan sonra)", "plan", 9)
     c.save("S5_yetkisiz_komut_korumasi.png")
 
 
