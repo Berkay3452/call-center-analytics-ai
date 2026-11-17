@@ -41,6 +41,9 @@ async def conn() -> AsyncIterator[AsyncConnection]:
     engine = create_async_engine(Settings().database_url)
     async with engine.connect() as connection:
         transaction = await connection.begin()
+        # Geliştirme veritabanında seed edilmiş hesaplar olabilir; testler boş tablodan başlar.
+        # Silme de geri alınan işlemin içindedir, kalıcı değildir.
+        await connection.execute(text("DELETE FROM user_accounts"))
         try:
             yield connection
         finally:
