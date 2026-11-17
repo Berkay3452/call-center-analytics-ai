@@ -1,0 +1,190 @@
+"""Kullanıcı hesapları: parola karması (argon2id), doğrulama, kilitlenme (#278).
+
+Henüz hiçbir uç bunu çağırmaz (giriş ekranı kararı #265'e bağlı); #266 oturum/belirteç katmanı
+`verify_credentials` üzerine kurulacak.
+
+Kurallar:
+- Parola asla düz metin saklanmaz ve günlüğe yazılmaz (günlükte yalnızca hesap kimliği).
+- Doğrulama sabit zamanlıdır: kullanıcı yoksa, hesap pasifse ya da kilitliyse de bir argon2id
+  doğrulaması yapılır; böylece süre hesabın var olup olmadığını sızdırmaz.
+- `MAX_FAILED_ATTEMPTS` yanlış denemede hesap `LOCK_MINUTES` dakika kilitlenir. Kilit sürerken
+  doğru parola da reddedilir ve sayaç değişmez.
+- Çağıran işlemi onaylar (`verify_credentials` flush eder, commit etmez).
+"""
+
+import secrets
+import string
+import unicodedata
+from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
+from enum import StrEnum
+from uuid import UUID
+
+import structlog
+from argon2 import PasswordHasher
+from argon2.exceptions import InvalidHashError, VerificationError, VerifyMismatchError
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.db.models.accounts import UserAccount
+from app.domain.accounts import (
+    LOCK_MINUTES,
+    MAX_FAILED_ATTEMPTS,
+    MIN_PASSWORD_LENGTH,
+    AccountRole,
+)
+
+log = structlog.get_logger(__name__)
+
+# argon2-cffi varsayılanı argon2id'dir (RFC 9106 düşük bellek profili).
+_hasher = PasswordHasher()
+_DUMMY_HASH = _hasher.hash("kullanici-yok-sabit-sure-icin-sahte-parola")
+
+_PASSWORD_ALPHABET = string.ascii_letters + string.digits + "-_.!?#%+="
+_TR_FOLD = str.maketrans("çğıöşüÇĞİÖŞÜâîû", "cgiosucgiosuaiu")
+
+
+class PasswordPolicyError(ValueError):
+    """Parola politikasına uymuyor (en az `MIN_PASSWORD_LENGTH` karakter)."""
+
+
+class LoginFailure(StrEnum):
+    """İç neden (günlük ve test içindir). Dışarıya hepsi aynı genel mesajla döner (#266)."""
+
+    UNKNOWN_USER = "bilinmeyen_kullanici"
+    WRONG_PASSWORD = "yanlis_parola"
+    INACTIVE = "pasif_hesap"
+    LOCKED = "kilitli"
+
+
+@dataclass(frozen=True)
+class LoginResult:
+    ok: bool
+    failure: LoginFailure | None = None
+    account_id: UUID | None = None
+    role: AccountRole | None = None
+    customer_id: UUID | None = None
+    just_locked: bool = False
+
+
+def validate_password_policy(password: str) -> None:
+    if len(password) < MIN_PASSWORD_LENGTH:
+        raise PasswordPolicyError(f"Parola en az {MIN_PASSWORD_LENGTH} karakter olmalı.")
+
+
+def hash_password(password: str) -> str:
+    """Politikayı denetler, argon2id karması döner (`$argon2id$...`)."""
+    validate_password_policy(password)
+    return _hasher.hash(password)
+
+
+def generate_password(length: int = 20) -> str:
+    """Kriptografik rastgele parola (seed için)."""
+    length = max(length, MIN_PASSWORD_LENGTH)
+    return "".join(secrets.choice(_PASSWORD_ALPHABET) for _ in range(length))
+
+
+def normalize_username(username: str) -> str:
+    return username.strip().lower()
+
+
+def derive_username(full_name: str, taken: set[str]) -> str:
+    """Müşteri adından kullanıcı adı: "Ahmet Yılmaz" → "ahmet.yilmaz"; çakışmada sayı eki."""
+    folded = unicodedata.normalize("NFKD", full_name.translate(_TR_FOLD)).lower()
+    parts = ["".join(c for c in word if c.isascii() and c.isalnum()) for word in folded.split()]
+    base = ".".join(p for p in parts if p) or "kullanici"
+    candidate, n = base, 1
+    while candidate in taken:
+        n += 1
+        candidate = f"{base}{n}"
+    taken.add(candidate)
+    return candidate
+
+
+def _verify_hash(stored_hash: str, password: str) -> bool:
+    try:
+        return _hasher.verify(stored_hash, password)
+    except (VerifyMismatchError, VerificationError, InvalidHashError):
+        return False
+
+
+def evaluate_login(account: UserAccount | None, password: str, now: datetime) -> LoginResult:
+    """Giriş kararını verir ve sayaç/kilit alanlarını günceller (veritabanına dokunmaz)."""
+    if account is None:
+        _verify_hash(_DUMMY_HASH, password)  # süre, hesabın varlığını belli etmesin
+        return LoginResult(False, LoginFailure.UNKNOWN_USER)
+
+    if account.locked_until is not None and account.locked_until <= now:
+        account.locked_until = None  # kilit süresi doldu: sayaç sıfırdan başlar
+        account.failed_attempts = 0
+
+    if account.locked_until is not None:
+        _verify_hash(_DUMMY_HASH, password)  # kilit sürerken doğru parola da geçmez
+        return LoginResult(False, LoginFailure.LOCKED, account_id=account.id)
+
+    if not account.is_active:
+        _verify_hash(_DUMMY_HASH, password)
+        return LoginResult(False, LoginFailure.INACTIVE, account_id=account.id)
+
+    if not _verify_hash(account.password_hash, password):
+        account.failed_attempts += 1
+        locked = account.failed_attempts >= MAX_FAILED_ATTEMPTS
+        if locked:
+            account.locked_until = now + timedelta(minutes=LOCK_MINUTES)
+        return LoginResult(
+            False, LoginFailure.WRONG_PASSWORD, account_id=account.id, just_locked=locked
+        )
+
+    account.failed_attempts = 0
+    account.locked_until = None
+    if _hasher.check_needs_rehash(account.password_hash):
+        account.password_hash = _hasher.hash(password)  # parametreler güçlendiyse yenile
+        account.password_changed_at = now
+    return LoginResult(
+        True,
+        account_id=account.id,
+        role=AccountRole(account.role),
+        customer_id=account.customer_id,
+    )
+
+
+async def verify_credentials(
+    session: AsyncSession, username: str, password: str, *, now: datetime | None = None
+) -> LoginResult:
+    """Kullanıcı adı + parolayı doğrular; başarısız denemeyi sayar, gerekirse hesabı kilitler."""
+    now = now or datetime.now(UTC)
+    account = await session.scalar(
+        select(UserAccount)
+        .where(UserAccount.username == normalize_username(username))
+        .with_for_update()
+    )
+    result = evaluate_login(account, password, now)
+    if account is not None:
+        await session.flush()
+    if result.just_locked:
+        log.warning("accounts.locked", account_id=str(result.account_id), minutes=LOCK_MINUTES)
+    elif not result.ok:
+        log.info("accounts.login_failed", reason=result.failure, account_id=str(result.account_id))
+    return result
+
+
+async def create_account(
+    session: AsyncSession,
+    *,
+    username: str,
+    password: str,
+    role: AccountRole,
+    customer_id: UUID | None = None,
+) -> UserAccount:
+    """Hesap oluşturur (parola politikası denetlenir, karması saklanır)."""
+    account = UserAccount(
+        username=normalize_username(username),
+        password_hash=hash_password(password),
+        role=role.value,
+        customer_id=customer_id,
+        failed_attempts=0,
+        is_active=True,
+    )
+    session.add(account)
+    await session.flush()
+    return account

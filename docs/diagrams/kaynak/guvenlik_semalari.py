@@ -147,9 +147,9 @@ def s1():
     c.box(3, 38, 20, 12, "Saldırı: sızan anahtar ya da\nsahte X-User-Id ile başka\nsahibin verisine erişim", "tehdit")
     c.arrow(23, 44, 78, 62, "tehdit", "", (0, 0))
     c.zone(3, 8, 94, 24, "Planlanan (Hafta 10, en son yapılacak)")
-    c.box(5, 12, 20, 13, "#278 Hesaplar (DB)\nkullanıcı adı + argon2id\nkarma, deneme kilidi", "plan")
+    c.box(5, 12, 20, 13, "Hesaplar (DB) ✔ #278\nargon2id karma, kilit;\ngiriş ucu YOK", "var")
     c.box(28, 12, 22, 13, "#266 İmzalı kullanıcı kimliği\nHMAC + zaman damgası,\nanahtar rotasyonu", "plan")
-    c.box(53, 12, 20, 13, "Denetim günlüğü ✔ (#267)\nactor_id/rol hesaplarla\nbağlanır (#278)", "var")
+    c.box(53, 12, 20, 13, "Denetim günlüğü ✔ (#267)\nactor_id/rol hesaplarla\nbağlanır (#266)", "var")
     c.box(76, 12, 19, 13, "#265 KARAR\ngiriş ekranı gerekir mi?\n(hocaya sorulacak)", "plan")
     c.save("S1_kimlik_dogrulama.png")
 

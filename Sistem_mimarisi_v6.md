@@ -76,7 +76,7 @@ Siber güvenlik dersi kapsamında (**Ses Verisi Güvenliği ve Yapay Zekâ Güve
 | Anahtar yalnızca Next.js sunucu tarafında; tarayıcı görmez | **Var** |
 | Tekne sahibi uçlarında `X-User-Id` zorunlu ve UUID doğrulamalı | **Var** |
 | Yeni bir uçta kimlik unutulursa yetki matrisi testi (83 test) kırılır | **Var** |
-| Tekne sahibi ve yönetici hesapları: kullanıcı adı + argon2id parola karması, deneme sayacı/kilit (giriş ekranı yok) | **Planlanan** #278 |
+| Tekne sahibi ve yönetici hesapları: `user_accounts`, kullanıcı adı + argon2id parola karması, deneme sayacı/kilit, seed (giriş ucu ve ekranı yok) | **Var** #278 (giriş ucu açılmadı; kimlik kaynağı hâlâ `X-User-Id`, #266) |
 | İmzalı `X-User-Id` (HMAC, kısa ömür), anahtar rotasyonu | **Planlanan** #266 |
 | Giriş ekranı gerekir mi? | **Hocaya sorulacak** #265 |
 
