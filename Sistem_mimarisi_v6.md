@@ -103,9 +103,9 @@ Siber güvenlik dersi kapsamında (**Ses Verisi Güvenliği ve Yapay Zekâ Güve
 | Asistan sorusu en fazla 5000 karakter; liste uçlarında sayfalama sınırı | **Var** |
 | Gizli anahtarlar yalnızca ortam değişkeninde; `.env` git dışında; canlıda Secret Manager | **Var** |
 | Docker: kök olmayan kullanıcı (backend, frontend); Postgres ve Redis yalnızca `127.0.0.1`'e açık | **Var** |
-| CI: backend `pip-audit` (uyarı), frontend `npm audit --audit-level=high` | **Var** |
+| CI: backend `pip-audit` (açık bulguda PR kırılır), frontend `npm audit --audit-level=high` | **Var** |
 | Hız sınırı, JSON gövde sınırı, Next güvenlik başlıkları, HTTPS/HSTS, LLM ham hatasının gizlenmesi | **Planlanan** #271 |
-| Gizli anahtar taraması (CI), Dependabot, imaj taraması, açık bağımlılık bulguları | **Planlanan** #272 |
+| Gizli anahtar taraması (gitleaks, CI), Dependabot, Trivy imaj taraması (bilgi), açık bağımlılık bulgularının kapatılması, anahtar hijyeni testi | **Var** (#272) |
 
 ### Prompt injection koruması — `S4_prompt_injection.png`
 

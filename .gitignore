@@ -17,6 +17,17 @@ node_modules/
 .env.*
 !.env.example
 
+# --- Anahtar ve sertifika dosyaları (asla commit edilmez) ---
+*.pem
+*.key
+*.p12
+*.pfx
+*.jks
+id_rsa*
+id_ed25519*
+service-account*.json
+credentials.json
+
 # --- Veri (ses dosyaları ve büyük veri setleri repoya girmez) ---
 data/raw/
 data/processed/

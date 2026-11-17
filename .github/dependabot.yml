@@ -1,0 +1,30 @@
+# Dependabot — bağımlılık ve GitHub Actions güncellemeleri için haftalık PR açar;
+# güvenlik açığı bildirimleri (Dependabot security updates) ayrıca hemen gelir.
+version: 2
+updates:
+  - package-ecosystem: uv
+    directory: /backend
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    labels: [güvenlik-katmanı, backend]
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    labels: [güvenlik-katmanı, frontend]
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    labels: [güvenlik-katmanı]
+  - package-ecosystem: docker
+    directory: /backend
+    schedule:
+      interval: weekly
+  - package-ecosystem: docker
+    directory: /frontend
+    schedule:
+      interval: weekly

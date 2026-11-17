@@ -9,7 +9,8 @@
 #                  API ve Celery işçisini ayağa kaldırıp uçtan uca dener.
 #   6. dependencies: Bağımlılık sürümleri tutarlı mı (pyproject.toml, uv.lock, requirements.txt)?
 #   7. docker    : Docker Compose dosyaları geçerli mi, backend imajı (API, Celery, STT) derleniyor mu?
-#   8. security  : Bağımlılıklarda bilinen güvenlik açığı var mı (pip-audit)? Yalnızca uyarır, PR'ı kırmaz.
+#   8. security  : Bağımlılıklarda bilinen güvenlik açığı var mı (pip-audit)? Bulgu varsa PR kırılır;
+#                  yanlış pozitif için `--ignore-vuln <ID>` ve gerekçe (docs/guvenlik_yuk.md).
 #   9. backend-ci: Tüm sonuçları toplayan tek kontrol. Branch korumasında "zorunlu kontrol" olarak bu seçilir.
 #
 # `test` işi ayrıca belge/kod tutarlılığını denetler (tests/test_docs_consistency.py): bozuk bağlantı,
@@ -300,12 +301,12 @@ jobs:
           cache-to: type=gha,mode=max
 
   security:
-    name: Güvenlik taraması (pip-audit, bilgi amaçlı)
+    name: Güvenlik taraması (pip-audit)
     needs: changes
     if: needs.changes.outputs.backend == 'true'
     runs-on: ubuntu-latest
-    # Yeni açık bildirimi PR ile ilgisiz olabilir; bu yüzden PR'ı kırmaz, yalnızca iş sayfasında görünür.
-    continue-on-error: true
+    # Bilinen açık varsa kırılır (pip-audit önem derecesine göre süzmez: her bulgu kırar). Yeni bildirim PR ile
+    # ilgisizse `uv.lock` güncellenir ya da gerekçeli `--ignore-vuln <ID>` eklenir.
     steps:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v10.2.0
@@ -319,13 +320,13 @@ jobs:
     # Branch korumasında yalnızca bu kontrol "zorunlu" yapılır. Backend'e dokunmayan PR'larda
     # diğer işler atlanır ve bu kontrol yine geçer; böylece dokümantasyon PR'ları takılı kalmaz.
     name: Backend CI sonucu
-    needs: [changes, lint, typecheck, test, smoke, dependencies, docker]
+    needs: [changes, lint, typecheck, test, smoke, dependencies, docker, security]
     if: always()
     runs-on: ubuntu-latest
     steps:
       - name: Sonuçları değerlendir
         run: |
-          echo "lint=${{ needs.lint.result }} typecheck=${{ needs.typecheck.result }} test=${{ needs.test.result }} smoke=${{ needs.smoke.result }} dependencies=${{ needs.dependencies.result }} docker=${{ needs.docker.result }}"
+          echo "lint=${{ needs.lint.result }} typecheck=${{ needs.typecheck.result }} test=${{ needs.test.result }} smoke=${{ needs.smoke.result }} dependencies=${{ needs.dependencies.result }} docker=${{ needs.docker.result }} security=${{ needs.security.result }}"
           if [ "${{ needs.changes.result }}" != "success" ] || \
              [[ "${{ join(needs.*.result, ' ') }}" =~ (failure|cancelled) ]]; then
             echo "::error::Backend CI başarısız. Kırmızı olan işe tıklayıp hatanın yerini görün."
