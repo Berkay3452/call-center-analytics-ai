@@ -118,7 +118,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Docker Buildx kur
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Frontend imajını derle (gönderilmez)
         uses: docker/build-push-action@v6
