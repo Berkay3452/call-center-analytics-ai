@@ -91,7 +91,7 @@ Siber güvenlik dersi kapsamında (**Ses Verisi Güvenliği ve Yapay Zekâ Güve
 | Gerçek ses kayıtları ve kişisel veri repoya eklenmez; geliştirme verisi sentetiktir | **Var** (kural) |
 | Maskeleme kapsamı (kart, vergi/pasaport/ehliyet no, plaka, adres, "Ben X" kalıbıyla ad) ve ölçümü (`docs/maskeleme_olcum.md`) | **Var** #268 (NER yok; kalıp dışı ad/adres maskelenmez) |
 | Ses içeriği doğrulama (magic bytes + kod çözücü + süre sınırı), ses uç noktası yalnızca yönetici bağlamı (tekne sahibi kimliği 403), harici STT varsayılan kapalı (`STT_ALLOW_EXTERNAL`), depolama izinleri (0700/0600) | **Var** (#270) |
-| Çağrı silme, saklama süresi, veri envanteri (KVKK) | **Planlanan** #269 |
+| KVKK: veri envanteri (`docs/kisisel_veri_envanteri.md`), `DELETE /calls/{id}` (ses + transkript + analiz + CRM önerisi; servis emri kalır, bağı kopar), `RETENTION_DAYS` ile günlük Celery beat temizliği (varsayılan kapalı), silme olayı denetim günlüğünde, silme sonrası kalıntı testi | **Var** (#269) |
 
 ### Güvenli API kullanımı — `S3_guvenli_api.png`
 

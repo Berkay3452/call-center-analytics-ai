@@ -144,3 +144,11 @@ Konteynerler durumsuz (stateless) olduğundan, santralden gelen ses dosyaları y
 * API, `APP_ENV=prod` iken `Strict-Transport-Security: max-age=63072000; includeSubDomains` başlığını gönderir; Next arayüzü de üretim derlemesinde aynısını gönderir. Yerel `http` geliştirmede gönderilmez (tarayıcıyı kilitlemesin).
 * **TLS sonlandırma uygulamada değil ortamdadır:** Cloud Run / yük dengeleyici yalnızca HTTPS kabul etmeli, HTTP'yi yönlendirmelidir. Ses dosyaları ve kişisel veri içeren istekler yalnızca TLS ile taşınmalıdır; .NET uygulaması ile bu servis arasındaki çağrı da `https://` adresiyle yapılmalıdır.
 * Arkada ters vekil varsa istemci IP'sinin doğru görünmesi için vekilin IP'yi iletmesi ve uvicorn'un `--proxy-headers`/`--forwarded-allow-ips` ile yapılandırılması gerekir; aksi halde hız sınırı tüm istekleri vekil IP'si altında sayar.
+
+---
+
+## 7. Saklama süresi ve silme (KVKK, #269)
+
+* `RETENTION_DAYS` canlıda **işletmenin belirlediği** değerle verilmelidir (varsayılan 0 = kapalı, otomatik silme yok). Celery beat süreci (`celery ... beat`) çalışmıyorsa temizlik de çalışmaz; beat'in ayakta olduğu izlenmelidir.
+* Çağrı silme `DELETE /api/v1/calls/{id}` ile yapılır (yalnızca yönetici bağlamı). Yedekler ve nesne deposu sürümleri bu uçla silinmez; yedek saklama süresi `RETENTION_DAYS` ile uyumlu seçilmeli, GCS nesne sürümlemesi kapalı olmalıdır.
+* Ayrıntı ve kalan sınırlar: `docs/kisisel_veri_envanteri.md`.

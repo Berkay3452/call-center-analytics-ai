@@ -6,13 +6,13 @@ Sözleşme: docs/api.md.
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Query, Request, Response
+from fastapi import APIRouter, Query, Request, Response, status
 
 from app.api.deps import AdminCallerDep, AudioStorageDep, ServiceCallerDep, SessionDep
 from app.domain.audit import AuditAction
 from app.schemas.api import CallDetail, CallFilters, CallListItem, CallMatchIn
 from app.schemas.common import ErrorResponse, Page
-from app.services import audio_ingest, call_matching, call_reader
+from app.services import audio_ingest, call_deletion, call_matching, call_reader
 from app.services.audit import has_recent_audit_event, record_audit_event
 
 router = APIRouter(prefix="/calls", tags=["calls"])
@@ -57,6 +57,34 @@ async def get_call(
 ) -> CallDetail:
     """Belirli bir çağrının tüm santral, transkript ve analiz verilerini getirir."""
     return await call_reader.get_call_detail(session, call_id)
+
+
+@router.delete(
+    "/{call_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Çağrıyı ve ses kaydını sil (KVKK)",
+    operation_id="deleteCall",
+    responses={
+        401: {"model": ErrorResponse},
+        403: {"model": ErrorResponse},
+        404: {"model": ErrorResponse},
+        409: {"model": ErrorResponse},
+    },
+)
+async def delete_call(
+    call_id: UUID,
+    caller: AdminCallerDep,
+    session: SessionDep,
+    storage: AudioStorageDep,
+) -> Response:
+    """Çağrıyı, ses dosyasını, transkripti (ham ve maskeli), analizi ve CRM önerilerini siler.
+
+    Yalnızca yönetici bağlamı (`X-User-Id` yok; tekne sahibi kimliği 403). Servis emirleri
+    silinmez, çağrıyla bağı (`source_call_id`) kopar. İşlenmekte olan çağrı 409 alır. Silme olayı
+    denetim günlüğüne kişisel veri olmadan yazılır (#269).
+    """
+    await call_deletion.delete_call(session, storage, call_id, actor=caller)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.put(

@@ -50,6 +50,11 @@ class Settings(BaseSettings):
     # Takılı kalan çağrı zaman aşımı (dakika). Bu süreden uzun süredir
     # 'beklemede', 'yaziya_cevriliyor' veya 'isleniyor' olan çağrılar otomatik kurtarılır (#107).
     stuck_call_timeout_min: int = Field(default=10, ge=1)
+    # KVKK saklama süresi (#269): çağrının `started_at` tarihinden bu kadar gün sonra çağrı, ses ve
+    # transkript silinir (günlük Celery beat görevi). 0 = kapalı (geliştirme verisi silinmesin);
+    # canlıda işletmenin belirlediği süre verilmelidir (bkz. docs/kisisel_veri_envanteri.md).
+    retention_days: int = Field(default=0, ge=0)
+    retention_batch_size: int = Field(default=200, ge=1)
 
     # --- Sağlık kontrolü ---
     health_check_timeout_s: float = 2.0
