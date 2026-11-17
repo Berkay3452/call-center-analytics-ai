@@ -195,6 +195,8 @@ async def test_api_docs_are_closed_in_production(path: str) -> None:
         service_api_key="x" * 40,
         rate_limit_backend="memory",
         audit_auth_failures=True,
+        user_signature_required=True,
+        user_signing_key="y" * 40,
     )
     async for c in client_for(settings):
         resp = await c.get(path)

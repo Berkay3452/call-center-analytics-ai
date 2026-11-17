@@ -20,6 +20,7 @@ uv run python -m scripts.guvenlik_testi --markdown   # tabloyu Markdown olarak y
 | Saldırı sınıfı | OWASP LLM | OWASP API | Geçti | Kaldı | Atlandı | Sınırlama |
 |---|---|---|---|---|---|---|
 | Kimlik doğrulama ve yetki yükseltme | LLM06 | API2, API5, API8 | 172 | 0 | 0 | 0 |
+| İmzalı kullanıcı kimliği (sahte/yeniden oynatılan imza) | LLM06 | API1, API2 | 45 | 0 | 0 | 0 |
 | Sahip izolasyonu (IDOR/BOLA) | LLM06, LLM02 | API1 | 14 | 0 | 0 | 0 |
 | Prompt injection (doğrudan, gizlenmiş, dolaylı) ve çıktı sızıntısı | LLM01, LLM02, LLM07 | - | 55 | 0 | 0 | 1 |
 | Kişisel veri (maskeleme) sızıntısı | LLM02 | API3 | 23 | 0 | 0 | 1 |
@@ -27,7 +28,7 @@ uv run python -m scripts.guvenlik_testi --markdown   # tabloyu Markdown olarak y
 | Yetkisiz araç / aşırı yetki | LLM06 | API5 | 24 | 0 | 0 | 0 |
 | Yazma uçlarında işlev düzeyi yetki | LLM06 | API5 | 2 | 0 | 0 | 0 |
 | Eşleme tablosunun doğruluğu | - | - | 23 | 0 | 0 | 0 |
-| **Toplam** |  |  | 327 | 0 | 0 | 2 |
+| **Toplam** |  |  | 372 | 0 | 0 | 2 |
 
 `--db` olmadan sahip izolasyonu satırı atlanır (14 test "atlandı" görünür). Önceden var olan testler (`test_authorization_matrix.py` 83, `test_injection.py`, `test_indirect_injection.py`, `test_yetki_siniri.py`, `test_protection.py` vb.) bu tabloya dahil değildir; bu paket onların **üstüne** taze saldırılar ekler. Prompt injection ve dolaylı injection için ölçülen yakalama oranları: `docs/injection_olcum.md`, `docs/dolayli_injection_olcum.md`.
 
@@ -36,6 +37,7 @@ uv run python -m scripts.guvenlik_testi --markdown   # tabloyu Markdown olarak y
 | Modül | Denenen saldırılar |
 |---|---|
 | `test_kimlik_saldirilari.py` | 20 sahte/değiştirilmiş anahtar × 6 uç; anahtarı sorgu/çerez/Bearer/uzantılı başlıktan gönderme; olağandışı HTTP yöntemleri; 14 sahte `X-User-Id` (SQL, yol gezinmesi, çoklu kimlik, 5000 karakter); sahip kimliğiyle yönetici uçları; kaba kuvvet ve kilitlenme; hata gövdesinde iç bilgi/anahtar yansıması; kimliksiz erişilebilen uç taraması; prod'da `/docs` ve `/openapi.json` |
+| `test_imzali_kimlik_saldirilari.py` | 14 sahte imza türü × 3 uç (eksik, boş, başka sahibin imzası, yanlış/servis anahtarıyla imza, bozuk MAC, değiştirilmiş zaman damgası, süresi dolmuş, gelecek, biçim bozuk, SQL, 5000 karakter); geçerli imzanın başka sahip kimliğiyle yeniden oynatılması; imzanın sorgu/çerezden gelmesi; yalnızca çalınmış servis anahtarıyla sahip taklidi (#266) |
 | `test_sahip_izolasyonu_integration.py` | Başkasının oturumunu okuma/silme/devam ettirme (iki uç ailesi), var olmayan ile başkasının oturumunun aynı 404'ü vermesi, toplu silme, gövdeye sahte `owner_id`/`ownerId`/`user_id`, başkasının teknesi için araçlar, sayfalama suistimali |
 | `test_prompt_injection_saldirilari.py` | 17 taze doğrudan saldırı; 8 kodlama (base64, hex, rot13, harf arası boşluk, sıfır genişlikli karakter, Kiril homoglif, büyük harf, URL) × 2 yük; çok turlu bölünmüş saldırı; zehirli transkript ve sınırlayıcıdan kaçış; çıktıda sistem istemi/anahtar/IBAN/kimlik/kart sızıntısı |
 | `test_maskeleme_sizinti.py` | 15 alışılmadık biçimde kişisel veri (telefon, TC, IBAN, kart, e-posta, plaka, pasaport), ayırıcı çeşitleri, ad kalıpları, idempotans |
@@ -63,8 +65,8 @@ uv run python -m scripts.guvenlik_testi --markdown   # tabloyu Markdown olarak y
 
 | Madde | Savunma (kod) | Kanıt (test) |
 |---|---|---|
-| API1 Nesne düzeyi yetki (BOLA) | Her sorguda `owner_id`; başkasının oturumu 404: `backend/app/services/assistant_chat.py` | `backend/tests/security/test_sahip_izolasyonu_integration.py`, `backend/tests/test_assistant_chat_integration.py` |
-| API2 Bozuk kimlik doğrulama | Sabit zamanlı servis anahtarı, yalnızca başlık, hatalı denemede kilit: `backend/app/core/security.py`, `backend/app/api/deps.py` | `backend/tests/security/test_kimlik_saldirilari.py`, `backend/tests/test_authorization_matrix.py` |
+| API1 Nesne düzeyi yetki (BOLA) | Her sorguda `owner_id`; başkasının oturumu 404; sahip kimliği imzalı: `backend/app/services/assistant_chat.py`, `backend/app/core/security.py` | `backend/tests/security/test_sahip_izolasyonu_integration.py`, `backend/tests/security/test_imzali_kimlik_saldirilari.py`, `backend/tests/test_assistant_chat_integration.py` |
+| API2 Bozuk kimlik doğrulama | Sabit zamanlı servis anahtarı, yalnızca başlık, hatalı denemede kilit; `X-User-Id` HMAC imzalı, kısa ömürlü, anahtar rotasyonlu (#266): `backend/app/core/security.py`, `backend/app/api/deps.py` | `backend/tests/security/test_kimlik_saldirilari.py`, `backend/tests/security/test_imzali_kimlik_saldirilari.py`, `backend/tests/test_user_signature.py`, `backend/tests/test_authorization_matrix.py` |
 | API3 Nesne özelliği düzeyi yetki | Yanıtlar `response_model` ile süzülür; gövdedeki `owner_id` yok sayılır: `backend/app/schemas/api.py` | `backend/tests/security/test_sahip_izolasyonu_integration.py`, `backend/tests/test_api_contract.py` |
 | API4 Sınırsız kaynak tüketimi | `backend/app/core/protection.py`, `backend/app/core/ratelimit.py`; ses 25 MB sınırı: `backend/app/storage/audio_validation.py` | `backend/tests/security/test_hiz_siniri_ve_kaynak_tuketimi.py`, `backend/tests/test_audio_validation.py` |
 | API5 İşlev düzeyi yetki (BFLA) | `require_admin`: `backend/app/api/deps.py`; **kısmi**, bkz. §6 BS-1 | `backend/tests/security/test_kimlik_saldirilari.py`, `backend/tests/security/test_yetki_haritasi.py` |
@@ -85,8 +87,8 @@ uv run python -m scripts.guvenlik_testi --markdown   # tabloyu Markdown olarak y
 
 | No | Sınırlama | Neden / azaltma | İzleme |
 |---|---|---|---|
-| BS-1 | `POST /calls`, `POST /calls/audio`, `POST /calls/{id}/analyze`, `PUT /calls/{id}/match`, `POST /crm/{id}/approve`, `POST /crm/{id}/reject`, `PATCH /service-orders/{id}/status` rol denetimi yapmaz: `X-User-Id` taşıyan servis çağrısı da yönetici işlemi yapabilir | Servis anahtarı yalnızca Miço Usta arka ucunda ve yönetici arayüzünün sunucu tarafında bulunur, tarayıcıya verilmez; yine de kimlik başlığı doğrulanmamıştır. Rol denetimi #275 ile gelecek | `backend/tests/security/test_yetki_haritasi.py` açık uç kümesini sabitler; #275 bir ucu kapatınca ya da yeni açık uç eklenince test kırılır |
+| BS-1 | `POST /calls`, `POST /calls/audio`, `POST /calls/{id}/analyze`, `PUT /calls/{id}/match`, `POST /crm/{id}/approve`, `POST /crm/{id}/reject`, `PATCH /service-orders/{id}/status` rol denetimi yapmaz: imzalı `X-User-Id` taşıyan servis çağrısı da yönetici işlemi yapabilir | Servis anahtarı yalnızca Miço Usta arka ucunda ve yönetici arayüzünün sunucu tarafında bulunur, tarayıcıya verilmez; kimlik başlığı imzalıdır (#266) ancak imzalı sahip yönetici işlemine yetkili sayılır. Rol denetimi #275 ile gelecek | `backend/tests/security/test_yetki_haritasi.py` açık uç kümesini sabitler; #275 bir ucu kapatınca ya da yeni açık uç eklenince test kırılır |
 | BS-2 | Kalıp dışı köşeli parantezli sahte yönerge (`[SİSTEM: ...]`) dolaylı injection taramasında işaretlenmez | Metin yine de sınırlayıcı içinde veri olarak sunulur ve model çıktısı şema + sızıntı denetiminden geçer; ayarlanmamış taze kümede ölçülen yakalama ≈ %60 (`docs/dolayli_injection_olcum.md`) | `test_known_gap_bracketed_fake_system_directive_is_not_scanned` (xfail, strict) |
 | BS-3 | Yazıyla söylenen numaralar ("sıfır beş üç iki ...") ve kalıp dışı serbest adlar maskelenemez | Kural tabanlı maskeleme bilinçli olarak basittir; ayrıntı `docs/maskeleme_olcum.md` | `test_known_gap_numbers_spoken_as_words_are_not_masked` (xfail, strict) |
-| BS-4 | Kimlik başlığı (`X-User-Id`) imzalı değildir: servis anahtarını ele geçiren biri her sahip adına konuşabilir | Servis anahtarı gizli tutulur (Secret Manager), kimlik hatası IP başına sınırlanır ve denetim günlüğüne yazılır; imzalı kimlik belirteci entegrasyonla birlikte düşünülecek | `docs/guvenlik_mimarisi.md` |
+| BS-4 | İmza zorunluluğu yalnızca prod'da açıktır (`USER_SIGNATURE_REQUIRED`); yerel/test ortamında imzasız `X-User-Id` kabul edilir. Servis ve imza anahtarı **birlikte** ele geçirilirse sahip taklit edilebilir | Yalnızca servis anahtarı yetmez (#266: ayrı imza anahtarı, 60 sn ömür, rotasyon penceresi); prod doğrulayıcısı ayrı anahtar ve zorunlu imzayı şart koşar; anahtarlar Secret Manager'da | `backend/tests/test_user_signature.py` (`test_prod_requires_separate_signing_key_and_signature`), `backend/tests/security/test_imzali_kimlik_saldirilari.py` |
 | BS-5 | Gerçek LLM ile uçtan uca injection denemesi CI'da yok (sahte model) | CI'da gerçek model çağrılmaz; gerçek model ölçümü elle: `python -m scripts.injection_olcum --llm`, `python -m scripts.dolayli_olcum` | `docs/injection_olcum.md` |

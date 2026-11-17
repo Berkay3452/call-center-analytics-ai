@@ -24,6 +24,11 @@ BACKEND = Path(__file__).parents[1]
 # Test modülü -> (saldırı sınıfı, OWASP LLM Top 10 (2025), OWASP API Security Top 10 (2023))
 SINIFLAR: dict[str, tuple[str, str, str]] = {
     "test_kimlik_saldirilari": ("Kimlik doğrulama ve yetki yükseltme", "LLM06", "API2, API5, API8"),
+    "test_imzali_kimlik_saldirilari": (
+        "İmzalı kullanıcı kimliği (sahte/yeniden oynatılan imza)",
+        "LLM06",
+        "API1, API2",
+    ),
     "test_sahip_izolasyonu_integration": ("Sahip izolasyonu (IDOR/BOLA)", "LLM06, LLM02", "API1"),
     "test_prompt_injection_saldirilari": (
         "Prompt injection (doğrudan, gizlenmiş, dolaylı) ve çıktı sızıntısı",

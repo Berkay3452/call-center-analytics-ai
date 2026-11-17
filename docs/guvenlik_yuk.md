@@ -52,7 +52,7 @@ Mevcut, kapsamı genişlemeden korunan testler: sohbet oturumu başka sahibe ait
 | Docker | ✓ / iyileştirildi | Kök olmayan kullanıcı; Postgres ve Redis portları artık yalnızca `127.0.0.1`'e bağlı (eskiden tüm arayüzler; varsayılan şifre `postgres`). Compose'taki `SERVICE_KEY` varsayılanı `change-me-in-local-env` yalnızca yerel içindir; canlıda Secret Manager (`docs/canliya_alma.md`) |
 | CORS / API belgesi | ✓ / düzeltildi (#276) | İzinli origin listesi (`CORS_ORIGINS`); `/docs` prod'da kapalı. Saldırı paketi `/openapi.json`'ın prod'da kimliksiz açık kaldığını buldu (tüm uç envanteri görünüyordu); `openapi_url` prod'da kapatıldı |
 | İşlev düzeyi yetki (rol) | **kısmi** | Yönetici uçları (`/audit-log`, çağrı silme) tekne sahibi kimliğine 403 verir; 7 yazma ucu henüz rol denetimi yapmaz (BS-1, #275); `test_yetki_haritasi.py` açık uç kümesini sabitler |
-| Saldırı paketi (kimlik, IDOR, injection, sızıntı, hız sınırı, araç yetkisi) | ✓ | 327 test, 0 kalan, 2 belgelenmiş sınırlama; `docs/guvenlik_testi.md`, CI'da her PR'da |
+| Saldırı paketi (kimlik, IDOR, injection, sızıntı, hız sınırı, araç yetkisi) | ✓ | 372 test, 0 kalan, imzalı X-User-Id saldırıları dahil, 2 belgelenmiş sınırlama; `docs/guvenlik_testi.md`, CI'da her PR'da |
 | API düzeyinde hız sınırı | **var** (#271) | Redis kayan pencere (kimlik kovası + kimlikten bağımsız IP tavanı: genel 600/dk, asistan 60/dk; `X-User-Id` döndürülerek kimlik kovası atlatılsa da IP tavanı geçerli kalır); bkz. §5 |
 | LLM'e giden veri | ✓ | Transkriptteki kişisel veriler maskelenir (`app/services/masking.py`); maskesiz metne düşülmez |
 
