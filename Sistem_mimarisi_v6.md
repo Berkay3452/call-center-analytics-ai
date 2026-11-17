@@ -84,12 +84,12 @@ Siber güvenlik dersi kapsamında (**Ses Verisi Güvenliği ve Yapay Zekâ Güve
 
 | Kural | Durum |
 |---|---|
-| Transkriptte e-posta, IBAN, TC kimlik no, telefon ve bilinen ad/soyadlar maskelenir; LLM'e yalnızca maskeli metin gider | **Var** |
+| Transkriptte e-posta, IBAN, TC kimlik no, telefon, kart, vergi no, belge no, plaka, adres kalıbı, kalıplı ad ve bilinen ad/soyadlar maskelenir; LLM'e yalnızca maskeli metin gider | **Var** |
 | STT varsayılanı yerel faster-whisper: ses makineden çıkmaz | **Var** |
 | Ses yükleme: 25 MB sınırı (413), tür kontrolü (415), aynı ses tekrar yüklenemez (409), dosya adı içerik özeti (kullanıcı adı yola girmez) | **Var** |
 | Hata iletisinde sunucu dosya yolu gösterilmez (#221) | **Var** |
 | Gerçek ses kayıtları ve kişisel veri repoya eklenmez; geliştirme verisi sentetiktir | **Var** (kural) |
-| Maskeleme kapsamı (kart, plaka, adres, listede olmayan ad) ve ölçümü | **Planlanan** #268 |
+| Maskeleme kapsamı (kart, vergi/pasaport/ehliyet no, plaka, adres, "Ben X" kalıbıyla ad) ve ölçümü (`docs/maskeleme_olcum.md`) | **Var** #268 (NER yok; kalıp dışı ad/adres maskelenmez) |
 | Ses içeriği doğrulama, ses uç noktası sahiplik testi, harici STT varsayılan kapalı | **Planlanan** #270 |
 | Çağrı silme, saklama süresi, veri envanteri (KVKK) | **Planlanan** #269 |
 
