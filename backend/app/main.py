@@ -18,6 +18,12 @@ from app.core.config import Settings, get_settings
 from app.core.errors import register_exception_handlers
 from app.core.logging import configure_logging
 from app.core.middleware import RequestContextMiddleware
+from app.core.protection import (
+    BodyLimitMiddleware,
+    RateLimitMiddleware,
+    SecurityHeadersMiddleware,
+)
+from app.core.ratelimit import InMemorySlidingWindow, RateLimiter, RedisSlidingWindow
 from app.core.redis import create_redis
 from app.db.session import create_engine, create_session_factory
 
@@ -69,6 +75,24 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         allow_headers=["*"],
         expose_headers=["X-Request-ID"],
     )
+    # Koruma katmanları (#271); CORS'un dışında, RequestContext'in içinde: 413/429 yanıtları da
+    # istek kimliği ve güvenlik başlıklarıyla döner.
+    limiter: RateLimiter | None = None
+    if settings.rate_limit_backend == "redis":
+        limiter = RedisSlidingWindow(lambda: app.state.redis)
+    elif settings.rate_limit_backend == "memory":
+        limiter = InMemorySlidingWindow()
+    app.state.rate_limiter = limiter
+    app.add_middleware(
+        RateLimitMiddleware,
+        limiter=limiter,
+        prefix=settings.api_v1_prefix,
+        general_per_min=settings.rate_limit_general_per_min,
+        assistant_per_min=settings.rate_limit_assistant_per_min,
+        window_s=settings.rate_limit_window_s,
+    )
+    app.add_middleware(BodyLimitMiddleware, max_bytes=settings.max_json_body_kb * 1024)
+    app.add_middleware(SecurityHeadersMiddleware, hsts=settings.is_production)
     # En dışta: request_id hata yanıtları dahil her yanıta eklenir.
     app.add_middleware(RequestContextMiddleware)
 

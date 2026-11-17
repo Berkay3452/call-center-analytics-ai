@@ -28,6 +28,7 @@ def make_settings(**overrides: Any) -> Settings:
         "service_api_key": TEST_SERVICE_KEY,
         "supabase_url": None,
         "auth_dev_bypass": False,
+        "rate_limit_backend": "off",  # sınır testleri kendi örneğini kurar (test_protection)
         "audit_auth_failures": False,  # birim testlerinde DB yok (bkz. test_audit_integration)
     }
     base.update(overrides)

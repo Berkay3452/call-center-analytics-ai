@@ -181,7 +181,8 @@ async def test_run_analysis_crash_does_not_leave_call_stuck(
         status = await get_status(session, call_id)
     assert status.state == "basarisiz"
     assert status.error is not None
-    assert "beklenmedik" in status.error
+    assert "beklenmedik" not in status.error  # ham istisna metni kullanıcıya gitmez (#271)
+    assert status.error.startswith("Beklenmeyen bir hata")
 
 
 async def test_request_analysis_rules(factory: async_sessionmaker[AsyncSession]) -> None:

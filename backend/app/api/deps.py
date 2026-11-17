@@ -9,7 +9,9 @@ from redis.asyncio import Redis
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import Settings, get_settings
-from app.core.errors import ForbiddenError, UnauthorizedError
+from app.core.errors import ForbiddenError, TooManyRequestsError, UnauthorizedError
+from app.core.middleware import client_ip_var
+from app.core.ratelimit import RateLimiter
 from app.core.security import (
     SERVICE_KEY_HEADER,
     USER_ID_HEADER,
@@ -67,11 +69,27 @@ async def require_service_key(
     Başarısız doğrulama denetim günlüğüne yazılır (#267): anahtar değeri veya başlık içeriği değil,
     yalnızca neden (`eksik` | `gecersiz`), yol ve istek kimliği/IP kaydedilir.
     """
+    limiter: RateLimiter | None = getattr(request.app.state, "rate_limiter", None)
+    ip = client_ip_var.get() or "bilinmeyen"
+    window = settings.rate_limit_window_s
+    limit = settings.rate_limit_auth_fail_per_min
+    if limiter is not None:
+        state = await limiter.peek(f"kimlik:{ip}", limit, window)
+        if not state.allowed:
+            # Çok kimlik hatası yapan IP: doğrulamaya (ve veritabanı yazımına) girmeden 429.
+            raise TooManyRequestsError(
+                "Çok fazla başarısız kimlik doğrulama denemesi; lütfen bekleyin.",
+                retry_after_s=state.retry_after_s,
+            )
     try:
         verify_service_key(x_service_key, settings)
     except UnauthorizedError as exc:
+        within_budget = True
+        if limiter is not None:
+            within_budget = (await limiter.hit(f"kimlik:{ip}", limit, window)).allowed
         factory = getattr(request.app.state, "session_factory", None)
-        if factory is not None and settings.audit_auth_failures:
+        # Denetim yazımı IP başına dakikada en çok `limit` ile sınırlıdır (DB yükü).
+        if factory is not None and settings.audit_auth_failures and within_budget:
             await record_audit_event_isolated(
                 factory,
                 action=AuditAction.KIMLIK_DOGRULAMA_BASARISIZ,

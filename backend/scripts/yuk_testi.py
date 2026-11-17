@@ -29,6 +29,7 @@ class Result:
     concurrency: int
     durations: list[float] = field(default_factory=list)
     errors: int = 0
+    limited: int = 0  # 429: hız sınırı devrede (hata sayılmaz, ayrıca raporlanır, #271)
     statuses: dict[int, int] = field(default_factory=dict)
     wall_s: float = 0.0
 
@@ -44,6 +45,7 @@ class Result:
             fmt(percentile(ms, 95), 0),
             fmt(max(ms) if ms else None, 0),
             f"{statistics.fmean(ms):.0f}" if ms else "—",
+            self.limited,
             self.errors,
         ]
 
@@ -62,6 +64,8 @@ async def run_level(
                 result.statuses[resp.status_code] = result.statuses.get(resp.status_code, 0) + 1
                 if resp.status_code == 200:
                     result.durations.append(time.perf_counter() - started)
+                elif resp.status_code == 429:
+                    result.limited += 1
                 else:
                     result.errors += 1
             except Exception:
@@ -113,12 +117,22 @@ async def main_async(args: argparse.Namespace) -> int:
                 "p95 ms",
                 "maks ms",
                 "ort ms",
+                "429",
                 "Hata",
             ],
             [r.row() for r in results],
         )
     )
-    return 1 if any(r.errors for r in results) else 0
+    limited = sum(r.limited for r in results)
+    total = sum(len(r.durations) + r.errors + r.limited for r in results)
+    errors = sum(r.errors for r in results)
+    if total:
+        print(
+            f"\nToplam {total} istek: {limited} adet 429 (hız sınırı), {errors} hata "
+            f"(hata oranı %{100 * errors / total:.1f}). 429'lar hata sayılmaz; sınırı görmek "
+            "istemiyorsanız API'yi RATE_LIMIT_GENERAL_PER_MIN yükseltilmiş ayarla başlatın."
+        )
+    return 1 if errors else 0
 
 
 def main() -> int:

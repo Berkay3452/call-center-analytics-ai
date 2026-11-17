@@ -15,6 +15,8 @@ Bu dosya Python AI servisinin dışa açtığı uçların sözleşmesidir. Backe
 | Enum değerleri | `docs/enums.md` listeleri; ekranda Türkçe karşılık `lib/types.ts` etiketlerinden. |
 | Sayfalama | Liste uçları `Page` döner: `items`, `total`, `page`, `page_size` (en fazla 100). |
 | Hata | Her hata `ErrorResponse` biçimindedir: `error.code`, `error.message`, `error.details`, `error.request_id`. |
+| Hız sınırı | Aşımda `429` + `error.code=rate_limited`, `Retry-After` (sn), `X-RateLimit-Limit`, `X-RateLimit-Remaining`; `details.bucket` `genel`, `asistan` veya `kimlik`. Varsayılan: genel 120/dk, asistan uçları ek 20/dk, hatalı anahtar IP başına 10/dk. `/health` ve OPTIONS sayılmaz. |
+| Gövde sınırı | JSON gövde en fazla 256 KB; aşımda `413` + `payload_too_large`. Ses yüklemesi (multipart) 25 MB sınırındadır. |
 
 ## 2. Kimlik doğrulama (#24)
 
