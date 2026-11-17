@@ -32,6 +32,7 @@ from app.rag.indexer import index_chunks
 from app.services.audio_ingest import storage_dir
 from scripts.seed.generator import DATA_DIR, SEED, write_synthetic_files
 from scripts.seed.loader import _asyncpg_dsn, seed_database
+from scripts.seed_accounts import seed_accounts
 
 
 def run_migrations() -> None:
@@ -180,6 +181,23 @@ async def ensure_seed_and_rag(data_dir: Path) -> None:
                 settings.database_url, data_dir=data_dir, seed=SEED, reset=False,
                 audio_dir=audio_path,
             )  # fmt: skip
+
+    # Kullanıcı hesapları (#278): eksik hesaplar eklenir, parolalar yalnızca yerel dosyaya yazılır.
+    try:
+        acc_engine = create_engine(settings, null_pool=True)
+        try:
+            async with create_session_factory(acc_engine)() as acc_session, acc_session.begin():
+                owners, admins = await seed_accounts(acc_session)
+        finally:
+            await acc_engine.dispose()
+        if owners or admins:
+            print(
+                f"✔ [init] Hesaplar eklendi ({owners} tekne sahibi, {admins} yönetici); "
+                "parolalar backend/.local/seed_credentials.csv dosyasında.",
+                flush=True,
+            )
+    except Exception as exc:  # hesap seed'i başlatmayı engellemesin
+        print(f"⚠ [init] Hesap seed'i atlandı: {type(exc).__name__}", flush=True)
 
     # RAG indeksi: embedding servisi ayaktaysa veya hash modundaysa
     try:

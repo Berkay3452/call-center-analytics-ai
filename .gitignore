@@ -45,3 +45,6 @@ backend/storage/
 .idea/
 .DS_Store
 Thumbs.db
+
+# --- Yerel, git dışı gizli dosyalar (seed parolaları vb., #278) ---
+backend/.local/
