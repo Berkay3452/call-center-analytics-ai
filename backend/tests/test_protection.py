@@ -232,6 +232,8 @@ async def test_hsts_only_in_production() -> None:
         make_settings(
             app_env="prod",
             service_api_key="x" * 40,
+            user_signing_key="y" * 40,
+            user_signature_required=True,
             audit_auth_failures=True,
             rate_limit_backend="memory",
         )

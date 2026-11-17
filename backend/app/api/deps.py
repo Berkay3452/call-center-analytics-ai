@@ -15,10 +15,13 @@ from app.core.ratelimit import RateLimiter
 from app.core.security import (
     SERVICE_KEY_HEADER,
     USER_ID_HEADER,
+    USER_SIGNATURE_HEADER,
     ServiceCaller,
+    UserSignatureError,
     normalize_user_id,
     require_owner_id_value,
     verify_service_key,
+    verify_user_signature,
 )
 from app.domain.audit import AuditAction, AuditActorRole, AuditOutcome
 from app.services.audit import record_audit_event_isolated
@@ -63,6 +66,7 @@ async def require_service_key(
     settings: SettingsDep,
     x_service_key: Annotated[str | None, Header(alias=SERVICE_KEY_HEADER)] = None,
     x_user_id: Annotated[str | None, Header(alias=USER_ID_HEADER)] = None,
+    x_user_signature: Annotated[str | None, Header(alias=USER_SIGNATURE_HEADER)] = None,
 ) -> ServiceCaller:
     """Servis anahtarını doğrular; `X-User-Id` varsa bağlama ekler (admin uçlarında opsiyonel).
 
@@ -83,7 +87,14 @@ async def require_service_key(
             )
     try:
         verify_service_key(x_service_key, settings)
+        # Servis anahtarı doğru olsa da kullanıcı kimliği imzasız/geçersizse sahte kimlik sayılır.
+        verify_user_signature(x_user_id, x_user_signature, settings)
     except UnauthorizedError as exc:
+        reason = (
+            exc.reason
+            if isinstance(exc, UserSignatureError)
+            else ("eksik" if not x_service_key else "gecersiz")
+        )
         within_budget = True
         if limiter is not None:
             within_budget = (await limiter.hit(f"kimlik:{ip}", limit, window)).allowed
@@ -97,7 +108,7 @@ async def require_service_key(
                 target_type="endpoint",
                 target_id=_endpoint_label(request),
                 outcome=AuditOutcome.REDDEDILDI,
-                details={"neden": "eksik" if not x_service_key else "gecersiz"},
+                details={"neden": reason},
             )
         raise exc
     return ServiceCaller(authenticated=True, owner_id=normalize_user_id(x_user_id))
