@@ -1,7 +1,8 @@
 """Yetki haritası (OWASP API5 işlev düzeyi yetki): durum değiştiren her uç hangi kimliği ister?
 
 Yeni bir yazma ucu eklenip yönetici/sahip denetimi unutulursa bu test kırılır.
-Rol denetimi (#275) sonrası bilinen açık uç yoktur (`BILINEN_ACIK` boş); eklenecek bir istisna gerekçesiyle burada durmalıdır.
+Rol denetimi (#275) sonrası bilinen açık uç yoktur (`BILINEN_ACIK` boş);
+eklenecek bir istisna gerekçesiyle burada durmalıdır.
 """
 
 from fastapi.routing import APIRoute
