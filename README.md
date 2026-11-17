@@ -157,7 +157,7 @@ npm run lint && npm run build
 npm run e2e                        # Playwright (önce: npx playwright install)
 ```
 
-**CI (GitHub Actions):** Backend: değişiklik tespiti, ruff, mypy, pytest, bağımlılık sürümü uyumu, Docker imajı, güvenlik taraması (pip-audit), Docker Compose ile uçtan uca duman testi (API + Celery + DB + Redis), belge tutarlılığı. Frontend: ESLint + build, Playwright e2e (Chromium), Docker imajı. `main` dalı ruleset ile korunur; `Backend CI sonucu` ve `Frontend CI sonucu` kontrolleri zorunludur.
+**CI (GitHub Actions):** Backend: değişiklik tespiti, ruff, mypy, pytest, bağımlılık sürümü uyumu, Docker imajı, güvenlik taraması (pip-audit; açık bulguda kırılır), gizli anahtar taraması (gitleaks, ayrı iş akışı), haftalık Trivy imaj raporu, Dependabot, Docker Compose ile uçtan uca duman testi (API + Celery + DB + Redis), belge tutarlılığı. Frontend: ESLint + build, Playwright e2e (Chromium), Docker imajı. `main` dalı ruleset ile korunur; `Backend CI sonucu` ve `Frontend CI sonucu` kontrolleri zorunludur.
 
 ## Başarı kriterleri
 

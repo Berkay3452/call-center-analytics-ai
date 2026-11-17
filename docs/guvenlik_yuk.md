@@ -46,8 +46,28 @@ Mevcut, kapsamı genişlemeden korunan testler: sohbet oturumu başka sahibe ait
 | Gizli anahtar taraması | ✓ | İzlenen dosyalarda `nvapi-`/`sk-`/`AIza`/`AKIA`/`ghp_`/JWT desenleri yok; `backend/.env` git'te yok (`.gitignore`), `.env.example` değerleri boş; ölçüm günlüklerinde LLM anahtarı geçmiyor |
 | Hata iletisinde iç bilgi | düzeltildi | Bozuk ses hatası sunucu dosya yolunu gösteriyordu (#221). Kalan: LLM sağlayıcısının ham İngilizce hata gövdesi `calls.error`'da görünüyor (öneri: Türkçe, kısa kullanıcı iletisi; ayrıntı yalnızca `agent_runs`'ta) |
 | Bağımlılıklar — backend (`pip-audit`) | düzeltildi | 4 dolaylı paket / 17 bulgu: `certifi` (CA kökü), `filelock` (13), `langgraph-sdk`, `opentelemetry-api`; `uv.lock` güncellendi (certifi 2026.10.23, filelock 4.2.6, langgraph-sdk 0.4.11, opentelemetry-api 1.45.2). Hiçbiri uygulamanın doğrudan kullandığı koddan değil |
-| Bağımlılıklar — frontend (`npm audit`) | **AÇIK (frontend)** | `next@16.4.0` **kritik**: kimlik doğrulamasız RCE (Image Optimization'da SVG, `use cache` typed array) ve Server Actions DoS → `next@16.4.4`; `zod` yüksek → `npm audit fix`. 18 orta bulgu yalnızca eslint/openapi-typescript geliştirme araçlarında. h8-frontend'e bildirildi |
+| Bağımlılıklar — frontend (`npm audit`) | **Kapatıldı (#272)** | `next@16.4.0` kritik bulgusu sonraki sürümlerle kapandı; 2026-11-17 `npm audit --omit=dev`: kritik/yüksek yok, 1 orta (`next` 16.3.0–16.4.4, `unstable_cache` kök parametre bilgi sızıntısı; düzeltme 16.4.6, bkz. §4). Geliştirme araçlarındaki orta bulgular üretime girmez |
 | Docker | ✓ / iyileştirildi | Kök olmayan kullanıcı; Postgres ve Redis portları artık yalnızca `127.0.0.1`'e bağlı (eskiden tüm arayüzler; varsayılan şifre `postgres`). Compose'taki `SERVICE_KEY` varsayılanı `change-me-in-local-env` yalnızca yerel içindir; canlıda Secret Manager (`docs/canliya_alma.md`) |
 | CORS / API belgesi | ✓ | İzinli origin listesi (`CORS_ORIGINS`); `/docs` prod'da kapalı |
 | API düzeyinde hız sınırı | yok | Servis yalnızca .NET uygulamasından çağrılır; ihtiyaç olursa ters vekil (gateway) katmanında uygulanmalı |
 | LLM'e giden veri | ✓ | Transkriptteki kişisel veriler maskelenir (`app/services/masking.py`); maskesiz metne düşülmez |
+
+## 4. Tedarik zinciri taramaları (#272, 2026-11-17)
+
+**Yeniden çalıştırılan denetimler**
+- Backend: `uvx pip-audit --requirement requirements.txt --no-deps --disable-pip` → **bilinen açık yok**.
+- Frontend: `npm audit --omit=dev --audit-level=high` → kritik/yüksek yok; 1 **orta** bulgu: `next` 16.3.0–16.4.4 (`unstable_cache()` ile çağrılan `use cache` işlevinde kök parametre bilgi sızıntısı, GHSA-mfr8-8qww-v76h). Uygulama `unstable_cache`/`use cache` kullanmıyor, bu yüzden etkilenmiyor; düzeltme 16.4.6'dadır ve Dependabot `next` için PR açacaktır (sürüm yükseltmesi o PR'da yapılır). Eşik `high` olduğundan CI kırmaz; gerekçeli istisna budur.
+
+**CI'daki otomatik adımlar**
+| Adım | Davranış |
+|---|---|
+| `backend-ci.yml` → `security` (pip-audit) | Her bilinen açıkta **PR'ı kırar** (`continue-on-error` kaldırıldı, `Backend CI sonucu`na bağlandı). pip-audit önem derecesine göre süzemez; yanlış pozitifte `--ignore-vuln <ID>` ve bu bölümde gerekçe |
+| `frontend-ci.yml` → `npm audit --audit-level=high` | Yüksek/kritikte kırar (önceden vardı) |
+| `gizli-anahtar-taramasi.yml` (gitleaks) | Her PR'da tüm geçmişi tarar, bulguda kırar; ayrı iş akışı olduğundan diğer işlere süre eklemez |
+| `imaj-taramasi.yml` (Trivy) | Yalnızca bilgi raporu (`exit-code: 0`); PR'larda çalışmaz: haftalık, elle ve Dockerfile/kilit dosyası main'e girince |
+| `.github/dependabot.yml` | Haftalık uv, npm, GitHub Actions ve Docker güncelleme PR'ları |
+| `.pre-commit-config.yaml` | İsteğe bağlı yerel gitleaks + özel anahtar denetimi |
+| `.gitignore` | `.env*`, `*.pem`, `*.key`, `*.p12`, `*.pfx`, `*.jks`, `id_rsa*`, `credentials.json` |
+| `tests/test_secret_hygiene.py` | LLM/STT/embedding/servis/Supabase anahtarları yalnızca ortamdan okunur, varsayılanı yok, `repr`/dump/günlüğe düşmez; kaynakta anahtar deseni yok; `.env.example` boş |
+
+Sınırlar: gitleaks ve Trivy ilk kez CI'da çalışır (yerelde ikili indirilmedi); ilk çalışmada yanlış pozitif çıkarsa `.gitleaksignore` ile gerekçeli eklenir.

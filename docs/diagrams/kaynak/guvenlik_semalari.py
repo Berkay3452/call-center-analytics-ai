@@ -194,8 +194,8 @@ def s3():
     c.box(34, 44, 30, 10, "SQL: parametreli sorgular\n/docs prod'da kapalı, /health sınırlı", "var", 9)
     c.box(68, 44, 30, 10, "Next güvenlik başlıkları\nCSP, frame-ancestors, nosniff  #271", "plan", 9)
     c.zone(2, 6, 96, 30, "Tedarik zinciri")
-    c.box(4, 10, 29, 20, "CI'da var: pip-audit (yalnız uyarı)\nve npm audit; next kritik bulgusu\nyeniden doğrulanacak  #272", "plan", 9)
-    c.box(36, 10, 29, 20, "Eksik: pip-audit PR'ı kırsın,\ngitleaks, Dependabot,\nTrivy (bilgi)  #272", "plan", 9)
+    c.box(4, 10, 29, 20, "pip-audit PR'ı kırar, npm audit\n(yüksek/kritik); next kritik\nbulgusu kapandı  #272 ✔", "var", 9)
+    c.box(36, 10, 29, 20, "gitleaks (tüm geçmiş), Dependabot,\nTrivy imaj raporu (bilgi),\nön-commit denetimi  #272 ✔", "var", 9)
     c.box(68, 10, 28, 20, "Gizli anahtarlar yalnız ortam\ndeğişkeni; .env git'te yok ✔;\nSecret Manager (canlı)", "var", 9)
     c.save("S3_guvenli_api.png")
 

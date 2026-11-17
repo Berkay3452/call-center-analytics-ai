@@ -1,0 +1,33 @@
+# Gizli anahtar taraması (gitleaks) — her PR'da ve main'e gönderimde, tüm git geçmişinde.
+# Bulgu varsa PR kırılır. Yanlış pozitif için `.gitleaksignore` (parmak izi) veya `.gitleaks.toml`
+# içinde gerekçeli istisna eklenir; gerçek anahtar sızdıysa önce anahtar iptal edilir (rotasyon).
+# Süre: yaklaşık 20-30 sn (depo küçük); backend/frontend işlerinden bağımsız ve paralel çalışır.
+
+name: Gizli anahtar taraması
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: gitleaks-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  gitleaks:
+    name: gitleaks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_COMMENTS: "false"

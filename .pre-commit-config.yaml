@@ -1,0 +1,11 @@
+# Ön-commit denetimi (isteğe bağlı, yerelde): `pip install pre-commit && pre-commit install`
+# CI'daki gitleaks taramasının aynısı commit'ten önce yerelde de çalışır; anahtar sızmadan yakalar.
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.28.0
+    hooks:
+      - id: gitleaks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: detect-private-key

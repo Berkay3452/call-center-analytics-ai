@@ -82,9 +82,11 @@ Savunma beş güven sınırında kurulur:
 | Hata iletisinde sunucu yolu sızıntısı | **Düzeltildi** (#221); LLM ham hata gövdesi `calls.error`'da kalıyor | #271 |
 | Vekil rotada yol izin listesi | **Var** | `route.ts` `ALLOWED` |
 | Gizli anahtarlar yalnızca ortam değişkeni; `.env` git'te yok; `.env.example` boş | **Var** | `.gitignore`, `docs/guvenlik_yuk.md` |
-| Backend `pip-audit` (yalnızca uyarır), frontend `npm audit --audit-level=high` CI'da | **Var** | `.github/workflows/` |
-| Frontend `next` bağımlılığı kritik bulgusu | **Yeniden doğrulanacak** | #272 |
-| Gizli anahtar taraması CI'da, Dependabot, imaj taraması | **Eksik** | #272 |
+| Backend `pip-audit` (bilinen açıkta PR'ı kırar), frontend `npm audit --audit-level=high` CI'da | **Var** | `backend-ci.yml` (`security`), `frontend-ci.yml` |
+| Frontend `next` bağımlılığı kritik bulgusu | **Kapalı**: kritik/yüksek yok; kalan tek bulgu orta düzey (2026-11-17, `docs/guvenlik_yuk.md` §4) | #272 |
+| Gizli anahtar taraması (gitleaks, tüm geçmiş, her PR), Dependabot (uv, npm, actions, docker), ön-commit denetimi | **Var** | `gizli-anahtar-taramasi.yml`, `.github/dependabot.yml`, `.pre-commit-config.yaml` |
+| Docker imaj taraması (Trivy, yalnızca bilgi raporu; haftalık/elle/Dockerfile değişiminde) | **Var** | `imaj-taramasi.yml` |
+| Anahtarlar yalnızca ortam değişkeninden okunur, `SecretStr`, günlüğe/dökümlere düşmez | **Var** (testli) | `tests/test_secret_hygiene.py` |
 | Hız sınırlama, JSON gövde sınırı | **Eksik** (gateway'e bırakılmıştı) | #271 |
 | Aktarımda şifreleme (HTTPS zorunlu, HSTS) | **Eksik** (canlıya alma ortamına bırakılmış) | #271 |
 | Next güvenlik başlıkları (CSP, frame-ancestors, nosniff, Referrer-Policy) | **Eksik** | #271 |
