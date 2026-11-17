@@ -59,7 +59,7 @@ Users (admin and boat owner) use the Next.js interface. It calls the Python AI s
 | ![Synthetic data](docs/diagrams/05_sentetik_veri.png) | Synthetic call and boat data generation |
 | ![ER](docs/diagrams/er_diagram.png) | Database ER diagram (17 tables) |
 
-Detailed architecture, decisions and current status: [`Sistem_mimarisi_v5.md`](Sistem_mimarisi_v5.md) (Turkish).
+Detailed architecture, decisions and current status: [`Sistem_mimarisi_v6.md`](Sistem_mimarisi_v6.md) (Turkish).
 
 ## Tech stack
 
@@ -213,7 +213,7 @@ All documents below are in Turkish.
 
 | Document | Content |
 |---|---|
-| [`Sistem_mimarisi_v5.md`](Sistem_mimarisi_v5.md) | Architecture, decisions, current status (v5) |
+| [`Sistem_mimarisi_v6.md`](Sistem_mimarisi_v6.md) | Architecture, decisions, security layer, current status (v6) |
 | [`docs/db_schema.md`](docs/db_schema.md) | Database schema and ER diagram |
 | [`docs/api.md`](docs/api.md) | API contract |
 | [`docs/enums.md`](docs/enums.md) | Field value lists |

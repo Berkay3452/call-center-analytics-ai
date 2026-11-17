@@ -1,7 +1,7 @@
 # Güvenlik Katmanı Mimarisi
 
 **Kapsam:** Ses Verisi Güvenliği ve Yapay Zekâ Güvenliği — kimlik doğrulama, kişisel verilerin korunması, güvenli API kullanımı, prompt injection ve yetkisiz komutlara karşı koruma.
-**Tarih:** 2026-11-17 · **İş takibi:** GitHub etiketi `güvenlik-katmanı`, kilometre taşı *Hafta 10 (16-22 Kasım)*, ana issue #264.
+**Tarih:** 2026-11-17 · **İş takibi:** GitHub etiketi `güvenlik-katmanı`, kilometre taşı *Hafta 10 (16-22 Kasım)*, ana issue #264 (#264-#278). Mimarideki özeti: `Sistem_mimarisi_v6.md` §4.1-§4.2.
 **Okuma kuralı:** Her satırda **Var** = kodda bugün çalışan, **Planlanan** = ilgili issue'da tanımlı, henüz yazılmamış. Olmayan özellik "var" diye yazılmaz. Bu belge `docs/guvenlik_yuk.md` (#158 kontrol listesi) ile birlikte okunur.
 
 ## 1. Genel bakış
@@ -42,8 +42,11 @@ Savunma beş güven sınırında kurulur:
 | `X-User-Id` UUID olarak doğrulanır | **Var** | `api/deps.py` |
 | `X-User-Id` **kaynağı** doğrulanmaz; geliştirmede tarayıcı başlığı olduğu gibi iletilir | **Eksik** → imzalı kimlik | #266 |
 | Anahtar rotasyonu (çoklu, süreli anahtar) | **Planlanan** | #266 |
-| Denetim günlüğü (kim, ne zaman, ne yaptı) | **Planlanan** | #267 |
-| Kullanıcı girişi (giriş ekranı, parola, oturum/JWT) | **Karar bekliyor** | #265 |
+| Denetim günlüğü (kim, ne zaman, ne yaptı) — ortak altyapı, erken yapılır | **Planlanan** | #267 |
+| Tekne sahibi ve yönetici hesapları: kullanıcı adı + argon2id parola karması, deneme sayacı/kilit; düz parola yalnızca git dışı yerel dosyada | **Planlanan** | #278 |
+| Giriş ekranı (oturum/JWT) | **Karar bekliyor** | #265 |
+
+**Ara karar (17 Kasım):** Giriş ekranı şimdilik yapılmıyor, ama hesaplar veritabanında tutulacak (#278). Kimlik doğrulama perspektifi uygulamada en sona bırakıldı.
 
 **Açık karar (#265):** Test arayüzünde ve entegre edilecek Miço Usta sitesinde giriş ekranı yoktur; kullanıcı kimliğini Miço Usta .NET uygulaması belirler. Hocaya sorulacak: "kimlik doğrulama" servisler arası doğrulamayı mı, yoksa kullanıcı girişini mi kapsıyor? Seçenekler: **A** servis düzeyi (anahtar rotasyonu + imzalı kimlik), **B** kullanıcı girişi (login + JWT + roller), **C** karma (A + yalnızca test ortamı için basit giriş). Cevaba göre bu bölüm güncellenir; B/C seçilirse ayrıca bir frontend issue'su açılır.
 
@@ -74,6 +77,8 @@ Savunma beş güven sınırında kurulur:
 | CORS izinli origin listesi; `/docs` prod'da kapalı; `/health` yalnızca `status/version/env` döner | **Var** | `core/config.py`, `docs/guvenlik_yuk.md` |
 | Parametreli SQLAlchemy sorguları (SQL enjeksiyonu) | **Var** | `docs/guvenlik_yuk.md` §3 |
 | Pydantic ile girdi/çıktı doğrulama; tek tip hata biçimi | **Var** | `app/schemas/` |
+| Asistan sorusu ≤ 5000 karakter; sayfa boyutu ≤ 100 | **Var** | `schemas/assistant.py`, `schemas/common.py` |
+| Docker: kök olmayan kullanıcı; Postgres/Redis yalnızca `127.0.0.1` | **Var** | `backend/Dockerfile`, `frontend/Dockerfile`, `infra/docker-compose.yml` |
 | Hata iletisinde sunucu yolu sızıntısı | **Düzeltildi** (#221); LLM ham hata gövdesi `calls.error`'da kalıyor | #271 |
 | Vekil rotada yol izin listesi | **Var** | `route.ts` `ALLOWED` |
 | Gizli anahtarlar yalnızca ortam değişkeni; `.env` git'te yok; `.env.example` boş | **Var** | `.gitignore`, `docs/guvenlik_yuk.md` |
@@ -81,6 +86,7 @@ Savunma beş güven sınırında kurulur:
 | Frontend `next` bağımlılığı kritik bulgusu | **Yeniden doğrulanacak** | #272 |
 | Gizli anahtar taraması CI'da, Dependabot, imaj taraması | **Eksik** | #272 |
 | Hız sınırlama, JSON gövde sınırı | **Eksik** (gateway'e bırakılmıştı) | #271 |
+| Aktarımda şifreleme (HTTPS zorunlu, HSTS) | **Eksik** (canlıya alma ortamına bırakılmış) | #271 |
 | Next güvenlik başlıkları (CSP, frame-ancestors, nosniff, Referrer-Policy) | **Eksik** | #271 |
 
 ## 6. Prompt injection koruması
@@ -96,7 +102,7 @@ Savunma beş güven sınırında kurulur:
 | Çıktı Pydantic şemasıyla doğrulanır; cevap grounding ile kaynağa dayandırılır | **Var** | `app/schemas/`, asistan grounding |
 | Liste tabanlı tespit: yeniden ifade, kodlama, bölünmüş sözcük gibi saldırılar kaçabilir; başarı **ölçülmedi** | **Sınırlama** → normalizasyon + LLM sınıflandırıcı + kırmızı takım seti | #273 |
 | Transkript/RAG içinde talimat-kalıbı taraması ve veri sınırlayıcıları | **Planlanan** | #274 |
-| İstemciden gelen geçmişte rol alanı (`system` vb.) kısıtlanmaz | **Eksik** | #274 |
+| Konuşma geçmişi sunucudaki oturumdan okunur; API yalnızca soru + oturum kimliği alır, rol `user`/`assistant` ile sınırlı — istemci sahte geçmiş ekleyemez | **Var** | `services/assistant_chat.py` `load_history`, `schemas/assistant.py` `HistoryTurn` |
 | Çıktı filtresi (sistem istemi / ham kişisel veri sızıntısı) | **Planlanan** | #274 |
 
 **Hedef ölçüt:** ≥ 60 saldırılı sette yakalama ≥ %90, normal sorularda yanlış pozitif ≤ %2; kaçan örnekler belgede açıkça listelenir (#273).
@@ -110,7 +116,9 @@ Savunma beş güven sınırında kurulur:
 | Asistan araçları salt-okunur (`get_expense_total`, `get_job_expenses`, `get_remaining_package`, `get_last_maintenance`, `get_upcoming_maintenance`) | **Var** | `backend/app/assistant/` |
 | Araçlarda zorunlu `owner_id`; başkasının tekne/notu dönmez; başka sahibin oturumu 404 | **Var** | `test_assistant*.py`, `test_assistant_chat_integration.py` |
 | CRM önerisi ve servis emri insan onayıyla oluşur; ajanlar doğrudan yazmaz | **Var** | CRM onay akışı |
-| Araç izin listesi ve "LLM'in yazdığı `owner_id` yok sayılır" testi | **Planlanan** | #275 |
+| Araç izin listesi: planlayıcı yalnızca `AssistantTool` Enum'undaki 5 araçtan birini seçebilir | **Var** | `schemas/assistant.py`, `assistant/planner.py` |
+| `owner_id` LLM'den gelmez; planlayıcı kimlikle ilgilenmez, araçlara sunucudaki kimlik verilir | **Var** | `assistant/planner.py`, `assistant/tools.py` |
+| Bu özelliklerin saldırı testleriyle kanıtlanması | **Planlanan** | #275 |
 | Sunucuda rol denetimi — roller yalnızca arayüzde simüle ediliyor | **Eksik** | #275 (kapsam #265'e bağlı) |
 | Onay adımının atlanamadığını kanıtlayan durum makinesi testleri | **Planlanan** | #275 |
 
@@ -135,11 +143,14 @@ Satır satır kanıt tablosu #276 kapsamında test paketiyle birlikte tamamlanac
 | Perspektif | Issue'lar |
 |---|---|
 | Mimari ve belge | #264 |
-| Kimlik doğrulama | #265, #266, #267 |
+| Kimlik doğrulama (en son) | #278, #266, #265 |
+| İzlenebilirlik | #267 |
 | Kişisel veri ve ses | #268, #269, #270 |
 | Güvenli API | #271, #272 |
 | Prompt injection | #273, #274 |
 | Yetkisiz komut | #275 |
 | Doğrulama testleri | #276 |
+
+Uygulama sırası: Faz 1 iki paralel hat (API: #272 → #267 → #271 → #270 → #269; yapay zekâ: #268 → #273 → #274 → #275), Faz 2 kimlik doğrulama (#278 → #266 → rol denetimi), Faz 3 #276.
 
 Diyagram kaynağı: `docs/diagrams/kaynak/guvenlik_semalari.py` (`python docs/diagrams/kaynak/guvenlik_semalari.py`). Alt işler bittikçe bu belgedeki **Eksik/Planlanan** satırları **Var**'a çevrilir.

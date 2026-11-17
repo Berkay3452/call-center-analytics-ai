@@ -58,7 +58,7 @@ Kullanıcılar (admin ve tekne sahibi) Next.js arayüzünü kullanır. Arayüz, 
 | ![ER](docs/diagrams/er_diagram.png) | Veritabanı ER diyagramı (17 tablo) |
 | ![Güvenlik katmanı](docs/diagrams/S0_guvenlik_katmani_mimarisi.png) | Güvenlik katmanı mimarisi; beş perspektifin şemaları ve ayrıntısı: [`docs/guvenlik_mimarisi.md`](docs/guvenlik_mimarisi.md) |
 
-Ayrıntılı mimari, kararlar ve mevcut durum: [`Sistem_mimarisi_v5.md`](Sistem_mimarisi_v5.md).
+Ayrıntılı mimari, kararlar ve mevcut durum: [`Sistem_mimarisi_v6.md`](Sistem_mimarisi_v6.md).
 
 ## Teknolojiler
 
@@ -210,7 +210,7 @@ Sentetik veri üzerinde, gerçek LLM ile (ayrıntılar `docs/` altında):
 
 | Belge | İçerik |
 |---|---|
-| [`Sistem_mimarisi_v5.md`](Sistem_mimarisi_v5.md) | Mimari, kararlar, mevcut durum (v5) |
+| [`Sistem_mimarisi_v6.md`](Sistem_mimarisi_v6.md) | Mimari, kararlar, güvenlik katmanı, mevcut durum (v6) |
 | [`docs/db_schema.md`](docs/db_schema.md) | Veritabanı şeması ve ER diyagramı |
 | [`docs/api.md`](docs/api.md) | API sözleşmesi |
 | [`docs/enums.md`](docs/enums.md) | Alan değer listeleri |
