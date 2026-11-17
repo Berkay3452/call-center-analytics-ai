@@ -1,7 +1,7 @@
 # =============================================================
 # 1. Aşama: Builder — Bağımlılıkları uv ile sanal ortama kurar
 # =============================================================
-FROM ghcr.io/astral-sh/uv:0.5.29 AS uv_bin
+FROM ghcr.io/astral-sh/uv:0.13.9 AS uv_bin
 FROM python:3.12-slim-bookworm AS builder
 
 # uv ikili dosyalarını builder aşamasına kopyala
