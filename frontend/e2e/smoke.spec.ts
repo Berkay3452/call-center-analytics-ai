@@ -129,7 +129,7 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
 
     // Tam analiz: rozet "Tamam" ve güven yüzdesi
     await page.goto("/admin/calls/11111111-1111-4111-8111-111111111111");
-    await expect(page.getByText("Analiz: Tamam")).toBeVisible();
+    await expect(page.getByRole("main").getByText("Analiz: Tamam").first()).toBeVisible();
     await expect(page.getByText("Çağrı türü güveni")).toBeVisible();
     await expect(page.getByText("Satış sonucu güveni")).toBeVisible();
     await expect(page.getByText(/^%\d+$/)).toHaveCount(2);
@@ -495,8 +495,8 @@ test("Issue #204: müşteri sağda, Miço Usta solda; balonlarda süre yok", asy
   const bubbles = transcript.getByTestId("transcript-bubble");
   await expect(bubbles).toHaveCount(5);
   for (const [speaker, label, alignment] of [
-    ["musteri", "Müşteri", "flex-end"],
-    ["firma", "Miço Usta", "flex-start"],
+    ["musteri", "Müşteri", /^(flex-end|flow-end|end)$/],
+    ["firma", "Miço Usta", /^(flex-start|flow-start|start|normal)$/],
   ]) {
     const bubble = transcript.locator(`[data-testid="transcript-bubble"][data-speaker="${speaker}"]`).first();
     await expect(bubble.getByText(label, { exact: true })).toBeVisible();

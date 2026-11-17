@@ -79,7 +79,7 @@ jobs:
     # Tarayıcılar ve sistem kütüphaneleri hazır imajda gelir: apt/ağ erişimine bağımlılık yok.
     # İmaj sürümü package.json'daki @playwright/test sürümüyle aynı olmalıdır.
     container:
-      image: mcr.microsoft.com/playwright:v1.64.1-noble
+      image: mcr.microsoft.com/playwright:v1.65.1-noble
       options: --ipc=host
     timeout-minutes: 25
     defaults:
