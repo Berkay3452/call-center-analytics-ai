@@ -84,7 +84,20 @@ async def test_unsigned_id_allowed_only_when_not_required() -> None:
     assert bad.status_code == 401
 
 
-@pytest.mark.parametrize("sig", ["abc", "12.", ".abc", "x1.abc", "-5.abc"])
+@pytest.mark.parametrize(
+    "sig",
+    [
+        "abc",
+        "12.",
+        ".abc",
+        "x1.abc",
+        "-5.abc",
+        "²1.abc",
+        "²." + "a" * 8,
+        "9" * 40 + ".abc",
+        "١٢٣.abc",
+    ],
+)
 def test_malformed_signature_is_rejected(sig: str) -> None:
     with pytest.raises(UnauthorizedError):
         verify_user_signature(OWNER, sig, _settings())

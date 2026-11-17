@@ -12,6 +12,7 @@
 
 import { createHmac } from "node:crypto";
 import type { NextRequest } from "next/server";
+import { decideBrowserUserId } from "@/lib/server/browser-user-id";
 
 /** `<unix_zaman>.<hex(HMAC-SHA256(user_id.zaman))>`: backend `sign_user_id` ile aynı biçim. */
 function signUserId(userId: string, key: string): string {
@@ -99,7 +100,12 @@ async function forward(
   const contentType = req.headers.get("content-type");
   if (contentType) headers.set("content-type", contentType);
   const userId = req.headers.get("x-user-id");
-  if (userId && process.env.ALLOW_BROWSER_USER_ID === "true") {
+  const gate = decideBrowserUserId(process.env);
+  if (userId && gate.refusedInProduction) {
+    // Canlıda bayrak açık bırakılmışsa kimlik imzalanmaz (herkes istediği sahibi taklit ederdi).
+    console.error("ALLOW_BROWSER_USER_ID canlıda reddedildi: x-user-id imzalanmadı, düşürüldü.");
+  }
+  if (userId && gate.allow) {
     headers.set("x-user-id", userId);
     const signingKey = process.env.USER_SIGNING_KEY;
     if (signingKey) headers.set("x-user-signature", signUserId(userId, signingKey));

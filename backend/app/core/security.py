@@ -98,7 +98,7 @@ def verify_user_signature(
             raise UserSignatureError("imza_eksik", "Kullanıcı kimliği imzası eksik.")
         return
     ts_text, _, mac = signature.partition(".")
-    if not ts_text.isdigit() or not mac:
+    if not (ts_text.isascii() and ts_text.isdigit()) or len(ts_text) > 12 or not mac:
         raise UserSignatureError("imza_gecersiz", "Kullanıcı kimliği imzası geçersiz.")
     ts = int(ts_text)
     current = time.time() if now is None else now
