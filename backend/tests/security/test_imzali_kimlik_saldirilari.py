@@ -105,3 +105,16 @@ async def test_stolen_service_key_alone_cannot_impersonate_any_owner(
     for owner in (OWNER_A, OWNER_B):
         resp = await signed_client.get("/api/v1/chat/sessions", headers=_headers(owner, None))
         assert resp.status_code == 401
+
+
+@pytest.mark.parametrize("claimed", ["admin", "ADMIN", " admin ", "staff", "root", "owner,admin"])
+@pytest.mark.parametrize("path", ["/api/v1/audit-log", "/api/v1/calls", "/api/v1/service-orders"])
+async def test_stolen_owner_signature_cannot_be_upgraded_to_a_staff_role(
+    signed_client: httpx.AsyncClient, path: str, claimed: str
+) -> None:
+    """Yetki yükseltme (#275): sahibin imzası `X-User-Role` eklenerek yönetici yapılamaz."""
+    headers = {**_headers(OWNER_A, sign_user_id(OWNER_A, SIGNING_KEY)), "X-User-Role": claimed}
+
+    resp = await signed_client.get(path, headers=headers)
+
+    assert resp.status_code in {400, 401, 403}, (path, claimed, resp.status_code)

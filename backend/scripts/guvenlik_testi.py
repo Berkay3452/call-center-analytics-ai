@@ -25,7 +25,7 @@ BACKEND = Path(__file__).parents[1]
 SINIFLAR: dict[str, tuple[str, str, str]] = {
     "test_kimlik_saldirilari": ("Kimlik doğrulama ve yetki yükseltme", "LLM06", "API2, API5, API8"),
     "test_imzali_kimlik_saldirilari": (
-        "İmzalı kullanıcı kimliği (sahte/yeniden oynatılan imza)",
+        "İmzalı kullanıcı kimliği (sahte/yeniden oynatılan imza, rol yükseltme)",
         "LLM06",
         "API1, API2",
     ),

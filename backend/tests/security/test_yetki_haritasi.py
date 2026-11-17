@@ -1,7 +1,7 @@
 """Yetki haritası (OWASP API5 işlev düzeyi yetki): durum değiştiren her uç hangi kimliği ister?
 
-Yeni bir yazma ucu eklenip yönetici/sahip denetimi unutulursa bu test kırılır. Bilinen açık uçlar
-`BILINEN_ACIK` içinde adı ve gerekçesiyle durur; rol sistemi (#275) bunları kapatınca liste boşalır.
+Yeni bir yazma ucu eklenip yönetici/sahip denetimi unutulursa bu test kırılır.
+Rol denetimi (#275) sonrası bilinen açık uç yoktur (`BILINEN_ACIK` boş); eklenecek bir istisna gerekçesiyle burada durmalıdır.
 """
 
 from fastapi.routing import APIRoute
@@ -18,17 +18,9 @@ from app.api.routes import (
     service_orders,
 )
 
-# Yazma uçlarından yalnızca servis anahtarı isteyenler. Rol denetimi (#275) gelene kadar bilinen
-# sınırlama: tekne sahibi kimliğiyle gelen çağrı bunlara erişebilir (docs/guvenlik_testi.md).
-BILINEN_ACIK = {
-    ("POST", "/api/v1/calls"),
-    ("POST", "/api/v1/calls/audio"),
-    ("POST", "/api/v1/calls/{call_id}/analyze"),
-    ("PUT", "/api/v1/calls/{call_id}/match"),
-    ("POST", "/api/v1/crm/{call_id}/approve"),
-    ("POST", "/api/v1/crm/{call_id}/reject"),
-    ("PATCH", "/api/v1/service-orders/{order_id}/status"),
-}
+# Rol denetimi (#275) tüm açık uçları kapattı; bilinen açık uç kalmadı. Yeni bir yazma ucu
+# yönetici/sahip denetimi olmadan eklenirse `test_no_mutating_route_is_left_unguarded` kırılır.
+BILINEN_ACIK: set[tuple[str, str]] = set()
 
 
 def _dependency_names(route: APIRoute) -> set[str]:
@@ -74,14 +66,14 @@ def test_every_mutating_route_requires_a_known_identity_dependency() -> None:
         assert "require_service_key" in deps, (method, path)
 
 
-def test_unguarded_mutating_routes_match_the_documented_gap_exactly() -> None:
+def test_no_mutating_route_is_left_unguarded() -> None:
     unguarded = {
         (method, path)
         for method, path, deps in _mutating_routes()
         if not deps & {"require_admin", "require_owner_id"}
     }
 
-    # Yeni açık uç eklenirse fazlalık, #275 bir ucu kapatırsa eksiklik listelenir; ikisi de kırar.
+    # Yeni açık uç eklenirse fazlalık listelenir ve test kırılır.
     assert unguarded == BILINEN_ACIK, {
         "belgelenmemis_acik": sorted(unguarded - BILINEN_ACIK),
         "artik_kapali_listeden_cikar": sorted(BILINEN_ACIK - unguarded),
