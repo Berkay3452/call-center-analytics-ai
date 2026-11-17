@@ -77,7 +77,7 @@ Siber güvenlik dersi kapsamında (**Ses Verisi Güvenliği ve Yapay Zekâ Güve
 | Tekne sahibi uçlarında `X-User-Id` zorunlu ve UUID doğrulamalı | **Var** |
 | Yeni bir uçta kimlik unutulursa yetki matrisi testi (83 test) kırılır | **Var** |
 | Tekne sahibi ve yönetici hesapları: `user_accounts`, kullanıcı adı + argon2id parola karması, deneme sayacı/kilit, seed (giriş ucu ve ekranı yok) | **Var** #278 (giriş ucu açılmadı; kimlik kaynağı hâlâ `X-User-Id`, #266) |
-| İmzalı `X-User-Id` (HMAC, kısa ömür), anahtar rotasyonu | **Planlanan** #266 |
+| İmzalı `X-User-Id` (HMAC-SHA256, 60 sn ömür, ayrı `USER_SIGNING_KEY`), süreli çift anahtarlı rotasyon, argon2 iş parçacığında, IP giriş bütçesi yardımcıları | **Var** #266 (giriş ucu ve oturum yok, #265; vekil rota e2e denenmedi) |
 | Giriş ekranı gerekir mi? | **Hocaya sorulacak** #265 |
 
 ### Kişisel verilerin ve ses verisinin korunması — `S2_kisisel_veri_ve_ses_guvenligi.png`
@@ -91,7 +91,7 @@ Siber güvenlik dersi kapsamında (**Ses Verisi Güvenliği ve Yapay Zekâ Güve
 | Gerçek ses kayıtları ve kişisel veri repoya eklenmez; geliştirme verisi sentetiktir | **Var** (kural) |
 | Maskeleme kapsamı (kart, vergi/pasaport/ehliyet no, plaka, adres, "Ben X" kalıbıyla ad) ve ölçümü (`docs/maskeleme_olcum.md`) | **Var** #268 (NER yok; kalıp dışı ad/adres maskelenmez) |
 | Ses içeriği doğrulama (magic bytes + kod çözücü + süre sınırı), ses uç noktası yalnızca yönetici bağlamı (tekne sahibi kimliği 403), harici STT varsayılan kapalı (`STT_ALLOW_EXTERNAL`), depolama izinleri (0700/0600) | **Var** (#270) |
-| Çağrı silme, saklama süresi, veri envanteri (KVKK) | **Planlanan** #269 |
+| KVKK: veri envanteri (`docs/kisisel_veri_envanteri.md`), `DELETE /calls/{id}` (ses + transkript + analiz + CRM önerisi; servis emri kalır, bağı kopar), `RETENTION_DAYS` ile günlük Celery beat temizliği (varsayılan kapalı), silme olayı denetim günlüğünde, silme sonrası kalıntı testi | **Var** (#269) |
 
 ### Güvenli API kullanımı — `S3_guvenli_api.png`
 
@@ -127,7 +127,7 @@ Siber güvenlik dersi kapsamında (**Ses Verisi Güvenliği ve Yapay Zekâ Güve
 | `owner_id` LLM'den gelmez; araç ve aramalara sunucudaki kimlik verilir; başka sahibin verisi dönmez, başka sahibin oturumu 404 | **Var** |
 | Ajanlar veritabanına doğrudan yazmaz; CRM önerisi ve servis emri yalnızca yönetici onayıyla oluşur (insan döngüde) | **Var** |
 | Bu özelliklerin saldırı testleriyle kanıtlanması (izin listesi, `owner_id`, yazma yok, onay durum makinesi), yetki matrisi belgesi (`docs/guvenlik_mimarisi.md` §7.1) | **Var** #275 |
-| Sunucu tarafında rol denetimi (yönetici / tekne sahibi) | **Eksik**: kimlik doğrulama aşamasına bırakıldı (#278, #266 sonrası); #275'in bu kısmı açık |
+| Sunucu tarafında rol denetimi (yönetici / tekne sahibi): imzalı `X-User-Role`, yönetici uçlarında sahibe 403, sahip uçlarında yönetici kimliğine 403 | **Var** #275 (iki rol; Temsilci ayrı rol değil; `X-User-Id`siz servis anahtarı = yönetici bağlamı) |
 
 ### İzlenebilirlik ve doğrulama
 

@@ -34,12 +34,16 @@ def test_prod_rejects_weak_service_key(settings_factory: Callable[..., Settings]
             settings_factory(
                 app_env="prod",
                 service_api_key=weak,
+                user_signing_key="y" * 40,
+                user_signature_required=True,
                 audit_auth_failures=True,
                 rate_limit_backend="redis",
             )
     ok = settings_factory(
         app_env="prod",
         service_api_key="x" * 40,
+        user_signing_key="y" * 40,
+        user_signature_required=True,
         audit_auth_failures=True,
         rate_limit_backend="redis",
     )
@@ -51,6 +55,8 @@ def test_prod_cannot_disable_auth_failure_audit(settings_factory: Callable[..., 
         settings_factory(
             app_env="prod",
             service_api_key="x" * 40,
+            user_signing_key="y" * 40,
+            user_signature_required=True,
             audit_auth_failures=False,
             rate_limit_backend="redis",
         )
@@ -70,6 +76,8 @@ def test_prod_cannot_turn_rate_limit_off(settings_factory: Callable[..., Setting
         settings_factory(
             app_env="prod",
             service_api_key="x" * 40,
+            user_signing_key="y" * 40,
+            user_signature_required=True,
             audit_auth_failures=True,
             rate_limit_backend="off",
         )

@@ -61,6 +61,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         lifespan=lifespan,
         # Üretimde etkileşimli dokümantasyon kapalı.
         docs_url=None if settings.is_production else "/docs",
+        # Şema belgesi de kapalı: kimliksiz erişen biri tüm uç envanterini çıkarabilirdi (#276).
+        openapi_url=None if settings.is_production else "/openapi.json",
         redoc_url=None,
     )
     app.state.settings = settings

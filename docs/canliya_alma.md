@@ -42,6 +42,8 @@ Sistemin bileşenleri:
 | Değişken Adı | Açıklama | Kullanıldığı Servis |
 |---|---|---|
 | `SERVICE_API_KEY` | Backend API'yi yetkisiz erişimden koruyan servis anahtarı | API, Worker, Init |
+| `USER_SIGNING_KEY` | `X-User-Id` imza anahtarı (≥ 32 karakter, servis anahtarından farklı); prod'da `USER_SIGNATURE_REQUIRED=true` | API, Worker, Web |
+| `ALLOW_BROWSER_USER_ID` | **Canlıda kapalı olmalı** (varsayılan kapalı). Oturum (#265) gelene kadar canlıda tekne sahibi kimliği bu yoldan akamaz: tarayıcının `x-user-id`'sini imzalamak herkesin istediği sahibi taklit etmesi demektir. `NODE_ENV=production` iken `APP_ENV` `local`/`test` değilse bayrak `true` olsa bile vekil rota kimliği imzalamaz, düşürür ve hata günlüğüne yazar. Canlıya almadan önce Web servisinde `ALLOW_BROWSER_USER_ID` tanımsız/`false` olduğunu kontrol edin | Web |
 | `SERVICE_KEY` | Frontend sunucusunun Backend API ile haberleşirken kullandığı servis anahtarı | Web |
 | `DATABASE_URL` | PostgreSQL bağlantı adresi (`postgresql+asyncpg://...`) | API, Worker, Init |
 | `REDIS_URL` | Redis bağlantı adresi (`redis://...`) | API, Worker, Init |
@@ -144,3 +146,11 @@ Konteynerler durumsuz (stateless) olduğundan, santralden gelen ses dosyaları y
 * API, `APP_ENV=prod` iken `Strict-Transport-Security: max-age=63072000; includeSubDomains` başlığını gönderir; Next arayüzü de üretim derlemesinde aynısını gönderir. Yerel `http` geliştirmede gönderilmez (tarayıcıyı kilitlemesin).
 * **TLS sonlandırma uygulamada değil ortamdadır:** Cloud Run / yük dengeleyici yalnızca HTTPS kabul etmeli, HTTP'yi yönlendirmelidir. Ses dosyaları ve kişisel veri içeren istekler yalnızca TLS ile taşınmalıdır; .NET uygulaması ile bu servis arasındaki çağrı da `https://` adresiyle yapılmalıdır.
 * Arkada ters vekil varsa istemci IP'sinin doğru görünmesi için vekilin IP'yi iletmesi ve uvicorn'un `--proxy-headers`/`--forwarded-allow-ips` ile yapılandırılması gerekir; aksi halde hız sınırı tüm istekleri vekil IP'si altında sayar.
+
+---
+
+## 7. Saklama süresi ve silme (KVKK, #269)
+
+* `RETENTION_DAYS` canlıda **işletmenin belirlediği** değerle verilmelidir (varsayılan 0 = kapalı, otomatik silme yok). Celery beat süreci (`celery ... beat`) çalışmıyorsa temizlik de çalışmaz; beat'in ayakta olduğu izlenmelidir.
+* Çağrı silme `DELETE /api/v1/calls/{id}` ile yapılır (yalnızca yönetici bağlamı). Yedekler ve nesne deposu sürümleri bu uçla silinmez; yedek saklama süresi `RETENTION_DAYS` ile uyumlu seçilmeli, GCS nesne sürümlemesi kapalı olmalıdır.
+* Ayrıntı ve kalan sınırlar: `docs/kisisel_veri_envanteri.md`.

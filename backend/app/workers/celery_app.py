@@ -65,6 +65,11 @@ celery_app.conf.update(
             "task": "app.workers.tasks.system.recover_stuck_calls",
             "schedule": 60.0,
         },
+        # KVKK saklama süresi (#269): günde bir; RETENTION_DAYS=0 iken görev boş geçer.
+        "purge-expired-calls": {
+            "task": "app.workers.tasks.system.purge_expired_calls",
+            "schedule": 86400.0,
+        },
     },
 )
 

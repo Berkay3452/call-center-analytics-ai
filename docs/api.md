@@ -26,8 +26,12 @@ Servisi yalnızca Miço Usta .NET uygulaması çağırır; tarayıcı doğrudan 
 |---|---|---|
 | `X-Service-Key` | Her istekte | Paylaşılan servis anahtarı. Eksik/yanlışsa 401. |
 | `X-User-Id` | Tekne sahibi uçlarında zorunlu | Oturumdaki tekne sahibinin kimliği (UUID, `customers.id`). Eksikse veya UUID değilse 400. |
+| `X-User-Signature` | `X-User-Id` ile (canlıda zorunlu) | `<unix_zaman>.<hex>` HMAC-SHA256 imzası (#266). Eksik/bozuk/süresi geçmişse 401. |
+| `X-User-Role` | İsteğe bağlı, yalnızca `X-User-Id` ile | `admin` veya `owner` (varsayılan `owner`); imza mesajına dahildir (#275). `X-User-Id` olmadan 400, bilinmeyen değer 400. |
 
-Admin/tekne sahibi rol ayrımını .NET uygulaması yapar. Tekne sahibi uçları **yalnızca** `X-User-Id`'deki kişinin verisini döndürür; gövdede kimlik alınmaz.
+**Rol denetimi (#275):** `X-User-Id` yoksa çağıran `admin` (servis/yönetici) bağlamıdır. Yönetici uçları (`/calls*`, `/crm*`, `/service-orders*`, `/analytics*`, `/customers`, `/audit-log`) tekne sahibi rolüyle 403 verir; tekne sahibi uçları (`/assistant*`, `/chat*`) yönetici kimliğiyle 403 verir.
+
+Admin/tekne sahibi rol ayrımını sunucu yukarıdaki başlıklarla yapar; kimliği veren taraf .NET uygulamasıdır. Tekne sahibi uçları **yalnızca** `X-User-Id`'deki kişinin verisini döndürür; gövdede kimlik alınmaz.
 
 ## 3. Uç listesi
 
@@ -37,6 +41,7 @@ Admin/tekne sahibi rol ayrımını .NET uygulaması yapar. Tekne sahibi uçları
 | `GET /me/owner` | Tekne sahibi | `X-Service-Key` + zorunlu `X-User-Id` | `ServiceCaller`; `X-User-Id` yoksa 400, anahtar yanlışsa 401 | — |
 | `GET /calls` | Admin | `CallFilters` (sorgu) | `Page` of `CallListItem` | #51 |
 | `GET /calls/{call_id}` | Admin | — | `CallDetail` | #51 |
+| `DELETE /calls/{call_id}` | Admin | — | 204; çağrı, ses, transkript, analiz ve CRM önerisi silinir, servis emri kalır (bağı kopar); işlenmekte olan çağrı 409; `X-User-Id` ile gelen 403 (KVKK, `docs/kisisel_veri_envanteri.md`) | #269 |
 | `PUT /calls/{call_id}/match` | Admin | `CallMatchIn` | `CallDetail` | #119 |
 | `GET /crm` | Admin | `CallFilters` (sorgu) | `Page` of `CrmRecordItem` | #51 |
 | `POST /crm/{call_id}/approve` | Admin | `CrmApproveIn` (isteğe bağlı) | `CrmReviewOut`; eşleşme yoksa 409 | #106 |
@@ -131,7 +136,7 @@ Yeni görev açıldıysa `already_running=false`'tur. Satır kilitlendiği için
 - `AuditLogItem`: tek kayıt (`id`, `occurred_at`, `actor_id`, `actor_role`, `action`, `target_type`, `target_id`, `outcome`, `request_id`, `ip`, `details`). Kişisel veri içermez.
 - `AuditLogFilters`: `action`, `outcome`, `actor_id`, `target_type`, `target_id`, `since`, `until`, `page`, `page_size`. En yeni kayıt başta gelir.
 - Yalnızca okuma ucu vardır; ekleme/değiştirme/silme ucu yoktur. Günlüğü görüntülemek de `denetim_goruntulendi` olarak kaydedilir.
-- Düşen olaylar: kimlik doğrulama başarısızlığı, çağrı yükleme (metin/ses), yeniden analiz, elle eşleştirme, ses dosyası erişimi (aynı çağrı, kişi ve IP için 5 dakikada en az bir kayıt; Range başlangıç ofseti atlatamaz), CRM onay/red, servis emri oluşturma ve durum değişikliği, asistan güvenlik tetikleyicileri (kural ihlali, injection, başka taraf verisi). Çağrı silme (#269) bu işte eklenecek.
+- Düşen olaylar: kimlik doğrulama başarısızlığı, çağrı yükleme (metin/ses), yeniden analiz, elle eşleştirme, ses dosyası erişimi (aynı çağrı, kişi ve IP için 5 dakikada en az bir kayıt; Range başlangıç ofseti atlatamaz), CRM onay/red, servis emri oluşturma ve durum değişikliği, asistan güvenlik tetikleyicileri (kural ihlali, injection, başka taraf verisi). Çağrı silme (`cagri_silindi`, silme nedeni `talep` veya `saklama_suresi`) kişisel veri olmadan yazılır (#269).
 
 ### Çağrı alma
 - `CallCreate`: sesi olmayan çağrı (geliştirme ve sentetik veri için). `transcript` (düz metin) veya `SegmentIn` listesinden biri zorunlu.

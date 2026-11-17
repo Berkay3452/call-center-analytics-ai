@@ -4,6 +4,7 @@ Tüm yapılandırma ortam değişkenlerinden (veya backend/.env dosyasından) ok
 Koda hiçbir anahtar veya model adı gömülmez; örnek değerler .env.example'dadır.
 """
 
+from datetime import datetime
 from functools import lru_cache
 from typing import Literal
 
@@ -50,6 +51,11 @@ class Settings(BaseSettings):
     # Takılı kalan çağrı zaman aşımı (dakika). Bu süreden uzun süredir
     # 'beklemede', 'yaziya_cevriliyor' veya 'isleniyor' olan çağrılar otomatik kurtarılır (#107).
     stuck_call_timeout_min: int = Field(default=10, ge=1)
+    # KVKK saklama süresi (#269): çağrının `started_at` tarihinden bu kadar gün sonra çağrı, ses ve
+    # transkript silinir (günlük Celery beat görevi). 0 = kapalı (geliştirme verisi silinmesin);
+    # canlıda işletmenin belirlediği süre verilmelidir (bkz. docs/kisisel_veri_envanteri.md).
+    retention_days: int = Field(default=0, ge=0)
+    retention_batch_size: int = Field(default=200, ge=1)
 
     # --- Sağlık kontrolü ---
     health_check_timeout_s: float = 2.0
@@ -57,6 +63,16 @@ class Settings(BaseSettings):
     # --- Servis anahtarı ve ses depolama ---
     # .NET API'nin Python servisini çağırırken `X-Service-Key` ile gönderdiği paylaşılan anahtar.
     service_api_key: SecretStr | None = None
+    # Anahtar rotasyonu (#266): eski anahtar, bitiş zamanına kadar yeni anahtarla geçerlidir.
+    service_api_key_previous: SecretStr | None = None
+    service_api_key_previous_expires_at: datetime | None = None
+    # İmzalı `X-User-Id` (#266): servis anahtarından AYRI HMAC anahtarı. İmza
+    # `X-User-Signature: <unix_zaman>.<hex>` biçimindedir; yalnızca sunucu tarafı (proxy) üretir.
+    user_signing_key: SecretStr | None = None
+    user_signing_key_previous: SecretStr | None = None
+    user_signing_key_previous_expires_at: datetime | None = None
+    user_signature_required: bool = False  # canlıda zorunlu (doğrulayıcı)
+    user_signature_max_age_s: int = Field(default=60, ge=5, le=600)
     supabase_url: str | None = None
     supabase_service_role_key: SecretStr | None = None  # yalnızca backend; asla frontend'e verilmez
     storage_bucket: str = "call-audio"
@@ -254,6 +270,24 @@ class Settings(BaseSettings):
             key = self.service_api_key.get_secret_value() if self.service_api_key else ""
             if len(key) < 32 or key == PLACEHOLDER_SERVICE_KEY:
                 raise ValueError("SERVICE_API_KEY canlıda en az 32 karakterli, özel olmalıdır.")
+        return self
+
+    @model_validator(mode="after")
+    def _guard_rotation_and_signature(self) -> "Settings":
+        # Eski anahtar bitiş zamanı olmadan kabul edilmez (sonsuz geçerli ikinci anahtar olmasın).
+        if self.service_api_key_previous and self.service_api_key_previous_expires_at is None:
+            raise ValueError("SERVICE_API_KEY_PREVIOUS için ..._EXPIRES_AT zorunlu.")
+        if self.user_signing_key_previous and self.user_signing_key_previous_expires_at is None:
+            raise ValueError("USER_SIGNING_KEY_PREVIOUS için ..._EXPIRES_AT zorunlu.")
+        if self.is_production and not self.auth_dev_bypass:
+            if not self.user_signature_required:
+                raise ValueError("USER_SIGNATURE_REQUIRED canlıda kapatılamaz.")
+            signing = self.user_signing_key.get_secret_value() if self.user_signing_key else ""
+            service = self.service_api_key.get_secret_value() if self.service_api_key else ""
+            if len(signing) < 32 or signing == service:
+                raise ValueError(
+                    "USER_SIGNING_KEY canlıda >=32 karakter ve servis anahtarından farklı olmalı."
+                )
         return self
 
 

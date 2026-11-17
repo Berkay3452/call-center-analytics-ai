@@ -8,7 +8,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Body, Query
 
-from app.api.deps import ServiceCallerDep, SessionDep
+from app.api.deps import AdminCallerDep, SessionDep
 from app.schemas.api import (
     CallFilters,
     CrmApproveIn,
@@ -33,7 +33,7 @@ router = APIRouter(prefix="/crm", tags=["crm"])
     },
 )
 async def list_crm_records(
-    _: ServiceCallerDep,
+    _: AdminCallerDep,
     session: SessionDep,
     filters: Annotated[CallFilters, Query()],
 ) -> Page[CrmRecordItem]:
@@ -56,7 +56,7 @@ async def list_crm_records(
 )
 async def approve_crm_record(
     call_id: UUID,
-    caller: ServiceCallerDep,
+    caller: AdminCallerDep,
     session: SessionDep,
     payload: Annotated[CrmApproveIn | None, Body()] = None,
 ) -> CrmReviewOut:
@@ -84,7 +84,7 @@ async def approve_crm_record(
 )
 async def reject_crm_record(
     call_id: UUID,
-    caller: ServiceCallerDep,
+    caller: AdminCallerDep,
     session: SessionDep,
     payload: Annotated[CrmRejectIn | None, Body()] = None,
 ) -> CrmReviewOut:

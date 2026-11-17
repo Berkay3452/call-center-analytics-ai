@@ -8,7 +8,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Query
 
-from app.api.deps import ServiceCallerDep, SessionDep
+from app.api.deps import AdminCallerDep, SessionDep
 from app.domain.audit import AuditAction
 from app.schemas.api import (
     ServiceOrderDetail,
@@ -34,7 +34,7 @@ router = APIRouter(prefix="/service-orders", tags=["service-orders"])
     },
 )
 async def list_service_orders(
-    _: ServiceCallerDep,
+    _: AdminCallerDep,
     session: SessionDep,
     filters: Annotated[ServiceOrderFilters, Query()],
 ) -> Page[ServiceOrderListItem]:
@@ -54,7 +54,7 @@ async def list_service_orders(
 )
 async def get_service_order(
     order_id: UUID,
-    _: ServiceCallerDep,
+    _: AdminCallerDep,
     session: SessionDep,
 ) -> ServiceOrderDetail:
     """Belirli bir servis emrinin müşteri, tekne, usta ve kaynak çağrı detaylarını getirir."""
@@ -75,7 +75,7 @@ async def get_service_order(
 async def update_service_order_status(
     order_id: UUID,
     payload: ServiceOrderStatusUpdate,
-    caller: ServiceCallerDep,
+    caller: AdminCallerDep,
     session: SessionDep,
 ) -> ServiceOrderDetail:
     """Servis emrinin durumunu iş akışına göre günceller.

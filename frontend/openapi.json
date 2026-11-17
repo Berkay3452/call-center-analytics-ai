@@ -295,6 +295,67 @@
             }
           }
         }
+      },
+      "delete": {
+        "summary": "Çağrıyı ve ses kaydını sil (KVKK)",
+        "description": "Çağrıyı, ses dosyasını, transkripti, analizi ve CRM önerisini siler. Servis emirleri kalır. Yalnızca yönetici bağlamı.",
+        "operationId": "deleteCall",
+        "parameters": [
+          {
+            "name": "call_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Silindi"
+          },
+          "401": {
+            "description": "Yetkisiz erişim",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Yalnızca yönetici bağlamı (X-User-Id olmadan)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Çağrı bulunamadı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Çağrı şu an işleniyor",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/calls/{call_id}/analyze": {

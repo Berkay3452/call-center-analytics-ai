@@ -12,6 +12,7 @@ Kurallar:
 - Çağıran işlemi onaylar (`verify_credentials` flush eder, commit etmez).
 """
 
+import asyncio
 import secrets
 import string
 import unicodedata
@@ -26,6 +27,8 @@ from argon2.exceptions import InvalidHashError, VerificationError, VerifyMismatc
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.errors import TooManyRequestsError
+from app.core.ratelimit import RateLimiter
 from app.db.models.accounts import UserAccount
 from app.domain.accounts import (
     LOCK_MINUTES,
@@ -158,7 +161,10 @@ async def verify_credentials(
         .where(UserAccount.username == normalize_username(username))
         .with_for_update()
     )
-    result = evaluate_login(account, password, now)
+    # argon2id CPU/bellek yoğundur: olay döngüsünü (tüm istekleri) bloklamasın diye iş parçacığına
+    # alınır (#266). `account` bu sırada yalnızca düz öznitelik atamasıyla değişir (G/Ç yok);
+    # satır kilidi (`FOR UPDATE`) işlem bitene dek sürdüğünden aynı hesapta yarış olmaz.
+    result = await asyncio.to_thread(evaluate_login, account, password, now)
     if account is not None:
         await session.flush()
     if result.just_locked:
@@ -188,3 +194,33 @@ async def create_account(
     session.add(account)
     await session.flush()
     return account
+
+
+# --- IP başına giriş denemesi sınırı (#266) ---------------------------------------------------
+# Hesap kilidi (5 yanlışta 15 dk) tek başına bir saldırganın bilinen bir kullanıcı adını sürekli
+# kilitlemesine (hizmet engelleme) izin verir. Giriş ucu açıldığında şu iki yardımcı kullanılır:
+# kaynak IP'nin başarısız deneme bütçesi dolunca parola doğrulamasına hiç girilmez (hem hesap
+# kilidi sayacı hem argon2 maliyeti korunur). Kalan risk: çok sayıda IP'den dağıtık saldırı
+# hesabı yine kilitleyebilir; bu risk belgelenmiştir (docs/guvenlik_mimarisi.md).
+
+
+async def enforce_login_ip_limit(
+    limiter: RateLimiter | None, ip: str, *, limit: int, window_s: int
+) -> None:
+    """IP'nin başarısız giriş bütçesi dolduysa `TooManyRequestsError` fırlatır (sayaç artmaz)."""
+    if limiter is None:
+        return
+    state = await limiter.peek(f"giris:{ip}", limit, window_s)
+    if not state.allowed:
+        raise TooManyRequestsError(
+            "Çok fazla başarısız giriş denemesi; lütfen bekleyin.",
+            retry_after_s=state.retry_after_s,
+        )
+
+
+async def record_login_failure_ip(
+    limiter: RateLimiter | None, ip: str, *, limit: int, window_s: int
+) -> None:
+    """Başarısız giriş denemesini IP bütçesine yazar (başarılı girişte çağrılmaz)."""
+    if limiter is not None:
+        await limiter.hit(f"giris:{ip}", limit, window_s)
