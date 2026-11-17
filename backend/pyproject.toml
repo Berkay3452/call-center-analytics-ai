@@ -8,7 +8,7 @@ readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
     # Web katmanı
-    "fastapi~=0.142.0",
+    "fastapi>=0.142,<0.163",
     "uvicorn[standard]~=0.54.0",
     "sse-starlette~=3.5",
     # Doğrulama ve ayarlar

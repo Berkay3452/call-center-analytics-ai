@@ -10,7 +10,7 @@ iniconfig==2.3.0
     # via pytest
 librt==0.16.0 ; platform_python_implementation != 'PyPy'
     # via mypy
-mypy==2.4.0
+mypy==2.4.1
 mypy-extensions==1.1.0
     # via mypy
 packaging==26.3
@@ -23,13 +23,13 @@ pluggy==1.6.0
     #   pytest-cov
 pygments==2.21.0
     # via pytest
-pytest==9.1.1
+pytest==9.2.0
     # via
     #   pytest-asyncio
     #   pytest-cov
-pytest-asyncio==1.4.0
+pytest-asyncio==1.5.0
 pytest-cov==7.1.0
-ruff==0.16.10
+ruff==0.17.5
 typing-extensions==4.16.0
     # via
     #   mypy
