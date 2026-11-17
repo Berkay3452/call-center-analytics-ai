@@ -59,6 +59,20 @@ Kullanıcılar (admin ve tekne sahibi) Miço Usta'nın Next.js arayüzünü kull
 
 Not: Gezdiğimiz örnek site (Figma Make ile hazırlanmış bir prototip) arayüzün görünümünü gösteriyor. Gerçek uygulamanın kod tabanı ve veri şeması hocadan alınacaktır.
 
+## 4.1 Güvenlik Katmanı
+
+![Güvenlik katmanı mimarisi](docs/diagrams/S0_guvenlik_katmani_mimarisi.png)
+
+Siber güvenlik dersi kapsamında (Ses Verisi Güvenliği ve Yapay Zekâ Güvenliği) beş perspektif mimarinin parçasıdır; her biri için şema, **var / planlanan** ayrımlı tablo ve issue ayrıntısı `docs/guvenlik_mimarisi.md` içindedir (iş takibi: etiket `güvenlik-katmanı`, kilometre taşı Hafta 10, ana issue #264).
+
+| Perspektif | Bugün (kodda var) | Planlanan | Şema |
+|---|---|---|---|
+| Kimlik doğrulama | Servis anahtarı (sabit zamanlı karşılaştırma, prod ≥ 32 karakter), tarayıcı anahtarı görmez, her uç kimlik ister | İmzalı `X-User-Id`, anahtar rotasyonu, denetim günlüğü; giriş ekranı kararı hocaya sorulacak (#265-#267) | `S1_kimlik_dogrulama.png` |
+| Kişisel veri | Transkriptte maskeleme, LLM'e yalnız maskeli metin, yerel STT, yükleme kontrolleri | Maskeleme ölçümü ve kapsamı, KVKK silme/saklama, ses güvenliği (#268-#270) | `S2_kisisel_veri_ve_ses_guvenligi.png` |
+| Güvenli API | CORS listesi, parametreli sorgu, Pydantic doğrulama, izin listeli vekil, CI'da bağımlılık taraması | Hız sınırı, gövde sınırı, güvenlik başlıkları, gizli anahtar taraması (#271, #272) | `S3_guvenli_api.png` |
+| Prompt injection | LLM'siz güvenlik kapısı (ifade listesi), "transkript veridir" kuralı, çıktı doğrulama ve grounding | Normalizasyon, LLM sınıflandırıcı, dolaylı injection savunması, kırmızı takım ölçümü (#273, #274) | `S4_prompt_injection.png` |
+| Yetkisiz komut | Salt-okunur ve sahip kapsamlı araçlar, CRM insan onayı | Araç izin listesi, sunucuda rol denetimi (#275) | `S5_yetkisiz_komut_korumasi.png` |
+
 ## 5. Teknoloji
 
 | Katman | Miço Usta (hazır) | Bizim AI servisimiz |
@@ -162,7 +176,7 @@ Arayüz ile AI servisi arasındaki sözleşme `docs/api.md` ve `frontend/openapi
 | KPI özeti | Tarih aralığına göre toplam KPI'lar |
 | Asistan sohbeti | Soru ve kullanıcı kimliği gönderilir; kaynaklı cevap akış olarak döner; oturum listesi ve geçmişi |
 
-- **Kimlik doğrulama:** İstemci AI servisini servis anahtarıyla çağırır; tekne sahibinin kimliği isteğe eklenir.
+- **Kimlik doğrulama:** İstemci AI servisini servis anahtarıyla çağırır; tekne sahibinin kimliği isteğe eklenir. Kullanıcı girişi şu an yoktur; kapsam kararı bekliyor (§4.1, #265).
 - **Hatalar:** Tek tip hata biçimi (kod, mesaj, istek kimliği) korunur.
 
 ## 9. Veri
@@ -194,7 +208,8 @@ Arayüz ile AI servisi arasındaki sözleşme `docs/api.md` ve `frontend/openapi
 | Docker ile tek komutla çalıştırma, ses depolama soyutlaması (yerel, GCS) | **Hazır**; uçtan uca duman testi CI'da |
 | CI ve dal koruması | **Hazır**: backend ve frontend iş akışları, Playwright e2e (Chromium), `main` için ruleset (zorunlu kontroller: Backend CI sonucu, Frontend CI sonucu) |
 | Erişilebilirlik (axe, klavye, pencere daraltma), Playwright E2E testleri | **Hazır** |
-| Miço Usta uygulamasına entegrasyon, kimlik doğrulama, Google Cloud'a canlıya alma | **Yapılmadı** (hocayla yöntem netleşecek) |
+| Güvenlik katmanı (§4.1): servis anahtarı, maskeleme, güvenlik kapısı, sahip izolasyonu | **Kısmen hazır**; eksikler Hafta 10'da (#264-#276), `docs/guvenlik_mimarisi.md` |
+| Miço Usta uygulamasına entegrasyon, kullanıcı girişi, Google Cloud'a canlıya alma | **Yapılmadı** (hocayla yöntem netleşecek) |
 | Duygu analizi agent'ı, embedding'in API ile denenmesi | **Planlandı, vize sonrası** |
 
 **Bilinen sorunlar:** Ücretsiz LLM kotası canlı demoda yavaşlığa yol açabilir (429'da bekleyip yeniden denenir). Mono kayıtta sağ-sol konuşmacı ayrımı yok (tek "müşteri" balonu); gerçek ayrım için model tabanlı konuşmacı ayrımı gerekir. Windows'ta `localhost` önce IPv6'ya gider ve Redis bağlantısı ~2 sn gecikir; bu yüzden varsayılan Redis adresi `127.0.0.1`'dir (mevcut `.env` dosyalarında elle değiştirilmelidir). Ortak geliştirme veritabanında önceki denemelerden kalan veri bazı entegrasyon testlerini düşürebilir (temiz veritabanında geçer).
@@ -211,10 +226,13 @@ Arayüz ile AI servisi arasındaki sözleşme `docs/api.md` ve `frontend/openapi
 | Embedding'i (bge-m3) API anahtarıyla çağırma denemesi (TEI konteynerini kaldırmak için) | Vize sonrası |
 | Mono kayıtta konuşmacı ayrımı (model tabanlı) | Vize sonrası |
 | Admin'deki mevcut AI Asistan'ın iyileştirilmesi kapsama dahil mi? | Hocaya sorulacak |
+| "Kimlik doğrulama" giriş ekranı mı, servisler arası doğrulama mı? (#265) | Hocaya sorulacak |
 
 **Karara bağlananlar:** Çağrı verisi 100'e çıkarıldı (#148), toplu ölçümler yapıldı (#149, #151, #216).  STT: yerel faster-whisper, stereo; varsayılan `small`, doğruluk için `medium` (#124). Hızlı LLM katmanı: NVIDIA lightning-30b, 404'te yedek model (#122). Veritabanı geliştirmede yerel PostgreSQL, Supabase yok.
 
 ## 13. Değişiklik Günlüğü
+
+- **v5 eki (2026-11-17):** §4.1 Güvenlik Katmanı eklendi (beş perspektif, var/planlanan ayrımı), güvenlik şemaları S0-S5 ve `docs/guvenlik_mimarisi.md`; iş takibi Hafta 10 (#264-#276). Mimari değişmedi, yalnızca güvenlik katmanı belgelendi.
 
 - **v5 (2026-11-11):** Belge sürümü v5 oldu (dosya `Sistem_mimarisi_v5.md`). Manuel test düzeltmeleri: Miço AI güvenlik ve anlaşılırlık katmanı, "geçen ay" dönemi, tutar soruları, hava, varyantlı ret cevapları, soru üst sınırı 5000 (#252); asistan arayüzü (#253); yükleme sayfası (#254); STT alan sözcüğü (#255). CI genişletmesi, belge tutarlılığı testi, güncel diyagramlar ve Redis adresi (#251). Durum, bilinen sorunlar ve açık kararlar yenilendi; duygu analizi ve embedding API denemesi vize sonrasına bırakıldı.
 
