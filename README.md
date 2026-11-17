@@ -56,6 +56,7 @@ Kullanıcılar (admin ve tekne sahibi) Next.js arayüzünü kullanır. Arayüz, 
 | ![Miço AI](docs/diagrams/03_miko_ai.png) | Miço AI akışı: planlama, arama, kaynak denetimi |
 | ![Sentetik veri](docs/diagrams/05_sentetik_veri.png) | Sentetik çağrı ve tekne verisi üretimi |
 | ![ER](docs/diagrams/er_diagram.png) | Veritabanı ER diyagramı (17 tablo) |
+| ![Güvenlik katmanı](docs/diagrams/S0_guvenlik_katmani_mimarisi.png) | Güvenlik katmanı mimarisi; beş perspektifin şemaları ve ayrıntısı: [`docs/guvenlik_mimarisi.md`](docs/guvenlik_mimarisi.md) |
 
 Ayrıntılı mimari, kararlar ve mevcut durum: [`Sistem_mimarisi_v5.md`](Sistem_mimarisi_v5.md).
 
