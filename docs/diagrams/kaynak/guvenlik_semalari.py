@@ -235,8 +235,8 @@ def s5():
                "Yapay zekâ ne yapabilir? Yalnızca izinli, salt-okunur, sahip kapsamlı araçlar; yazma insan onayıyla")
     c.box(2, 62, 15, 10, "Kullanıcı / LLM\nistemi", "dis")
     c.box(22, 62, 18, 10, "Planlayıcı\nLLM araç seçimi\n(şema doğrulamalı)", "var", 9)
-    c.box(45, 62, 20, 10, "Araç izin listesi\n(AssistantTool, 5 araç)\nkanıt testi #275", "var", 9)
-    c.box(70, 62, 28, 10, "owner_id LLM'den gelmez,\nsunucudaki kimlik verilir\n(kanıt testi #275)", "var", 9)
+    c.box(45, 62, 20, 10, "Araç izin listesi\n(AssistantTool, 5 araç)\nizin dışı → ret + audit ✔", "var", 9)
+    c.box(70, 62, 28, 10, "owner_id LLM'den gelmez,\nsunucudaki kimlik verilir\n(kanıt testi ✔ #275)", "var", 9)
     for a, b in [(17, 22), (40, 45), (65, 70)]:
         c.arrow(a, 67, b, 67)
     c.zone(2, 30, 60, 26, "Salt-okunur araçlar (var)")
@@ -244,12 +244,12 @@ def s5():
     c.box(24, 34, 18, 16, "get_remaining_package", "var", 9)
     c.box(44, 34, 16, 16, "get_last_maintenance\nget_upcoming_\nmaintenance", "var", 9)
     c.zone(66, 30, 32, 26, "Yazma (insan onayı)")
-    c.box(68, 34, 28, 16, "CRM önerisi / servis emri:\nyönetici onaylamadan yazılmaz\nonay adımı atlanamaz (test #275)", "var", 9)
+    c.box(68, 34, 28, 16, "CRM önerisi / servis emri:\nyönetici onaylamadan yazılmaz\nonay adımı atlanamaz (test ✔ #275)", "var", 9)
     c.arrow(31, 62, 31, 56)
     c.arrow(82, 62, 82, 56)
     c.zone(2, 6, 96, 20, "Rol tabanlı yetki")
     c.box(4, 9, 44, 13, "Bugün: roller yalnız arayüzde simüle (sunucuda denetim YOK)\nSaldırı: anahtarı olan herkes yönetici uçlarını çağırabilir", "tehdit", 9)
-    c.box(52, 9, 44, 13, "#275 Yetki matrisi rol × uç × eylem;\nimzalı X-User-Role, yetkisiz → 403, audit log\n(kimlik doğrulama aşamasında, #278 ve #266'dan sonra)", "plan", 9)
+    c.box(52, 9, 44, 13, "Yetki matrisi belgesi ✔ (§7.1); sunucu rol\ndenetimi (X-User-Role, 403) AÇIK: kimlik\ndoğrulama aşamasında (#278, #266 sonrası)", "plan", 9)
     c.save("S5_yetkisiz_komut_korumasi.png")
 
 

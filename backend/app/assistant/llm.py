@@ -33,6 +33,17 @@ class AssistantLLMError(RuntimeError):
     """LLM çağrısı başarısız oldu veya geçerli çıktı alınamadı (API bunu 503'e çevirir)."""
 
 
+class AssistantOutputInvalidError(AssistantLLMError):
+    """LLM sağlayıcı hatasız yanıt verdi ama şemaya uymadı (ör. izin listesi dışı araç adı).
+
+    `fields`: şemayı bozan üst düzey alan adları (ret olayının nedeni için; değer taşımaz).
+    """
+
+    def __init__(self, message: str, fields: tuple[str, ...] = ()) -> None:
+        super().__init__(message)
+        self.fields = fields
+
+
 def load_prompt(name: str) -> str:
     return (PROMPTS_DIR / f"{name}.md").read_text(encoding="utf-8").strip()
 
@@ -100,6 +111,7 @@ class AssistantLLM:
             f"Yalnızca bu JSON şemasına uyan TEK bir JSON nesnesi döndür:\n{schema_json}"
         )
         feedback = ""
+        bad_fields: tuple[str, ...] = ()
         for attempt in range(max_fix_attempts + 1):
             content = prompt + (f"\n\n## Düzeltme gerekli\n{feedback}" if feedback else "")
             messages = [SystemMessage(system), HumanMessage(content)]
@@ -125,7 +137,11 @@ class AssistantLLM:
                 return schema.model_validate(extract_json_object(text))
             except ValidationError as exc:
                 feedback = format_validation_error(exc)
+                bad_fields = tuple(str(e["loc"][0]) for e in exc.errors() if e["loc"])
             except ValueError as exc:
                 feedback = str(exc)
+                bad_fields = ()
             log.warning("assistant.invalid_output", attempt=attempt + 1, error=feedback[:200])
-        raise AssistantLLMError(f"LLM geçerli çıktı üretemedi: {feedback[:200]}")
+        raise AssistantOutputInvalidError(
+            f"LLM geçerli çıktı üretemedi: {feedback[:200]}", bad_fields
+        )

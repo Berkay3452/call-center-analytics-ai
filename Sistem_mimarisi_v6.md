@@ -126,8 +126,8 @@ Siber güvenlik dersi kapsamında (**Ses Verisi Güvenliği ve Yapay Zekâ Güve
 | Araç izin listesi: planlayıcı yalnızca 5 sabit araçtan (`AssistantTool`) birini seçebilir; araçlar salt-okunurdur | **Var** |
 | `owner_id` LLM'den gelmez; araç ve aramalara sunucudaki kimlik verilir; başka sahibin verisi dönmez, başka sahibin oturumu 404 | **Var** |
 | Ajanlar veritabanına doğrudan yazmaz; CRM önerisi ve servis emri yalnızca yönetici onayıyla oluşur (insan döngüde) | **Var** |
-| Bu özelliklerin saldırı testleriyle kanıtlanması, yetki matrisi belgesi | **Planlanan** #275 |
-| Sunucu tarafında rol denetimi (yönetici / tekne sahibi) | **Planlanan** #275 (kimlik doğrulama aşamasında) |
+| Bu özelliklerin saldırı testleriyle kanıtlanması (izin listesi, `owner_id`, yazma yok, onay durum makinesi), yetki matrisi belgesi (`docs/guvenlik_mimarisi.md` §7.1) | **Var** #275 |
+| Sunucu tarafında rol denetimi (yönetici / tekne sahibi) | **Eksik**: kimlik doğrulama aşamasına bırakıldı (#278, #266 sonrası); #275'in bu kısmı açık |
 
 ### İzlenebilirlik ve doğrulama
 

@@ -14,7 +14,7 @@ from app.agents.grounding import normalize
 from app.assistant import injection, safety, tools
 from app.assistant.answer import general_answer, history_answer, numeric_answer
 from app.assistant.boats import foreign_boat_reply, resolve_boat
-from app.assistant.llm import AssistantLLM
+from app.assistant.llm import AssistantLLM, AssistantOutputInvalidError
 from app.assistant.planner import (
     mentions_topic,
     plan_by_rules,
@@ -197,7 +197,18 @@ async def _answer_question(
         return AssistantAnswer(
             answer=foreign_boat_reply(own_boats), question_type=QuestionType.KAPSAM_DISI
         )
-    plan = await plan_question(question, llm)
+    try:
+        plan = await plan_question(question, llm)
+    except AssistantOutputInvalidError as exc:
+        # Planlayıcı izin listesi dışı araç adı (ya da şemaya uymayan plan) üretti: araç çalışmaz,
+        # ret cevabı verilir ve olay denetim günlüğüne düşer (#275). Ham LLM çıktısı yazılmaz.
+        log.warning("assistant.invalid_plan", fields=list(exc.fields))
+        ihlal = "izin_disi_arac" if "tool" in exc.fields else "gecersiz_plan"
+        await _audit_safety(session, request, AuditAction.ASISTAN_KURAL_IHLALI, ihlal=ihlal)
+        return AssistantAnswer(
+            answer=safety.pick_reply(safety.OUT_OF_SCOPE_REPLIES, question),
+            question_type=QuestionType.KAPSAM_DISI,
+        )
     log.info("assistant.planned", question_type=plan.question_type, tool=plan.tool)
 
     if plan.question_type == QuestionType.KAPSAM_DISI:
