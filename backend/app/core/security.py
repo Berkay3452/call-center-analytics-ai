@@ -16,10 +16,12 @@ from pydantic import BaseModel
 
 from app.core.config import Settings
 from app.core.errors import AppError, ServiceUnavailableError, UnauthorizedError
+from app.domain.accounts import AccountRole
 
 SERVICE_KEY_HEADER = "X-Service-Key"
 USER_ID_HEADER = "X-User-Id"
 USER_SIGNATURE_HEADER = "X-User-Signature"
+USER_ROLE_HEADER = "X-User-Role"
 # Saat farkı payı: imzalayan sunucunun saati biraz ileride olabilir.
 _FUTURE_SKEW_S = 5
 
@@ -33,6 +35,27 @@ class ServiceCaller(BaseModel):
 
     authenticated: bool = True
     owner_id: str | None = None
+
+
+class CallerContext(ServiceCaller):
+    """Sunucu içi çağrı bağlamı: `ServiceCaller` + doğrulanmış rol (#275).
+
+    Rol API yanıt şemasına girmez (`/me` yanıtı `ServiceCaller` olarak süzülür).
+    `X-User-Id` yoksa rol `admin` (servis/yönetici bağlamı); varsa imzalı `X-User-Role`
+    (yoksa `owner`). Rol, imza mesajına dahildir: sahibin imzası `admin` rolüne çevrilemez.
+    """
+
+    role: AccountRole = AccountRole.ADMIN
+
+
+def normalize_role(raw_role: str | None) -> AccountRole | None:
+    """`X-User-Role` değerini doğrular; boş değer `None`, bilinmeyen değer 400."""
+    if raw_role is None or not raw_role.strip():
+        return None
+    try:
+        return AccountRole(raw_role.strip().lower())
+    except ValueError:
+        raise AppError("X-User-Role 'admin' veya 'owner' olmalıdır.") from None
 
 
 def verify_service_key(provided_key: str | None, settings: Settings) -> None:
@@ -75,15 +98,28 @@ class UserSignatureError(UnauthorizedError):
         self.reason = reason
 
 
-def sign_user_id(user_id: str, key: str, timestamp: int | None = None) -> str:
+def _message(user_id: str, ts: int, role: str | None) -> bytes:
+    """İmzalanan mesaj: rol varsa `kimlik.rol.zaman`, yoksa `kimlik.zaman` (geriye uyumlu)."""
+    clean = role.strip().lower() if role else ""
+    return (f"{user_id}.{clean}.{ts}" if clean else f"{user_id}.{ts}").encode()
+
+
+def sign_user_id(
+    user_id: str, key: str, timestamp: int | None = None, role: str | None = None
+) -> str:
     """`X-User-Signature` değeri üretir: `<unix_zaman>.<hex(HMAC-SHA256(user_id.zaman))>`."""
     ts = int(time.time()) if timestamp is None else timestamp
-    mac = hmac.new(key.encode("utf-8"), f"{user_id}.{ts}".encode(), hashlib.sha256).hexdigest()
+    mac = hmac.new(key.encode("utf-8"), _message(user_id, ts, role), hashlib.sha256).hexdigest()
     return f"{ts}.{mac}"
 
 
 def verify_user_signature(
-    raw_user_id: str | None, signature: str | None, settings: Settings, *, now: float | None = None
+    raw_user_id: str | None,
+    signature: str | None,
+    settings: Settings,
+    *,
+    now: float | None = None,
+    role: str | None = None,
 ) -> None:
     """İmzalı `X-User-Id` doğrulaması (#266).
 
@@ -115,7 +151,7 @@ def verify_user_signature(
         keys.append(prev.get_secret_value())
     if not keys:
         raise ServiceUnavailableError("Kimlik imzası yapılandırılmamış (USER_SIGNING_KEY eksik).")
-    message = f"{raw_user_id.strip()}.{ts}".encode()
+    message = _message(raw_user_id.strip(), ts, role)
     matches = [
         hmac.compare_digest(
             hmac.new(k.encode("utf-8"), message, hashlib.sha256).hexdigest().encode(),

@@ -47,7 +47,7 @@ Savunma beş güven sınırında kurulur:
 | IP başına başarısız giriş bütçesi (`enforce_login_ip_limit` / `record_login_failure_ip`; mevcut `RateLimiter`) | **Hazır, giriş ucu olmadığından bağlı değil** | `services/accounts.py`, #265 |
 | Denetim günlüğü: `audit_log` (yalnızca ekleme, DB tetikleyicisi), `record_audit_event`, `GET /audit-log` (yönetici bağlamı); kimlik doğrulama başarısızlığı, çağrı yükleme/yeniden analiz/eşleştirme, ses erişimi, CRM onay/red, servis emri oluşturma/durum, asistan güvenlik tetikleyicileri; kişisel veri kodla reddedilir | **Var** | `app/services/audit.py`, `migrations/versions/20261117_0006_denetim_gunlugu.py`, `tests/test_audit*.py` |
 | Denetim günlüğünde eylemi yapanın kimliği | **Kısmi**: `actor_id` yalnızca tekne sahibi bağlamında dolu (X-User-Id artık imzalı; ancak imzayı atan taraf kimliği doğrulamış sayılır, #265); servis/yönetici ayrımı hesaplarla netleşecek | #278, #266 |
-| `GET /audit-log` yönetici denetimi | **Geçici**: `X-User-Id` taşımayan servis çağrısı = yönetici; gerçek rol denetimi | #275 |
+| Sunucuda rol denetimi: rol sunucuda belirlenir (`X-User-Id` yok → `admin` servis bağlamı; `X-User-Id` + imzalı `X-User-Role: admin` → yönetici kullanıcı; rolsüz `X-User-Id` → `owner`). Rol imza mesajına dahildir (`kimlik.rol.zaman`): sahibin imzası `admin`e çevrilemez. Yönetici uçları (çağrı, CRM, servis emri, analitik, müşteri, denetim günlüğü) sahibe 403; sahip uçları (asistan/sohbet) yönetici kimliğine 403 | **Var** | `api/deps.py`, `core/security.py`, `tests/test_role_enforcement.py` |
 | Tekne sahibi ve yönetici hesapları: `user_accounts` tablosu (migration `0007`), kullanıcı adı + **argon2id** parola karması, parola politikası (en az 12 karakter), sabit zamanlı doğrulama (`verify_credentials`), 5 başarısız denemede 15 dakikalık kilit; her müşteri için bir hesap + 2 yönetici seed'i; düz parolalar yalnızca git dışı `backend/.local/seed_credentials.csv` dosyasında | **Var** (giriş ucu **açılmadı**) | `backend/app/services/accounts.py`, `scripts/seed_accounts.py`, `tests/test_accounts*.py`, `docs/db_schema.md` §3.11 |
 | Giriş ekranı (oturum/JWT) | **Karar bekliyor** | #265 |
 
@@ -148,12 +148,12 @@ Savunma beş güven sınırında kurulur:
 | `owner_id` LLM'den gelmez; planlayıcı kimlikle ilgilenmez, araçlara sunucudaki kimlik verilir | **Var** | `assistant/planner.py`, `assistant/tools.py` |
 | Bu özelliklerin saldırı testleriyle kanıtlanması: izin listesi dışı araç adı reddedilir ve audit'e düşer (`asistan_kural_ihlali`, `ihlal=izin_disi_arac`; şemaya uymayan ya da bozuk JSON planlayıcı çıktısı da `ihlal=gecersiz_plan` olarak sayılır, çünkü sağlayıcı kaynaklı bozuk çıktıyı saldırıdan ayırmak mümkün değildir, bu yüzden bu olay sayısı saldırı sayısı olarak okunmamalıdır); sahte plandaki `owner_id` yok sayılır, araçlara yalnız sunucu kimliği gider; başka sahibin adı/kimliği veri döndürmez | **Var** | `backend/tests/test_yetki_siniri.py` |
 | Analiz agent'larında yazma aracı yok: agent modülleri veritabanı/servis katmanı içe aktarmaz, LLM'e araç bağlanmaz, `CrmReview` ve `ServiceOrder` satırını yalnız insan onay/red servisi oluşturur (statik testle) | **Var** | `backend/tests/test_yetki_siniri.py` |
-| Sunucuda rol denetimi (yönetici uçları için 403, `X-User-Role`/oturum) — roller yalnızca arayüzde simüle ediliyor | **Eksik: kimlik doğrulama aşamasına bırakıldı** | #278, #266 sonrası (#275'in bu kısmı açık) |
+| Sunucuda rol denetimi (yönetici uçları için 403, imzalı `X-User-Role`) | **Var** (iki rol: `admin`, `owner`; Temsilci ayrı rol değil, aşağıya bakın) | #275, `tests/test_role_enforcement.py` |
 | Onay adımının atlanamadığını kanıtlayan durum makinesi testleri: servis emri durumu tek yönlü zincir, atlama/geri dönüş/aynı duruma geçiş reddedilir ve hiçbir şey yazılmaz | **Var** | `backend/tests/test_yetki_siniri.py` |
 
 ### 7.1 Yetki matrisi (rol × uç × eylem)
 
-Roller: **Yönetici** ve **Temsilci** (çağrı merkezi/ofis), **Tekne sahibi** (yalnızca kendi verisi). "Bugün" sütunu sunucunun gerçekte yaptığıdır; "Hedef" sütunu kimlik doğrulama aşamasında (#278, #266) uygulanacak denetimdir. **Sunucuda rol denetimi bugün yoktur:** servis anahtarını taşıyan çağıran, `X-User-Id` göndermese yönetici uçlarını çağırabilir. Bu kısım (X-User-Role/oturum ile 403) #275 kapsamından çıkarıldı ve kimlik doğrulama aşamasına bırakıldı.
+Roller: **Yönetici** ve **Temsilci** (çağrı merkezi/ofis), **Tekne sahibi** (yalnızca kendi verisi). "Bugün" sütunu sunucunun gerçekte yaptığıdır; "Hedef" sütunu rol modelinin tamamını gösterir. **Sunucuda rol denetimi (#275) vardır, iki rolle:** `admin` ve `owner` (`user_accounts.role`). "Temsilci" sunucuda ayrı bir rol değildir: sunucu onu `admin` sayar; yönetici/temsilci ayrımı (ör. denetim günlüğü yalnızca yönetici) hesap rolleri genişletilince (ayrı migration) eklenecektir. **Dürüst sınırlar:** (1) `X-User-Id` taşımayan servis anahtarı sahibi hâlâ `admin` bağlamıdır (Miço Usta arka ucu / yönetici vekili); servis anahtarı sızarsa yönetici uçları açılır, bunu yalnızca anahtar rotasyonu ve gizli yönetimi sınırlar. (2) Rol iddiası yalnızca imza zorunluyken (prod) güvenlidir; `USER_SIGNATURE_REQUIRED=false` yerel/test ayarında `X-User-Role` doğrulanmaz. (3) Rolü kimin verdiği, giriş akışı (#265) olmadığından, imzayı atan sunucuya (Miço Usta .NET / vekil) güvenir; Next vekil tarayıcıdan rol kabul etmez, hiç rol göndermez (yalnızca `owner`).
 
 | Uç | Eylem | Bugün (sunucu) | Hedef: Yönetici | Hedef: Temsilci | Hedef: Tekne sahibi |
 |---|---|---|---|---|---|
@@ -161,16 +161,16 @@ Roller: **Yönetici** ve **Temsilci** (çağrı merkezi/ofis), **Tekne sahibi** 
 | `POST /assistant/chat`, `/chat/messages[/stream]` | soru sor | servis anahtarı + geçerli `X-User-Id` | hayır | hayır | **evet (yalnız kendi verisi)** |
 | `GET/DELETE /assistant/sessions[/{id}]`, `/chat/sessions[/{id}]` | oturum oku/sil | servis anahtarı + `X-User-Id`; başka sahibin oturumu 404 | hayır | hayır | **evet (yalnız kendi oturumu)** |
 | `GET /me`, `/me/owner` | oku | servis anahtarı | evet | evet | evet |
-| `GET /calls`, `/calls/{id}`, `/calls/{id}/status` | okuma | servis anahtarı | evet | evet | hayır |
-| `GET /calls/{id}/audio` | ses dinle (audit'e yazılır) | servis anahtarı | evet | evet | hayır |
-| `POST /calls`, `/calls/audio`, `POST /calls/{id}/analyze`, `PUT /calls/{id}/match` | yaz (çağrı/analiz/eşleştirme) | servis anahtarı | evet | evet | hayır |
-| `GET /crm`, `GET /customers`, `GET /analytics/summary` | okuma | servis anahtarı | evet | evet | hayır |
-| `POST /crm/{id}/approve`, `/reject` | **insan onayı** (servis emri yalnız burada oluşur; audit'e yazılır) | servis anahtarı | evet | evet | hayır |
-| `GET /service-orders[/{id}]` | okuma | servis anahtarı | evet | evet | hayır |
-| `PATCH /service-orders/{id}/status` | durum ilerlet (ileri tek adım) | servis anahtarı | evet | evet | hayır |
-| `GET /audit-log` | denetim günlüğü | `X-User-Id` taşımayan servis çağrısı (geçici) | **evet** | hayır | hayır |
+| `GET /calls`, `/calls/{id}`, `/calls/{id}/status` | okuma | servis anahtarı + rol `admin` (sahip 403) | evet | evet | hayır |
+| `GET /calls/{id}/audio` | ses dinle (audit'e yazılır) | servis anahtarı + rol `admin` (sahip 403) | evet | evet | hayır |
+| `POST /calls`, `/calls/audio`, `POST /calls/{id}/analyze`, `PUT /calls/{id}/match` | yaz (çağrı/analiz/eşleştirme) | servis anahtarı + rol `admin` (sahip 403) | evet | evet | hayır |
+| `GET /crm`, `GET /customers`, `GET /analytics/summary` | okuma | servis anahtarı + rol `admin` (sahip 403) | evet | evet | hayır |
+| `POST /crm/{id}/approve`, `/reject` | **insan onayı** (servis emri yalnız burada oluşur; audit'e yazılır) | servis anahtarı + rol `admin` (sahip 403) | evet | evet | hayır |
+| `GET /service-orders[/{id}]` | okuma | servis anahtarı + rol `admin` (sahip 403) | evet | evet | hayır |
+| `PATCH /service-orders/{id}/status` | durum ilerlet (ileri tek adım) | servis anahtarı + rol `admin` (sahip 403) | evet | evet | hayır |
+| `GET /audit-log` | denetim günlüğü | rol `admin` (sahip 403) | **evet** | hayır (sunucu admin sayar) | hayır |
 
-Yapay zekânın yetkisi bu matrisin dışındadır ve rolden bağımsız sabittir: asistan yalnızca 5 salt-okunur aracı, yalnızca sunucu bağlamındaki `owner_id` ile çağırabilir; analiz agent'ları hiçbir araç çağırmaz ve veritabanına yazmaz (test: `backend/tests/test_yetki_siniri.py`). Servis anahtarı ve `X-User-Id` varlığı her uç için `backend/tests/test_authorization_matrix.py` ile doğrulanır; rol bazlı (izinli/yasak) uç denemeleri rol denetimi geldiğinde bu matristen üretilecektir.
+Yapay zekânın yetkisi bu matrisin dışındadır ve rolden bağımsız sabittir: asistan yalnızca 5 salt-okunur aracı, yalnızca sunucu bağlamındaki `owner_id` ile çağırabilir; analiz agent'ları hiçbir araç çağırmaz ve veritabanına yazmaz (test: `backend/tests/test_yetki_siniri.py`). Servis anahtarı ve `X-User-Id` varlığı her uç için `backend/tests/test_authorization_matrix.py` ile doğrulanır; rol bazlı (izinli/yasak) uç denemeleri `backend/tests/test_role_enforcement.py` içinde OpenAPI'den üretilen uç listesiyle çalışır: her yönetici ucunda sahip 403, her sahip ucunda yönetici kimliği 403.
 
 
 ## 8. OWASP eşlemesi (özet)
@@ -179,7 +179,7 @@ Yapay zekânın yetkisi bu matrisin dışındadır ve rolden bağımsız sabitti
 |---|---|---|
 | LLM01 | Prompt injection | §6 · #273, #274 |
 | LLM02 | Güvensiz çıktı işleme | Pydantic doğrulama, çıktı filtresi (#274, var) |
-| LLM06 | Aşırı yetki | §7 · salt-okunur araçlar, izin listesi ve `owner_id` testleri (var); rol denetimi eksik |
+| LLM06 | Aşırı yetki | §7 · salt-okunur araçlar, izin listesi ve `owner_id` testleri ve sunucuda rol denetimi (var) |
 | LLM07 | Sistem istemi sızıntısı | Çıktı filtresi: istem parçası örtüşmesi (#274, var; parafraz yakalanmaz) |
 | API1 | Nesne düzeyi yetki (IDOR) | Zorunlu `owner_id` (var), #276 testleri |
 | API2 | Kırık kimlik doğrulama | §3 · #265, #266 |
@@ -202,6 +202,6 @@ Satır satır kanıt tablosu #276 kapsamında test paketiyle birlikte tamamlanac
 | Yetkisiz komut | #275 |
 | Doğrulama testleri | #276 |
 
-Uygulama sırası: Faz 1 iki paralel hat (API: #272 → #267 → #271 → #270 → #269; yapay zekâ: #268 → #273 → #274 → #275), Faz 2 kimlik doğrulama (#278 → #266 → rol denetimi), Faz 3 #276.
+Uygulama sırası: Faz 1 iki paralel hat (API: #272 → #267 → #271 → #270 → #269; yapay zekâ: #268 → #273 → #274 → #275), Faz 2 kimlik doğrulama (#278 → #266 → rol denetimi ✔ #275), Faz 3 #276.
 
 Diyagram kaynağı: `docs/diagrams/kaynak/guvenlik_semalari.py` (`python docs/diagrams/kaynak/guvenlik_semalari.py`). Alt işler bittikçe bu belgedeki **Eksik/Planlanan** satırları **Var**'a çevrilir.

@@ -248,8 +248,8 @@ def s5():
     c.arrow(31, 62, 31, 56)
     c.arrow(82, 62, 82, 56)
     c.zone(2, 6, 96, 20, "Rol tabanlı yetki")
-    c.box(4, 9, 44, 13, "Bugün: roller yalnız arayüzde simüle (sunucuda denetim YOK)\nSaldırı: anahtarı olan herkes yönetici uçlarını çağırabilir", "tehdit", 9)
-    c.box(52, 9, 44, 13, "Yetki matrisi belgesi ✔ (§7.1); sunucu rol\ndenetimi (X-User-Role, 403) AÇIK: kimlik\ndoğrulama aşamasında (#278, #266 sonrası)", "plan", 9)
+    c.box(4, 9, 44, 13, "Saldırı: servis anahtarı sızarsa X-User-Id'siz çağrı\nyönetici sayılır; rol iddiası imzasızsa (yerel) kabul edilir", "tehdit", 9)
+    c.box(52, 9, 44, 13, "Sunucuda rol denetimi ✔ #275: imzalı X-User-Role,\nsahip → yönetici ucu 403, yönetici kimliği → sahip\nucu 403 (tests/test_role_enforcement.py)", "var", 9)
     c.save("S5_yetkisiz_komut_korumasi.png")
 
 

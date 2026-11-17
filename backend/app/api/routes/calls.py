@@ -8,7 +8,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Query, Request, Response, status
 
-from app.api.deps import AdminCallerDep, AudioStorageDep, ServiceCallerDep, SessionDep
+from app.api.deps import AdminCallerDep, AudioStorageDep, SessionDep
 from app.domain.audit import AuditAction
 from app.schemas.api import CallDetail, CallFilters, CallListItem, CallMatchIn
 from app.schemas.common import ErrorResponse, Page
@@ -32,7 +32,7 @@ AUDIO_AUDIT_WINDOW_S = 300
     },
 )
 async def list_calls(
-    _: ServiceCallerDep,
+    _: AdminCallerDep,
     session: SessionDep,
     filters: Annotated[CallFilters, Query()],
 ) -> Page[CallListItem]:
@@ -52,7 +52,7 @@ async def list_calls(
 )
 async def get_call(
     call_id: UUID,
-    _: ServiceCallerDep,
+    _: AdminCallerDep,
     session: SessionDep,
 ) -> CallDetail:
     """Belirli bir çağrının tüm santral, transkript ve analiz verilerini getirir."""
@@ -101,7 +101,7 @@ async def delete_call(
 async def match_call_endpoint(
     call_id: UUID,
     payload: CallMatchIn,
-    caller: ServiceCallerDep,
+    caller: AdminCallerDep,
     session: SessionDep,
 ) -> CallDetail:
     """Eşleşmeyen veya yanlış bağlanan çağrıyı belirli bir müşteri ve tekneye bağlar (#119)."""

@@ -106,6 +106,10 @@ def actor_of(caller: ServiceCaller | None) -> tuple[uuid.UUID | None, AuditActor
     if caller is None:
         return None, AuditActorRole.SISTEM
     if caller.owner_id:
+        role = getattr(caller, "role", None)
+        if role is not None and role != "owner":
+            # Kimlikli yönetici kullanıcı (#275): kimliği kaydedilir, rolü tekne sahibi değildir.
+            return uuid.UUID(caller.owner_id), AuditActorRole.SERVIS
         return uuid.UUID(caller.owner_id), AuditActorRole.TEKNE_SAHIBI
     return None, AuditActorRole.SERVIS
 
