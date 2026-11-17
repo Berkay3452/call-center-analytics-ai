@@ -10,13 +10,22 @@ import structlog
 from pydantic import BaseModel
 
 from app.agents.base import AnalysisContext, ModelTier
-from app.agents.grounding import is_grounded, transcript_text
-from app.agents.llm_agent import LLMAgent
+from app.agents.grounding import is_grounded, normalize, transcript_text
+from app.agents.llm_agent import LLMAgent, flagged_segments
 from app.agents.names import CRM_EXTRACTION
 from app.agents.terms import same_place
 from app.schemas.analysis import CrmExtraction
 
 log = structlog.get_logger(__name__)
+
+
+def _copies_from(value: str, bad: str, good: str, run: int = 4) -> bool:
+    words = normalize(value).split()
+    for i in range(len(words) - run + 1):
+        chunk = " ".join(words[i : i + run])
+        if is_grounded(chunk, bad) and not is_grounded(chunk, good):
+            return True
+    return False
 
 
 class CrmExtractionAgent(LLMAgent[CrmExtraction]):
@@ -33,6 +42,7 @@ class CrmExtractionAgent(LLMAgent[CrmExtraction]):
         Alanın kendisine dokunulmaz; yalnızca kanıt olarak gösterilecek alıntı temizlenir.
         """
         output = self._normalize_location(output, ctx)
+        output = self._drop_tainted(output, ctx)
         transcript = transcript_text(ctx.segments)
         kept: dict[str, str] = {}
         for field, quote in output.evidence.items():
@@ -45,6 +55,36 @@ class CrmExtractionAgent(LLMAgent[CrmExtraction]):
                 continue
             log.info("crm_extraction.evidence_dropped", field=field, reason=reason)
         return output.model_copy(update={"evidence": kept})
+
+    @staticmethod
+    def _drop_tainted(output: CrmExtraction, ctx: AnalysisContext) -> CrmExtraction:
+        """Talimat içeren satırlardan türetilmiş alanı boşaltır (dolaylı injection, #274).
+
+        Bir alan, kanıt alıntısı yalnızca işaretli satırda geçiyorsa ya da metni işaretli
+        satırdan art arda 4 sözcük kopyalıyorsa (temiz satırlarda yoksa) "bulaşmış" sayılır.
+        """
+        flagged = flagged_segments(ctx.segments)
+        if not flagged:
+            return output
+        bad = transcript_text([s for s in ctx.segments if s.idx in flagged])
+        good = transcript_text([s for s in ctx.segments if s.idx not in flagged])
+        update: dict[str, object] = {}
+        evidence = dict(output.evidence)
+        for field in set(type(output).model_fields) - {"evidence"}:
+            value = getattr(output, field)
+            if value is None:
+                continue
+            quote = evidence.get(field, "")
+            tainted = bool(quote) and is_grounded(quote, bad) and not is_grounded(quote, good)
+            if isinstance(value, str) and not tainted:
+                tainted = _copies_from(value, bad, good)
+            if tainted:
+                log.warning("crm_extraction.tainted_field_dropped", field=field)
+                update[field] = None
+                evidence.pop(field, None)
+        if not update:
+            return output
+        return output.model_copy(update={**update, "evidence": evidence})
 
     @staticmethod
     def _normalize_location(output: CrmExtraction, ctx: AnalysisContext) -> CrmExtraction:

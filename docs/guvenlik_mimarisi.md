@@ -107,9 +107,12 @@ Savunma beş güven sınırında kurulur:
 | Çıktı Pydantic şemasıyla doğrulanır; cevap grounding ile kaynağa dayandırılır | **Var** | `app/schemas/`, asistan grounding |
 | Doğrudan injection: normalizasyon (Unicode, homoglif, harf bölme, rakamlı yazım), kodlama çözme (base64, hex, URL, rot13, ters yazı), fiil+nesne kalıpları, sohbet şablonu taklidi, çok turlu birleşim; yalnızca **şüpheli** girdide hızlı LLM sınıflandırıcı (hata olursa girdi geçer); saldırıda güvenli ret + `audit_log` kaydı (`asistan_injection`, katman ve kategori `details`'te, ham metin yok) | **Var** | `backend/app/assistant/injection.py`, `assistant.py` (`_is_injection`), `docs/injection_olcum.md` |
 | Kırmızı takım seti (128 sentetik saldırı) ve normal soru seti (128) ile ölçüm: toplam yakalama %93,8 (ilk ölçüm %89,8 idi, iki düzeltmeyle yükseltildi), yanlış pozitif 0/128; **ayar sonrası taze kümelerde %75-88** (aşağıdaki sınır) | **Var** (sınırlı) | `backend/tests/data/injection_set.json`, `backend/scripts/injection_olcum.py` |
-| Transkript/RAG içinde talimat-kalıbı taraması ve veri sınırlayıcıları | **Planlanan** | #274 |
+| Transkript ve RAG kayıtlarında talimat-kalıbı taraması (`untrusted.scan`); şüpheli satır/kayıt `<veri>` sınırlayıcılarıyla, "Güvenlik uyarısı" notuyla sunulur; sınırlayıcı taklidi etkisizleştirilir; talimat içeren satırdan türeyen CRM alanı boşaltılır, işaretli kayıt kaynak gösterilemez; geçmiş de sınırlayıcıda sunulur, yeniden yazım eski saldırıyı taşıyamaz | **Var** (sınırlı) | `backend/app/security/untrusted.py`, `agents/llm_agent.py`, `agents/crm_extraction.py`, `assistant/answer.py`, `assistant/rewrite.py` |
 | Konuşma geçmişi sunucudaki oturumdan okunur; API yalnızca soru + oturum kimliği alır, rol `user`/`assistant` ile sınırlı — istemci sahte geçmiş ekleyemez | **Var** | `services/assistant_chat.py` `load_history`, `schemas/assistant.py` `HistoryTurn` |
-| Çıktı filtresi (sistem istemi / ham kişisel veri sızıntısı) | **Planlanan** | #274 |
+| Çıktı filtresi (`untrusted.output_leaks`): sistem istemi parçası (10 sözcüklük örtüşme), gizli anahtar/bağlantı, ham IBAN/TC/kart; analiz çıktısında doğrulama hatası (yeniden dene), asistan cevabında hazır güvenli ret + `audit_log` (`asistan_kural_ihlali`, `ihlal=cikti_filtresi`) | **Var** | `backend/app/security/untrusted.py`, `assistant/assistant.py` |
+| Zehirli sentetik transkript/not seti ve ölçüm (`docs/dolayli_injection_olcum.md`) | **Var** (sınırlı) | `backend/tests/data/dolayli_injection.json`, `backend/scripts/dolayli_olcum.py`, `backend/tests/test_indirect_injection.py` |
+
+**Ölçüm (#274, dolaylı yol):** 12 zehirli transkript satırı ve 8 zehirli usta notunda tarama 20/20, 18 temiz örnekte yanlış pozitif 0 (bu 38 örnek geliştirme sırasında ayarlandı). **Ayarlanmamış taze 10 zehirli örnekte yakalama yalnızca 6/10 (%60)**, 8 temiz örnekte yanlış pozitif 0. Çıktı süzgeci: 7/7 sızıntılı çıktı engellendi, 6 temiz çıktıda yanlış pozitif 0 (küçük sentetik küme). Ayrıntı ve kaçanlar `docs/dolayli_injection_olcum.md`. **Sınırlar:** tarama LLM'in uyacağını garanti etmez; işaretlenmeyen zehirli satır yalnızca istem çerçevesi (sınırlayıcı + "veridir" kuralı) ile korunur; CRM'de boşaltma yalnızca kanıt alıntısı ya da metin kopyası üzerinden bulaşmayı yakalar; çıktı süzgeci parafraz edilmiş istem sızıntısını yakalamaz. Servis emri bu agent'lardan otomatik oluşmaz (insan onayı, #275), bu yüzden CRM önerisi son kapıdır.
 
 **Ölçüm (#273):** 128 saldırılı sette yakalama %93,8 (ilk ölçüm %89,8; kural katmanı tek başına kesin ret %75, kural+şüpheli %100), 128 normal soruda yanlış pozitif %0; normal soruların %22'sinde şüphe ipucu nedeniyle ek bir hızlı LLM çağrısı yapılır (ortalama 0,5 sn). **Dürüst sınır:** küme geliştirme sırasında kuralları ve istemi şekillendirdi; kuralların hiç görmediği taze paraphrase kümelerinde (test2: 16, test3: 12) kural katmanı yalnızca %50 işaretledi ve ön süzgeç genişletilince bile nihai yakalama ayar sonrası %75-88 kaldı (bu sayı kümeye bakılarak iyileştirildi, iyimser); görülmemiş saldırılarda yakalamanın %90 altında olması beklenir. Kaçan örnekler `docs/injection_olcum.md` içinde listelenir. Kaçışa en açık yer: alan sözcüğü içeren yeni ifade biçimleri ve çok turlu kısa takip mesajları.
 
@@ -133,9 +136,9 @@ Savunma beş güven sınırında kurulur:
 | OWASP | Risk | Karşılığı |
 |---|---|---|
 | LLM01 | Prompt injection | §6 · #273, #274 |
-| LLM02 | Güvensiz çıktı işleme | Pydantic doğrulama (var), çıktı filtresi #274 |
+| LLM02 | Güvensiz çıktı işleme | Pydantic doğrulama, çıktı filtresi (#274, var) |
 | LLM06 | Aşırı yetki | §7 · salt-okunur araçlar (var), #275 |
-| LLM07 | Sistem istemi sızıntısı | #274 |
+| LLM07 | Sistem istemi sızıntısı | Çıktı filtresi: istem parçası örtüşmesi (#274, var; parafraz yakalanmaz) |
 | API1 | Nesne düzeyi yetki (IDOR) | Zorunlu `owner_id` (var), #276 testleri |
 | API2 | Kırık kimlik doğrulama | §3 · #265, #266 |
 | API4 | Kaynak tüketimi | #271 hız sınırı |

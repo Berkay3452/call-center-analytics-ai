@@ -25,6 +25,7 @@ from app.assistant.retrieval import search_boat_notes
 from app.assistant.rewrite import standalone_question
 from app.domain.audit import AuditAction, AuditActorRole, AuditOutcome
 from app.schemas.assistant import AssistantAnswer, AssistantRequest, QuestionType
+from app.security import untrusted
 from app.services.audit import record_audit_event
 
 log = structlog.get_logger(__name__)
@@ -82,6 +83,38 @@ async def _is_injection(
 
 
 async def answer_question(
+    request: AssistantRequest,
+    *,
+    llm: AssistantLLM | None = None,
+    today: date | None = None,
+    session: AsyncSession | None = None,
+) -> AssistantAnswer:
+    """Soruyu cevaplar ve cevabı çıkış denetiminden geçirir (#274).
+
+    Cevapta sistem istemi parçası, gizli anahtar ya da ham kimlik numarası (TC, IBAN, kart)
+    varsa cevap engellenir ve hazır güvenli ret verilir; olay denetim günlüğüne yazılır.
+    """
+    answer = await _answer_question(request, llm=llm, today=today, session=session)
+    if not (leaks := untrusted.output_leaks(answer.answer)):
+        return answer
+    log.warning("assistant.output_blocked", reasons=leaks)
+    try:
+        await _audit_safety(
+            session,
+            request,
+            AuditAction.ASISTAN_KURAL_IHLALI,
+            ihlal="cikti_filtresi",
+            nedenler=",".join(leaks),
+        )
+    except Exception:  # denetim yazımı başarısız olsa da cevap engellenir
+        log.warning("assistant.output_audit_failed")
+    return AssistantAnswer(
+        answer=safety.pick_reply(safety.OUTPUT_BLOCKED_REPLIES, request.question),
+        question_type=QuestionType.KAPSAM_DISI,
+    )
+
+
+async def _answer_question(
     request: AssistantRequest,
     *,
     llm: AssistantLLM | None = None,

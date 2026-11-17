@@ -17,6 +17,7 @@ from app.assistant.llm import AssistantLLM, AssistantLLMError, load_prompt
 from app.assistant.planner import mentions_topic, plan_by_rules
 from app.llm.client import LLMNotConfiguredError
 from app.schemas.assistant import HistoryTurn
+from app.security import untrusted
 
 log = structlog.get_logger(__name__)
 
@@ -57,7 +58,7 @@ def _format_history(history: list[HistoryTurn]) -> str:
     for turn in history[-MAX_HISTORY_TURNS:]:
         who = "Tekne sahibi" if turn.role == "user" else "Asistan"
         lines.append(f"{who}: {turn.content.strip()[:MAX_TURN_CHARS]}")
-    return "\n".join(lines)
+    return untrusted.fence("\n".join(lines), "onceki_konusma")
 
 
 async def standalone_question(question: str, history: list[HistoryTurn], llm: AssistantLLM) -> str:
@@ -75,5 +76,9 @@ async def standalone_question(question: str, history: list[HistoryTurn], llm: As
         log.warning("assistant.rewrite_failed")
         return question
     rewritten = result.standalone_question.strip()
+    if untrusted.scan(rewritten) and not untrusted.scan(question):
+        # Geçmişteki eski bir saldırı, yeniden yazımla "temiz" bir soruya taşınamaz (#274).
+        log.warning("assistant.rewrite_tainted")
+        return question
     log.info("assistant.rewritten", original=question, rewritten=rewritten)
     return rewritten or question
