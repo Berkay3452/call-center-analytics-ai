@@ -33,7 +33,7 @@ jobs:
       - name: İmajı derle (gönderilmez)
         run: docker build -t tarama-${{ matrix.imaj }}:ci ${{ matrix.imaj }}
       - name: Trivy taraması (yüksek/kritik; exit-code 0 olduğu için kırmaz)
-        uses: aquasecurity/trivy-action@0.33.1
+        uses: aquasecurity/trivy-action@v0.33.1
         with:
           image-ref: tarama-${{ matrix.imaj }}:ci
           severity: HIGH,CRITICAL
