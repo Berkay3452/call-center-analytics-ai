@@ -10,6 +10,8 @@ tetikleyicisi ve kayıtlarda ham kişisel veri bulunmaması.
 
 import os
 from collections.abc import AsyncIterator
+from datetime import UTC, datetime
+from pathlib import Path
 from uuid import UUID, uuid4
 
 import pytest
@@ -278,3 +280,42 @@ async def test_assistant_safety_trigger_is_recorded(
     assert last.actor_id == customer_id and last.actor_role == "tekne_sahibi"
     assert last.outcome == "reddedildi"
     assert "customers" not in repr(last.details) and "DROP" not in repr(last.details)
+
+
+async def test_audio_access_is_recorded_once_per_window_even_with_offset_range(
+    factory: async_sessionmaker[AsyncSession], tmp_path: Path
+) -> None:
+    (tmp_path / "kayit.wav").write_bytes(b"RIFF" + b"" * 64)
+    async with factory() as session:
+        call = Call(started_at=datetime.now(UTC), state="tamam", audio_path="kayit.wav")
+        session.add(call)
+        await session.commit()
+        call_id = call.id
+
+    app = create_app(
+        make_settings(database_url=Settings().database_url, audio_storage_dir=str(tmp_path))
+    )
+
+    async def override_get_db_session() -> AsyncIterator[AsyncSession]:
+        async with factory() as session:
+            yield session
+
+    app.dependency_overrides[get_db_session] = override_get_db_session
+    async with AsyncClient(transport=ASGITransport(app=app), base_url="http://test") as api:
+        # Başlangıç ofseti 0 olmayan Range ile gelen ilk istek de kayıt bırakmalı (atlatma yok).
+        first = await api.get(
+            f"/api/v1/calls/{call_id}/audio", headers={**HEADERS, "Range": "bytes=1-"}
+        )
+        second = await api.get(
+            f"/api/v1/calls/{call_id}/audio", headers={**HEADERS, "Range": "bytes=10-"}
+        )
+        third = await api.get(f"/api/v1/calls/{call_id}/audio", headers=HEADERS)
+    assert first.status_code == second.status_code == 206 and third.status_code == 200
+
+    access = [
+        e
+        for e in await _events(factory)
+        if e.action == "ses_erisimi" and e.target_id == str(call_id)
+    ]
+    assert len(access) == 1
+    assert access[0].actor_role == "servis"

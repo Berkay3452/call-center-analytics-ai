@@ -28,9 +28,11 @@ import ipaddress
 import re
 import uuid
 from collections.abc import Mapping
+from datetime import timedelta
 from typing import Any
 
 import structlog
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.core.middleware import client_ip_var
@@ -170,6 +172,38 @@ async def record_audit_event(
     db.add(event)
     await db.flush()
     return event
+
+
+async def has_recent_audit_event(
+    db: AsyncSession,
+    *,
+    action: AuditAction,
+    actor: ServiceCaller | None,
+    target_type: str,
+    target_id: object,
+    within_s: int,
+) -> bool:
+    """Aynı eylem, hedef, eylemi yapan ve IP için son `within_s` saniyede kayıt var mı?
+
+    Çok sayıda istek atan akışlarda (ses oynatıcının Range istekleri) her isteği değil, her
+    pencerede en az bir kaydı garanti etmek için kullanılır.
+    """
+    actor_id, role = actor_of(actor)
+    ip = _valid_ip(client_ip_var.get())
+    stmt = (
+        select(AuditLog.id)
+        .where(
+            AuditLog.action == AuditAction(action).value,
+            AuditLog.target_type == target_type,
+            AuditLog.target_id == _safe_token(target_id, "target_id"),
+            AuditLog.actor_role == role.value,
+            AuditLog.occurred_at >= func.now() - timedelta(seconds=within_s),
+            AuditLog.actor_id.is_(None) if actor_id is None else AuditLog.actor_id == actor_id,
+            AuditLog.ip.is_(None) if ip is None else AuditLog.ip == ip,
+        )
+        .limit(1)
+    )
+    return (await db.scalar(stmt)) is not None
 
 
 async def record_audit_event_isolated(

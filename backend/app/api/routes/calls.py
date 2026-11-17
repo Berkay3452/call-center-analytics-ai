@@ -13,9 +13,12 @@ from app.domain.audit import AuditAction
 from app.schemas.api import CallDetail, CallFilters, CallListItem, CallMatchIn
 from app.schemas.common import ErrorResponse, Page
 from app.services import audio_ingest, call_matching, call_reader
-from app.services.audit import record_audit_event
+from app.services.audit import has_recent_audit_event, record_audit_event
 
 router = APIRouter(prefix="/calls", tags=["calls"])
+
+# Aynı (çağrı, eylemi yapan, IP) için ses erişimi kaydı en çok bu aralıkla tekrarlanır.
+AUDIO_AUDIT_WINDOW_S = 300
 
 
 @router.get(
@@ -119,14 +122,23 @@ async def get_call_audio(
 ) -> Response:
     """Çağrıya ait ses dosyasını akıtır (Range isteklerini destekler).
 
-    Erişim denetim günlüğüne yazılır (#267). Oynatıcılar çok sayıda Range isteği attığı için
-    yalnızca ilk istek (Range yok veya `bytes=0-` ile başlayan) kaydedilir.
+    Erişim denetim günlüğüne yazılır (#267). Oynatıcılar çok sayıda Range isteği attığı için her
+    istek değil, (çağrı, eylemi yapan, IP) başına her
+    `AUDIO_AUDIT_WINDOW_S` saniyede en az bir kayıt düşer;
+    başlangıç ofseti (`bytes=1-` gibi) kaydı atlatamaz.
     """
     range_header = request.headers.get("range")
     response = await audio_ingest.get_call_audio_response(
         session, call_id, storage, range_header=range_header
     )
-    if range_header is None or range_header.strip().replace(" ", "").startswith("bytes=0-"):
+    if not await has_recent_audit_event(
+        session,
+        action=AuditAction.SES_ERISIMI,
+        actor=caller,
+        target_type="call",
+        target_id=call_id,
+        within_s=AUDIO_AUDIT_WINDOW_S,
+    ):
         await record_audit_event(
             session,
             action=AuditAction.SES_ERISIMI,

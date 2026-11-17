@@ -129,7 +129,7 @@ Yeni görev açıldıysa `already_running=false`'tur. Satır kilitlendiği için
 - `AuditLogItem`: tek kayıt (`id`, `occurred_at`, `actor_id`, `actor_role`, `action`, `target_type`, `target_id`, `outcome`, `request_id`, `ip`, `details`). Kişisel veri içermez.
 - `AuditLogFilters`: `action`, `outcome`, `actor_id`, `target_type`, `target_id`, `since`, `until`, `page`, `page_size`. En yeni kayıt başta gelir.
 - Yalnızca okuma ucu vardır; ekleme/değiştirme/silme ucu yoktur. Günlüğü görüntülemek de `denetim_goruntulendi` olarak kaydedilir.
-- Düşen olaylar: kimlik doğrulama başarısızlığı, çağrı yükleme (metin/ses), yeniden analiz, elle eşleştirme, ses dosyası erişimi (yalnızca ilk Range isteği), CRM onay/red, servis emri oluşturma ve durum değişikliği, asistan güvenlik tetikleyicileri (kural ihlali, injection, başka taraf verisi). Çağrı silme (#269) bu işte eklenecek.
+- Düşen olaylar: kimlik doğrulama başarısızlığı, çağrı yükleme (metin/ses), yeniden analiz, elle eşleştirme, ses dosyası erişimi (aynı çağrı, kişi ve IP için 5 dakikada en az bir kayıt; Range başlangıç ofseti atlatamaz), CRM onay/red, servis emri oluşturma ve durum değişikliği, asistan güvenlik tetikleyicileri (kural ihlali, injection, başka taraf verisi). Çağrı silme (#269) bu işte eklenecek.
 
 ### Çağrı alma
 - `CallCreate`: sesi olmayan çağrı (geliştirme ve sentetik veri için). `transcript` (düz metin) veya `SegmentIn` listesinden biri zorunlu.
