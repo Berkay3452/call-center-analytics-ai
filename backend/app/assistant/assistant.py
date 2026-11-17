@@ -67,14 +67,17 @@ async def _is_injection(
         layer = "llm"
         detection.category = verdict.category if verdict.category != "yok" else detection.category
     log.info("assistant.injection_attempt", layer=layer, category=detection.category)
-    await _audit_safety(
-        session,
-        request,
-        AuditAction.ASISTAN_INJECTION,
-        kural="girdi_deseni" if layer == "kural" else "llm_siniflandirici",
-        katman=layer,
-        kategori=detection.category or "yok",
-    )
+    try:
+        await _audit_safety(
+            session,
+            request,
+            AuditAction.ASISTAN_INJECTION,
+            kural="girdi_deseni" if layer == "kural" else "llm_siniflandirici",
+            katman=layer,
+            kategori=detection.category or "yok",
+        )
+    except Exception:  # denetim yazımı başarısız olsa da ret cevabı verilir
+        log.warning("assistant.injection_audit_failed", layer=layer)
     return True
 
 

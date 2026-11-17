@@ -29,7 +29,7 @@ from enum import StrEnum
 from urllib.parse import unquote
 
 import structlog
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 from app.agents.grounding import normalize
 from app.assistant import safety
@@ -443,9 +443,28 @@ def inspect_input(question: str, history: list[HistoryTurn] | None = None) -> De
 # --- 4. LLM sınıflandırıcı --------------------------------------------------------------------
 
 
+CATEGORIES = frozenset(
+    {
+        "sistem_istemi_ifsa",
+        "rol_degistirme",
+        "talimat_yoksay",
+        "baska_musteri",
+        "kodlanmis",
+        "cok_turlu",
+        "yok",
+    }
+)
+
+
 class InjectionVerdict(BaseModel):
     attack: bool
     category: str = "yok"
+
+    @field_validator("category", mode="before")
+    @classmethod
+    def _known_category(cls, value: object) -> str:
+        """Serbest LLM çıktısı denetim günlüğüne gitmesin: bilinmeyen kategori "diger" olur."""
+        return value if isinstance(value, str) and value in CATEGORIES else "diger"
 
 
 def _classifier_input(question: str, history: list[HistoryTurn]) -> str:
