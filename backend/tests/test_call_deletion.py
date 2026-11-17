@@ -3,11 +3,12 @@
 from collections.abc import AsyncIterator
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Any, cast
 from uuid import UUID
 
 import httpx
 import pytest
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from app.api.deps import get_audio_storage, get_db_session
 from app.db.models.ai import Call
@@ -140,7 +141,10 @@ async def test_retention_disabled_deletes_nothing(tmp_path: Path) -> None:
         raise AssertionError("RETENTION_DAYS=0 iken veritabanına dokunulmamalı")
 
     result = await purge_expired_calls(
-        factory, LocalAudioStorage(tmp_path), retention_days=0, batch_size=10
+        cast(async_sessionmaker[AsyncSession], factory),
+        LocalAudioStorage(tmp_path),
+        retention_days=0,
+        batch_size=10,
     )
     assert result == {"silinen": 0, "hata": 0, "atlanan_ses": 0}
 

@@ -59,6 +59,12 @@ geçici kapatan bir bakım işlemi gerekir, otomatiği yoktur. (3) Yedeklerden s
 yedek saklama süresi `RETENTION_DAYS` ile uyumlu seçilmelidir. (4) Silinen sesin nesne deposunda
 sürüm/geri dönüşüm kutusu varsa orada da silinmelidir (GCS nesne sürümlemesi kapalı olmalıdır).
 
+**Bilinen küçük sınırlar (izlenecek):** (5) `yaziya_cevriliyor`/`isleniyor` durumunda takılı kalan çağrı
+saklama süresinde silinmez; takılı çağrılar `recover_stuck_calls` ile başarısız duruma düşünce
+sonraki çalışmada silinir. (6) Durum denetimi ile silme arasında satır kilidi yoktur (küçük yarış);
+işçi silinen çağrıya yazarsa FK hatası alır ve görev hata verir, veri sızmaz. (7) Ses silinemezse
+yalnızca günlükte `call.delete.audio_orphan` kaydı olur; artık dosyaları süpüren bir görev yoktur.
+
 ## 4. Ham transkript için uygulama düzeyinde şifreleme: değerlendirme
 
 Karar: **uygulama düzeyinde (alan bazlı) şifreleme yapılmadı.** Gerekçe:
