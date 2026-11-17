@@ -32,6 +32,7 @@ from app.storage.base import (  # noqa: F401 - hata sınıfları geriye uyumlulu
     AUDIO_MEDIA_TYPES,
     AudioStorage,
     AudioTooLargeError,
+    AudioTooLongError,
     StoredAudio,
     UnsupportedAudioError,
 )
@@ -59,14 +60,20 @@ def store_audio(
     storage: AudioStorage | Path | str | None = None,
     *,
     max_bytes: int,
+    max_duration_s: float | None = None,
 ) -> StoredAudio:
     """Yüklenen sesi AudioStorage arayüzü ile saklar; boyut ve uzantıyı denetler.
 
     Dosya adı içeriğin özetidir: aynı ses tekrar yüklenirse aynı dosyanın üstüne yazılır.
     Geriye dönük uyumluluk için `storage` parametresi Path, str veya AudioStorage alabilir.
     """
+    from app.storage.audio_validation import validate_audio_upload
     from app.storage.local import LocalAudioStorage
     from app.storage.registry import build_audio_storage
+
+    if max_duration_s is not None:
+        # İçerik doğrulaması (#270): sahte uzantılı, bozuk, aşırı uzun dosya saklanmadan reddedilir.
+        validate_audio_upload(source, filename, max_bytes=max_bytes, max_duration_s=max_duration_s)
 
     if isinstance(storage, AudioStorage):
         backend = storage

@@ -8,7 +8,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Query, Request, Response
 
-from app.api.deps import AudioStorageDep, ServiceCallerDep, SessionDep
+from app.api.deps import AdminCallerDep, AudioStorageDep, ServiceCallerDep, SessionDep
 from app.domain.audit import AuditAction
 from app.schemas.api import CallDetail, CallFilters, CallListItem, CallMatchIn
 from app.schemas.common import ErrorResponse, Page
@@ -110,17 +110,21 @@ async def match_call_endpoint(
             },
         },
         401: {"model": ErrorResponse},
+        403: {"model": ErrorResponse},
         404: {"model": ErrorResponse},
     },
 )
 async def get_call_audio(
     call_id: UUID,
     request: Request,
-    caller: ServiceCallerDep,
+    caller: AdminCallerDep,
     session: SessionDep,
     storage: AudioStorageDep,
 ) -> Response:
     """Çağrıya ait ses dosyasını akıtır (Range isteklerini destekler).
+
+    Yalnızca yönetici bağlamı (`X-User-Id` yok): çağrı kayıtları işletmenin içidir, tekne sahibi
+    kimliğiyle gelen istek 403 alır (#270).
 
     Erişim denetim günlüğüne yazılır (#267). Oynatıcılar çok sayıda Range isteği attığı için her
     istek değil, (çağrı, eylemi yapan, IP) başına her

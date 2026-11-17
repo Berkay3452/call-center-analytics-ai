@@ -341,7 +341,10 @@ def test_registry_builds_configured_provider() -> None:
     assert whisper.model_size == "base"
     assert whisper._model is None  # model ilk kullanımda yüklenir
     assert isinstance(build_transcriber(settings, "stub"), StubTranscriber)
-    assert isinstance(build_transcriber(settings, "openai_compatible"), OpenAICompatibleTranscriber)
+    with pytest.raises(ValueError, match="STT_ALLOW_EXTERNAL"):
+        build_transcriber(settings, "openai_compatible")  # harici STT varsayılan kapalı (#270)
+    external = make_settings(stt_provider="faster_whisper", stt_allow_external=True)
+    assert isinstance(build_transcriber(external, "openai_compatible"), OpenAICompatibleTranscriber)
     with pytest.raises(ValueError, match="Bilinmeyen"):
         build_transcriber(settings, "deepgram")
 

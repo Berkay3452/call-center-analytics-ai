@@ -65,6 +65,7 @@ class Settings(BaseSettings):
     audio_storage_backend: Literal["local", "gcs"] = "local"
     audio_storage_dir: str = "storage/audio"
     audio_max_mb: int = Field(default=25, ge=1)
+    audio_max_duration_min: int = Field(default=120, ge=1)  # üstü reddedilir (#270)
     gcs_bucket_name: str = "call-audio"
     gcs_project_id: str | None = None
     gcs_credentials_file: str | None = None
@@ -131,6 +132,9 @@ class Settings(BaseSettings):
     # faster_whisper: yerel, CPU'da çalışır (`stt` ekstrası). openai_compatible: Whisper API'si
     # (ör. Groq). stub: ses yanındaki .txt dosyasını okur; STT kurulmadan zinciri denemek için.
     stt_provider: Literal["faster_whisper", "openai_compatible", "stub"] = "faster_whisper"
+    # Güvenlik (#270): harici STT (openai_compatible) HAM SESİ dışarı gönderir; maskeleme sesten
+    # önce uygulanamaz. Bu yüzden bilinçli açılmadıkça kapalıdır.
+    stt_allow_external: bool = False
     stt_language: str = "tr"
     # Konuşmacı ayrımı: santral kaydı stereo ise her kanal bir konuşmacıdır (temsilci sol/sağ).
     # Mono kayıtta konuşmacı ayrılamaz ("unknown"); model tabanlı ayrım sonraki adımdır.
@@ -220,6 +224,15 @@ class Settings(BaseSettings):
         # Güvenlik: kimlik doğrulama atlatma yalnızca yerel geliştirme ve testte açılabilir.
         if self.auth_dev_bypass and self.app_env not in ("local", "test"):
             raise ValueError("AUTH_DEV_BYPASS yalnızca APP_ENV=local veya test iken açılabilir.")
+        return self
+
+    @model_validator(mode="after")
+    def _guard_external_stt(self) -> "Settings":
+        if self.stt_provider == "openai_compatible" and not self.stt_allow_external:
+            raise ValueError(
+                "STT_PROVIDER=openai_compatible ham sesi harici servise gönderir; "
+                "bilinçli olarak STT_ALLOW_EXTERNAL=true verilmelidir."
+            )
         return self
 
     @model_validator(mode="after")

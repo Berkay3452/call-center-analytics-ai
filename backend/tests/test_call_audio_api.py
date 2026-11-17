@@ -177,3 +177,19 @@ def test_openapi_schema_includes_audio_endpoint() -> None:
     assert endpoint in paths
     assert "get" in paths[endpoint]
     assert paths[endpoint]["get"]["operationId"] == "getCallAudio"
+
+
+async def test_get_call_audio_forbidden_for_boat_owner_identity(fake_storage: Path) -> None:
+    """Tekne sahibi kimliğiyle (X-User-Id) gelen istek ses dosyasını alamaz (#270)."""
+    call = Call(
+        id=CALL_ID, started_at=datetime.now(UTC), state="tamam", audio_path="test_audio.wav"
+    )
+    owner = {**HEADERS, "X-User-Id": "22222222-2222-4222-8222-222222222222"}
+    async for client in _make_client(call, fake_storage):
+        denied = await client.get(f"/api/v1/calls/{CALL_ID}/audio", headers=owner)
+        assert denied.status_code == 403
+        assert denied.json()["error"]["code"] == "forbidden"
+        assert AUDIO_CONTENT not in denied.content
+        allowed = await client.get(f"/api/v1/calls/{CALL_ID}/audio", headers=HEADERS)
+        assert allowed.status_code == 200
+        assert allowed.content == AUDIO_CONTENT

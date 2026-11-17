@@ -1,5 +1,7 @@
 """Ayarlara göre STT sağlayıcısını kurar (`STT_PROVIDER`)."""
 
+import structlog
+
 from app.core.config import Settings
 from app.stt.base import Transcriber
 from app.stt.providers import (
@@ -8,10 +10,16 @@ from app.stt.providers import (
     StubTranscriber,
 )
 
+log = structlog.get_logger(__name__)
+
 
 def build_transcriber(settings: Settings, provider: str | None = None) -> Transcriber:
     """`provider` verilirse ayardaki yerine o kullanılır (karşılaştırma script'i için)."""
     name = provider or settings.stt_provider
+    if name == "openai_compatible" and not settings.stt_allow_external:
+        raise ValueError(
+            "Harici STT kapalı: STT_ALLOW_EXTERNAL=true verilmeden ham ses gönderilmez."
+        )
     if name == "faster_whisper":
         return FasterWhisperTranscriber(
             settings.whisper_model,
@@ -23,6 +31,7 @@ def build_transcriber(settings: Settings, provider: str | None = None) -> Transc
             initial_prompt=settings.whisper_initial_prompt,
         )
     if name == "openai_compatible":
+        log.warning("stt.external_enabled", base_url=settings.stt_api_base_url)
         return OpenAICompatibleTranscriber(
             base_url=settings.stt_api_base_url,
             api_key=settings.stt_api_key.get_secret_value() if settings.stt_api_key else None,

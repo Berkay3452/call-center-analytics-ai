@@ -1173,6 +1173,15 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponse"];
                 };
             };
+            /** @description Yalnızca yönetici bağlamı (X-User-Id olmadan) ses dosyasını alabilir */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
             /** @description Ses veya çağrı bulunamadı */
             404: {
                 headers: {

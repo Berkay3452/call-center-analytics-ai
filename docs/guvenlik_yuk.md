@@ -42,7 +42,7 @@ Mevcut, kapsamı genişlemeden korunan testler: sohbet oturumu başka sahibe ait
 | Her uç kimlik ister | ✓ | Yetki matrisi testi (§2) |
 | Tekne sahibi izolasyonu | ✓ | Kodda zorunlu `owner_id`, başka sahibin oturumu 404 (varlığı sızdırılmaz) |
 | SQL enjeksiyonu | ✓ | Parametreli SQLAlchemy sorguları; tek `f"..."` kullanımı sabit bir `server_default` |
-| Dosya yükleme | ✓ | 25 MB sınırı (413), tür kontrolü (415), aynı ses 409, depolama adı içerik özeti |
+| Dosya yükleme | ✓ | 25 MB sınırı (413), tür kontrolü (415), içerik doğrulaması (sihirli bayt + kod çözücü, bozuk/sahte uzantı 415, 120 dk üstü 413; #270), aynı ses 409, depolama adı içerik özeti |
 | Gizli anahtar taraması | ✓ | İzlenen dosyalarda `nvapi-`/`sk-`/`AIza`/`AKIA`/`ghp_`/JWT desenleri yok; `backend/.env` git'te yok (`.gitignore`), `.env.example` değerleri boş; ölçüm günlüklerinde LLM anahtarı geçmiyor |
 | Hata iletisinde iç bilgi | düzeltildi (#221, #271) | Bozuk ses hatası sunucu yolunu gösteriyordu (#221); LLM/STT ham hata gövdesi `calls.error`'da görünüyordu (#271'de kapandı: sabit Türkçe iletiler, ayrıntı yalnızca `agent_runs`'ta) |
 | Bağımlılıklar — backend (`pip-audit`) | düzeltildi | 4 dolaylı paket / 17 bulgu: `certifi` (CA kökü), `filelock` (13), `langgraph-sdk`, `opentelemetry-api`; `uv.lock` güncellendi (certifi 2026.10.23, filelock 4.2.6, langgraph-sdk 0.4.11, opentelemetry-api 1.45.2). Hiçbiri uygulamanın doğrudan kullandığı koddan değil |

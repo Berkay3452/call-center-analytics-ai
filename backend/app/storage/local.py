@@ -29,7 +29,8 @@ class LocalAudioStorage(AudioStorage):
 
     def __init__(self, base_dir: Path | str) -> None:
         self.base_dir = Path(base_dir).resolve()
-        self.base_dir.mkdir(parents=True, exist_ok=True)
+        # Yalnızca süreç sahibi okuyup yazabilir (#270); diğer kullanıcılar giremez.
+        self.base_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
 
     def _resolve_safe_path(self, relative_path: str) -> Path:
         """Yol dışına çıkma (path traversal) denetimi yaparak mutlak dosya yolunu döner."""
@@ -92,6 +93,7 @@ class LocalAudioStorage(AudioStorage):
             if size == 0:
                 raise UnsupportedAudioError("Ses dosyası boş.")
             name = f"{digest.hexdigest()}{ext}"
+            tmp.chmod(0o600)
             tmp.replace(self.base_dir / name)
         finally:
             tmp.unlink(missing_ok=True)

@@ -142,6 +142,7 @@ async def create_audio_call(
         file.filename,
         storage,
         max_bytes=settings.audio_max_mb * 1024 * 1024,
+        max_duration_s=settings.audio_max_duration_min * 60,
     )
     call_id = await audio_ingest.create_audio_call(session, meta, stored)
     await record_audit_event(
