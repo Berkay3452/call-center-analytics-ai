@@ -2,7 +2,7 @@
 # 1. Aşama: Builder — Bağımlılıkları uv ile sanal ortama kurar
 # =============================================================
 FROM ghcr.io/astral-sh/uv:0.5.29 AS uv_bin
-FROM python:3.12-slim-bookworm AS builder
+FROM python:3.15-slim-bookworm AS builder
 
 # uv ikili dosyalarını builder aşamasına kopyala
 COPY --from=uv_bin /uv /uvx /bin/
@@ -23,7 +23,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # =============================================================
 # 2. Aşama: Runner — Çalışma zamanı imajı (API & Celery Worker)
 # =============================================================
-FROM python:3.12-slim-bookworm AS runner
+FROM python:3.15-slim-bookworm AS runner
 
 # Sağlık kontrolü için curl, ses işleme ve STT için ffmpeg
 RUN apt-get update && apt-get install -y --no-install-recommends \
