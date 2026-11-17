@@ -267,7 +267,7 @@ sse-starlette==3.5.0
     # via
     #   call-center-backend
     #   mcp
-starlette==1.7.0
+starlette==1.10.0
     # via
     #   fastapi
     #   mcp
