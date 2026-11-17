@@ -211,7 +211,7 @@ def s4():
     c.box(23, 66, 15, 9, "Normalizasyon\nUnicode, homoglif,\nbase64/rot13 #273", "var", 9)
     c.box(43, 66, 16, 9, "Kural katmanı\nifade + fiil/nesne\ntemiz/şüpheli/saldırı", "var", 9)
     c.box(64, 66, 15, 9, "LLM sınıflandırıcı\n(yalnız şüpheli)\n#273", "var", 9)
-    c.box(84, 66, 14, 9, "Güvenli ret +\nolay kaydı\n(audit log: #267)", "var", 9)
+    c.box(84, 66, 14, 9, "Güvenli ret +\nolay kaydı\n(audit_log ✔)", "var", 9)
     c.arrow(17, 70.5, 23, 70.5)
     c.arrow(38, 70.5, 43, 70.5)
     c.arrow(59, 70.5, 64, 70.5)
