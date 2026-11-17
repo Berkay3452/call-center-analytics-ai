@@ -26,6 +26,19 @@ AUDIO_CONTENT = b"RIFF" + b"\x12\x34\x56\x78" * 64  # 260 byte sahte wav
 class FakeSession:
     def __init__(self, call: Call | None = None) -> None:
         self.call = call
+        self.added: list[Any] = []  # denetim günlüğü satırları (#267)
+
+    def add(self, obj: Any) -> None:
+        self.added.append(obj)
+
+    async def flush(self) -> None:
+        return None
+
+    async def commit(self) -> None:
+        return None
+
+    async def scalar(self, stmt: Any) -> None:
+        return None  # yakın zamanlı denetim kaydı sorgusu: kayıt yok
 
     async def get(self, model: type[Any], ident: Any) -> Any:
         if self.call is not None and self.call.id == ident:

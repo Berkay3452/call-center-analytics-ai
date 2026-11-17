@@ -42,7 +42,9 @@ Savunma beş güven sınırında kurulur:
 | `X-User-Id` UUID olarak doğrulanır | **Var** | `api/deps.py` |
 | `X-User-Id` **kaynağı** doğrulanmaz; geliştirmede tarayıcı başlığı olduğu gibi iletilir | **Eksik** → imzalı kimlik | #266 |
 | Anahtar rotasyonu (çoklu, süreli anahtar) | **Planlanan** | #266 |
-| Denetim günlüğü (kim, ne zaman, ne yaptı) — ortak altyapı, erken yapılır | **Planlanan** | #267 |
+| Denetim günlüğü: `audit_log` (yalnızca ekleme, DB tetikleyicisi), `record_audit_event`, `GET /audit-log` (yönetici bağlamı); kimlik doğrulama başarısızlığı, çağrı yükleme/yeniden analiz/eşleştirme, ses erişimi, CRM onay/red, servis emri oluşturma/durum, asistan güvenlik tetikleyicileri; kişisel veri kodla reddedilir | **Var** | `app/services/audit.py`, `migrations/versions/20261117_0006_denetim_gunlugu.py`, `tests/test_audit*.py` |
+| Denetim günlüğünde eylemi yapanın kimliği | **Kısmi**: `actor_id` yalnızca tekne sahibi bağlamında dolu (X-User-Id doğrulanmadığından güvenilir değil); servis/yönetici ayrımı hesaplarla netleşecek | #278, #266 |
+| `GET /audit-log` yönetici denetimi | **Geçici**: `X-User-Id` taşımayan servis çağrısı = yönetici; gerçek rol denetimi | #275 |
 | Tekne sahibi ve yönetici hesapları: kullanıcı adı + argon2id parola karması, deneme sayacı/kilit; düz parola yalnızca git dışı yerel dosyada | **Planlanan** | #278 |
 | Giriş ekranı (oturum/JWT) | **Karar bekliyor** | #265 |
 

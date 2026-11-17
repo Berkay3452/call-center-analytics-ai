@@ -17,11 +17,14 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.errors import ConflictError, NotFoundError
+from app.core.security import ServiceCaller
 from app.db.models.ai import AnalysisResult as AnalysisRow
 from app.db.models.ai import Call, CrmReview
 from app.db.models.external import ServiceOrder
+from app.domain.audit import AuditAction
 from app.domain.enums import CrmReviewStatus, ServiceOrderStatus
 from app.schemas.api import CrmApproveIn, CrmRejectIn, CrmReviewOut
+from app.services.audit import record_audit_event
 
 CRM_EDITABLE_FIELDS = {
     "request_category",
@@ -58,6 +61,8 @@ async def approve_crm_record(
     session: AsyncSession,
     call_id: UUID,
     payload: CrmApproveIn,
+    *,
+    actor: ServiceCaller | None = None,
 ) -> CrmReviewOut:
     """CRM önerisini onaylar (veya düzenleyerek onaylar) ve servis emri oluşturur (#106)."""
     call = await session.get(Call, call_id)
@@ -94,6 +99,7 @@ async def approve_crm_record(
 
     # Servis emri: Yalnızca ilk onayda oluşturulur (idempotent)
     service_order_id: UUID | None = None
+    order_created = False
     if review is not None and review.service_order_id is not None:
         service_order_id = review.service_order_id
     else:
@@ -109,6 +115,7 @@ async def approve_crm_record(
         session.add(new_order)
         await session.flush()
         service_order_id = new_order.id
+        order_created = True
 
     now = datetime.now(UTC)
     if review is None:
@@ -130,6 +137,25 @@ async def approve_crm_record(
         review.reviewed_at = now
         review.service_order_id = service_order_id
 
+    await session.flush()
+    await record_audit_event(
+        session,
+        action=AuditAction.CRM_ONAYLANDI,
+        actor=actor,
+        target_type="call",
+        target_id=call.id,
+        details={"duzenlenen_alan_sayisi": len(edited_fields), "inceleme_id": review.id},
+    )
+    if order_created:
+        await record_audit_event(
+            session,
+            action=AuditAction.SERVIS_EMRI_OLUSTURULDU,
+            actor=actor,
+            target_type="service_order",
+            target_id=service_order_id,
+            details={"cagri_id": call.id},
+        )
+
     # İstek oturumu commit etmez (get_db_session); yazma kararı servis katmanındadır.
     await session.commit()
 
@@ -149,6 +175,8 @@ async def reject_crm_record(
     session: AsyncSession,
     call_id: UUID,
     payload: CrmRejectIn,
+    *,
+    actor: ServiceCaller | None = None,
 ) -> CrmReviewOut:
     """CRM önerisini reddeder (#106)."""
     call = await session.get(Call, call_id)
@@ -180,6 +208,16 @@ async def reject_crm_record(
         if payload.note is not None:
             review.note = payload.note
         review.reviewed_at = now
+
+    await session.flush()
+    await record_audit_event(
+        session,
+        action=AuditAction.CRM_REDDEDILDI,
+        actor=actor,
+        target_type="call",
+        target_id=call.id,
+        details={"inceleme_id": review.id},
+    )
 
     # İstek oturumu commit etmez (get_db_session); yazma kararı servis katmanındadır.
     await session.commit()

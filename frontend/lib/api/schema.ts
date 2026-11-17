@@ -345,6 +345,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/audit-log": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Denetim günlüğü (yönetici) */
+        get: operations["listAuditLog"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -868,6 +885,34 @@ export interface components {
             /** @description Yalnızca admin görür. */
             phone?: string | null;
             boats?: components["schemas"]["CustomerBoatOut"][];
+        };
+        /** @enum {string} */
+        AuditAction: "kimlik_dogrulama_basarisiz" | "cagri_yuklendi" | "cagri_yeniden_analiz" | "cagri_eslestirildi" | "cagri_silindi" | "ses_erisimi" | "crm_onaylandi" | "crm_reddedildi" | "servis_emri_olusturuldu" | "servis_emri_durum_degisti" | "asistan_kural_ihlali" | "asistan_injection" | "asistan_baska_taraf" | "denetim_goruntulendi";
+        /** @enum {string} */
+        AuditOutcome: "basarili" | "reddedildi" | "hata";
+        /** @enum {string} */
+        AuditActorRole: "servis" | "tekne_sahibi" | "sistem" | "anonim";
+        AuditLogItem: {
+            /** Format: uuid */
+            id: string;
+            /** Format: date-time */
+            occurred_at: string;
+            /** Format: uuid */
+            actor_id?: string | null;
+            actor_role?: components["schemas"]["AuditActorRole"];
+            action: components["schemas"]["AuditAction"];
+            target_type?: string | null;
+            target_id?: string | null;
+            outcome: components["schemas"]["AuditOutcome"];
+            request_id?: string | null;
+            ip?: string | null;
+            details?: Record<string, never>;
+        };
+        PageAuditLogItem: {
+            items: components["schemas"]["AuditLogItem"][];
+            total: number;
+            page: number;
+            page_size: number;
         };
     };
     responses: never;
@@ -1652,6 +1697,36 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    listAuditLog: {
+        parameters: {
+            query?: {
+                action?: components["schemas"]["AuditAction"];
+                outcome?: components["schemas"]["AuditOutcome"];
+                actor_id?: string;
+                target_type?: string;
+                target_id?: string;
+                since?: string;
+                until?: string;
+                page?: number;
+                page_size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Başarılı */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PageAuditLogItem"];
                 };
             };
         };

@@ -70,6 +70,9 @@ class Settings(BaseSettings):
     gcs_credentials_file: str | None = None
     # Yalnızca local/test: servis anahtarı kurulmadan uçları denemek için doğrulamayı atlar.
     auth_dev_bypass: bool = False
+    # Kimlik doğrulama başarısızlıklarını denetim günlüğüne ayrı oturumda yazar (#267). Veritabanı
+    # olmayan birim testlerinde kapatılır; canlıda kapatılamaz.
+    audit_auth_failures: bool = True
 
     # --- LLM (ücretsiz, OpenAI-uyumlu API sağlayıcıları) ---
     llm_provider: Literal[
@@ -203,6 +206,12 @@ class Settings(BaseSettings):
         # Güvenlik: kimlik doğrulama atlatma yalnızca yerel geliştirme ve testte açılabilir.
         if self.auth_dev_bypass and self.app_env not in ("local", "test"):
             raise ValueError("AUTH_DEV_BYPASS yalnızca APP_ENV=local veya test iken açılabilir.")
+        return self
+
+    @model_validator(mode="after")
+    def _guard_audit(self) -> "Settings":
+        if self.is_production and not self.audit_auth_failures:
+            raise ValueError("AUDIT_AUTH_FAILURES canlıda kapatılamaz.")
         return self
 
     @model_validator(mode="after")

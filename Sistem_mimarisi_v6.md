@@ -133,7 +133,7 @@ Siber güvenlik dersi kapsamında (**Ses Verisi Güvenliği ve Yapay Zekâ Güve
 | Kural | Durum |
 |---|---|
 | Her istekte `X-Request-Id`; LLM çalıştırmaları `agent_runs` tablosunda | **Var** |
-| Denetim günlüğü (kim, ne zaman, ne yaptı; kişisel veri yazılmaz) | **Planlanan** #267 |
+| Denetim günlüğü: `audit_log` yalnızca ekleme (DB tetikleyicisi), tek yazma noktası `record_audit_event`, yönetici listeleme ucu `GET /audit-log`; kişisel veri yazılmaz (kodla reddedilir) | **Var** (#267) |
 | Güvenlik test paketi ve OWASP (LLM Top 10, API Top 10) eşlemesi | **Planlanan** #276 |
 
 ## 4.2 Güvenlik İlkeleri

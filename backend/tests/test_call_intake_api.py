@@ -30,6 +30,13 @@ BODY = {
 class FakeSession:
     def __init__(self) -> None:
         self.commits = 0
+        self.added: list[Any] = []  # denetim günlüğü satırları (#267)
+
+    def add(self, obj: Any) -> None:
+        self.added.append(obj)
+
+    async def flush(self) -> None:
+        return None
 
     async def commit(self) -> None:
         self.commits += 1

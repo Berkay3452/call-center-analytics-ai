@@ -1249,6 +1249,103 @@
           }
         }
       }
+    },
+    "/audit-log": {
+      "get": {
+        "summary": "Denetim günlüğü (yönetici)",
+        "operationId": "listAuditLog",
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/AuditAction"
+            },
+            "required": false
+          },
+          {
+            "name": "outcome",
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/AuditOutcome"
+            },
+            "required": false
+          },
+          {
+            "name": "actor_id",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": false
+          },
+          {
+            "name": "target_type",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "name": "target_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "required": false
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "required": false
+          },
+          {
+            "name": "until",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "required": false
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            },
+            "required": false
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            },
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Başarılı",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PageAuditLogItem"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -3117,6 +3214,121 @@
             "items": {
               "$ref": "#/components/schemas/CustomerBoatOut"
             }
+          }
+        }
+      },
+      "AuditAction": {
+        "type": "string",
+        "enum": [
+          "kimlik_dogrulama_basarisiz",
+          "cagri_yuklendi",
+          "cagri_yeniden_analiz",
+          "cagri_eslestirildi",
+          "cagri_silindi",
+          "ses_erisimi",
+          "crm_onaylandi",
+          "crm_reddedildi",
+          "servis_emri_olusturuldu",
+          "servis_emri_durum_degisti",
+          "asistan_kural_ihlali",
+          "asistan_injection",
+          "asistan_baska_taraf",
+          "denetim_goruntulendi"
+        ]
+      },
+      "AuditOutcome": {
+        "type": "string",
+        "enum": [
+          "basarili",
+          "reddedildi",
+          "hata"
+        ]
+      },
+      "AuditActorRole": {
+        "type": "string",
+        "enum": [
+          "servis",
+          "tekne_sahibi",
+          "sistem",
+          "anonim"
+        ]
+      },
+      "AuditLogItem": {
+        "type": "object",
+        "required": [
+          "id",
+          "occurred_at",
+          "action",
+          "outcome"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "occurred_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "actor_id": {
+            "type": "string",
+            "format": "uuid",
+            "nullable": true
+          },
+          "actor_role": {
+            "$ref": "#/components/schemas/AuditActorRole",
+            "nullable": true
+          },
+          "action": {
+            "$ref": "#/components/schemas/AuditAction"
+          },
+          "target_type": {
+            "type": "string",
+            "nullable": true
+          },
+          "target_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "outcome": {
+            "$ref": "#/components/schemas/AuditOutcome"
+          },
+          "request_id": {
+            "type": "string",
+            "nullable": true
+          },
+          "ip": {
+            "type": "string",
+            "nullable": true
+          },
+          "details": {
+            "type": "object"
+          }
+        }
+      },
+      "PageAuditLogItem": {
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "page_size"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AuditLogItem"
+            }
+          },
+          "total": {
+            "type": "integer"
+          },
+          "page": {
+            "type": "integer"
+          },
+          "page_size": {
+            "type": "integer"
           }
         }
       }

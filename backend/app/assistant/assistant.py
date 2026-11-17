@@ -23,11 +23,31 @@ from app.assistant.planner import (
 )
 from app.assistant.retrieval import search_boat_notes
 from app.assistant.rewrite import standalone_question
+from app.domain.audit import AuditAction, AuditActorRole, AuditOutcome
 from app.schemas.assistant import AssistantAnswer, AssistantRequest, QuestionType
+from app.services.audit import record_audit_event
 
 log = structlog.get_logger(__name__)
 
 MAX_PROCESSED_CHARS = 1000
+
+
+async def _audit_safety(
+    session: AsyncSession | None, request: AssistantRequest, action: AuditAction, **details: str
+) -> None:
+    """Güvenlik tetikleyicisini denetim günlüğüne ekler (#267). Soru metni yazılmaz; yalnızca
+    tetikleyen kural türü. Kayıt, sohbet turunun işlemiyle birlikte kalıcı olur."""
+    if session is None:
+        return
+    await record_audit_event(
+        session,
+        action=action,
+        actor_id=request.owner_id,
+        actor_role=AuditActorRole.TEKNE_SAHIBI,
+        target_type="assistant",
+        outcome=AuditOutcome.REDDEDILDI,
+        details=details,
+    )
 
 
 async def answer_question(
@@ -58,6 +78,9 @@ async def answer_question(
     question_text = request.question
     if (verdict := safety.moderate(question_text)) is not None:
         log.info("assistant.moderated", violation=verdict.violation)
+        await _audit_safety(
+            session, request, AuditAction.ASISTAN_KURAL_IHLALI, ihlal=verdict.violation.value
+        )
         has_question = bool(verdict.cleaned) and verdict.violation == safety.Violation.ABUSE
         if has_question and (
             plan_by_rules(verdict.cleaned) is not None
@@ -75,11 +98,13 @@ async def answer_question(
         )
     if safety.is_injection_attempt(question_text):
         log.info("assistant.injection_attempt")
+        await _audit_safety(session, request, AuditAction.ASISTAN_INJECTION, kural="girdi_deseni")
         return AssistantAnswer(
             answer=safety.pick_reply(safety.INJECTION_REPLIES, question_text),
             question_type=QuestionType.KAPSAM_DISI,
         )
     if safety.asks_other_party(question_text):
+        await _audit_safety(session, request, AuditAction.ASISTAN_BASKA_TARAF, kural="baska_taraf")
         return AssistantAnswer(
             answer=safety.pick_reply(safety.OTHER_PARTY_REPLIES, question_text),
             question_type=QuestionType.KAPSAM_DISI,
@@ -88,6 +113,9 @@ async def answer_question(
         question_text, await tools.other_customer_names(request.owner_id, session=session)
     ):
         log.info("assistant.other_party_name")
+        await _audit_safety(
+            session, request, AuditAction.ASISTAN_BASKA_TARAF, kural="baska_musteri"
+        )
         return AssistantAnswer(
             answer=safety.pick_reply(safety.OTHER_PARTY_REPLIES, question_text),
             question_type=QuestionType.KAPSAM_DISI,
@@ -100,6 +128,7 @@ async def answer_question(
     )
     if match.foreign:
         log.info("assistant.other_boat_name")
+        await _audit_safety(session, request, AuditAction.ASISTAN_BASKA_TARAF, kural="baska_tekne")
         return AssistantAnswer(
             answer=foreign_boat_reply(own_boats), question_type=QuestionType.KAPSAM_DISI
         )

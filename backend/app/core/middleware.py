@@ -11,12 +11,16 @@ Her istek için:
 
 import time
 import uuid
+from contextvars import ContextVar
 
 import structlog
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 REQUEST_ID_HEADER = "x-request-id"
 logger = structlog.get_logger("app.request")
+
+# Geçerli isteğin istemci IP'si (denetim günlüğü okur; bkz. app/services/audit.py).
+client_ip_var: ContextVar[str | None] = ContextVar("client_ip", default=None)
 
 
 class RequestContextMiddleware:
@@ -37,7 +41,10 @@ class RequestContextMiddleware:
         scope.setdefault("state", {})["request_id"] = request_id
 
         structlog.contextvars.clear_contextvars()
+        client = scope.get("client")
         structlog.contextvars.bind_contextvars(request_id=request_id)
+        # İstemci IP'si günlüğe değil, yalnızca denetim kaydına (#267) gider.
+        ip_token = client_ip_var.set(client[0] if client else None)
 
         status_code = 500
         start = time.perf_counter()
@@ -62,3 +69,4 @@ class RequestContextMiddleware:
                 duration_ms=duration_ms,
             )
             structlog.contextvars.clear_contextvars()
+            client_ip_var.reset(ip_token)

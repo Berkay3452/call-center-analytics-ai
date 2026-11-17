@@ -9,11 +9,16 @@ from uuid import UUID
 from fastapi import APIRouter, Query, Request, Response
 
 from app.api.deps import AudioStorageDep, ServiceCallerDep, SessionDep
+from app.domain.audit import AuditAction
 from app.schemas.api import CallDetail, CallFilters, CallListItem, CallMatchIn
 from app.schemas.common import ErrorResponse, Page
 from app.services import audio_ingest, call_matching, call_reader
+from app.services.audit import has_recent_audit_event, record_audit_event
 
 router = APIRouter(prefix="/calls", tags=["calls"])
+
+# Aynı (çağrı, eylemi yapan, IP) için ses erişimi kaydı en çok bu aralıkla tekrarlanır.
+AUDIO_AUDIT_WINDOW_S = 300
 
 
 @router.get(
@@ -68,14 +73,23 @@ async def get_call(
 async def match_call_endpoint(
     call_id: UUID,
     payload: CallMatchIn,
-    _: ServiceCallerDep,
+    caller: ServiceCallerDep,
     session: SessionDep,
 ) -> CallDetail:
     """Eşleşmeyen veya yanlış bağlanan çağrıyı belirli bir müşteri ve tekneye bağlar (#119)."""
     async with session.begin():
-        return await call_matching.manual_match_call(
+        detail = await call_matching.manual_match_call(
             session, call_id, payload.customer_id, payload.boat_id
         )
+        await record_audit_event(
+            session,
+            action=AuditAction.CAGRI_ESLESTIRILDI,
+            actor=caller,
+            target_type="call",
+            target_id=call_id,
+            details={"musteri_id": payload.customer_id, "tekne_id": payload.boat_id},
+        )
+        return detail
 
 
 @router.get(
@@ -102,12 +116,35 @@ async def match_call_endpoint(
 async def get_call_audio(
     call_id: UUID,
     request: Request,
-    _: ServiceCallerDep,
+    caller: ServiceCallerDep,
     session: SessionDep,
     storage: AudioStorageDep,
 ) -> Response:
-    """Çağrıya ait ses dosyasını akıtır (Range isteklerini destekler)."""
+    """Çağrıya ait ses dosyasını akıtır (Range isteklerini destekler).
+
+    Erişim denetim günlüğüne yazılır (#267). Oynatıcılar çok sayıda Range isteği attığı için her
+    istek değil, (çağrı, eylemi yapan, IP) başına her
+    `AUDIO_AUDIT_WINDOW_S` saniyede en az bir kayıt düşer;
+    başlangıç ofseti (`bytes=1-` gibi) kaydı atlatamaz.
+    """
     range_header = request.headers.get("range")
-    return await audio_ingest.get_call_audio_response(
+    response = await audio_ingest.get_call_audio_response(
         session, call_id, storage, range_header=range_header
     )
+    if not await has_recent_audit_event(
+        session,
+        action=AuditAction.SES_ERISIMI,
+        actor=caller,
+        target_type="call",
+        target_id=call_id,
+        within_s=AUDIO_AUDIT_WINDOW_S,
+    ):
+        await record_audit_event(
+            session,
+            action=AuditAction.SES_ERISIMI,
+            actor=caller,
+            target_type="call",
+            target_id=call_id,
+        )
+        await session.commit()
+    return response
