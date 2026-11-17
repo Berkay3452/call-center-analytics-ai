@@ -15,6 +15,7 @@ Kullanım (backend/ klasöründe; LLM veya veritabanı gerekmez):
 """
 
 import argparse
+import io
 import json
 import sys
 from dataclasses import dataclass, field
@@ -237,7 +238,8 @@ def sentetik_degisenler() -> tuple[int, list[tuple[str, str, str]]]:
 
 def main() -> None:
     argparse.ArgumentParser(description=__doc__.splitlines()[0]).parse_args()
-    sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
+    if isinstance(sys.stdout, io.TextIOWrapper):
+        sys.stdout.reconfigure(encoding="utf-8")
     toplam, degisen = sentetik_degisenler()
     print(f"Sentetik çağrılar: {toplam} turdan {len(degisen)} tanesi maskeleme ile değişti.")
     for cagri, ozgun, maskeli in degisen:

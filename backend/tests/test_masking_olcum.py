@@ -11,7 +11,7 @@ import pytest
 import structlog
 from structlog.testing import capture_logs
 
-from app.agents.base import AnalysisContext, Segment
+from app.agents.base import AgentResult, AnalysisContext, Segment
 from app.agents.call_classifier import CallClassifierAgent
 from app.agents.summarizer import SummarizerAgent, find_personal_data
 from app.services.masking import mask_text
@@ -103,7 +103,7 @@ def _segments() -> list[Segment]:
     return [
         Segment(
             idx=i, speaker=sp, start_ms=i * 1000, end_ms=i * 1000 + 900, text_masked=mask_text(t)
-        )  # type: ignore[arg-type]
+        )
         for i, (sp, t) in enumerate(RAW_TURNS)
     ]
 
@@ -128,7 +128,7 @@ async def test_llm_receives_only_masked_text_and_logs_stay_clean() -> None:
     ctx = AnalysisContext(call_id=uuid4(), segments=_segments())
 
     with capture_logs() as logs:
-        results = [
+        results: list[AgentResult[Any]] = [
             await CallClassifierAgent(model=classifier_model).run(ctx),
             await SummarizerAgent(model=summary_model).run(ctx),
         ]
@@ -149,7 +149,7 @@ async def test_failure_records_and_logs_do_not_contain_raw_text() -> None:
     ctx = AnalysisContext(call_id=uuid4(), segments=_segments())
 
     with capture_logs() as logs:
-        result: Any = await CallClassifierAgent(model=model).run(ctx)
+        result = await CallClassifierAgent(model=model).run(ctx)
 
     assert result.status == "failed"
     _assert_clean(json.dumps(logs, ensure_ascii=False, default=str))

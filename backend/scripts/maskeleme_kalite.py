@@ -13,6 +13,7 @@ Kullanım (backend/ klasöründe, .env'de LLM ayarları dolu olmalı):
 
 import argparse
 import asyncio
+import io
 import json
 import sys
 from pathlib import Path
@@ -101,7 +102,8 @@ def main() -> None:
     parser.add_argument("--calls", required=True, help="virgülle ayrılmış çağrı kimlikleri")
     parser.add_argument("--out", help="ham sonuçların yazılacağı JSON dosyası")
     args = parser.parse_args()
-    sys.stdout.reconfigure(encoding="utf-8")  # type: ignore[attr-defined]
+    if isinstance(sys.stdout, io.TextIOWrapper):
+        sys.stdout.reconfigure(encoding="utf-8")
     rows = asyncio.run(run(args.calls.split(","), Settings()))
     print(ozet(rows))
     if args.out:
