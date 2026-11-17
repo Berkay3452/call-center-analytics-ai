@@ -56,7 +56,7 @@ async def list_crm_records(
 )
 async def approve_crm_record(
     call_id: UUID,
-    _: ServiceCallerDep,
+    caller: ServiceCallerDep,
     session: SessionDep,
     payload: Annotated[CrmApproveIn | None, Body()] = None,
 ) -> CrmReviewOut:
@@ -65,7 +65,9 @@ async def approve_crm_record(
     Çağrının müşteri ve tekne kaydı eşleşmişse servis emri oluşturulur.
     Eşleşme yoksa 409 döner. Tekrar onay aynı servis emrini döner (idempotent).
     """
-    return await crm_review_service.approve_crm_record(session, call_id, payload or CrmApproveIn())
+    return await crm_review_service.approve_crm_record(
+        session, call_id, payload or CrmApproveIn(), actor=caller
+    )
 
 
 @router.post(
@@ -82,9 +84,11 @@ async def approve_crm_record(
 )
 async def reject_crm_record(
     call_id: UUID,
-    _: ServiceCallerDep,
+    caller: ServiceCallerDep,
     session: SessionDep,
     payload: Annotated[CrmRejectIn | None, Body()] = None,
 ) -> CrmReviewOut:
     """CRM önerisini gerekçe/not ile reddeder (#106)."""
-    return await crm_review_service.reject_crm_record(session, call_id, payload or CrmRejectIn())
+    return await crm_review_service.reject_crm_record(
+        session, call_id, payload or CrmRejectIn(), actor=caller
+    )

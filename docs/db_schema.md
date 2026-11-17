@@ -164,6 +164,20 @@ erDiagram
         timestamptz created_at
     }
 
+    audit_log {
+        uuid id PK
+        timestamptz occurred_at
+        uuid actor_id
+        text actor_role
+        text action
+        text target_type
+        text target_id
+        text outcome
+        text request_id
+        text ip
+        jsonb details
+    }
+
     crm_reviews {
         uuid id PK
         uuid analysis_id FK
@@ -513,6 +527,32 @@ Analiz çıktısından üretilen CRM önerisinin admin tarafından incelenmesi (
 - `FK (call_id) REFERENCES calls(id) ON DELETE CASCADE`
 - `FK (service_order_id) REFERENCES service_orders(id) ON DELETE SET NULL`
 - `CHECK (status IN ('bekliyor', 'onaylandi', 'reddedildi'))`
+
+### 3.10 `audit_log`
+
+Denetim günlüğü (#267): kim, ne zaman, hangi nesneye ne yaptı. **Yalnızca eklenir**; satırlar değiştirilemez veya silinemez. Yazma tek yoldan yapılır: `app/services/audit.py` içindeki `record_audit_event(db, action=..., ...)`.
+
+| Sütun | Tip | Zorunlu | Varsayılan | Açıklama |
+|-------|-----|---------|------------|----------|
+| `id` | `UUID` | ✅ | `gen_random_uuid()` | Birincil anahtar |
+| `occurred_at` | `TIMESTAMPTZ` | ✅ | `now()` | Olayın zamanı |
+| `actor_id` | `UUID` | — | — | Eylemi yapan tekne sahibi (`customers.id`); FK yoktur, müşteri silinse de iz kalır. Servis/yönetici bağlamında ve anonimde boş |
+| `actor_role` | `TEXT` | — | — | `servis`, `tekne_sahibi`, `sistem`, `anonim` (hesap sistemi #278 ile genişler) |
+| `action` | `TEXT` | ✅ | — | Olay türü (`app/domain/audit.py` `AuditAction`; yeni tür eklemek migration gerektirmez) |
+| `target_type` | `TEXT` | — | — | Hedefin türü: `call`, `service_order`, `assistant`, `endpoint`, `audit_log` |
+| `target_id` | `TEXT` | — | — | Hedefin kimliği (UUID veya sabit etiket); yalnızca `[A-Za-z0-9_.:-]`, en çok 64 karakter |
+| `outcome` | `TEXT` | ✅ | `'basarili'` | CHECK: `basarili`, `reddedildi`, `hata` |
+| `request_id` | `TEXT` | — | — | `X-Request-ID` (günlüklerle eşleştirmek için) |
+| `ip` | `TEXT` | — | — | İsteği yapan bağlantının adresi; Next vekil rotası arkasında vekilin adresidir |
+| `details` | `JSONB` | ✅ | `'{}'::jsonb` | Yalnızca güvenli sabit değerler (en çok 10 anahtar; metin değerleri kimlik/tür biçiminde) |
+
+**Kısıtlamalar ve indeksler:**
+- `PK (id)`
+- `CHECK (outcome IN ('basarili', 'reddedildi', 'hata'))`
+- Tetikleyici `audit_log_no_update_delete` (satır başına UPDATE/DELETE) ve `audit_log_no_truncate` (TRUNCATE): `insufficient_privilege` hatasıyla reddeder (migration `0006`).
+- İndeksler: `occurred_at`, `(action, occurred_at)`, `actor_id`, `(target_type, target_id)`
+
+**Kişisel veri kuralı:** ad, telefon, e-posta, transkript, soru metni, dosya adı, anahtar değeri yazılmaz; yalnızca kimlikler, türler ve sabit değerler. `record_audit_event` bu kuralı kodla uygular (serbest metin, `@`, boşluk, 9+ haneli sayı reddedilir). `ip` kişisel veri sayılabilir; saklama süresi #269 kapsamındadır.
 
 ---
 

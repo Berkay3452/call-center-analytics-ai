@@ -44,6 +44,7 @@ Admin/tekne sahibi rol ayrımını .NET uygulaması yapar. Tekne sahibi uçları
 | `GET /service-orders/{order_id}` | Admin | — | `ServiceOrderDetail` | #118 |
 | `PATCH /service-orders/{order_id}/status` | Admin | `ServiceOrderStatusUpdate` | `ServiceOrderDetail` | #118 |
 | `GET /analytics/summary` | Admin | `PeriodFilter` (sorgu) | `KpiSummary` | #52 |
+| `GET /audit-log` | Yönetici (`X-User-Id` yok; tekne sahibi kimliğiyle 403) | `AuditLogFilters` (sorgu) | `Page` of `AuditLogItem` | #267 |
 | `POST /calls` | Admin | `CallCreate` (JSON) | 202 `CallAccepted` | #48 |
 | `POST /calls/audio` | Admin | multipart: `file` (wav/mp3/m4a/ogg/flac/aac/webm, en fazla 25 MB) + `AudioCallMeta` alanları | 202 `CallAccepted`; aynı ses daha önce yüklendiyse 409 (`details.call_id`) | #49 |
 | `POST /calls/{call_id}/analyze` | Admin | — | 202 `CallAccepted` (yeni analiz sürümü); çağrı zaten işleniyorsa da 202, `already_running=true` (hata değil, #218) | #48 |
@@ -123,6 +124,12 @@ Yeni görev açıldıysa `already_running=false`'tur. Satır kilitlendiği için
 - `CrmApproveIn`: isteğe bağlı 7 alan düzenlemesi (`request_category`, `location`, `problem`, `service_mode`, `urgency`, `potential_job`, `next_action`) ve `note`.
 - `CrmRejectIn`: red nedeni veya not (`note`).
 - `CrmReviewOut`: inceleme kaydı (`id`, `call_id`, `analysis_id`, `status`, `edited_fields`, `note`, `reviewed_at`, `service_order_id`).
+
+### Denetim günlüğü (#267)
+- `AuditLogItem`: tek kayıt (`id`, `occurred_at`, `actor_id`, `actor_role`, `action`, `target_type`, `target_id`, `outcome`, `request_id`, `ip`, `details`). Kişisel veri içermez.
+- `AuditLogFilters`: `action`, `outcome`, `actor_id`, `target_type`, `target_id`, `since`, `until`, `page`, `page_size`. En yeni kayıt başta gelir.
+- Yalnızca okuma ucu vardır; ekleme/değiştirme/silme ucu yoktur. Günlüğü görüntülemek de `denetim_goruntulendi` olarak kaydedilir.
+- Düşen olaylar: kimlik doğrulama başarısızlığı, çağrı yükleme (metin/ses), yeniden analiz, elle eşleştirme, ses dosyası erişimi (yalnızca ilk Range isteği), CRM onay/red, servis emri oluşturma ve durum değişikliği, asistan güvenlik tetikleyicileri (kural ihlali, injection, başka taraf verisi). Çağrı silme (#269) bu işte eklenecek.
 
 ### Çağrı alma
 - `CallCreate`: sesi olmayan çağrı (geliştirme ve sentetik veri için). `transcript` (düz metin) veya `SegmentIn` listesinden biri zorunlu.

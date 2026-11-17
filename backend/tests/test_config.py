@@ -31,9 +31,14 @@ def test_broker_defaults_to_redis(settings_factory: Callable[..., Settings]) -> 
 def test_prod_rejects_weak_service_key(settings_factory: Callable[..., Settings]) -> None:
     for weak in (None, "change-me-in-local-env", "kisa"):
         with pytest.raises(ValueError):
-            settings_factory(app_env="prod", service_api_key=weak)
-    ok = settings_factory(app_env="prod", service_api_key="x" * 40)
+            settings_factory(app_env="prod", service_api_key=weak, audit_auth_failures=True)
+    ok = settings_factory(app_env="prod", service_api_key="x" * 40, audit_auth_failures=True)
     assert ok.is_production
+
+
+def test_prod_cannot_disable_auth_failure_audit(settings_factory: Callable[..., Settings]) -> None:
+    with pytest.raises(ValueError, match="AUDIT_AUTH_FAILURES"):
+        settings_factory(app_env="prod", service_api_key="x" * 40, audit_auth_failures=False)
 
 
 def test_empty_whisper_download_root_means_default_cache(

@@ -106,7 +106,7 @@ def s0():
     c.box(42.5, 66, 24, 8, "Kimlik: X-Service-Key\n(compare_digest, prod ≥ 32)", "var", 8.8)
     c.box(42.5, 55, 24, 8, "İmzalı X-User-Id + rol\nrotasyon  #266", "plan", 8.8)
     c.box(42.5, 44, 24, 8, "Sahip izolasyonu (owner_id),\nyetki matrisi testi, 404 sızıntısız", "var", 8.8)
-    c.box(42.5, 33, 24, 8, "Denetim günlüğü  #267\nKVKK silme/saklama  #269", "plan", 8.8)
+    c.box(42.5, 33, 24, 8, "Denetim günlüğü (audit_log) ✔\nKVKK silme/saklama  #269", "var", 8.8)
     c.zone(72, 40, 26, 38, "3 · Yapay zekâ katmanı")
     c.box(73.5, 66, 23, 8, "Safety + injection kapısı\n(anahtar ifade)  → #273", "var", 8.8)
     c.box(73.5, 55, 23, 8, "Dolaylı injection, çıktı\nfiltresi, geçmiş bütünlüğü #274", "plan", 8.8)
@@ -149,7 +149,7 @@ def s1():
     c.zone(3, 8, 94, 24, "Planlanan (Hafta 10, en son yapılacak)")
     c.box(5, 12, 20, 13, "#278 Hesaplar (DB)\nkullanıcı adı + argon2id\nkarma, deneme kilidi", "plan")
     c.box(28, 12, 22, 13, "#266 İmzalı kullanıcı kimliği\nHMAC + zaman damgası,\nanahtar rotasyonu", "plan")
-    c.box(53, 12, 20, 13, "#267 Denetim günlüğü\nkim/ne zaman/ne yaptı", "plan")
+    c.box(53, 12, 20, 13, "Denetim günlüğü ✔ (#267)\nactor_id/rol hesaplarla\nbağlanır (#278)", "var")
     c.box(76, 12, 19, 13, "#265 KARAR\ngiriş ekranı gerekir mi?\n(hocaya sorulacak)", "plan")
     c.save("S1_kimlik_dogrulama.png")
 
@@ -173,7 +173,7 @@ def s2():
     c.zone(2, 6, 96, 32, "Planlanan")
     c.box(4, 10, 28, 22, "#270 Ses güvenliği\nmagic-bytes/süre kontrolü\nses uç noktası sahiplik testi\nharici STT varsayılan KAPALI", "plan", 9)
     c.box(36, 10, 28, 22, "#269 KVKK\nveri envanteri, silme uç noktası\nsaklama süresi (Celery beat)\nsilme sonrası kalıntı testi", "plan", 9)
-    c.box(68, 10, 28, 22, "Denetim günlüğüne (#267)\nkişisel veri yazılmaz\nNER değerlendirmesi:\ngerçek transkriptle, ayrı deney", "plan", 9)
+    c.box(68, 10, 28, 22, "audit_log'a kişisel veri\nyazılmaz ✔ (kodla zorunlu)\nNER değerlendirmesi:\ngerçek transkriptle, ayrı deney", "plan", 9)
     c.save("S2_kisisel_veri_ve_ses_guvenligi.png")
 
 
@@ -211,7 +211,7 @@ def s4():
     c.box(23, 66, 15, 9, "Normalizasyon\nUnicode, kodlama\n#273", "plan", 9)
     c.box(43, 66, 16, 9, "Safety + injection\nanahtar ifade listesi\n(TR/EN)", "var", 9)
     c.box(64, 66, 15, 9, "LLM sınıflandırıcı\n(2. katman)  #273", "plan", 9)
-    c.box(84, 66, 14, 9, "Güvenli ret\n(audit log: #267)", "var", 9)
+    c.box(84, 66, 14, 9, "Güvenli ret\n(audit_log ✔)", "var", 9)
     c.arrow(17, 70.5, 23, 70.5)
     c.arrow(38, 70.5, 43, 70.5)
     c.arrow(59, 70.5, 64, 70.5)

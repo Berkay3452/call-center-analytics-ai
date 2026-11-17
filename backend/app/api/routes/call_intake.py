@@ -14,10 +14,12 @@ from starlette.concurrency import run_in_threadpool
 
 from app.api.deps import AudioStorageDep, ServiceCallerDep, SessionDep, SettingsDep
 from app.core.errors import ServiceUnavailableError
+from app.domain.audit import AuditAction
 from app.domain.enums import SwitchboardOutcome
 from app.schemas.api import AudioCallMeta, CallAccepted, CallCreate, CallStatus
 from app.schemas.common import ErrorResponse
 from app.services import audio_ingest, call_ingest
+from app.services.audit import record_audit_event
 from app.services.call_ingest import AnalysisKind
 
 log = structlog.get_logger(__name__)
@@ -74,10 +76,18 @@ _ERRORS: dict[int | str, dict[str, Any]] = {
     responses={k: v for k, v in _ERRORS.items() if k != 404},
 )
 async def create_call(
-    payload: CallCreate, _: ServiceCallerDep, session: SessionDep, enqueue: EnqueueDep
+    payload: CallCreate, caller: ServiceCallerDep, session: SessionDep, enqueue: EnqueueDep
 ) -> CallAccepted:
     """Transkriptli çağrıyı kaydeder ve analizi arka planda başlatır."""
     call_id = await call_ingest.create_call(session, payload)
+    await record_audit_event(
+        session,
+        action=AuditAction.CAGRI_YUKLENDI,
+        actor=caller,
+        target_type="call",
+        target_id=call_id,
+        details={"kaynak": "metin"},
+    )
     await session.commit()  # görev başlamadan kayıt görünür olmalı
     return await _enqueue_or_fail(session, enqueue, call_id, "analysis")
 
@@ -95,7 +105,7 @@ async def create_call(
 async def create_audio_call(
     file: Annotated[UploadFile, File(description="Çağrı ses kaydı (wav, mp3, m4a...)")],
     started_at: Annotated[datetime, Form()],
-    _: ServiceCallerDep,
+    caller: ServiceCallerDep,
     session: SessionDep,
     settings: SettingsDep,
     storage: AudioStorageDep,
@@ -134,6 +144,14 @@ async def create_audio_call(
         max_bytes=settings.audio_max_mb * 1024 * 1024,
     )
     call_id = await audio_ingest.create_audio_call(session, meta, stored)
+    await record_audit_event(
+        session,
+        action=AuditAction.CAGRI_YUKLENDI,
+        actor=caller,
+        target_type="call",
+        target_id=call_id,
+        details={"kaynak": "ses", "boyut_bayt": stored.size_bytes},
+    )
     await session.commit()
     log.info("call.audio_received", call_id=str(call_id), size=stored.size_bytes)
     return await _enqueue_or_fail(session, enqueue, call_id, "stt")
@@ -147,7 +165,7 @@ async def create_audio_call(
 )
 async def analyze_call(
     call_id: UUID,
-    _: ServiceCallerDep,
+    caller: ServiceCallerDep,
     session: SessionDep,
     settings: SettingsDep,
     enqueue: EnqueueDep,
@@ -170,6 +188,14 @@ async def analyze_call(
             stage=current.stage,
             updated_at=current.updated_at,
         )
+    await record_audit_event(
+        session,
+        action=AuditAction.CAGRI_YENIDEN_ANALIZ,
+        actor=caller,
+        target_type="call",
+        target_id=call_id,
+        details={"tur": kind},
+    )
     await session.commit()
     return await _enqueue_or_fail(session, enqueue, call_id, kind)
 

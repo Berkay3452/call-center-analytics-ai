@@ -9,6 +9,7 @@ from uuid import UUID
 from fastapi import APIRouter, Query
 
 from app.api.deps import ServiceCallerDep, SessionDep
+from app.domain.audit import AuditAction
 from app.schemas.api import (
     ServiceOrderDetail,
     ServiceOrderFilters,
@@ -17,6 +18,7 @@ from app.schemas.api import (
 )
 from app.schemas.common import ErrorResponse, Page
 from app.services import service_orders
+from app.services.audit import record_audit_event
 
 router = APIRouter(prefix="/service-orders", tags=["service-orders"])
 
@@ -73,7 +75,7 @@ async def get_service_order(
 async def update_service_order_status(
     order_id: UUID,
     payload: ServiceOrderStatusUpdate,
-    _: ServiceCallerDep,
+    caller: ServiceCallerDep,
     session: SessionDep,
 ) -> ServiceOrderDetail:
     """Servis emrinin durumunu iş akışına göre günceller.
@@ -84,4 +86,13 @@ async def update_service_order_status(
     tamamlandi durumuna geçildiğinde completed_at zamanı otomatik kaydedilir.
     """
     async with session.begin():
-        return await service_orders.update_service_order_status(session, order_id, payload.status)
+        detail = await service_orders.update_service_order_status(session, order_id, payload.status)
+        await record_audit_event(
+            session,
+            action=AuditAction.SERVIS_EMRI_DURUM_DEGISTI,
+            actor=caller,
+            target_type="service_order",
+            target_id=order_id,
+            details={"yeni_durum": payload.status.value},
+        )
+        return detail

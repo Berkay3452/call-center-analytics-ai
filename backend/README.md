@@ -66,6 +66,8 @@ uv export --frozen --no-hashes --no-emit-project --only-dev -o requirements-dev.
 
 Servis anahtarı kurulmadan `/api/v1` uçlarını denemek için `.env` içinde `AUTH_DEV_BYPASS=true` yapın (yalnızca `APP_ENV=local`).
 
+**Denetim günlüğü (#267):** `audit_log` tablosu için `uv run alembic upgrade head` gerekir. Yeni bir iş akışı olay yazacaksa tek yol `app.services.audit.record_audit_event(db, action=AuditAction.…, actor=caller, target_type=…, target_id=…, details={…})` çağrısıdır (commit çağıranındır; kişisel veri içeren değer `AuditDataError` ile reddedilir). Kimlik doğrulama başarısızlıkları ayrı oturumda yazılır; veritabanı olmayan birim testlerinde `AUDIT_AUTH_FAILURES=false` verilir (canlıda kapatılamaz).
+
 ## Sentetik veri üretimi ve veritabanı doldurma (seed)
 
 Miço Usta sentetik kayıtlarını (`data/synthetic/*.json`) üretmek ve tüm sentetik veriyi (müşteriler, tekneler, ustalar, servis kayıtları, usta notları, giderler, abonelikler, RAG parçaları + 30 çağrı verisi) veritabanına yüklemek için önce `uv run alembic upgrade head` ile şemayı kurun, ardından `backend/` klasöründe:
