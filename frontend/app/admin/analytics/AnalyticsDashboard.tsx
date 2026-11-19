@@ -24,7 +24,9 @@ import {
   MARINA_OPTIONS,
   REQUEST_CATEGORY_LABELS,
   RequestCategory,
+  SENTIMENT_LABELS,
   URGENCY_LABELS,
+  type Sentiment,
   type Urgency,
 } from "@/lib/types";
 
@@ -159,6 +161,10 @@ export default function AnalyticsDashboard() {
     .sort((a, b) => b.count - a.count);
   const urgencyRows: DistributionRow[] = Object.entries(data?.by_urgency ?? {})
     .map(([key, count]) => ({ key, label: labelOf(URGENCY_LABELS, key as Urgency), count }));
+  const sentimentRows: DistributionRow[] = (Object.keys(SENTIMENT_LABELS) as Sentiment[])
+    .map((key) => ({ key, label: SENTIMENT_LABELS[key], count: data?.by_sentiment?.[key] ?? 0 }))
+    .filter((row) => row.count > 0);
+  const sentimentTotal = sentimentRows.reduce((acc, r) => acc + r.count, 0);
   const totalLost = lossRows.reduce((acc, r) => acc + r.count, 0);
 
   const fmt = (n: number) => n.toLocaleString("tr-TR");
@@ -317,6 +323,17 @@ export default function AnalyticsDashboard() {
               tone="accent"
             />
             <StatCard
+              label="Şikâyetli Çağrı"
+              value={fmt(data.complaint_calls ?? 0)}
+              unit="adet"
+              hint={
+                sentimentTotal > 0
+                  ? `${fmt(sentimentTotal)} duygu analizli çağrı içinde`
+                  : "Duygu analizi yok"
+              }
+              tone="danger"
+            />
+            <StatCard
               label="Ort. Yanıt Süresi"
               value={
                 data.avg_answer_delay_s != null ? `${Math.round(data.avg_answer_delay_s)}` : EMPTY_LABEL
@@ -329,6 +346,7 @@ export default function AnalyticsDashboard() {
           <div data-testid="analytics-charts" className="grid grid-cols-1 items-start gap-4 md:grid-cols-2 xl:grid-cols-3">
             <DistributionDonut title="Talep Kategorisi" rows={categoryRows} emptyText="Kategori verisi bulunmuyor" />
             <DistributionDonut title="Aciliyet Dağılımı" rows={urgencyRows} emptyText="Aciliyet verisi bulunmuyor" />
+            <DistributionDonut title="Müşteri Duygusu" rows={sentimentRows} emptyText="Duygu analizi yapılmış çağrı yok (analiz edilmedi)" />
             <DistributionDonut title="En Yoğun Marinalar" rows={marinaRows} emptyText="Marina verisi bulunmuyor" />
             <DistributionDonut title="Satış Kaçırma Sebepleri" rows={lossRows} emptyText="Kayıp satış kaydı bulunmuyor" />
             <Card className="min-w-0 md:col-span-2">

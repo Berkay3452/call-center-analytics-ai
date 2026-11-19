@@ -80,6 +80,8 @@ export async function fetchCalls(
     stateUpdatedAt: item.updated_at,
     transcript: "",
     summary: item.summary ?? "",
+    sentiment: item.sentiment ?? null,
+    complaint: item.complaint ?? null,
     tags: item.call_type ? [item.call_type] : [],
     crm: {
       requestCategory: item.request_category ?? null,
