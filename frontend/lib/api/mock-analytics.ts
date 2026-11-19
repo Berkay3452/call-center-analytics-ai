@@ -38,8 +38,8 @@ export function buildMockKpi(filters: { date_from?: unknown; date_to?: unknown; 
     busiest_marinas: Object.entries(marinas).map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count),
     by_category: countBy(calls.map((call) => call.request_category)),
     by_urgency: countBy(calls.map((call) => call.urgency)),
-    by_sentiment: {},
-    complaint_calls: 0,
+    by_sentiment: countBy(calls.map((call) => call.sentiment)),
+    complaint_calls: calls.filter((call) => call.complaint === true).length,
     daily_calls: Object.entries(daily).sort(([a], [b]) => a.localeCompare(b)).map(([day, count]) => ({ day, count })),
     avg_answer_delay_s: delays.length ? delays.reduce((sum, value) => sum + value, 0) / delays.length : null,
   };

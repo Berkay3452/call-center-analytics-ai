@@ -250,6 +250,9 @@ export interface Call {
   keyPoints?: string[];
   crm: CrmRecord;
   sales: SalesAnalysisData;
+  /** Duygu analizi yoksa null (eski analizler veya analiz sürüyor). */
+  sentiment?: Sentiment | null;
+  complaint?: boolean | null;
   tags: string[];
 }
 
@@ -370,6 +373,7 @@ export const ANALYSIS_SECTION_LABELS = {
   crm: "CRM çıkarımı",
   sales: "Satış analizi",
   summary: "Görüşme özeti",
+  sentiment: "Duygu analizi",
 } as const;
 
 /** Backend `analysis.errors` anahtarları (ajan adları) → bölüm anahtarı. */
@@ -382,6 +386,8 @@ export const ANALYSIS_ERROR_KEY_TO_SECTION: Record<string, keyof typeof ANALYSIS
   sales: "sales",
   summarizer: "summary",
   summary: "summary",
+  sentiment_analyzer: "sentiment",
+  sentiment: "sentiment",
 };
 
 /**
@@ -395,6 +401,7 @@ export function describeAnalysis(
     crm?: unknown;
     sales?: unknown;
     summary?: unknown;
+    sentiment?: unknown;
     errors?: unknown;
   } | null | undefined,
 ): { showConfidence: boolean; missing: string[] } {

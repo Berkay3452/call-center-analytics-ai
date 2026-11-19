@@ -1,5 +1,6 @@
 import { connection } from "next/server";
 import { CallAnalysisBadge } from "@/components/AnalysisTracker";
+import { SentimentBadge } from "@/components/SentimentBadge";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import Link from "next/link";
@@ -204,6 +205,7 @@ async function CallsListContent({
             <Th>Aciliyet</Th>
             <Th>Durum</Th>
             <Th>Satış</Th>
+            <Th>Duygu</Th>
             <Th>
               <span className="sr-only">Eylem</span>
             </Th>
@@ -228,6 +230,9 @@ async function CallsListContent({
               </Td>
               <Td className="whitespace-nowrap">
                 <SalesBadge sales={call.sales} />
+              </Td>
+              <Td className="whitespace-nowrap">
+                <SentimentBadge sentiment={call.sentiment} complaint={call.complaint} />
               </Td>
               <Td className="whitespace-nowrap text-right">
                 <Link

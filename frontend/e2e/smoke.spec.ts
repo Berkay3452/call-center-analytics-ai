@@ -137,6 +137,34 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
   });
 
   // ──────────────────────────────────────────────────────────────────────────
+  // Senaryo 3c: Duygu analizi (#335) — liste rozeti, detay kartı, analitik dağılımı
+  // ──────────────────────────────────────────────────────────────────────────
+  test("Senaryo 3c (Duygu analizi): listede rozet ve şikâyet bayrağı, detayda gerekçe, analitikte dağılım", async ({
+    page,
+  }) => {
+    // Liste: duygu rozeti metinle gösterilir; analizi olmayan çağrıda "Analiz edilmedi"
+    await page.goto("/admin/calls?page_size=30");
+    await expect(page.getByRole("columnheader", { name: "Duygu" })).toBeVisible();
+    await expect(page.getByTestId("sentiment-badge").first()).toBeVisible();
+    await expect(page.getByTestId("sentiment-badge").filter({ hasText: "Olumsuz" }).first()).toBeVisible();
+    await expect(page.getByTestId("complaint-flag").first()).toContainText("Şikâyet");
+    await expect(page.getByTestId("sentiment-empty").first()).toHaveText("Analiz edilmedi");
+
+    // Detay: rozet ve kısa gerekçe cümlesi
+    await page.goto("/admin/calls/11111111-1111-4111-8111-111111111111");
+    const card = page.getByTestId("sentiment-card");
+    await expect(card.getByRole("heading", { name: "Müşteri Duygusu" })).toBeVisible();
+    await expect(card.getByTestId("sentiment-badge")).toHaveText(/Nötr/);
+    await expect(card.getByText("Gerekçe")).toBeVisible();
+    await expect(card.getByText(/sakin, olgusal/)).toBeVisible();
+
+    // Analitik: dağılım grafiği ve şikâyetli çağrı sayısı
+    await page.goto("/admin/analytics");
+    await expect(page.getByRole("heading", { name: "Müşteri Duygusu" })).toBeVisible();
+    await expect(page.getByText("Şikâyetli Çağrı")).toBeVisible();
+  });
+
+  // ──────────────────────────────────────────────────────────────────────────
   // Senaryo 4: CRM Akışı (#113 - Onay, Düzenleme ve Ret Butonları)
   // ──────────────────────────────────────────────────────────────────────────
   test("Senaryo 4 (CRM Akışı): sekmeler, Düzenle/Reddet pencereleri, onay ve elle eşleştirme çalışır", async ({

@@ -20,6 +20,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "yuksek",
     "sales_outcome": "satisa_donustu",
     "loss_reason": null,
+    "sentiment": "olumlu",
+    "complaint": false,
     "summary": "Hocanın örnek senaryosu. Yarın talebi ve cumartesi denize çıkış nedeniyle aciliyet yüksek. Motor devir sorunu: makine."
   },
   {
@@ -37,6 +39,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "acil",
     "sales_outcome": "satisa_donustu",
     "loss_reason": null,
+    "sentiment": null,
+    "complaint": null,
     "summary": "Su alma ve sintine: Miço Usta'da sintine sistemleri Su & Sıhhi Tesisat kategorisinde."
   },
   {
@@ -54,6 +58,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "yuksek",
     "sales_outcome": "kaybedildi",
     "loss_reason": "takvim",
+    "sentiment": "olumsuz",
+    "complaint": false,
     "summary": "Kayıp nedeni takvim: müşteri 'bu tarih bana uymuyor' diyor, rakip veya fiyat söylemiyor. Akü/şarj: elektrik_elektronik."
   },
   {
@@ -71,6 +77,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "normal",
     "sales_outcome": "kaybedildi",
     "loss_reason": "gec_donus",
+    "sentiment": "olumsuz",
+    "complaint": true,
     "summary": "Kayıp nedeni geç dönüş: müşteri üç gündür dönüş yapılmadığını söylüyor. Belirti motor teklemesi (müşterinin yakıt filtresi tahmini değil): makine; Miço Usta'da yakıt filtresi de Makine kategorisinde."
   },
   {
@@ -88,6 +96,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "dusuk",
     "sales_outcome": "kaybedildi",
     "loss_reason": "fiyat",
+    "sentiment": "notr",
+    "complaint": false,
     "summary": "Arıza yok, problem null beklenir. Çok kalemli kış bakımında en ağır kalem motor kışlaması: makine."
   },
   {
@@ -105,6 +115,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "normal",
     "sales_outcome": "kaybedildi",
     "loss_reason": "rakip",
+    "sentiment": "olumsuz",
+    "complaint": false,
     "summary": "Kayıp nedeni rakip: müşteri başka bir firmayla anlaştığını söylüyor; fiyat veya tarih itirazı yok. Gövde/osmoz onarımı Miço Usta kategorilerinde yok: diger."
   },
   {
@@ -122,6 +134,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "dusuk",
     "sales_outcome": "satisa_donustu",
     "loss_reason": null,
+    "sentiment": "olumlu",
+    "complaint": false,
     "summary": "Yeni müşteri; arıza yok, problem null beklenir. Yıllık bakım paketinde motor yağ bakımı var: makine."
   },
   {
@@ -139,6 +153,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "dusuk",
     "sales_outcome": "beklemede",
     "loss_reason": null,
+    "sentiment": "notr",
+    "complaint": false,
     "summary": "Satışla ilgisi yok; sonuç beklemede. Periyodik bakım ve filtre değişimi: makine. Firma iş bitince mesaj atacak: bilgi_ver."
   },
   {
@@ -156,6 +172,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "dusuk",
     "sales_outcome": "beklemede",
     "loss_reason": null,
+    "sentiment": "notr",
+    "complaint": false,
     "summary": "Bilgi çağrısı: kategori, problem, hizmet biçimi ve potansiyel iş yok, null beklenir. Bilgi görüşmede verildi, müşteri kendisi arayacak: firmanın sonraki adımı yok (aksiyon_yok)."
   },
   {
@@ -173,6 +191,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "acil",
     "sales_outcome": "satisa_donustu",
     "loss_reason": null,
+    "sentiment": "olumlu",
+    "complaint": false,
     "summary": "Duman ve yanık plastik kokusu: elektrik_elektronik (kural: duman/yanık kablo kokusu elektrik)."
   },
   {
@@ -190,6 +210,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "normal",
     "sales_outcome": "satisa_donustu",
     "loss_reason": null,
+    "sentiment": "notr",
+    "complaint": false,
     "summary": "Belirti navigasyon cihazının donması: elektrik & elektronik. Müşteri cuma günü randevuyu kabul ediyor."
   },
   {
@@ -207,6 +229,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "acil",
     "sales_outcome": "satisa_donustu",
     "loss_reason": null,
+    "sentiment": "notr",
+    "complaint": false,
     "summary": "Yakıt kaçağı acil aciliyet kuralı. Belirti yakıt sistemi: makine. Müşteri ustayı kabul ediyor."
   },
   {
@@ -224,6 +248,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "normal",
     "sales_outcome": "kaybedildi",
     "loss_reason": "fiyat",
+    "sentiment": "notr",
+    "complaint": false,
     "summary": "Müşteri arıza tespit ücretini pahalı bulup vazgeçiyor: fiyat. Belirti klima: iklimlendirme."
   },
   {
@@ -241,6 +267,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "dusuk",
     "sales_outcome": "beklemede",
     "loss_reason": null,
+    "sentiment": "notr",
+    "complaint": false,
     "summary": "Müşteri teklif istiyor, karar vermedi: beklemede. Cila ve tente: temizlik & tekne bakımı."
   },
   {
@@ -258,6 +286,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "dusuk",
     "sales_outcome": "beklemede",
     "loss_reason": null,
+    "sentiment": null,
+    "complaint": null,
     "summary": "İlk kez arayan müşteri, paketleri öğreniyor ve düşünüp dönecek: beklemede. Motor kışlama: makine."
   },
   {
@@ -275,6 +305,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "dusuk",
     "sales_outcome": "beklemede",
     "loss_reason": null,
+    "sentiment": "notr",
+    "complaint": false,
     "summary": "Mevcut işin durumu sorusu; rep kontrol edip geri bildirecek: bilgi_ver. Satışla ilgili değil: beklemede."
   },
   {
@@ -292,6 +324,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "acil",
     "sales_outcome": "satisa_donustu",
     "loss_reason": null,
+    "sentiment": "notr",
+    "complaint": false,
     "summary": "Teknenin su alması acil. Belirti gider vanası ve su: su & sıhhi tesisat."
   },
   {
@@ -309,6 +343,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "normal",
     "sales_outcome": "kaybedildi",
     "loss_reason": "rakip",
+    "sentiment": "olumsuz",
+    "complaint": false,
     "summary": "Müşteri başka bir firmayla çalışacağını söylüyor: rakip. Belirti şanzıman: mekanik & hidrolik."
   },
   {
@@ -326,6 +362,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "dusuk",
     "sales_outcome": "satisa_donustu",
     "loss_reason": null,
+    "sentiment": "olumlu",
+    "complaint": false,
     "summary": "Teklifi görüşmede kabul edip randevu istiyor: satışa dönüştü. Yangın tüpü ve can salı: tekne güvenliği."
   },
   {
@@ -343,6 +381,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "normal",
     "sales_outcome": "kaybedildi",
     "loss_reason": "guven",
+    "sentiment": "olumsuz",
+    "complaint": true,
     "summary": "Müşteri işçilik garantisinden ve referanslardan şüphe duyuyor: güven. Gövde/karina onarımı: diğer."
   },
   {
@@ -360,6 +400,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "dusuk",
     "sales_outcome": "beklemede",
     "loss_reason": null,
+    "sentiment": "notr",
+    "complaint": false,
     "summary": "Yalnızca genel bilgi (hangi marinalar, çalışma saati). İş konuşulmuyor: kategori null, satış beklemede."
   },
   {
@@ -377,6 +419,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "yuksek",
     "sales_outcome": "kaybedildi",
     "loss_reason": "gec_donus",
+    "sentiment": "olumsuz",
+    "complaint": true,
     "summary": "Müşteri uzun süre bekletilmekten şikâyet edip vazgeçiyor: geç dönüş. Belirti makine soğutma: makine."
   },
   {
@@ -394,6 +438,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "dusuk",
     "sales_outcome": "beklemede",
     "loss_reason": null,
+    "sentiment": "notr",
+    "complaint": false,
     "summary": "Teklif isteniyor, karar sonra: beklemede. Akü grubu ve güneş paneli: elektrik & elektronik."
   },
   {
@@ -411,6 +457,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "normal",
     "sales_outcome": "satisa_donustu",
     "loss_reason": null,
+    "sentiment": "notr",
+    "complaint": false,
     "summary": "Hidrofor: su & sıhhi tesisat. Müşteri randevuyu kabul ediyor."
   },
   {
@@ -428,6 +476,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "dusuk",
     "sales_outcome": "satisa_donustu",
     "loss_reason": null,
+    "sentiment": "olumlu",
+    "complaint": false,
     "summary": "İlk kez arayan müşteri temizlik paketini kabul ediyor: satışa dönüştü. Temizlik: temizlik & tekne bakımı."
   },
   {
@@ -445,6 +495,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "dusuk",
     "sales_outcome": "kaybedildi",
     "loss_reason": "fiyat",
+    "sentiment": "notr",
+    "complaint": false,
     "summary": "Teklif fiyatı bütçeyi aştığı için vazgeçiyor: fiyat. Periyodik motor bakımı: makine."
   },
   {
@@ -462,6 +514,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "normal",
     "sales_outcome": "beklemede",
     "loss_reason": null,
+    "sentiment": "notr",
+    "complaint": false,
     "summary": "Müşteri uygun tarihi sonra bildirecek, firma geri arayacak: beklemede. Sigorta ve kara elektriği: elektrik."
   },
   {
@@ -479,6 +533,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "dusuk",
     "sales_outcome": "kaybedildi",
     "loss_reason": "diger",
+    "sentiment": "olumsuz",
+    "complaint": false,
     "summary": "Müşteri kaptan kiralama istiyor, firma bu hizmeti vermiyor: neden listeye uymuyor (diger). İş/hizmet yok: kategori null."
   },
   {
@@ -496,6 +552,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "dusuk",
     "sales_outcome": "beklemede",
     "loss_reason": null,
+    "sentiment": "notr",
+    "complaint": false,
     "summary": "Randevu saati teyidi: bilgi görüşmede verildi, yeni iş yok. Kategori null, aksiyon yok."
   },
   {
@@ -513,6 +571,8 @@ export const mockSeedCalls: CallListItem[] = [
     "urgency": "normal",
     "sales_outcome": "kaybedildi",
     "loss_reason": "takvim",
+    "sentiment": "olumsuz",
+    "complaint": false,
     "summary": "Usta uygunluğu müşterinin istediği zamana denk gelmiyor: takvim. Isıtma: iklimlendirme & havalandırma."
   }
 ] as unknown as CallListItem[];

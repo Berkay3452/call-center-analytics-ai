@@ -29,6 +29,7 @@ import {
 } from "@/lib/types";
 import { Badge, Card, CardHeader, type Tone } from "@/components/ui";
 import { ConfidenceMeter } from "@/components/ConfidenceMeter";
+import { SentimentBadge } from "@/components/SentimentBadge";
 import mockCallsList from "@/mocks/cagri_listesi.json";
 
 interface Props {
@@ -114,6 +115,7 @@ async function CallDetailContent({ params }: Props) {
   const crm = call.analysis?.crm;
   const sales = call.analysis?.sales;
   const summary = call.analysis?.summary;
+  const sentiment = call.analysis?.sentiment;
   const classification = call.analysis?.classification;
   const durationSec = call.duration_s ?? 0;
 
@@ -158,10 +160,12 @@ async function CallDetailContent({ params }: Props) {
           crm_extraction: "CRM Çıkarımı",
           sales_analyzer: "Satış Analizi",
           summarizer: "Görüşme Özeti",
+          sentiment_analyzer: "Duygu Analizi",
           classification: "Çağrı Sınıflandırma",
           crm: "CRM Çıkarımı",
           sales: "Satış Analizi",
           summary: "Görüşme Özeti",
+          sentiment: "Duygu Analizi",
         };
         const sectionName = sectionMap[key] || key;
         errorEntries.push({ section: sectionName, message: "Bu bölüm üretilemedi.", detail: String(val) });
@@ -223,6 +227,7 @@ async function CallDetailContent({ params }: Props) {
             <Badge tone={analysisBadge.tone}>{analysisBadge.text}</Badge>
             {urgency === "acil" && <Badge tone="danger">Acil servis</Badge>}
             {callType && <Badge>{labelOf(CALL_TYPE_LABELS, callType as CallType)}</Badge>}
+            {sentiment && <SentimentBadge sentiment={sentiment.sentiment} complaint={sentiment.complaint} />}
             {/* Kısmi/başarısız analizde aynı eylem uyarı kutusunda sunulur; iki kez gösterilmez */}
             {!(isPartial && !inProgress) && (
               <ReanalyzeButton callId={call.id} currentState={call.state} variant="header" />
@@ -334,9 +339,38 @@ async function CallDetailContent({ params }: Props) {
               <p className="text-sm text-slate-500">Bu çağrı için henüz satış analizi oluşturulmadı.</p>
             )}
           </Card>
+
+          <Card data-testid="sentiment-card">
+            <CardHeader
+              title="Müşteri Duygusu"
+              action={
+                sentiment ? (
+                  <SentimentBadge sentiment={sentiment.sentiment} complaint={sentiment.complaint} />
+                ) : undefined
+              }
+            />
+            {sentiment ? (
+              <dl className="space-y-3 text-sm">
+                <div>
+                  <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">Gerekçe</dt>
+                  <dd className="mt-0.5 text-slate-800">{sentiment.reason}</dd>
+                </div>
+                {sentiment.evidence && (
+                  <div>
+                    <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">Dayanak</dt>
+                    <dd className="mt-0.5 italic text-slate-700">&ldquo;{sentiment.evidence}&rdquo;</dd>
+                  </div>
+                )}
+              </dl>
+            ) : (
+              <p className="text-sm text-slate-500">
+                {inProgress ? "Duygu analizi hazırlanıyor..." : "Bu çağrı için duygu analizi yapılmadı (analiz edilmedi)."}
+              </p>
+            )}
+          </Card>
         </div>
 
-        <div className="lg:col-span-5">
+        <div className="space-y-6 lg:col-span-5">
           <CrmSuggestionCard
             suggestion={{
               callId: call.id,
