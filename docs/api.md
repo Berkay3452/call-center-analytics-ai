@@ -57,6 +57,7 @@ Admin/tekne sahibi rol ayrımını sunucu yukarıdaki başlıklarla yapar; kimli
 | `POST /calls/{call_id}/analyze` | Admin | — | 202 `CallAccepted` (yeni analiz sürümü); çağrı zaten işleniyorsa da 202, `already_running=true` (hata değil, #218) | #48 |
 | `GET /calls/{call_id}/status` | Admin | — | `CallStatus` | #48 |
 | `GET /calls/{call_id}/audio` | Admin | — | Ses dosyası akışı (Range destekli 200/206); `X-User-Id` ile gelen istek 403 (#270) | #80 |
+| `GET /calls/{call_id}/transcript/stream` | Admin | başlık: `Last-Event-ID` (isteğe bağlı) | SSE (`text/event-stream`): `segment` (`seq`, `speaker` rep/customer/unknown, `start_ms`, `end_ms`, `text` — **ham** metin), sonra `done` \| `error` (`code: stt_failed`) \| `timeout`; olay `id`si Redis Stream kimliğidir, `Last-Event-ID` ile kaldığı yerden devam eder; `X-User-Id` ile gelen istek 403; çağrı yoksa 404; çağrı başına en çok 5 eşzamanlı izleyici (aşımda 429); en uzun bağlantı 45 dk; denetim: `canli_transkript_izlendi` (#324) | #324 |
 | `POST /chat/messages` | Tekne sahibi | `ChatQuestion` | `ChatReply` | #28 |
 | `POST /chat/messages/stream` | Tekne sahibi | `ChatQuestion` | SSE akışı (`ChatStreamEvent`, bkz. §4) | #28 |
 | `POST /assistant/chat` | Tekne sahibi | `ChatQuestion` | SSE akışı (`token` -> `sources` -> `done`) | #28 |
