@@ -12,12 +12,14 @@ Karşılaştırma için: `python -m scripts.stt_benchmark` (WER, hız).
 
 import asyncio
 import threading
+from collections.abc import Callable, Iterator
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
 import structlog
 
+from app.agents.base import Speaker
 from app.services.transcript_text import parse_transcript, with_timings
 from app.stt.base import SttError, SttSegment, TranscriptionResult
 
@@ -107,43 +109,116 @@ class FasterWhisperTranscriber:
             )
         return self._model
 
+    def _start(
+        self, model: Any, audio: Any, language: str, split_pauses: bool
+    ) -> tuple[Iterator[SttSegment], Any]:
+        """Çözümlemeyi başlatır: (tembel segment üreteci, bilgi). Kilit çağıranda tutulur."""
+        segments, info = model.transcribe(
+            audio,
+            language=language,
+            beam_size=self.beam_size,
+            vad_filter=True,  # sessizlikleri atlar: hız ve uydurma metne karşı
+            vad_parameters={"threshold": self.vad_threshold},
+            initial_prompt=self.initial_prompt,
+            condition_on_previous_text=False,  # uzun kayıtta tekrar döngüsünü önler
+            word_timestamps=split_pauses,
+        )
+
+        def produce() -> Iterator[SttSegment]:
+            # `segments` tembel üreteçtir; asıl çözümleme pencere pencere burada yapılır.
+            for s in segments:
+                if not (s.text and s.text.strip()):
+                    continue
+                words = getattr(s, "words", None)
+                if split_pauses and words:
+                    yield from split_at_pauses(words)
+                else:
+                    yield SttSegment(start_ms=_ms(s.start), end_ms=_ms(s.end), text=s.text.strip())
+
+        return produce(), info
+
+    def _result(
+        self, info: Any, language: str, segments: list[SttSegment], duration: float | None = None
+    ) -> TranscriptionResult:
+        return TranscriptionResult(
+            language=getattr(info, "language", language) or language,
+            duration_sec=(
+                duration if duration is not None else float(getattr(info, "duration", 0.0) or 0.0)
+            ),
+            segments=segments,
+            model=f"faster-whisper/{self.model_size}/{self.compute_type}",
+        )
+
     def _run(self, audio: Any, language: str, *, split_pauses: bool = False) -> TranscriptionResult:
         with self._lock:
             model = self._get_model()
             try:
-                segments, info = model.transcribe(
-                    audio,
-                    language=language,
-                    beam_size=self.beam_size,
-                    vad_filter=True,  # sessizlikleri atlar: hız ve uydurma metne karşı
-                    vad_parameters={"threshold": self.vad_threshold},
-                    initial_prompt=self.initial_prompt,
-                    condition_on_previous_text=False,  # uzun kayıtta tekrar döngüsünü önler
-                    word_timestamps=split_pauses,
-                )
-                # `segments` tembel üreteçtir; asıl çözümleme burada, kilit içinde yapılır.
-                out: list[SttSegment] = []
-                for s in segments:
-                    if not (s.text and s.text.strip()):
-                        continue
-                    words = getattr(s, "words", None)
-                    if split_pauses and words:
-                        out.extend(split_at_pauses(words))
-                    else:
-                        out.append(
-                            SttSegment(
-                                start_ms=_ms(s.start), end_ms=_ms(s.end), text=s.text.strip()
-                            )
-                        )
+                produced, info = self._start(model, audio, language, split_pauses)
+                out = list(produced)
             except SttError:
                 raise
             except Exception as exc:
                 raise SttError(f"Ses çözümlenemedi: {type(exc).__name__}: {exc}") from exc
-        return TranscriptionResult(
-            language=getattr(info, "language", language) or language,
-            duration_sec=float(getattr(info, "duration", 0.0) or 0.0),
-            segments=out,
-            model=f"faster-whisper/{self.model_size}/{self.compute_type}",
+        return self._result(info, language, out)
+
+    def _run_live(
+        self,
+        channels: dict[Speaker, Any],
+        language: str,
+        on_segment: Callable[[SttSegment], None],
+        *,
+        split_pauses: bool,
+    ) -> TranscriptionResult:
+        """Kanalları pencere pencere sırayla ilerletip segmentleri **zamana göre** yayınlar.
+
+        Her kanal tembel bir üreteçtir. Bir sonraki segmenti en erken başlayan kanaldan alınır
+        (sıralı birleştirme): iki kanal ayrı çözülse de yayın, gerçek konuşma sırasıyla akar.
+        Sonuç, kanalı bütünüyle çözmekle aynı segmentleri verir (yalnız çözüm sırası değişir).
+        """
+        with self._lock:
+            model = self._get_model()
+            out: list[SttSegment] = []
+            infos: list[Any] = []
+            try:
+                heads: dict[Speaker, SttSegment] = {}
+                streams: dict[Speaker, Iterator[SttSegment]] = {}
+                for speaker, audio in channels.items():
+                    produced, info = self._start(model, audio, language, split_pauses)
+                    infos.append(info)
+                    streams[speaker] = produced
+                    first = next(produced, None)
+                    if first is not None:
+                        heads[speaker] = first
+                while heads:
+                    speaker = min(heads, key=lambda k: (heads[k].start_ms, heads[k].end_ms))
+                    seg = heads[speaker].model_copy(
+                        update={"speaker": speaker} if speaker != "unknown" else {}
+                    )
+                    out.append(seg)
+                    on_segment(seg)
+                    nxt = next(streams[speaker], None)
+                    if nxt is None:
+                        del heads[speaker]
+                    else:
+                        heads[speaker] = nxt
+            except SttError:
+                raise
+            except Exception as exc:
+                raise SttError(f"Ses çözümlenemedi: {type(exc).__name__}: {exc}") from exc
+        duration = max((float(getattr(i, "duration", 0.0) or 0.0) for i in infos), default=0.0)
+        return self._result(infos[0] if infos else None, language, out, duration)
+
+    async def transcribe_live(
+        self,
+        channels: dict[Speaker, Any],
+        *,
+        language: str = "tr",
+        on_segment: Callable[[SttSegment], None],
+        split_pauses: bool = True,
+    ) -> TranscriptionResult:
+        """Segmentler hazır oldukça `on_segment` çağrılır (iş parçacığından; hızlı olmalı)."""
+        return await asyncio.to_thread(
+            self._run_live, channels, language, on_segment, split_pauses=split_pauses
         )
 
     async def transcribe(self, audio_path: Path, *, language: str = "tr") -> TranscriptionResult:
