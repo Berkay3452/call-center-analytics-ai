@@ -16,7 +16,6 @@ test.describe("Canlı transkript pop-up (#326)", () => {
     await expect(log).toContainText("Temsilci");
     await expect(log).toContainText("Müşteri");
     await expect(log).toContainText("Usta uygunluğuna bakıp sizi bilgilendireceğiz.", { timeout: 10000 });
-    await expect(dialog.getByText("Tamamlandı", { exact: true })).toBeVisible({ timeout: 10000 });
 
     // Konuşmacı yerleşimi: temsilci solda, müşteri sağda.
     const rep = log.getByText("Miço Usta, buyurun.");
@@ -25,8 +24,9 @@ test.describe("Canlı transkript pop-up (#326)", () => {
     const customerBox = await customer.boundingBox();
     expect(repBox!.x).toBeLessThan(customerBox!.x);
 
-    await dialog.getByRole("button", { name: "Kapat" }).click();
-    await expect(dialog).toBeHidden();
+    await expect(dialog.getByText("Tamamlandı", { exact: true })).toBeVisible({ timeout: 10000 });
+    // Yazıya çevirme bitince pencere kendiliğinden kapanır (analiz adımları görünür kalır).
+    await expect(dialog).toBeHidden({ timeout: 10000 });
   });
 
   test("kapatılan pop-up kendiliğinden açılmaz; Canlı izle ile yeniden açılır", async ({ page }) => {

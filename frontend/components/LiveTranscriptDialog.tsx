@@ -21,6 +21,8 @@ const STATUS_INFO: Record<LiveStatus, { label: string; tone: "brand" | "success"
 };
 
 const STICK_THRESHOLD_PX = 48;
+/** Yazıya çevirme bitince pencere bu süre sonra kendiliğinden kapanır; analiz adımları görünür kalır. */
+export const AUTO_CLOSE_MS = 4000;
 
 /**
  * Yazıya çevirme (2. adım) sürerken açılan pop-up: cümleler konuşmacıya göre (temsilci solda,
@@ -51,6 +53,12 @@ export function LiveTranscriptDialog({
   useEffect(() => {
     if (stuck && logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
   }, [turns, stuck]);
+
+  useEffect(() => {
+    if (status !== "bitti") return;
+    const timer = setTimeout(onClose, AUTO_CLOSE_MS);
+    return () => clearTimeout(timer);
+  }, [status, onClose]);
 
   const info = STATUS_INFO[status];
   const live = status === "canli" || status === "baglaniyor";
@@ -150,6 +158,11 @@ export function LiveTranscriptDialog({
           {status === "zaman_asimi" && (
             <p role="status" className="text-sm text-amber-800">
               Canlı izleme süresi doldu. Sonuç çağrı detayında görünecek.
+            </p>
+          )}
+          {status === "bitti" && (
+            <p role="status" className="text-sm text-slate-600">
+              Yazıya çevirme tamamlandı. Analiz sürüyor; bu pencere birkaç saniye içinde kapanır.
             </p>
           )}
           {status === "hata" && (
