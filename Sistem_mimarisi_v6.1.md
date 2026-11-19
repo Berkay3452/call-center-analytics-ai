@@ -1,7 +1,9 @@
-# Sistem Mimarisi v6
+# Sistem Mimarisi v6.1
 
 **Proje:** Yapay Zekâ Destekli Sesli Asistan ve Çağrı Merkezi Analitiği Sistemi
-**Sürüm:** v6 · **Tarih:** 2026-11-17 · **Durum:** Güncel · **Önceki sürümler:** v1, v2, v3.0, v3.1, v4, v4.1, v4.2, v5 (git geçmişinde)
+**Sürüm:** v6.1 · **Tarih:** 2026-11-20 · **Durum:** Güncel · **Önceki sürümler:** v1, v2, v3.0, v3.1, v4, v4.1, v4.2, v5, v6 (git geçmişinde)
+
+**v6.1'de değişenler (20 Kasım, final ek özellikleri):** Hocanın geri dönüşünden sonra eklenen iki özellik işlendi: **canlı transkript** (yazıya çevirme sırasında konuşmacı ayrımlı pop-up; Redis Stream + SSE, #323-#327) ve **Duygu Analiz Agent'ı** (5. agent: olumlu / nötr / olumsuz + şikâyet bayrağı; şema, istem, orkestratör, DB sütunları, API alanları, KPI, arayüz ve ölçüm, #333-#335). Genel mimari, çağrı analitiği ve agent şemaları ile ER diyagramı yeniden üretildi (üretim betikleri `docs/diagrams/kaynak/` altında); güvenlik şeması S2'ye canlı transkript kuralları eklendi. Teknoloji tablosu, durum (§11) ve takvim (§2) gerçek duruma getirildi; sürümler `uv.lock`'a göre yazıldı; bağımlılıklar küçük/yama düzeyinde güncellendi. Planlanan sonraki işler (STT doğruluğu, STT model karşılaştırması, embedding karşılaştırması, otomatik güvenlik turu, entegrasyon ve canlıya alma) §2 ve §12'de. §1, §2, §4, §5, §9, §11, §12, §13 güncellendi.
 
 **v6'da değişenler (17 Kasım, siber güvenlik katmanı):** Güvenlik katmanı mimarinin ayrı bir katmanı oldu (§4.1): hocanın istediği beş perspektif (kimlik doğrulama, kişisel verilerin korunması, güvenli API kullanımı, prompt injection, yetkisiz komutlara karşı koruma) ve ses verisi güvenliği; sistemde **zaten çalışan** tüm güvenlik kuralları bu katmanın içinde toplandı, eksikler Hafta 10 issue'larına (#264-#278) bağlandı. Güvenlik ilkeleri ve kurallar (§4.2) eklendi. Mono kayıtta dil modeliyle konuşmacı ayrımı (#263) duruma işlendi. §4, §8, §11, §12, §13 güncellendi.
 
@@ -21,7 +23,7 @@
   1. **Çağrı → CRM kaydı (Admin paneli):** Müşteriyle yapılan telefon görüşmesi otomatik analiz edilir; talep, lokasyon, problem, aciliyet ve sonraki aksiyon çıkarılıp CRM kaydı önerilir. Admin öneriyi **onaylar, reddeder veya düzenleyerek onaylar**; onayda servis emri oluşur.
   2. **Çağrı Analitiği (Admin paneli):** Aylık KPI'lar ve "satış neden kaçtı" analizi.
   3. **Miço AI (Tekne Sahibi paneli):** Tekne sahibinin kişisel asistanı; tekne karnesi, işler, giderler ve abonelik verisinden cevap verir, takip sorularını anlar.
-- **Kapsam dışı:** Usta paneli, canlı (gerçek zamanlı) çağrı akışı, telefon santrali entegrasyonu, model eğitimi.
+- **Kapsam dışı:** Usta paneli, telefon santralinden gerçek zamanlı ses akışı, telefon santrali entegrasyonu, model eğitimi. (Canlı transkript, yüklenen kaydın yazıya çevrilmesini canlı gösterir; santralden canlı arama akışı değildir.)
 - **Terimler:** *Agent* = yapay zekâ bileşeni. *Usta* = tekne teknisyeni.
 
 ## 2. Takvim
@@ -33,11 +35,14 @@
 | 26 Ekim–8 Kasım (7.–8. hafta) | Ölçümler (doğruluk, dayanıklılık, yük, sohbet kalitesi), 100 çağrılık veri, CI genişletmesi |
 | 9–15 Kasım (9. hafta) | Manuel test ve düzeltmeler, belge ve diyagram güncellemesi, vize videosu |
 | 16 Kasım 23:59 | Vize sunumu yükleme (sunum: 17–19 Kasım) |
+| 16–22 Kasım (10. hafta) | Siber güvenlik katmanı (#264-#278), canlı transkript (#315, #323-#327), duygu analizi agent'ı (#317, #333-#335); bu belge ve diyagramların güncellenmesi |
+| 23 Kasım sonrası (planlı) | Yazıya çevirme doğruluğu: hatalı kelime listesi, parametre deneyi, alan sözlüğü (#322); ücretsiz STT modellerinin karşılaştırması (#316); 4 embedding modeli + reranker + HF API karşılaştırması (#318); arka planda otomatik güvenlik turu ve Berkay'ın manuel test listesi (#320); canlı transkript ve duygu analizi manuel testinden çıkan düzeltmeler |
+| En sonda (hocayla) | Miço Usta'ya entegrasyon ve canlıya alma (#321); giriş ekranı kararı (#265) |
 | 14 Aralık | Final sunumu yükleme (sunum: 15–17 Aralık); **canlıya alma final zamanı** |
 | 28 Aralık | Demo ve tez son teslim |
 | 5 Ocak | Demo ve poster sunumu |
 
-**Vize hedefi:** Admin panelinde çağrı analizi ve CRM kaydı çalışır durumda (iş 1 ve 2); Miço AI de gösterilebilir durumda. **Vizeden sonra:** duygu analizi agent'ı, embedding'i API ile deneme, mono kayıtta konuşmacı ayrımı, Google Cloud'a canlıya alma, ince ayar.
+**Vize hedefi:** Admin panelinde çağrı analizi ve CRM kaydı çalışır durumda (iş 1 ve 2); Miço AI de gösterilebilir durumda. **Vizeden sonra yapılanlar:** duygu analizi agent'ı, canlı transkript, mono kayıtta konuşmacı ayrımı (#263), güvenlik katmanı. **Kalanlar:** STT doğruluğu ve model karşılaştırması, embedding karşılaştırması (API denemesi dahil), otomatik güvenlik turu, Google Cloud'a canlıya alma, ince ayar.
 
 ## 3. Temel Kararlar
 
@@ -57,7 +62,7 @@
 
 ![Genel mimari](docs/diagrams/01_genel_mimari.png)
 
-Kullanıcılar (admin ve tekne sahibi) Miço Usta'nın Next.js arayüzünü kullanır. Arayüz, REST ile bizim AI servisimizi çağırır. AI servisi; çağrı analizi, Miço AI, CRM inceleme ve KPI modüllerinden oluşur. Uzun işler (ses → yazı, analiz, indeksleme) Celery işçisinde çalışır; kuyruk Redis'tir. Servis, konuşma tanıma (STT), LLM ve embedding hizmetlerini kullanır; sonuçları kendi veritabanına yazar. Miço AI, tekne karnesi verisini bu veritabanından okur.
+Kullanıcılar (admin ve tekne sahibi) Miço Usta'nın Next.js arayüzünü kullanır. Arayüz, REST ile bizim AI servisimizi çağırır. AI servisi; çağrı analizi, Miço AI, CRM inceleme ve KPI modüllerinden oluşur. Uzun işler (ses → yazı, analiz, indeksleme) Celery işçisinde çalışır; kuyruk Redis'tir. Yazıya çevirme sürerken konuşma parçaları Redis Stream'ine yazılır ve SSE ile (Next vekil üzerinden) yönetici arayüzüne canlı akar. Analiz beş agent'la yapılır (sınıflandırma, CRM, satış, özet, duygu). Servis, konuşma tanıma (STT), LLM ve embedding hizmetlerini kullanır; sonuçları kendi veritabanına yazar. Miço AI, tekne karnesi verisini bu veritabanından okur.
 
 Not: Gezdiğimiz örnek site (Figma Make ile hazırlanmış bir prototip) arayüzün görünümünü gösteriyor. Gerçek uygulamanın kod tabanı ve veri şeması hocadan alınacaktır.
 
@@ -135,7 +140,7 @@ Siber güvenlik dersi kapsamında (**Ses Verisi Güvenliği ve Yapay Zekâ Güve
 |---|---|
 | Her istekte `X-Request-Id`; LLM çalıştırmaları `agent_runs` tablosunda | **Var** |
 | Denetim günlüğü: `audit_log` yalnızca ekleme (DB tetikleyicisi), tek yazma noktası `record_audit_event`, yönetici listeleme ucu `GET /audit-log`; kişisel veri yazılmaz (kodla reddedilir) | **Var** (#267) |
-| Güvenlik test paketi ve OWASP (LLM Top 10, API Top 10) eşlemesi | **Planlanan** #276 |
+| Güvenlik doğrulama testleri ve saldırı senaryoları (`backend/tests/security`, `scripts/guvenlik_testi.py`), OWASP (LLM Top 10, API Top 10) eşlemesi | **Var** #276 (`docs/guvenlik_testi.md`) |
 
 ## 4.2 Güvenlik İlkeleri
 
@@ -162,9 +167,11 @@ Siber güvenlik dersi kapsamında (**Ses Verisi Güvenliği ve Yapay Zekâ Güve
 | Embedding | — | bge-m3, TEI konteynerinde (Docker) |
 | Ses üretimi (seed) | — | Piper (çevrimdışı Türkçe, varsayılan) veya Edge TTS (iki nöral Türkçe ses, daha gerçekçi; `--engine edge`); karar: `docs/stt_karari.md` |
 | Agent orkestrasyonu | — | LangGraph + LangChain |
-| Geliştirme | — | uv, ruff, mypy, pytest (~1.430 test); GitHub Actions CI (lint, tip, test, duman testi, Docker imajı, güvenlik taraması, Playwright e2e, belge tutarlılığı); Docker Compose |
+| Geliştirme | — | uv, ruff, mypy, pytest (~2.460 test); GitHub Actions CI (lint, tip, test, duman testi, Docker imajı, güvenlik taraması, Playwright e2e, belge tutarlılığı, gitleaks); Docker Compose |
 
-Kilit dosyaları (`uv.lock`, `package-lock.json`) repoda tutulur; `requirements.txt` `uv.lock`'tan üretilir.
+Kilit dosyaları (`uv.lock`, `package-lock.json`) repoda tutulur; `requirements.txt` ve `requirements-dev.txt` `uv.lock`'tan üretilir.
+
+**Doğrulanmış sürümler (20 Kasım 2026, `uv.lock` ve `package.json`):** Python 3.12 · FastAPI 0.162 · Uvicorn 0.54 · Pydantic 2.14 · SQLAlchemy 2.1 (asyncio) + asyncpg 0.32 · Alembic 1.20 · pgvector (Python) 0.5 · Celery 5.7 + Redis istemcisi 6.4 · LangChain 1.5 · LangGraph 1.2 · faster-whisper 1.2 (PyAV 15) · argon2-cffi 25.1 · pytest 9.2 · ruff 0.17 · mypy 2.4. Arayüz: Next.js 16.4 · React 19.3 · Tailwind 4 · TypeScript 5 · Playwright 1.65. Altyapı imajları: PostgreSQL 17 + pgvector 0.8 · Redis 8.10 · TEI `cpu-1.7`. Bu güncellemede yalnızca küçük/yama sürümleri yükseltildi; **ana sürüm atlayan üç paket bilinçli olarak bekletildi:** `redis` (6 → 8), `huggingface-hub` (1 → 2, faster-whisper model indirmesini etkiler), `websockets` (16 → 17). `av` (PyAV) faster-whisper uyumu için `<16`, FastAPI ise `<0.163` ile sınırlıdır (sınırlar `backend/pyproject.toml`'dadır; `av` sınırının gerekçesi oradaki yorumdadır). Bu üçünün yükseltilmesi ayrı bir iş olarak, testlerle birlikte yapılmalıdır.
 
 ## 6. Pipeline'lar
 
@@ -259,7 +266,7 @@ Arayüz ile AI servisi arasındaki sözleşme `docs/api.md` ve `frontend/openapi
 
 ## 9. Veri
 
-- **Bizim tablolarımız:** çağrılar, transkript ve segmentler, analiz sonuçları (sürümlü) ve agent çalıştırma kayıtları, **CRM inceleme kayıtları**, sohbet oturumları ve mesajları, RAG parçaları (vektör + tam metin indeksi).
+- **Bizim tablolarımız:** çağrılar, transkript ve segmentler, analiz sonuçları (sürümlü; duygu, şikâyet bayrağı, gerekçe ve alıntı sütunları dahil) ve agent çalıştırma kayıtları (5 agent), **CRM inceleme kayıtları**, sohbet oturumları ve mesajları, RAG parçaları (vektör + tam metin indeksi), kullanıcı hesapları (`user_accounts`) ve ekleme-yalnız denetim günlüğü (`audit_log`). Toplam 18 tablo (Alembic 0008).
 - **Miço Usta verisi** (müşteriler, tekneler, usta, servis emirleri, giderler, abonelikler): şu an sentetik olarak aynı veritabanında; şema ve erişim yöntemi hocadan alınacak. Onaylanan CRM önerisi bu tablolardaki servis emrini üretir.
 - Şema ayrıntısı: `docs/db_schema.md`.
 
@@ -270,12 +277,14 @@ Arayüz ile AI servisi arasındaki sözleşme `docs/api.md` ve `frontend/openapi
 - Çalıştırma biçimi (konteyner, VM) ve veritabanı yönetimi netleşecek. LLM tarafında Vertex AI/Gemini uyumluluğu önemlidir; sağlayıcı arayüzümüz bunu destekler.
 - Geliştirmede tek komutla başlatıcı vardır: `uv run python -m scripts.dev` (altyapı, migration, seed, indeks, işçi, zamanlayıcı, API). Rehber: `docs/calistirma.md`.
 
-## 11. Mevcut Durum (11 Kasım)
+## 11. Mevcut Durum (20 Kasım)
 
 | Alan | Durum |
 |------|-------|
-| Backend (FastAPI, 29 API işlemi, 17 tablo, Alembic 0005), CI (lint, tip, ~1.430 test, duman testi, Docker imajı, güvenlik taraması, belge tutarlılığı) | **Hazır** |
-| Dört analiz agent'ı + orkestratör, gerçek LLM ile ölçüm | **Hazır** (100 çağrılık sette test kümesinde genel %94; sonraki aksiyon %92) |
+| Backend (FastAPI, 32 API işlemi, 18 tablo, Alembic 0008), CI (lint, tip, ~2.460 test, duman testi, Docker imajı, güvenlik taraması, gitleaks, belge tutarlılığı) | **Hazır** |
+| Beş analiz agent'ı (sınıflandırma, CRM, satış, özet, duygu) + orkestratör, gerçek LLM ile ölçüm | **Hazır** (100 çağrılık sette ilk dört agent test kümesinde genel %94, sonraki aksiyon %92; duygu agent'ı 119 çağrıda %97, şikâyet kesinliği %92 — etiketler tek kişiden, örnek sayısı az: `docs/agent_dogrulugu.md`) |
+| Duygu analizi arayüzü: çağrı listesinde rozet ve şikâyet bayrağı, detayda gerekçe, analitikte dağılım ve şikâyet sayısı | **Hazır**; manuel test bekliyor |
+| Canlı transkript (yazıya çevirme sırasında pop-up, SSE) | **Hazır**; manuel test bekliyor; gerçek yığında uçtan uca denenmedi, parçalar ~30 sn'lik pencere hızında gelir |
 | STT (faster-whisper stereo, seed sesleri, alan sözcüğü) | **Hazır**; karar `docs/stt_karari.md`; gerçek santral kaydıyla denenmedi; mono kayıtta dil modeliyle (metin tabanlı) konuşmacı ayrımı (#263, 20 çağrıda %94,6) |
 | CRM onay akışı ve arayüzü (onayla, reddet, düzenle, servis emri) | **Hazır** |
 | Çağrı → müşteri ve tekne eşleştirme (otomatik + elle) | **Hazır** |
@@ -286,9 +295,9 @@ Arayüz ile AI servisi arasındaki sözleşme `docs/api.md` ve `frontend/openapi
 | Docker ile tek komutla çalıştırma, ses depolama soyutlaması (yerel, GCS) | **Hazır**; uçtan uca duman testi CI'da |
 | CI ve dal koruması | **Hazır**: backend ve frontend iş akışları, Playwright e2e (Chromium), `main` için ruleset (zorunlu kontroller: Backend CI sonucu, Frontend CI sonucu) |
 | Erişilebilirlik (axe, klavye, pencere daraltma), Playwright E2E testleri | **Hazır** |
-| Güvenlik katmanı (§4.1): servis anahtarı, maskeleme, güvenlik kapısı, sahip izolasyonu, salt-okunur araçlar, insan onayı, yükleme kontrolleri | **Kısmen hazır**; eksikler Hafta 10'da (#264-#278), `docs/guvenlik_mimarisi.md` |
+| Güvenlik katmanı (§4.1): servis anahtarı ve imzalı kimlik, maskeleme, injection savunması, sahip izolasyonu ve roller, hız sınırı, denetim günlüğü, KVKK silme, yükleme kontrolleri, saldırı test paketi | **Hazır** (#264-#278 kapandı; giriş ekranı kararı #265 açık, hocaya sorulacak); otomatik tam tur (#320) planlı; `docs/guvenlik_mimarisi.md` |
 | Miço Usta uygulamasına entegrasyon, kullanıcı girişi, Google Cloud'a canlıya alma | **Yapılmadı** (hocayla yöntem netleşecek) |
-| Duygu analizi agent'ı, embedding'in API ile denenmesi | **Planlandı, vize sonrası** |
+| Yazıya çevirme doğruluğu (#322), ücretsiz STT modellerinin karşılaştırması (#316), embedding karşılaştırması (#318), otomatik güvenlik turu (#320) | **Planlandı** (ölçümler yalnız sentetik veriyle) |
 
 **Bilinen sorunlar:** Ücretsiz LLM kotası canlı demoda yavaşlığa yol açabilir (429'da bekleyip yeniden denenir). Mono kayıtta konuşmacı ayrımı metin tabanlıdır (LLM cümleleri temsilci/müşteri diye etiketler, #263); akustik ayrım yoktur. Windows'ta `localhost` önce IPv6'ya gider ve Redis bağlantısı ~2 sn gecikir; bu yüzden varsayılan Redis adresi `127.0.0.1`'dir (mevcut `.env` dosyalarında elle değiştirilmelidir). Ortak geliştirme veritabanında önceki denemelerden kalan veri bazı entegrasyon testlerini düşürebilir (temiz veritabanında geçer).
 
@@ -300,8 +309,9 @@ Arayüz ile AI servisi arasındaki sözleşme `docs/api.md` ve `frontend/openapi
 | Canlı veritabanı: kendi PostgreSQL'imiz mi, Miço Usta'nınki mi? | Hocayla konuşulacak |
 | Miço Usta veri şeması / örnek veri | Hocadan istenecek |
 | Canlıya alma ortamı ve biçimi (Google Cloud) | Entegrasyon kararından sonra |
-| Duygu analizi agent'ı (plan hazır) | Vize sonrası |
-| Embedding'i (bge-m3) API anahtarıyla çağırma denemesi (TEI konteynerini kaldırmak için) | Vize sonrası |
+| Embedding: bge-m3'e 4 alternatif (Qwen3-Embedding-0.6B, multilingual-e5-large, jina-embeddings-v3, arctic-embed-l-v2.0), reranker ve Hugging Face API denemesi (#318) | Planlandı; ölçümden sonra Berkay'a sunulur, kazanım yoksa değişmez |
+| STT: model boyutu, beam, VAD, hotwords, alan sözlüğü (#322) ve ücretsiz model karşılaştırması (#316) | Planlandı; yalnız sentetik ses; bellek (15,7 GB, GPU yok) ve hız bütçesiyle sınırlı |
+| Canlı transkript ve duygu analizi: manuel test sonucu | 21 Kasım'dan sonra; sorun çıkarsa düzeltme issue'ları açılır |
 | Admin'deki mevcut AI Asistan'ın iyileştirilmesi kapsama dahil mi? | Hocaya sorulacak |
 | "Kimlik doğrulama" giriş ekranı mı, servisler arası doğrulama mı? (#265) | Hocaya sorulacak; hesaplar yine de DB'de tutulacak (#278) |
 
@@ -309,6 +319,7 @@ Arayüz ile AI servisi arasındaki sözleşme `docs/api.md` ve `frontend/openapi
 
 ## 13. Değişiklik Günlüğü
 
+- **v6.1 (2026-11-20):** Belge sürümü v6.1 oldu (dosya `Sistem_mimarisi_v6.1.md`). Canlı transkript ve duygu analizi (5. agent) mimariye, teknoloji ve durum tablolarına işlendi; genel mimari (01), çağrı analitiği (02), agent (04) ve ER şemaları yeniden üretildi (kaynak betikler `docs/diagrams/kaynak/mimari_semalari.py` ve `er_semasi.py`), S2'ye canlı transkript kuralları eklendi; güvenlik issue'larının durumu (#264-#278 kapandı) ve planlanan işler (#316, #318, #320, #321, #322) yazıldı; bağımlılıklar `uv.lock`'ta küçük/yama sürümlerine yükseltildi, doğrulanmış sürümler §5'e eklendi, ana sürüm atlayan üç paket bekletildi.
 - **v6 ek (2026-11-20):** Duygu Analiz Agent'ı eklendi (5. agent): müşterinin duygusu (olumlu / nötr / olumsuz) ve şikâyet bayrağı; şema, istem, orkestratöre ekleme, DB sütunları ve API alanı (#333); çağrı listesi ve analitik özetinde duygu alanları, ölçüm ve süre etkisi (#334).
 - **v6 ek (2026-11-19):** Canlı transkript akışı eklendi (§6.1): Redis Stream, SSE ucu, vekil geçişi, pop-up (#323-#327).
 - **v6 (2026-11-17):** Belge sürümü v6 oldu (dosya `Sistem_mimarisi_v6.md`). Güvenlik katmanı (§4.1) mevcut tüm güvenlik kurallarını içerecek biçimde yeniden yazıldı; güvenlik ilkeleri (§4.2); kullanıcı hesapları kararı (#278); uygulama sırası (Hafta 10, kimlik doğrulama en son). İlk hali v5 ekinde (#277) S0-S5 şemaları ve `docs/guvenlik_mimarisi.md` ile gelmişti. Mono konuşmacı ayrımı (#263) duruma işlendi.

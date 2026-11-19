@@ -59,7 +59,7 @@ jobs:
               - 'docs/**'
               - 'README.md'
               - 'README.en.md'
-              - 'Sistem_mimarisi_v6.md'
+              - 'Sistem_mimarisi_v6.1.md'
               - 'frontend/lib/types.ts'
               - 'frontend/lib/api-types.ts'
               - 'frontend/openapi.json'

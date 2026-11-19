@@ -1,0 +1,1112 @@
+{
+ "agent_runs": [
+  {
+   "name": "id",
+   "type": "uuid",
+   "pk": true,
+   "fk": null
+  },
+  {
+   "name": "analysis_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "analysis_results.id"
+  },
+  {
+   "name": "agent_name",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "status",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "attempts",
+   "type": "smallint",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "latency_ms",
+   "type": "integer",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "error",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "error_kind",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "model",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "prompt_version",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "tokens_in",
+   "type": "integer",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "tokens_out",
+   "type": "integer",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "created_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  }
+ ],
+ "analysis_results": [
+  {
+   "name": "id",
+   "type": "uuid",
+   "pk": true,
+   "fk": null
+  },
+  {
+   "name": "call_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "calls.id"
+  },
+  {
+   "name": "version",
+   "type": "smallint",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "status",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "call_type",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "call_type_confidence",
+   "type": "real",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "call_type_reason",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "request_category",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "location",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "problem",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "service_mode",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "urgency",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "potential_job",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "next_action",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "crm_evidence",
+   "type": "jsonb",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "sales_outcome",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "loss_reason",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "sales_evidence",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "sales_confidence",
+   "type": "real",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "summary",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "key_points",
+   "type": "jsonb",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "sentiment",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "sentiment_complaint",
+   "type": "boolean",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "sentiment_reason",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "sentiment_evidence",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "sentiment_confidence",
+   "type": "real",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "errors",
+   "type": "jsonb",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "created_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  }
+ ],
+ "audit_log": [
+  {
+   "name": "id",
+   "type": "uuid",
+   "pk": true,
+   "fk": null
+  },
+  {
+   "name": "occurred_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "actor_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "actor_role",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "action",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "target_type",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "target_id",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "outcome",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "request_id",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "ip",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "details",
+   "type": "jsonb",
+   "pk": false,
+   "fk": null
+  }
+ ],
+ "boat_notes": [
+  {
+   "name": "id",
+   "type": "uuid",
+   "pk": true,
+   "fk": null
+  },
+  {
+   "name": "boat_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "boats.id"
+  },
+  {
+   "name": "author_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "craftsmen.id"
+  },
+  {
+   "name": "content",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "note_date",
+   "type": "date",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "created_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  }
+ ],
+ "boats": [
+  {
+   "name": "id",
+   "type": "uuid",
+   "pk": true,
+   "fk": null
+  },
+  {
+   "name": "owner_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "customers.id"
+  },
+  {
+   "name": "name",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "model",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "year",
+   "type": "smallint",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "marina",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "created_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  }
+ ],
+ "calls": [
+  {
+   "name": "id",
+   "type": "uuid",
+   "pk": true,
+   "fk": null
+  },
+  {
+   "name": "started_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "answer_delay_s",
+   "type": "integer",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "duration_s",
+   "type": "integer",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "switchboard_outcome",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "audio_path",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "audio_sha256",
+   "type": "varchar",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "customer_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "customers.id"
+  },
+  {
+   "name": "boat_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "boats.id"
+  },
+  {
+   "name": "customer_name",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "customer_phone",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "boat_name",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "boat_model",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "marina",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "state",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "error",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "match_method",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "created_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "updated_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  }
+ ],
+ "chat_messages": [
+  {
+   "name": "id",
+   "type": "uuid",
+   "pk": true,
+   "fk": null
+  },
+  {
+   "name": "session_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "chat_sessions.id"
+  },
+  {
+   "name": "role",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "content",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "question_type",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "sources",
+   "type": "jsonb",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "found",
+   "type": "boolean",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "created_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  }
+ ],
+ "chat_sessions": [
+  {
+   "name": "id",
+   "type": "uuid",
+   "pk": true,
+   "fk": null
+  },
+  {
+   "name": "owner_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "customers.id"
+  },
+  {
+   "name": "title",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "created_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "updated_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  }
+ ],
+ "craftsmen": [
+  {
+   "name": "id",
+   "type": "uuid",
+   "pk": true,
+   "fk": null
+  },
+  {
+   "name": "full_name",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "specialty",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "phone",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "created_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  }
+ ],
+ "crm_reviews": [
+  {
+   "name": "id",
+   "type": "uuid",
+   "pk": true,
+   "fk": null
+  },
+  {
+   "name": "analysis_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "analysis_results.id"
+  },
+  {
+   "name": "call_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "calls.id"
+  },
+  {
+   "name": "status",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "edited_fields",
+   "type": "jsonb",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "note",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "reviewed_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "service_order_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "service_orders.id"
+  },
+  {
+   "name": "created_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "updated_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  }
+ ],
+ "customers": [
+  {
+   "name": "id",
+   "type": "uuid",
+   "pk": true,
+   "fk": null
+  },
+  {
+   "name": "full_name",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "phone",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "email",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "marina",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "created_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  }
+ ],
+ "expenses": [
+  {
+   "name": "id",
+   "type": "uuid",
+   "pk": true,
+   "fk": null
+  },
+  {
+   "name": "boat_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "boats.id"
+  },
+  {
+   "name": "service_order_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "service_orders.id"
+  },
+  {
+   "name": "amount",
+   "type": "numeric",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "currency",
+   "type": "varchar",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "description",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "expense_date",
+   "type": "date",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "created_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  }
+ ],
+ "rag_chunks": [
+  {
+   "name": "id",
+   "type": "uuid",
+   "pk": true,
+   "fk": null
+  },
+  {
+   "name": "source_kind",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "source_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "boat_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "boats.id"
+  },
+  {
+   "name": "owner_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "customers.id"
+  },
+  {
+   "name": "chunk_index",
+   "type": "smallint",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "content",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "embedding",
+   "type": "vector",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "tsv",
+   "type": "tsvector",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "created_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  }
+ ],
+ "service_orders": [
+  {
+   "name": "id",
+   "type": "uuid",
+   "pk": true,
+   "fk": null
+  },
+  {
+   "name": "boat_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "boats.id"
+  },
+  {
+   "name": "customer_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "customers.id"
+  },
+  {
+   "name": "craftsman_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "craftsmen.id"
+  },
+  {
+   "name": "category",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "description",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "status",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "scheduled_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "completed_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "source_call_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "calls.id"
+  },
+  {
+   "name": "created_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  }
+ ],
+ "subscriptions": [
+  {
+   "name": "id",
+   "type": "uuid",
+   "pk": true,
+   "fk": null
+  },
+  {
+   "name": "customer_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "customers.id"
+  },
+  {
+   "name": "boat_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "boats.id"
+  },
+  {
+   "name": "plan_name",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "total_services",
+   "type": "integer",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "used_services",
+   "type": "integer",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "starts_at",
+   "type": "date",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "expires_at",
+   "type": "date",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "created_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  }
+ ],
+ "transcript_segments": [
+  {
+   "name": "id",
+   "type": "uuid",
+   "pk": true,
+   "fk": null
+  },
+  {
+   "name": "transcript_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "transcripts.id"
+  },
+  {
+   "name": "segment_index",
+   "type": "smallint",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "speaker",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "start_ms",
+   "type": "integer",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "end_ms",
+   "type": "integer",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "text",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "masked_text",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  }
+ ],
+ "transcripts": [
+  {
+   "name": "id",
+   "type": "uuid",
+   "pk": true,
+   "fk": null
+  },
+  {
+   "name": "call_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "calls.id"
+  },
+  {
+   "name": "full_text",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "masked_text",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "created_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  }
+ ],
+ "user_accounts": [
+  {
+   "name": "id",
+   "type": "uuid",
+   "pk": true,
+   "fk": null
+  },
+  {
+   "name": "username",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "password_hash",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "role",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "customer_id",
+   "type": "uuid",
+   "pk": false,
+   "fk": "customers.id"
+  },
+  {
+   "name": "is_active",
+   "type": "boolean",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "failed_attempts",
+   "type": "integer",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "locked_until",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "password_changed_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "created_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  }
+ ]
+}
