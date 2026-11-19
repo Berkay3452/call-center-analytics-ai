@@ -1855,6 +1855,7 @@
           "crm",
           "sales",
           "summary",
+          "sentiment",
           "errors",
           "runs"
         ],
