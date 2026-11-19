@@ -29,6 +29,7 @@ const R: Array<[RegExp, readonly string[]]> = [
   [/^calls\/[^/]+\/status$/, ["GET"]],
   [/^calls\/[^/]+\/match$/, ["PUT"]],
   [/^calls\/[^/]+\/audio$/, ["GET", "HEAD"]],
+  [/^calls\/[^/]+\/transcript\/stream$/, ["GET"]], // canlı transkript (SSE, #325)
   [/^calls\/audio$/, ["POST"]],
   [/^crm$/, ["GET"]],
   [/^crm\/[^/]+\/approve$/, ["POST"]],
@@ -153,6 +154,13 @@ async function forward(
   ]) {
     const v = upstream.headers.get(name);
     if (v) out.set(name, v);
+  }
+  // SSE akışı (canlı transkript) ara katmanlarda tamponlanmamalı/sıkıştırılmamalı: olaylar anında
+  // iletilir. `no-transform` Next/ters vekil sıkıştırmasını kapatır.
+  if (out.get("content-type")?.startsWith("text/event-stream")) {
+    out.set("cache-control", "no-store, no-transform");
+    out.set("x-accel-buffering", "no");
+    out.delete("content-length");
   }
   return new Response(upstream.body, { status: upstream.status, headers: out });
 }
