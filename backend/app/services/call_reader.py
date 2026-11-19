@@ -135,6 +135,8 @@ async def list_calls(session: AsyncSession, filters: CallFilters) -> Page[CallLi
             latest_analysis.c.sales_outcome,
             latest_analysis.c.loss_reason,
             latest_analysis.c.summary,
+            latest_analysis.c.sentiment,
+            latest_analysis.c.sentiment_complaint,
         )
         .select_from(Call)
         .outerjoin(latest_analysis, Call.id == latest_analysis.c.call_id)
@@ -169,6 +171,8 @@ async def list_calls(session: AsyncSession, filters: CallFilters) -> Page[CallLi
             sales_outcome=r[13],
             loss_reason=r[14],
             summary=r[15],
+            sentiment=r[16],
+            complaint=r[17],
         )
         for r in rows
     ]

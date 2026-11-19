@@ -1,0 +1,29 @@
+{
+  "call_id": "duygu_ek_06",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, ben [İSİM]. Size nasıl yardımcı olabilirim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, sabah mesaj bırakmıştım. Yarım saat sonra döndünüz, bu ilgiye bayıldım doğrusu."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teşekkürler, nasıl yardımcı olabiliriz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yarın sabah için sintine pompası kontrolü rica edeceğim. Hızlı olmanız çok güzel."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yarın saat dokuza yazıyorum."
+    },
+    {
+      "speaker": "customer",
+      "text": "Mükemmel, çok sağ olun."
+    }
+  ]
+}

@@ -509,6 +509,8 @@ export interface components {
             urgency: components["schemas"]["Urgency"];
             sales_outcome: components["schemas"]["SalesOutcomeType"];
             loss_reason: components["schemas"]["LossReason"];
+            sentiment: components["schemas"]["Sentiment"];
+            complaint: boolean | null;
             summary: string | null;
         };
         TranscriptSegmentOut: {
@@ -705,6 +707,10 @@ export interface components {
             by_urgency: {
                 [key: string]: number;
             };
+            by_sentiment: {
+                [key: string]: number;
+            };
+            complaint_calls: number;
             daily_calls: components["schemas"]["DailyCount"][];
             avg_answer_delay_s: number | null;
         };

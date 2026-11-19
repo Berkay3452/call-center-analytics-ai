@@ -173,6 +173,9 @@ export interface CallListItem {
   urgency: Urgency | null;
   sales_outcome: SalesOutcomeType | null;
   loss_reason: LossReason | null;
+  /** Duygu analizi yoksa null (eski analizler). */
+  sentiment: Sentiment | null;
+  complaint: boolean | null;
   summary: string | null;
 }
 
@@ -357,6 +360,10 @@ export interface KpiSummary {
   busiest_marinas: CountItem[];
   by_category: Partial<Record<RequestCategory, number>>;
   by_urgency: Partial<Record<Urgency, number>>;
+  /** Duygu analizi olan çağrıların müşteri duygusuna göre dağılımı. */
+  by_sentiment: Partial<Record<Sentiment, number>>;
+  /** Müşterinin açıkça şikâyet ettiği çağrı sayısı. */
+  complaint_calls: number;
   daily_calls: DailyCount[];
   avg_answer_delay_s: number | null;
 }

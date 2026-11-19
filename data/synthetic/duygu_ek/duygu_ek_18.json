@@ -1,0 +1,29 @@
+{
+  "call_id": "duygu_ek_18",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, ben [İSİM]. Size nasıl yardımcı olabilirim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "İş bitmedi mi? Biraz uzadı galiba, ama sorun değil, bekleyebilirim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Parça bekleniyor, perşembe gelecek."
+    },
+    {
+      "speaker": "customer",
+      "text": "Peki, perşembe ne zaman biter? Hafta sonu kullanmak isterdim ama zorunlu değil."
+    },
+    {
+      "speaker": "rep",
+      "text": "Cuma öğlene biter."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, o zaman cuma haber verin."
+    }
+  ]
+}

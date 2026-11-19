@@ -1,0 +1,25 @@
+{
+  "call_id": "duygu_ek_03",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, ben [İSİM]. Size nasıl yardımcı olabilirim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, az önce ustanız geldi, su alma durdu, çok şükür. Canımızı kurtardınız, bin teşekkür."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geçmiş olsun, sizi rahatlattığına sevindik."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bu kadar hızlı ulaşacağınızı düşünmemiştim, gerçekten çok minnettarım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz, iyi günler."
+    }
+  ]
+}

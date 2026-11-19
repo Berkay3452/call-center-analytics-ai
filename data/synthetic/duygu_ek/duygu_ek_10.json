@@ -1,0 +1,29 @@
+{
+  "call_id": "duygu_ek_10",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, ben [İSİM]. Size nasıl yardımcı olabilirim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Teklifte kırk bin lira demiştiniz, faturada elli beş bin çıktı. Bu kabul edilemez."
+    },
+    {
+      "speaker": "rep",
+      "text": "Fatura kalemlerini kontrol edelim, isterseniz detay gönderelim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Önceden haber vermediniz. Müşteriyi böyle karşılamanız çok yanlış, kendimi kandırılmış hissediyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yöneticimizle konuşup size dönelim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Dönün bakalım."
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "call_id": "duygu_ek_16",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, ben [İSİM]. Size nasıl yardımcı olabilirim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, teknem Tuzla'da. Sintine pompasının şamandırası takılıyor, baktırmak istiyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Bu hafta için uygun gün var, perşembe olur mu?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Olur, ben teknede olacağım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Perşembe saat on için yazdım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkür ederim, iyi günler."
+    }
+  ]
+}

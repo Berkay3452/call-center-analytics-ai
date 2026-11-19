@@ -20,7 +20,7 @@ from sqlalchemy.ext.asyncio import (
 
 from app.core.config import Settings
 from app.core.errors import AppError
-from app.domain.enums import LossReason, RequestCategory, Urgency
+from app.domain.enums import LossReason, RequestCategory, Sentiment, Urgency
 from app.schemas.api import PeriodFilter
 from app.services.analytics_service import get_kpi_summary
 
@@ -238,3 +238,51 @@ async def test_kpi_daily_calls_istanbul_timezone(
         day_counts = {d.day: d.count for d in summary.daily_calls}
         assert day_counts[date(2025, 5, 10)] == 0
         assert day_counts[date(2025, 5, 11)] == 1
+
+
+async def test_kpi_sentiment_distribution_and_complaints(
+    conn: AsyncConnection, factory: async_sessionmaker[AsyncSession]
+) -> None:
+    """Duygu dağılımı ve şikâyet sayısı en son analiz sürümünden gelir (#334).
+
+    Seed analizlerinde duygu yoktur (eski analiz): onlar dağılıma girmez.
+    """
+    period = PeriodFilter(date_from=date(2026, 10, 5), date_to=date(2026, 10, 13))
+    ids = (
+        (
+            await conn.execute(
+                text(
+                    "SELECT a.id FROM analysis_results a JOIN calls c ON c.id = a.call_id "
+                    "WHERE c.started_at >= '2026-10-05' AND c.started_at < '2026-10-13' "
+                    "ORDER BY a.id LIMIT 4"
+                )
+            )
+        )
+        .scalars()
+        .all()
+    )
+    assert len(ids) == 4
+    rows = [
+        ("olumsuz", True),  # şikâyetli
+        ("olumsuz", False),
+        ("olumlu", False),
+        ("notr", False),
+    ]
+    for analysis_id, (sentiment, complaint) in zip(ids, rows, strict=True):
+        await conn.execute(
+            text(
+                "UPDATE analysis_results SET sentiment = :s, sentiment_complaint = :c, "
+                "sentiment_confidence = 0.9 WHERE id = :i"
+            ),
+            {"s": sentiment, "c": complaint, "i": analysis_id},
+        )
+
+    async with factory() as session:
+        summary = await get_kpi_summary(session, period)
+
+    assert summary.by_sentiment == {
+        Sentiment.OLUMSUZ: 2,
+        Sentiment.OLUMLU: 1,
+        Sentiment.NOTR: 1,
+    }
+    assert summary.complaint_calls == 1

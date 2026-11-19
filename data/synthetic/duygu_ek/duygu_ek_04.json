@@ -1,0 +1,25 @@
+{
+  "call_id": "duygu_ek_04",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, ben [İSİM]. Size nasıl yardımcı olabilirim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, gönderdiğiniz teklifi inceledim. Çok net ve fiyatı da gayet uygun, beğendim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teşekkürler, onaylarsanız randevuyu oluşturalım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Hemen onaylıyorum. Açıkçası bu kadar ilgili bir firma bulacağımı düşünmemiştim, çok memnunum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Rica ederiz, randevunuzu yazıyorum."
+    }
+  ]
+}

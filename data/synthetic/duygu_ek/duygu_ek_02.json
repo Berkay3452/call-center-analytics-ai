@@ -1,0 +1,29 @@
+{
+  "call_id": "duygu_ek_02",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, ben [İSİM]. Size nasıl yardımcı olabilirim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, geçen sezonki kış bakımınız mükemmeldi. Tekne bahara pırıl pırıl çıktı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Memnun kaldığınıza sevindik."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bu sene de aynı paketi istiyorum, sizinle çalışmak gerçekten rahatlatıyor. Randevu için ne yapmam lazım?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Tarihleri not alıp size mesaj atabiliriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Çok iyi olur, sağ olun."
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "call_id": "duygu_ek_11",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, ben [İSİM]. Size nasıl yardımcı olabilirim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Günlerdir telefonu açan yok, mesaj bıraktım dönen yok. Bu resmen ilgisizlik."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yoğunluktan dolayı özür dileriz, şimdi talebinizi alalım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Motorum arızalı, ben tatili iptal ettim. Bu kadar umursamaz bir firmayla çalışmak çok zor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Önceliğe alıyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, görelim."
+    }
+  ]
+}

@@ -22,7 +22,7 @@ from sqlalchemy.ext.asyncio import (
 from app.core.config import Settings
 from app.core.errors import NotFoundError
 from app.db.models.ai import Call
-from app.domain.enums import LossReason, RequestCategory, SalesOutcomeType, Urgency
+from app.domain.enums import LossReason, RequestCategory, SalesOutcomeType, Sentiment, Urgency
 from app.schemas.api import CallFilters
 from app.services.call_reader import get_call_detail, list_calls, list_crm_records
 
@@ -374,3 +374,36 @@ async def test_list_and_detail_expose_stage_and_updated_at(
     row = next(c for c in page.items if c.id == call_id)
     assert (row.stage, row.state) == ("analiz", "isleniyor")
     assert row.updated_at == detail.updated_at
+
+
+async def test_list_calls_and_detail_expose_sentiment(
+    conn: AsyncConnection, factory: async_sessionmaker[AsyncSession]
+) -> None:
+    """Duygu alanları liste ve detayda görünür; duygu analizi olmayan çağrıda null (#334)."""
+    call_id = (
+        await conn.execute(text("SELECT call_id FROM analysis_results ORDER BY call_id LIMIT 1"))
+    ).scalar_one()
+    await conn.execute(
+        text(
+            "UPDATE analysis_results SET sentiment = 'olumsuz', sentiment_complaint = true, "
+            "sentiment_reason = 'Geç dönüşten yakınıyor.', sentiment_confidence = 0.9 "
+            "WHERE call_id = :c"
+        ),
+        {"c": call_id},
+    )
+
+    async with factory() as session:
+        page = await list_calls(session, CallFilters(page_size=100))
+        detail = await get_call_detail(session, call_id)
+
+    by_id = {item.id: item for item in page.items}
+    assert by_id[call_id].sentiment == Sentiment.OLUMSUZ
+    assert by_id[call_id].complaint is True
+    others = [i for i in page.items if i.id != call_id and i.state == "tamam"]
+    assert others
+    assert all(i.sentiment is None and i.complaint is None for i in others)
+
+    assert detail.analysis is not None
+    assert detail.analysis.sentiment is not None
+    assert detail.analysis.sentiment.complaint is True
+    assert detail.analysis.sentiment.reason == "Geç dönüşten yakınıyor."

@@ -1,0 +1,29 @@
+{
+  "call_id": "duygu_ek_09",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, ben [İSİM]. Size nasıl yardımcı olabilirim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Usta saat onda gelecekti, akşam oldu, ne geldi ne aradı. Çok kızgınım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yaşanan aksaklık için özür dileriz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tekneyi sizi beklerken bütün gün bırakmadım. Böyle ilgisizlik kabul edilemez."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yarın için öncelikli randevu verelim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bakalım, bir daha beklemem."
+    }
+  ]
+}

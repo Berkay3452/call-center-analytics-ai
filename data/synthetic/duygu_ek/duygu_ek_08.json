@@ -1,0 +1,29 @@
+{
+  "call_id": "duygu_ek_08",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, ben [İSİM]. Size nasıl yardımcı olabilirim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Geçen hafta yaptırdığınız alternatör bir günde yine arıza verdi. Bu nasıl iş? Para verdim, sonuç yok."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yaşadığınız sorun için üzgünüz, hemen bir usta yönlendirelim."
+    },
+    {
+      "speaker": "customer",
+      "text": "Üç gün bekledim, parasını da ödedim. İşi düzgün yapsaydınız tekrar aramak zorunda kalmazdım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Haklısınız, yarın sabah ilk iş gönderiyoruz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Umarım bu sefer düzgün olur."
+    }
+  ]
+}
