@@ -156,6 +156,11 @@ class Settings(BaseSettings):
     # Mono kayıtta konuşmacı ayrılamaz ("unknown"); model tabanlı ayrım sonraki adımdır.
     # Santral kayıtları iki kanallıdır (temsilci sol); mono dosyalar otomatik mono işlenir.
     stt_channel_layout: Literal["mono", "stereo_rep_left", "stereo_rep_right"] = "stereo_rep_left"
+    # Canlı transkript (#323): STT segmentleri işlenirken Redis Stream'ine yayınlanır (#324 okur).
+    # Redis yoksa yayın sessizce kapanır; analiz etkilenmez.
+    live_transcript_enabled: bool = True
+    live_transcript_ttl_s: int = Field(default=3600, ge=60)
+    live_transcript_maxlen: int = Field(default=5000, ge=100)
     # Mono kayıtta dil modeliyle metin tabanlı konuşmacı ayrımı (akustik ayrım değildir).
     stt_llm_diarization: bool = True
     whisper_model: str = "small"  # CPU için small/medium; GPU varsa large-v3

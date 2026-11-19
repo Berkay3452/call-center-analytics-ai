@@ -29,6 +29,9 @@ from app.stt.base import SttError, SttSegment, Transcriber
 log = structlog.get_logger(__name__)
 
 Diarizer = Callable[[list[SttSegment]], Awaitable[list[SttSegment]]]
+# Canlı yayın (#323): her segment hazır olunca çağrılır. Asla hata fırlatmamalıdır; fırlatırsa
+# pipeline yutar (canlı gösterim STT'yi düşüremez).
+SegmentSink = Callable[[SttSegment], None]
 ChannelLayout = Literal["mono", "stereo_rep_left", "stereo_rep_right"]
 SAMPLE_RATE = 16_000
 
@@ -142,6 +145,19 @@ async def _transcribe_channel(
     return result.segments
 
 
+def _safe_sink(on_segment: SegmentSink | None) -> SegmentSink | None:
+    if on_segment is None:
+        return None
+
+    def sink(segment: SttSegment) -> None:
+        try:
+            on_segment(segment)
+        except Exception:  # canlı gösterim STT'yi düşüremez
+            log.warning("stt.live_sink_failed")
+
+    return sink
+
+
 async def transcribe_call(
     audio_path: Path,
     transcriber: Transcriber,
@@ -149,8 +165,16 @@ async def transcribe_call(
     layout: ChannelLayout = "mono",
     language: str = "tr",
     diarizer: Diarizer | None = None,
+    on_segment: SegmentSink | None = None,
 ) -> CallTranscription:
-    """Çağrı sesini konuşmacı turlarına çevirir. Hata durumunda `SttError`."""
+    """Çağrı sesini konuşmacı turlarına çevirir. Hata durumunda `SttError`.
+
+    `on_segment` verilirse segmentler çözüldükçe **zamana göre sıralı** bildirilir (canlı
+    transkript, #323). Canlı çözüm yalnızca yerel sağlayıcıda (`transcribe_live`) ve metin
+    tabanlı ayrım gerekmediğinde mümkündür; aksi halde segmentler bitişte sırayla bildirilir.
+    """
+    sink = _safe_sink(on_segment)
+    live = getattr(transcriber, "transcribe_live", None) if sink is not None else None
     if not await asyncio.to_thread(audio_path.exists):
         raise SttError(f"Ses dosyası yok: {audio_path.name}")
     started = time.perf_counter()
@@ -160,27 +184,46 @@ async def transcribe_call(
         layout = "mono"
 
     if layout == "mono":
-        result = await transcriber.transcribe(audio_path, language=language)
-        segments = result.segments
-        if diarizer is not None:
-            segments = await diarizer(segments)  # mono: metin tabanlı konuşmacı ayrımı
+        if live is not None and sink is not None and diarizer is None:
+            result = await live(
+                {"unknown": str(audio_path)}, language=language, on_segment=sink, split_pauses=False
+            )
+            segments, notified = result.segments, True
+        else:
+            result = await transcriber.transcribe(audio_path, language=language)
+            segments, notified = result.segments, False
+            if diarizer is not None:
+                segments = await diarizer(segments)  # mono: metin tabanlı konuşmacı ayrımı
         turns = merge_turns(segments)
         duration, model = result.duration_sec, result.model
     else:
         left, right = await asyncio.to_thread(split_stereo, audio_path)
         rep, customer = (left, right) if layout == "stereo_rep_left" else (right, left)
-        with tempfile.TemporaryDirectory(prefix="stt_") as tmp:
-            workdir = Path(tmp)
-            rep_segs = await _transcribe_channel(transcriber, rep, language, workdir, "rep")
-            cust_segs = await _transcribe_channel(
-                transcriber, customer, language, workdir, "customer"
+        if live is not None and sink is not None:
+            result = await live(
+                {"rep": rep, "customer": customer}, language=language, on_segment=sink
             )
-        segments = [s.model_copy(update={"speaker": "rep"}) for s in rep_segs] + [
-            s.model_copy(update={"speaker": "customer"}) for s in cust_segs
-        ]
+            segments, notified = result.segments, True
+        else:
+            with tempfile.TemporaryDirectory(prefix="stt_") as tmp:
+                workdir = Path(tmp)
+                rep_segs = await _transcribe_channel(transcriber, rep, language, workdir, "rep")
+                cust_segs = await _transcribe_channel(
+                    transcriber, customer, language, workdir, "customer"
+                )
+            segments = [s.model_copy(update={"speaker": "rep"}) for s in rep_segs] + [
+                s.model_copy(update={"speaker": "customer"}) for s in cust_segs
+            ]
+            notified = False
         turns = merge_turns(segments)
         duration = max(len(left), len(right)) / SAMPLE_RATE
         model = getattr(transcriber, "name", "stt")
+
+    if sink is not None and not notified:
+        # Canlı çözüm yoktu: segmentler bitişte, zaman sırasıyla bildirilir.
+        for seg in sorted(segments, key=lambda x: (x.start_ms, x.end_ms)):
+            if seg.text.strip():
+                sink(seg)
 
     processing = time.perf_counter() - started
     log.info(

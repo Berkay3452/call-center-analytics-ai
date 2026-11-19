@@ -4,6 +4,7 @@ STT CPU'yu yoğun kullandığı için `stt` kuyruğu tek eşzamanlılıkla çal�
 Whisper modeli işçi süreci boyunca bir kez yüklenir.
 """
 
+import asyncio
 from functools import lru_cache
 from uuid import UUID
 
@@ -13,6 +14,7 @@ from app.core.config import get_settings
 from app.core.errors import NotFoundError
 from app.db.session import create_engine, create_session_factory
 from app.services.audio_ingest import run_transcription
+from app.services.transcript_stream import TranscriptPublisher
 from app.storage.registry import build_audio_storage
 from app.stt.base import SttSegment, Transcriber
 from app.stt.pipeline import Diarizer
@@ -46,15 +48,26 @@ async def _transcribe(call_id: UUID) -> str:
 
             diarizer = _diarize
 
-        return await run_transcription(
-            call_id,
-            create_session_factory(engine),
-            _transcriber(),
-            storage=storage,
-            layout=settings.stt_channel_layout,
-            language=settings.stt_language,
-            diarizer=diarizer,
-        )
+        publisher = TranscriptPublisher.from_settings(settings, call_id)
+        try:
+            state = await run_transcription(
+                call_id,
+                create_session_factory(engine),
+                _transcriber(),
+                storage=storage,
+                layout=settings.stt_channel_layout,
+                language=settings.stt_language,
+                diarizer=diarizer,
+                on_segment=publisher.publish_segment if publisher.enabled else None,
+            )
+            # İzleyiciye bitişi bildir (canlı akış #324). Yayın hatası sonucu değiştirmez.
+            if state == "basarisiz":
+                await asyncio.to_thread(publisher.publish_error)
+            else:
+                await asyncio.to_thread(publisher.publish_done)
+            return state
+        finally:
+            await asyncio.to_thread(publisher.close)
     finally:
         await engine.dispose()
 
