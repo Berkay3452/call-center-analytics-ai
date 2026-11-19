@@ -30,14 +30,17 @@ Istanbul Gedik University, MFK420 Graduation Project. An AI-powered call analyti
 
 | # | Feature | User | In short |
 |---|---|---|---|
-| 1 | **Call → CRM record** | Admin | An audio file or transcript is uploaded; speech is transcribed and 4 agents extract 7 CRM fields. The admin approves, edits-and-approves, or rejects the suggestion; the first approval creates a service order. |
+| 1 | **Call → CRM record** | Admin | An audio file or transcript is uploaded; speech is transcribed and 5 agents extract 7 CRM fields, the customer's sentiment and a complaint flag. The admin approves, edits-and-approves, or rejects the suggestion; the first approval creates a service order. |
 | 2 | **Call analytics** | Admin | Call counts, urgent calls, calls converted to sales and lost sales, most common faults, busiest marinas, reasons for lost sales; date and marina filters. |
 | 3 | **Miço AI** | Boat owner | A chat assistant that answers from the owner's own boat record, jobs, expenses and subscription, **citing its sources**. Numbers are computed by code; the model never makes them up. |
+| 4 | **Sentiment analysis** (5th agent) | Admin | The customer's overall sentiment (positive / neutral / negative), an explicit complaint flag, a short reason and a quote from the conversation. A badge in the call list and call detail; a distribution and the number of complaint calls in analytics. |
+| 5 | **Live transcript** | Admin | While an uploaded call is being transcribed, the conversation streams into a pop-up live (agent on the left, customer on the right; Redis Stream + SSE). |
 
 **Highlights**
 
-- Four agents run in parallel (call classifier, CRM extraction, sales analysis, summariser). Every output is validated against a schema, with one correction round on failure; if one agent crashes, the others' results are kept (the record completes as "partial").
-- For stereo telephone recordings each channel is transcribed separately (agent on the left, customer on the right), which gives speaker separation.
+- Five agents run in parallel (call classifier, CRM extraction, sales analysis, summariser, sentiment analysis). Every output is validated against a schema, with one correction round on failure; if one agent crashes, the others' results are kept (the record completes as "partial").
+- For stereo telephone recordings each channel is transcribed separately (agent on the left, customer on the right), which gives speaker separation. For mono recordings speaker separation is text-based (done by the language model).
+- While transcription runs, a live-transcript pop-up opens; the stream is admin-only, and a failure in it does not affect the analysis.
 - A call is automatically linked to a registered customer and boat by phone number or by name + boat name; otherwise the admin matches it manually.
 - Analyses are versioned: re-analysis creates a new version and keeps the old ones; approvals are tied to an analysis version.
 - Resilience: on an LLM timeout the system switches to a fallback model; calls that get stuck are recovered automatically.
@@ -49,7 +52,7 @@ Istanbul Gedik University, MFK420 Graduation Project. An AI-powered call analyti
 
 ![Overall architecture](docs/diagrams/01_genel_mimari.png)
 
-Users (admin and boat owner) use the Next.js interface. It calls the Python AI service (FastAPI) through a server-side proxy using a service key. Long jobs (speech → text, analysis, indexing) run in a Celery worker with Redis as the queue. The service uses speech recognition (STT), an LLM and an embedding service, and writes results to PostgreSQL (pgvector).
+Users (admin and boat owner) use the Next.js interface. It calls the Python AI service (FastAPI) through a server-side proxy using a service key. Long jobs (speech → text, analysis, indexing) run in a Celery worker with Redis as the queue; live-transcript chunks flow from a Redis Stream to the browser over SSE. The service uses speech recognition (STT), an LLM and an embedding service, and writes results to PostgreSQL (pgvector).
 
 | Diagram | Content |
 |---|---|
@@ -57,22 +60,23 @@ Users (admin and boat owner) use the Next.js interface. It calls the Python AI s
 | ![Agents](docs/diagrams/04_agent_orkestrator.png) | Agents and the LangGraph orchestrator |
 | ![Miço AI](docs/diagrams/03_miko_ai.png) | Miço AI flow: planning, retrieval, grounding |
 | ![Synthetic data](docs/diagrams/05_sentetik_veri.png) | Synthetic call and boat data generation |
-| ![ER](docs/diagrams/er_diagram.png) | Database ER diagram (17 tables) |
+| ![ER](docs/diagrams/er_diagram.png) | Database ER diagram (18 tables) |
+| ![Security layer](docs/diagrams/S0_guvenlik_katmani_mimarisi.png) | Security-layer architecture; the five perspectives' diagrams and details: [`docs/guvenlik_mimarisi.md`](docs/guvenlik_mimarisi.md) (Turkish) |
 
-Detailed architecture, decisions and current status: [`Sistem_mimarisi_v6.md`](Sistem_mimarisi_v6.md) (Turkish).
+Detailed architecture, decisions and current status: [`Sistem_mimarisi_v6.1.md`](Sistem_mimarisi_v6.1.md) (Turkish).
 
 ## Tech stack
 
 | Layer | Technology |
 |---|---|
-| Backend | Python 3.12, FastAPI, Pydantic, SQLAlchemy (async) + asyncpg, Alembic |
-| Background jobs | Celery + Redis (Beat for periodic tasks) |
-| Database | PostgreSQL 17 + pgvector |
-| Agents | LangGraph + LangChain; the LLM provider is selected by configuration (NVIDIA Nemotron in development: fast + strong + fallback model) |
-| Speech recognition | faster-whisper (local, CPU; `small` by default, `medium` is more accurate); Whisper API and a stub as alternatives |
+| Backend | Python 3.12, FastAPI 0.162, Pydantic 2.14, SQLAlchemy 2.1 (async) + asyncpg, Alembic 1.20 |
+| Background jobs | Celery 5.7 + Redis (Beat for periodic tasks; Redis Stream for the live transcript) |
+| Database | PostgreSQL 17 + pgvector (18 tables, Alembic 0008) |
+| Agents | LangGraph 1.2 + LangChain 1.5 (5 agents); the LLM provider is selected by configuration (NVIDIA Nemotron in development: fast + strong + fallback model) |
+| Speech recognition | faster-whisper 1.2 (local, CPU; `small` by default, `medium` is more accurate); Whisper API and a stub as alternatives |
 | Embeddings | bge-m3 (TEI container), 1024 dimensions |
-| Frontend | Next.js 16, React 19, TypeScript, Tailwind CSS |
-| Tests | pytest (~1,430 tests), Playwright (e2e + accessibility/axe), ruff, mypy, ESLint |
+| Frontend | Next.js 16.4, React 19.3, TypeScript 5, Tailwind CSS 4 |
+| Tests | pytest (~2,460 tests), Playwright 1.65 (e2e + accessibility/axe), ruff, mypy, ESLint |
 | Infrastructure | Docker Compose, GitHub Actions |
 
 ## Quick start
@@ -132,6 +136,7 @@ All settings are read from `backend/.env` (`backend/.env.example` is commented).
 | `EMBEDDING_PROVIDER`, `TEI_URL` | Embedding service |
 | `AUDIO_STORAGE_BACKEND` | Audio storage: `local` or `gcs` |
 | `ANALYSIS_CLASSIFIER_FIRST` | If `true`, restores the older "classify first" ordering |
+| `LLM_SENTIMENT_ANALYZER_MODEL` | Model for the sentiment agent (the strong model if empty) |
 
 Never commit secrets to the code or the repository.
 
@@ -151,7 +156,7 @@ docs/       API contract, schema, measurement reports, run and deployment guides
 cd backend
 uv run ruff check . && uv run ruff format --check .
 uv run mypy app
-uv run pytest                      # ~1,430 tests
+uv run pytest                      # ~2,460 tests
 
 cd ../frontend
 npm run lint && npm run build
@@ -162,13 +167,13 @@ npm run e2e                        # Playwright (first: npx playwright install)
 
 ## Success criteria
 
-The targets we set at the start of the project, and the measured status as of 11 November 2026:
+The targets we set at the start of the project, and the measured status as of 20 November 2026:
 
 | # | Criterion | How it is measured | Target | Current status |
 |---|---|---|---|---|
 | 1 | STT accuracy | WER on a synthetic test set simulating phone audio | WER ≤ 15% | ⚠️ `medium` **15.4%** (very close), default `small` 24.8%. `medium` is needed to hit the target; the memory/time trade-off is still open ([`docs/stt_karari.md`](docs/stt_karari.md)) |
-| 2 | Complaint detection | Comparison with labels on a 30-call test set | Recall ≥ 90%, Precision ≥ 80% | ⏳ Not measured: there is no complaint/sentiment agent yet, planned **after the midterm** (the sentiment-analysis plan is ready) |
-| 3 | Topic and intent classification | Accuracy on the same test set; macro F1 for sentiment | Accuracy ≥ 80%, F1 ≥ 0.70 | ✅ / ⏳ Accuracy: **94%** overall on the test set, call type 85%, request category 95% ([`docs/agent_dogrulugu.md`](docs/agent_dogrulugu.md)). Sentiment F1: not measured, no sentiment agent yet |
+| 2 | Complaint detection | Comparison with labels on labelled synthetic calls | Recall ≥ 90%, Precision ≥ 80% | ✅ On 119 calls (100 main + 19 extra) Recall **100%** (11/11), Precision **92%** (11/12). Small sample, labels from a single person; the prompt was tuned on errors from the first run (first-run Precision was 61%) ([`docs/agent_dogrulugu.md`](docs/agent_dogrulugu.md)) |
+| 3 | Topic and intent classification | Accuracy on the same test set; macro F1 for sentiment | Accuracy ≥ 80%, F1 ≥ 0.70 | ✅ Accuracy: **94%** overall on the test set, call type 85%, request category 95% ([`docs/agent_dogrulugu.md`](docs/agent_dogrulugu.md)). Sentiment macro F1 ≈ **0.95** (positive 1.00 · neutral 0.98 · negative 0.88; 119 calls, sentiment accuracy 97%; only 8 positive and 13 negative samples) |
 | 4 | Numeric-question accuracy | 20 numeric questions: chat = SQL result = dashboard | 100% consistent | ✅ **20/20** chat answers equal the SQL result ([`docs/dayaniklilik.md`](docs/dayaniklilik.md)) |
 | 5 | End-to-end time | 5-minute call: upload to analysis result | ≤ 3 minutes | ⚠️ Estimated 1.5–2 min (STT 60–90 s + analysis ~10 s), but it could not be measured with `small` on this machine; manual testing showed 2–3 min for transcription, **to be re-measured** |
 | 6 | Reliability | Processing of 30 test calls | ≥ 95% error-free completion | ✅ **55/55** valid calls without error (100%), including a 40-call bulk run |
@@ -186,7 +191,8 @@ On synthetic data with a real LLM (details under `docs/`, in Turkish):
 | Bulk analysis reliability | **55/55** valid calls completed without error | [`docs/dayaniklilik.md`](docs/dayaniklilik.md) |
 | Miço AI chat quality (82 questions) | **95-98%** acceptable answers | [`docs/asistan_sohbet_olcumu.md`](docs/asistan_sohbet_olcumu.md) |
 | Load (single process, 30 concurrent) | No errors; list endpoint ~52 requests/s | [`docs/guvenlik_yuk.md`](docs/guvenlik_yuk.md) |
-| Analysis time | Four agents in parallel; LLM stage ~5 s | [`docs/analiz_sureleri.md`](docs/analiz_sureleri.md) |
+| Sentiment analysis (119 calls) | Sentiment accuracy **97%** (116/119), complaint recall 100%, precision 92% | [`docs/agent_dogrulugu.md`](docs/agent_dogrulugu.md) |
+| Analysis time | Five agents in parallel; LLM stage ~5 s; adding the sentiment agent cost +0.5 s on average over 10 calls (within measurement noise) | [`docs/analiz_sureleri.md`](docs/analiz_sureleri.md), [`docs/agent_dogrulugu.md`](docs/agent_dogrulugu.md) |
 
 ## Security and privacy
 
@@ -194,6 +200,8 @@ On synthetic data with a real LLM (details under `docs/`, in Turkish):
 - The web interface calls the AI service with a service key and attaches the boat owner's identity to each request. Authorization-matrix tests verify that one owner cannot reach another owner's data.
 - Every claim in a Miço AI answer is backed by a record; unsupported claims are removed.
 - Miço AI answers profanity, threats, self-harm, injection attempts and requests for other people's data without sending them to the LLM.
+- The security layer is applied at five trust boundaries: signed identity and roles, rate limiting and security headers, masking, multi-layer (direct and indirect) prompt-injection defence, an audit log, KVKK/GDPR-style deletion and retention, and audio-file validation. Attack test suite: [`docs/guvenlik_testi.md`](docs/guvenlik_testi.md); details: [`docs/guvenlik_mimarisi.md`](docs/guvenlik_mimarisi.md).
+- The live-transcript stream is admin-only (raw text), with limits of 5 viewers per call and caps on duration and events.
 
 ## Contribution workflow
 
@@ -203,9 +211,10 @@ No direct commits to `main`. Every piece of work goes on its own branch with a p
 
 | Status | Item |
 |---|---|
-| Done | Call analysis, CRM approval flow, service orders, KPI screens, Miço AI, one-command Docker, CI |
-| After the midterm | Sentiment-analysis agent; trying the embedding model through an API key; model-based speaker separation for mono recordings |
-| Final | Integration into the Miço Usta application and deployment to Google Cloud ([`docs/canliya_alma.md`](docs/canliya_alma.md)) |
+| Done | Call analysis (5 agents), CRM approval flow, service orders, KPI screens, Miço AI, live transcript, sentiment analysis, security layer, one-command Docker, CI |
+| Awaiting manual test | Live transcript and sentiment analysis (fix issues are opened if problems appear) |
+| Planned | Transcription accuracy and a comparison of free STT models; a comparison of embedding alternatives (4 models, reranker, Hugging Face API); an automated background security round |
+| Final | Integration into the Miço Usta application and deployment to Google Cloud ([`docs/canliya_alma.md`](docs/canliya_alma.md)); the login-screen decision with the instructor |
 
 ## Documentation
 
@@ -213,15 +222,16 @@ All documents below are in Turkish.
 
 | Document | Content |
 |---|---|
-| [`Sistem_mimarisi_v6.md`](Sistem_mimarisi_v6.md) | Architecture, decisions, security layer, current status (v6) |
+| [`Sistem_mimarisi_v6.1.md`](Sistem_mimarisi_v6.1.md) | Architecture, decisions, security layer, current status (v6.1) |
 | [`docs/db_schema.md`](docs/db_schema.md) | Database schema and ER diagram |
 | [`docs/api.md`](docs/api.md) | API contract |
 | [`docs/enums.md`](docs/enums.md) | Field value lists |
-| [`docs/agent_dogrulugu.md`](docs/agent_dogrulugu.md) | AI accuracy measurement |
+| [`docs/agent_dogrulugu.md`](docs/agent_dogrulugu.md) | AI accuracy measurement (including sentiment analysis) |
 | [`docs/stt_karari.md`](docs/stt_karari.md) | Speech-recognition decision and measurements |
 | [`docs/asistan_sohbet_olcumu.md`](docs/asistan_sohbet_olcumu.md) | Miço AI chat quality and safety measurement |
 | [`docs/analiz_sureleri.md`](docs/analiz_sureleri.md) | Analysis time, stage by stage |
 | [`docs/dayaniklilik.md`](docs/dayaniklilik.md), [`docs/guvenlik_yuk.md`](docs/guvenlik_yuk.md) | Resilience, load and security measurements |
+| [`docs/guvenlik_mimarisi.md`](docs/guvenlik_mimarisi.md), [`docs/guvenlik_testi.md`](docs/guvenlik_testi.md), [`docs/kisisel_veri_envanteri.md`](docs/kisisel_veri_envanteri.md) | Security layer, attack tests, personal-data inventory |
 | [`docs/calistirma.md`](docs/calistirma.md) | Run guide and troubleshooting |
 | [`docs/canliya_alma.md`](docs/canliya_alma.md) | Deployment guide |
 | [`docs/ekip_test_senaryosu.md`](docs/ekip_test_senaryosu.md) | Team test scenario (Miço AI sample questions: [`docs/test_senaryosu.md`](docs/test_senaryosu.md)) |

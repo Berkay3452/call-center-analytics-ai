@@ -167,6 +167,8 @@ def s2():
         c.arrow(x1, 67, x2, 67)
     c.box(21, 44, 16, 10, "Harici STT API\nHAM SES DIŞARI\nvarsayılan KAPALI ✔", "tehdit")
     c.arrow(29, 54, 29, 62, "tehdit")
+    c.box(42, 44, 16, 12, "Canlı transkript (SSE)\nHAM metin: yalnız yönetici,\n5 izleyici/çağrı, 45 dk ✔\n(#323-#327)", "var", 8.6)
+    c.arrow(50, 62, 50, 56)
     c.box(63, 44, 16, 12, "#268 Ölçüm (var)\nkalıp kapsamı %100,\nkalıp dışı 0/5 (belgeli)\ndocs/maskeleme_olcum.md", "var", 9)
     c.arrow(71, 56, 71, 62)
     c.box(84, 44, 14, 12, "Günlükte, LLM\nistemi ve agent\nkaydında ham veri\nyok (test)", "var", 9)
