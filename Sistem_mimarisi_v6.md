@@ -174,6 +174,7 @@ Kilit dosyaları (`uv.lock`, `package-lock.json`) repoda tutulur; `requirements.
 
 - Girdi: çağrının **ses kaydı** (veya metni) ve **çağrı bilgisi** (çağrı zamanı, cevap süresi, sonuç).
 - Ses metne çevrilir, konuşmacılar müşteri ve usta olarak ayrılır, kişisel veriler maskelenir.
+- **Canlı transkript (#323-#327):** Yazıya çevirme sürerken konuşma parçaları canlı gösterilir. Yerel Whisper iki kanalı (temsilci, müşteri) pencere pencere sırayla çözer ve parçaları **zamana göre sıralı** yayınlar (kanalı bütünüyle çözüp sonra yayınlasaydık önce tüm temsilci, sonra tüm müşteri cümleleri akardı). İşçi parçaları Redis Stream'ine (`transcript:{çağrı}`, en çok 5000 olay, 1 saat) yazar; `GET /calls/{id}/transcript/stream` (SSE, yalnız yönetici, `Last-Event-ID` ile devam) bunu Next vekil üzerinden tarayıcıya iletir; yükleme sayfası yazıya çevirme başlayınca konuşmacı ayrımlı bir pop-up açar (temsilci solda, müşteri sağda). Yayın hatası STT'yi ve analizi etkilemez; akış yoksa metin çağrı detayında görünür. Sınırlar: parçalar yaklaşık 30 sn'lik pencere hızında gelir (kelime kelime değil); API/stub STT sağlayıcısında ve mono kayıtta metin tabanlı konuşmacı ayrımı açıkken parçalar bitişte toplu gelir; akıştaki metin ham transkripttir (yalnız yönetici).
 - Agent'lar konuşmadan CRM alanlarını çıkarır. Çıktı doğrulanır; doğrulanmazsa agent'a bir kez düzeltme şansı verilir.
 - Sonuç iki yere gider: **CRM** (müşteri ve servis emri önerisi) ve **Çağrı Analitiği** (KPI).
 - **CRM onayı:** Admin öneriyi onaylar, reddeder veya alanları düzenleyerek onaylar. Servis emri yalnızca ilk onayda ve çağrının müşteri ile teknesi eşleşmişse oluşur. Onay analiz sürümüne bağlıdır; çağrı yeniden analiz edilirse yeni sürüm yeniden "bekliyor" olur.
@@ -306,6 +307,7 @@ Arayüz ile AI servisi arasındaki sözleşme `docs/api.md` ve `frontend/openapi
 
 ## 13. Değişiklik Günlüğü
 
+- **v6 ek (2026-11-19):** Canlı transkript akışı eklendi (§6.1): Redis Stream, SSE ucu, vekil geçişi, pop-up (#323-#327).
 - **v6 (2026-11-17):** Belge sürümü v6 oldu (dosya `Sistem_mimarisi_v6.md`). Güvenlik katmanı (§4.1) mevcut tüm güvenlik kurallarını içerecek biçimde yeniden yazıldı; güvenlik ilkeleri (§4.2); kullanıcı hesapları kararı (#278); uygulama sırası (Hafta 10, kimlik doğrulama en son). İlk hali v5 ekinde (#277) S0-S5 şemaları ve `docs/guvenlik_mimarisi.md` ile gelmişti. Mono konuşmacı ayrımı (#263) duruma işlendi.
 
 - **v5 (2026-11-11):** Belge sürümü v5 oldu (dosya `Sistem_mimarisi_v5.md`). Manuel test düzeltmeleri: Miço AI güvenlik ve anlaşılırlık katmanı, "geçen ay" dönemi, tutar soruları, hava, varyantlı ret cevapları, soru üst sınırı 5000 (#252); asistan arayüzü (#253); yükleme sayfası (#254); STT alan sözcüğü (#255). CI genişletmesi, belge tutarlılığı testi, güncel diyagramlar ve Redis adresi (#251). Durum, bilinen sorunlar ve açık kararlar yenilendi; duygu analizi ve embedding API denemesi vize sonrasına bırakıldı.
