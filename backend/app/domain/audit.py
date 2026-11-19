@@ -24,6 +24,7 @@ class AuditAction(StrEnum):
     CAGRI_ESLESTIRILDI = "cagri_eslestirildi"  # elle müşteri/tekne eşleştirme
     CAGRI_SILINDI = "cagri_silindi"  # #269
     SES_ERISIMI = "ses_erisimi"
+    CANLI_TRANSKRIPT_IZLENDI = "canli_transkript_izlendi"  # #324 (ham transkript akışı)
     CRM_ONAYLANDI = "crm_onaylandi"
     CRM_REDDEDILDI = "crm_reddedildi"
     SERVIS_EMRI_OLUSTURULDU = "servis_emri_olusturuldu"

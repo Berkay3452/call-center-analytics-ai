@@ -3,22 +3,25 @@
 Sözleşme: docs/api.md.
 """
 
+from collections.abc import AsyncIterator
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Query, Request, Response, status
+from fastapi import APIRouter, Header, Query, Request, Response, status
+from sse_starlette.sse import EventSourceResponse, ServerSentEvent
 
-from app.api.deps import AdminCallerDep, AudioStorageDep, SessionDep
+from app.api.deps import AdminCallerDep, AudioStorageDep, RedisDep, SessionDep
 from app.domain.audit import AuditAction
 from app.schemas.api import CallDetail, CallFilters, CallListItem, CallMatchIn
 from app.schemas.common import ErrorResponse, Page
-from app.services import audio_ingest, call_deletion, call_matching, call_reader
+from app.services import audio_ingest, call_deletion, call_matching, call_reader, transcript_live
 from app.services.audit import has_recent_audit_event, record_audit_event
 
 router = APIRouter(prefix="/calls", tags=["calls"])
 
 # Aynı (çağrı, eylemi yapan, IP) için ses erişimi kaydı en çok bu aralıkla tekrarlanır.
 AUDIO_AUDIT_WINDOW_S = 300
+LIVE_AUDIT_WINDOW_S = 300  # canlı transkript izleme kaydı (yeniden bağlanmalar tekrar yazmaz)
 
 
 @router.get(
@@ -180,3 +183,71 @@ async def get_call_audio(
         )
         await session.commit()
     return response
+
+
+@router.get(
+    "/{call_id}/transcript/stream",
+    summary="Canlı transkript akışı (SSE)",
+    operation_id="streamCallTranscript",
+    response_description="Server-Sent Events: segment ... sonra done | error | timeout",
+    responses={
+        200: {"description": "SSE akışı", "content": {"text/event-stream": {}}},
+        401: {"model": ErrorResponse},
+        403: {"model": ErrorResponse},
+        404: {"model": ErrorResponse},
+        429: {"model": ErrorResponse},
+    },
+)
+async def stream_call_transcript(
+    call_id: UUID,
+    request: Request,
+    caller: AdminCallerDep,
+    redis: RedisDep,
+    last_event_id: Annotated[str | None, Header(alias="Last-Event-ID")] = None,
+) -> EventSourceResponse:
+    """Yazıya çevirme sürerken konuşma parçalarını canlı iletir (#324).
+
+    Yalnızca yönetici bağlamı: akış **ham** transkripttir (tekne sahibi kimliği 403). Olaylar:
+    `segment` (`seq`, `speaker`, `start_ms`, `end_ms`, `text`), `done`, `error` (yalnız sabit
+    kod), `timeout`. `Last-Event-ID` ile kaldığı yerden devam edilir. İzleme, (çağrı, eylemi
+    yapan, IP) başına her `LIVE_AUDIT_WINDOW_S` saniyede bir denetim günlüğüne yazılır.
+    """
+    factory = request.app.state.session_factory
+    await transcript_live.call_state(factory, call_id)  # yoksa 404
+    await transcript_live.acquire_connection(redis, call_id)
+    try:
+        async with factory() as audit_session:
+            if not await has_recent_audit_event(
+                audit_session,
+                action=AuditAction.CANLI_TRANSKRIPT_IZLENDI,
+                actor=caller,
+                target_type="call",
+                target_id=call_id,
+                within_s=LIVE_AUDIT_WINDOW_S,
+            ):
+                await record_audit_event(
+                    audit_session,
+                    action=AuditAction.CANLI_TRANSKRIPT_IZLENDI,
+                    actor=caller,
+                    target_type="call",
+                    target_id=call_id,
+                )
+                await audit_session.commit()
+    except BaseException:
+        await transcript_live.release_connection(redis, call_id)
+        raise
+
+    async def events() -> AsyncIterator[ServerSentEvent]:
+        try:
+            async for event in transcript_live.stream_transcript(
+                redis, factory, call_id, last_event_id=last_event_id
+            ):
+                yield event
+        finally:
+            await transcript_live.release_connection(redis, call_id)
+
+    return EventSourceResponse(
+        events(),
+        ping=15,
+        headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
+    )
