@@ -1,0 +1,29 @@
+{
+  "call_id": "duygu_ek_19",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, ben [İSİM]. Size nasıl yardımcı olabilirim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, bilgi alacaktım. Geçen sefer ustanız geç kalmıştı ama işi güzel yaptı. Bu sefer yarın için randevu rica ediyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Elbette, hangi marinadasınız?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Çeşme Marina, motor yağ bakımı için."
+    },
+    {
+      "speaker": "rep",
+      "text": "Yarın saat on bire yazdım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Teşekkürler."
+    }
+  ]
+}

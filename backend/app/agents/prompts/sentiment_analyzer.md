@@ -9,14 +9,16 @@ Duygu durumu (sentiment):
   Örnek: "Üç gündür arıyorum, kimse dönmedi, bu kadar ilgisizlik olmaz!"
 
 Şikâyet (complaint):
-- true: Müşteri firmadan, hizmetten, ustadan, fiyattan veya bekleme/geri dönüş sürecinden AÇIKÇA yakınıyor (yapılan işin kusurlu olması, sözün tutulmaması, ulaşılamama, geç dönüş gibi).
+- true: Müşteri firmadan, hizmetten, ustadan veya bekleme/geri dönüş sürecinden AÇIKÇA yakınıyor (yapılan işin kusurlu olması, sözün tutulmaması, ulaşılamama, geç dönüş, teklifte söylenenden farklı ücret istenmesi gibi).
 - false: Müşteri yalnızca bir arızayı veya talebi bildiriyor, soru soruyor ya da sadece sorun yaşadığı için endişeli.
 - complaint true ise sentiment mutlaka olumsuz olmalıdır.
 
 Kurallar:
 - Arıza bildirmek tek başına olumsuzluk veya şikâyet değildir: "Motor çalışmıyor, usta gönderir misiniz?" nötrdür.
 - Acil durumda panik veya telaş (su alıyor, yangın) firmaya yönelik bir tepki değilse olumsuz sayılmaz; sakin ve olgusal anlatılıyorsa notr seç. Müşteri yardımın geç gelmesine veya ilgisizliğe kızıyorsa olumsuzdur.
-- Fiyatı sormak veya "pahalı mı?" diye merak etmek nötrdür; fiyattan açıkça yakınmak ("bu fiyat saçmalık") şikâyettir.
+- Fiyat sormak, fiyatı "pahalı/yüksek" bulup vazgeçmek veya indirim istemek satış itirazıdır; şikâyet değildir ve tek başına olumsuz yapmaz (notr). Yalnızca haksız ücret iddiası (teklifte söylenenden farklı fatura gibi) şikâyettir.
+- Randevu/tarih uygun olmadığı için iptal eden veya başka firmaya yönelen müşteri, tonu sakinse şikâyet etmemiştir (notr). Şikâyet için firmaya yönelik açık bir yakınma veya sitem gerekir.
+- Teklifi/randevuyu kabul etmek, "makul", "uygun", "tamam", "harika" gibi onay sözleri ve rutin teşekkür tek başına olumlu değildir (notr). Olumlu için açık memnuniyet veya övgü gerekir ("memnun kaldım", "çok yardımcı oldunuz", "harika iş çıkardınız").
 - Görüşmede hem sitem hem teşekkür varsa görüşmenin SONUNDAKİ ve baskın tona göre karar ver: sorun çözüldüyse ve müşteri memnun ayrıldıysa olumlu, çözülmediyse olumsuz seç. Açıkça dile getirilmiş bir yakınma varsa complaint true olabilir; o durumda sentiment olumsuz seçilir.
 - Konuşmacı etiketleri ("Müşteri" ve "Firma") varsa yalnızca "Müşteri" satırlarına bak; firmanın sitemi veya özrü müşterinin duygusu değildir. Etiketler "Bilinmiyor" ise (tek kanallı kayıt), sözlerinden müşteri tarafını ayırt etmeye çalış ve tüm metni bu gözle değerlendir; ayıramıyorsan notr seç ve güveni düşük tut.
 - Nezaket kalıpları (merhaba, iyi günler, rica ederim) duygu belirtisi sayılmaz.

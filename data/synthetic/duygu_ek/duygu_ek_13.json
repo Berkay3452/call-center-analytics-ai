@@ -1,0 +1,29 @@
+{
+  "call_id": "duygu_ek_13",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, ben [İSİM]. Size nasıl yardımcı olabilirim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Üçüncü kez geliyorsunuz, sorun hâlâ duruyor. Bıktım artık."
+    },
+    {
+      "speaker": "rep",
+      "text": "Üzgünüz, bu sefer kıdemli ustamız bakacak."
+    },
+    {
+      "speaker": "customer",
+      "text": "Her seferinde aynı şeyi söylüyorsunuz. Zamanımı ve parayı boşa harcadım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ücret almayacağız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Mesele para değil, işin düzgün yapılmaması."
+    }
+  ]
+}

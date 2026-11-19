@@ -1,0 +1,29 @@
+{
+  "call_id": "duygu_ek_12",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, ben [İSİM]. Size nasıl yardımcı olabilirim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Ustanız teknenin güvertesine çizik atmış, haber bile vermedi. Çok üzgünüm, güvenim sarsıldı."
+    },
+    {
+      "speaker": "rep",
+      "text": "Bunu duyduğumuza üzüldük, hemen inceleme başlatalım."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tekneme özen göstermeyecekseniz neden iş alıyorsunuz? Bu kabul edilemez."
+    },
+    {
+      "speaker": "rep",
+      "text": "Tazmin süreci için sizi arayacağız."
+    },
+    {
+      "speaker": "customer",
+      "text": "Bekliyorum."
+    }
+  ]
+}

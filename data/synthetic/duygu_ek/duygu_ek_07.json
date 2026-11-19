@@ -1,0 +1,25 @@
+{
+  "call_id": "duygu_ek_07",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, ben [İSİM]. Size nasıl yardımcı olabilirim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, uygulamanız çok kullanışlı olmuş, randevuyu iki dakikada aldım, eline sağlık."
+    },
+    {
+      "speaker": "rep",
+      "text": "Geri bildiriminiz için teşekkürler."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ben sadece onu söylemek istedim. İşler kolaylaşınca insan gerçekten memnun oluyor."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ne mutlu bize, iyi günler."
+    }
+  ]
+}

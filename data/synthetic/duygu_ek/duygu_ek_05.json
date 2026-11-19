@@ -1,0 +1,25 @@
+{
+  "call_id": "duygu_ek_05",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, ben [İSİM]. Size nasıl yardımcı olabilirim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "İyi günler, bir arkadaşıma sizi önerdim, o da tekne bakımı için arayacak."
+    },
+    {
+      "speaker": "rep",
+      "text": "Çok teşekkür ederiz."
+    },
+    {
+      "speaker": "customer",
+      "text": "Ustanız çok ilgiliydi, işini de titizlikle yaptı. Herkese tavsiye ederim."
+    },
+    {
+      "speaker": "rep",
+      "text": "Güzel sözleriniz için teşekkürler."
+    }
+  ]
+}

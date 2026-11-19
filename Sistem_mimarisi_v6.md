@@ -189,6 +189,7 @@ Kilit dosyaları (`uv.lock`, `package-lock.json`) repoda tutulur; `requirements.
 - **CRM Bilgi Çıkarım Agent'ı:** CRM kaydının 7 alanı: müşteri talebi, lokasyon, problem, hizmet biçimi, aciliyet, potansiyel iş, sonraki aksiyon.
 - **Satış Analiz Agent'ı:** satış sonucu ve kayıp nedeni (fiyat, geç dönüş).
 - **Özetleme Agent'ı:** kısa görüşme özeti.
+- **Duygu Analiz Agent'ı (5. agent, #333, #334):** müşterinin görüşmedeki genel duygusu (olumlu, nötr, olumsuz) ve açık şikâyet bayrağı; gerekçe ve konuşmadan alıntı verir. Şikâyet varsa duygu her zaman olumsuzdur (şema ve veritabanı kuralı). Agent başarısız olursa diğer sonuçlar korunur, analiz "kısmi" olur ve duygu alanı boş kalır. Sonuç `AnalysisOut.sentiment`, çağrı listesinde `sentiment` ve `complaint`, analitik özetinde `by_sentiment` ile `complaint_calls` olarak görünür. Ölçüm ve sınırlar: `docs/agent_dogrulugu.md` "Duygu analizi (#334)".
 - **Orkestratör:** agent'ları çalıştırır, her çıktıyı şemasıyla yeniden doğrular ve sonucu yazar. Doğrulama hatasında agent'a bir kez düzeltme şansı verir; her agent için toplam süre bütçesi vardır. Her agent çalışması (süre, deneme sayısı, kullanılan model, yedek modele geçip geçmediği, hata) kaydedilir.
 - **Ölçülen doğruluk (sentetik veri, 100 çağrı: 60 geliştirme, 40 dokunulmaz test; 2 tekrar):** test setinde genel **%94,3-94,5** (agent bazında: çağrı sınıflandırıcı %85, CRM çıkarımı %94, satış analizi %99, özetleyici %100). **Sonraki aksiyon %92** (hedef ≥ %85 karşılandı). Ayrıntı: `docs/agent_dogrulugu.md`.
 
@@ -199,6 +200,7 @@ Kilit dosyaları (`uv.lock`, `package-lock.json`) repoda tutulur; `requirements.
 | Gelen çağrı | Çağrı sayısı |
 | Yeni müşteri, servis talebi, teklif talebi, acil servis | Konuşmadan çıkarılan çağrı tipi ve aciliyet |
 | Satışa dönüşen, kaybedilme nedeni | Satış Analiz Agent'ı |
+| Müşteri duygusu dağılımı, şikâyetli çağrı sayısı | Duygu Analiz Agent'ı |
 | En sık arıza, en yoğun marina | Konuşmadan çıkarılan problem ve lokasyon |
 | Ortalama cevap süresi | Ses dosyasından çıkmaz; **çağrı bilgisinden** (çalma ve açılma zamanı) hesaplanır |
 
@@ -307,7 +309,7 @@ Arayüz ile AI servisi arasındaki sözleşme `docs/api.md` ve `frontend/openapi
 
 ## 13. Değişiklik Günlüğü
 
-- **v6 ek (2026-11-20):** Duygu Analiz Agent'ı eklendi (5. agent): müşterinin duygusu (olumlu / nötr / olumsuz) ve şikâyet bayrağı; şema, istem, orkestratöre ekleme, DB sütunları ve API alanı (#333).
+- **v6 ek (2026-11-20):** Duygu Analiz Agent'ı eklendi (5. agent): müşterinin duygusu (olumlu / nötr / olumsuz) ve şikâyet bayrağı; şema, istem, orkestratöre ekleme, DB sütunları ve API alanı (#333); çağrı listesi ve analitik özetinde duygu alanları, ölçüm ve süre etkisi (#334).
 - **v6 ek (2026-11-19):** Canlı transkript akışı eklendi (§6.1): Redis Stream, SSE ucu, vekil geçişi, pop-up (#323-#327).
 - **v6 (2026-11-17):** Belge sürümü v6 oldu (dosya `Sistem_mimarisi_v6.md`). Güvenlik katmanı (§4.1) mevcut tüm güvenlik kurallarını içerecek biçimde yeniden yazıldı; güvenlik ilkeleri (§4.2); kullanıcı hesapları kararı (#278); uygulama sırası (Hafta 10, kimlik doğrulama en son). İlk hali v5 ekinde (#277) S0-S5 şemaları ve `docs/guvenlik_mimarisi.md` ile gelmişti. Mono konuşmacı ayrımı (#263) duruma işlendi.
 

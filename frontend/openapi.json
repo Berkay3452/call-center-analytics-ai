@@ -1921,6 +1921,8 @@
           "urgency",
           "sales_outcome",
           "loss_reason",
+          "sentiment",
+          "complaint",
           "summary"
         ],
         "properties": {
@@ -1992,6 +1994,14 @@
           },
           "loss_reason": {
             "$ref": "#/components/schemas/LossReason",
+            "nullable": true
+          },
+          "sentiment": {
+            "$ref": "#/components/schemas/Sentiment",
+            "nullable": true
+          },
+          "complaint": {
+            "type": "boolean",
             "nullable": true
           },
           "summary": {
@@ -2599,6 +2609,8 @@
           "busiest_marinas",
           "by_category",
           "by_urgency",
+          "by_sentiment",
+          "complaint_calls",
           "daily_calls",
           "avg_answer_delay_s"
         ],
@@ -2665,6 +2677,15 @@
             "additionalProperties": {
               "type": "integer"
             }
+          },
+          "by_sentiment": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "integer"
+            }
+          },
+          "complaint_calls": {
+            "type": "integer"
           },
           "daily_calls": {
             "type": "array",

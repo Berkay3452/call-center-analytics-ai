@@ -1,0 +1,29 @@
+{
+  "call_id": "duygu_ek_17",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, ben [İSİM]. Size nasıl yardımcı olabilirim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Endişeliyim ama panik yapmıyorum. Motor çalışırken garip bir titreşim var, bir ustanın bakması lazım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Seyre çıkabiliyor musunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yavaş gidersem sorun yok, yine de gönlüm rahat değil. Ne zaman gelebilir?"
+    },
+    {
+      "speaker": "rep",
+      "text": "Yarın öğleden sonra uygun."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, olur."
+    }
+  ]
+}

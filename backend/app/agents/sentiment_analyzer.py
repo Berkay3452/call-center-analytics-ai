@@ -24,7 +24,7 @@ log = structlog.get_logger(__name__)
 class SentimentAnalyzerAgent(LLMAgent[CustomerSentiment]):
     name: ClassVar[str] = SENTIMENT_ANALYZER
     prompt_file: ClassVar[str] = "sentiment_analyzer"
-    prompt_version: ClassVar[str] = "sentiment_analyzer.v1"
+    prompt_version: ClassVar[str] = "sentiment_analyzer.v2"
     output_schema: ClassVar[type[BaseModel]] = CustomerSentiment
     # Ton ve imayı ayırt etmek ince bir yorum gerektirir; güçlü model kullanılır.
     model_tier: ClassVar[ModelTier] = "smart"

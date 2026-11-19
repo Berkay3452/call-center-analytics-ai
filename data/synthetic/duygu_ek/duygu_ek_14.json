@@ -1,0 +1,29 @@
+{
+  "call_id": "duygu_ek_14",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, ben [İSİM]. Size nasıl yardımcı olabilirim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Yardım edin, teknede yangın çıktı! Yalıkavak Marina'dayız, iki kişiyiz."
+    },
+    {
+      "speaker": "rep",
+      "text": "Sakin olun, ateşe müdahale edebiliyor musunuz?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Söndürücü elimde, alev küçük, kullanıyorum. Motoru kapattım."
+    },
+    {
+      "speaker": "rep",
+      "text": "Ekip yönlendiriliyor, marina görevlisine haber verin."
+    },
+    {
+      "speaker": "customer",
+      "text": "Tamam, veriyorum."
+    }
+  ]
+}

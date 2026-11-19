@@ -1,0 +1,719 @@
+{
+ "aciklama": "Duygu analizi ölçümü etiketleri (#334). `sentiment`: müşterinin görüşmedeki genel duygusu, `complaint`: firmadan/hizmetten açıkça yakınma, `zor`: sınır vaka (fiyat itirazı, rutin 'harika' onayı, sakin güvensizlik). Etiketler istem yazıldıktan sonra, model çıktısı görülmeden elle verildi.",
+ "calls": {
+  "call_001": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_002": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_003": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_004": {
+   "sentiment": "olumsuz",
+   "complaint": true,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_005": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": true,
+   "kume": "ana"
+  },
+  "call_006": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_007": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": true,
+   "kume": "ana"
+  },
+  "call_008": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_009": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_010": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_011": {
+   "sentiment": "olumsuz",
+   "complaint": false,
+   "zor": true,
+   "kume": "ana"
+  },
+  "call_012": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_013": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": true,
+   "kume": "ana"
+  },
+  "call_014": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_015": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_016": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_017": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_018": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_019": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": true,
+   "kume": "ana"
+  },
+  "call_020": {
+   "sentiment": "olumsuz",
+   "complaint": false,
+   "zor": true,
+   "kume": "ana"
+  },
+  "call_021": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_022": {
+   "sentiment": "olumsuz",
+   "complaint": true,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_023": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_024": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": true,
+   "kume": "ana"
+  },
+  "call_025": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_026": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": true,
+   "kume": "ana"
+  },
+  "call_027": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_028": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_029": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_030": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_031": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_032": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_033": {
+   "sentiment": "olumsuz",
+   "complaint": true,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_034": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_035": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": true,
+   "kume": "ana"
+  },
+  "call_036": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_037": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": true,
+   "kume": "ana"
+  },
+  "call_038": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_039": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_040": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_041": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_042": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_043": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_044": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_045": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_046": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": true,
+   "kume": "ana"
+  },
+  "call_047": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": true,
+   "kume": "ana"
+  },
+  "call_048": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_049": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_050": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_051": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": true,
+   "kume": "ana"
+  },
+  "call_052": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_053": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_054": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_055": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_056": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_057": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": true,
+   "kume": "ana"
+  },
+  "call_058": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_059": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_060": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_061": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_062": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_063": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_064": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_065": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_066": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_067": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_068": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_069": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_070": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_071": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_072": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_073": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_074": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_075": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_076": {
+   "sentiment": "olumlu",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_077": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_078": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_079": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_080": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_081": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": true,
+   "kume": "ana"
+  },
+  "call_082": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_083": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_084": {
+   "sentiment": "olumsuz",
+   "complaint": true,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_085": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_086": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_087": {
+   "sentiment": "olumsuz",
+   "complaint": true,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_088": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_089": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_090": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_091": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_092": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_093": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_094": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_095": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_096": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_097": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_098": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_099": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "call_100": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "ana"
+  },
+  "duygu_ek_01": {
+   "sentiment": "olumlu",
+   "complaint": false,
+   "zor": false,
+   "kume": "duygu_ek"
+  },
+  "duygu_ek_02": {
+   "sentiment": "olumlu",
+   "complaint": false,
+   "zor": false,
+   "kume": "duygu_ek"
+  },
+  "duygu_ek_03": {
+   "sentiment": "olumlu",
+   "complaint": false,
+   "zor": false,
+   "kume": "duygu_ek"
+  },
+  "duygu_ek_04": {
+   "sentiment": "olumlu",
+   "complaint": false,
+   "zor": false,
+   "kume": "duygu_ek"
+  },
+  "duygu_ek_05": {
+   "sentiment": "olumlu",
+   "complaint": false,
+   "zor": false,
+   "kume": "duygu_ek"
+  },
+  "duygu_ek_06": {
+   "sentiment": "olumlu",
+   "complaint": false,
+   "zor": false,
+   "kume": "duygu_ek"
+  },
+  "duygu_ek_07": {
+   "sentiment": "olumlu",
+   "complaint": false,
+   "zor": false,
+   "kume": "duygu_ek"
+  },
+  "duygu_ek_08": {
+   "sentiment": "olumsuz",
+   "complaint": true,
+   "zor": false,
+   "kume": "duygu_ek"
+  },
+  "duygu_ek_09": {
+   "sentiment": "olumsuz",
+   "complaint": true,
+   "zor": false,
+   "kume": "duygu_ek"
+  },
+  "duygu_ek_10": {
+   "sentiment": "olumsuz",
+   "complaint": true,
+   "zor": false,
+   "kume": "duygu_ek"
+  },
+  "duygu_ek_11": {
+   "sentiment": "olumsuz",
+   "complaint": true,
+   "zor": false,
+   "kume": "duygu_ek"
+  },
+  "duygu_ek_12": {
+   "sentiment": "olumsuz",
+   "complaint": true,
+   "zor": false,
+   "kume": "duygu_ek"
+  },
+  "duygu_ek_13": {
+   "sentiment": "olumsuz",
+   "complaint": true,
+   "zor": false,
+   "kume": "duygu_ek"
+  },
+  "duygu_ek_14": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": true,
+   "kume": "duygu_ek"
+  },
+  "duygu_ek_15": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": true,
+   "kume": "duygu_ek"
+  },
+  "duygu_ek_16": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": false,
+   "kume": "duygu_ek"
+  },
+  "duygu_ek_17": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": true,
+   "kume": "duygu_ek"
+  },
+  "duygu_ek_18": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": true,
+   "kume": "duygu_ek"
+  },
+  "duygu_ek_19": {
+   "sentiment": "notr",
+   "complaint": false,
+   "zor": true,
+   "kume": "duygu_ek"
+  }
+ }
+}

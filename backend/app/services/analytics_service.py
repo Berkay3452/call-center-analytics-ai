@@ -19,7 +19,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.core.errors import AppError
 from app.db.models.ai import AnalysisResult as AnalysisRow
 from app.db.models.ai import Call
-from app.domain.enums import CallType, LossReason, RequestCategory, SalesOutcomeType, Urgency
+from app.domain.enums import (
+    CallType,
+    LossReason,
+    RequestCategory,
+    SalesOutcomeType,
+    Sentiment,
+    Urgency,
+)
 from app.schemas.analysis import CountItem, DailyCount, KpiSummary
 from app.schemas.api import PeriodFilter
 
@@ -116,6 +123,9 @@ async def get_kpi_summary(session: AsyncSession, filter_params: PeriodFilter) ->
             .filter(latest_analysis.c.sales_outcome == SalesOutcomeType.SATISA_DONUSTU.value)
             .label("converted_sales"),
             func.avg(Call.answer_delay_s).label("avg_delay"),
+            func.count(latest_analysis.c.id)
+            .filter(latest_analysis.c.sentiment_complaint.is_(True))
+            .label("complaint_calls"),
         )
         .select_from(Call)
         .outerjoin(latest_analysis, Call.id == latest_analysis.c.call_id)
@@ -131,6 +141,7 @@ async def get_kpi_summary(session: AsyncSession, filter_params: PeriodFilter) ->
     urgent_requests: int = summary_row[5] or 0
     converted_sales: int = summary_row[6] or 0
     raw_avg_delay: float | None = summary_row[7]
+    complaint_calls: int = summary_row[8] or 0
 
     conversion_rate: float | None = (
         round(converted_sales / analyzed_calls, 3) if analyzed_calls > 0 else None
@@ -197,6 +208,26 @@ async def get_kpi_summary(session: AsyncSession, filter_params: PeriodFilter) ->
     )
     urg_rows: Sequence[Any] = (await session.execute(urg_stmt)).all()
     by_urgency: dict[Urgency, int] = {Urgency(r[0]): r[1] for r in urg_rows if r[0] is not None}
+
+    # 4b. Müşteri duygusuna göre dağılım (duygu analizi olmayan eski analizler sayılmaz)
+    sent_stmt = (
+        select(
+            latest_analysis.c.sentiment,
+            func.count(latest_analysis.c.id),
+        )
+        .select_from(Call)
+        .join(latest_analysis, Call.id == latest_analysis.c.call_id)
+        .where(
+            *period_conditions,
+            latest_analysis.c.sentiment.isnot(None),
+        )
+        .group_by(latest_analysis.c.sentiment)
+        .order_by(func.count(latest_analysis.c.id).desc())
+    )
+    sent_rows: Sequence[Any] = (await session.execute(sent_stmt)).all()
+    by_sentiment: dict[Sentiment, int] = {
+        Sentiment(r[0]): r[1] for r in sent_rows if r[0] is not None
+    }
 
     # 5. En sık arızalar (top problems, ilk 10)
     prob_stmt = (
@@ -274,6 +305,8 @@ async def get_kpi_summary(session: AsyncSession, filter_params: PeriodFilter) ->
         busiest_marinas=busiest_marinas,
         by_category=by_category,
         by_urgency=by_urgency,
+        by_sentiment=by_sentiment,
+        complaint_calls=complaint_calls,
         daily_calls=daily_calls,
         avg_answer_delay_s=avg_answer_delay_s,
     )

@@ -11,6 +11,8 @@ Miço Usta bağlamında yazılmış **100 sahte telefon görüşmesi** ve her bi
 | `calls/call_NNN.json` | Görüşme metni: `{"call_id", "turns": [{"speaker", "text"}]}` |
 | `truth/call_NNN.truth.json` | Doğru etiketler (aşağıda) |
 | `calls_meta.json` | Santral/CRM bilgisi ve müşteri/tekne referansı |
+| `duygu_ek/duygu_ek_NN.json` | Duygu analizi ölçümü için 19 ek kısa görüşme (olumlu, şikâyetli, nötr; #334) |
+| `duygu_etiketleri.json` | Duygu etiketleri: 100 ana + 19 ek çağrı için `sentiment`, `complaint`, `zor` (sınır vaka). Ölçüm: `python -m scripts.duygu_olcum` |
 | `customers_boats.json` | Müşteri ve tekne birleşik referans listesi (#12 ve #23 ortak sözleşmesi) |
 | `marinas.json` | İstanbul/Marmara/Ege marinaları (10 marina) |
 | `customers.json` | Sentetik müşteriler (18 müşteri; sahte telefon ve `@example.com` e-posta) |

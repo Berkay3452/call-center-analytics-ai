@@ -277,6 +277,13 @@ class KpiSummary(BaseModel):
     by_urgency: dict[Urgency, int] = Field(
         default_factory=dict, description="Aciliyete göre çağrı sayısı."
     )
+    by_sentiment: dict[Sentiment, int] = Field(
+        default_factory=dict,
+        description="Müşteri duygusuna göre çağrı sayısı (duygu analizi olan çağrılar).",
+    )
+    complaint_calls: int = Field(
+        default=0, ge=0, description="Müşterinin açıkça şikâyet ettiği çağrı sayısı."
+    )
     daily_calls: list[DailyCount] = Field(
         default_factory=list, description="Dönemdeki her gün için çağrı sayısı (boş gün 0)."
     )

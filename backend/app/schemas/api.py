@@ -25,6 +25,7 @@ from app.domain.enums import (
     NextAction,
     RequestCategory,
     SalesOutcomeType,
+    Sentiment,
     ServiceMode,
     ServiceOrderStatus,
     SwitchboardOutcome,
@@ -142,6 +143,12 @@ class CallListItem(BaseModel):
     sales_outcome: SalesOutcomeType | None = None
     loss_reason: LossReason | None = Field(
         default=None, description="Kaybedilme nedeni (yalnızca kaybedildi iken)."
+    )
+    sentiment: Sentiment | None = Field(
+        default=None, description="Müşterinin duygu durumu (duygu analizi yoksa null)."
+    )
+    complaint: bool | None = Field(
+        default=None, description="Müşteri açıkça şikâyet ediyorsa true (duygu analizi yoksa null)."
     )
     summary: str | None = Field(default=None, description="En son analizin özeti.")
 

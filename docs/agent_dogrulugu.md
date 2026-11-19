@@ -191,3 +191,75 @@ Geliştirme kümesindeki (60 çağrı) hatalar incelendi; test kümesi hata list
 - **Kalan hata türleri (test):** `service_mode` %82: kaybedilen/ertelenen çağrılarda etiket ile model "hizmet biçimi var/yok" konusunda ayrışıyor (etiketler arasında da tutarsızlık var: kayıp çağrılarda `yerinde_servis` yazılmış); `call_type` %85: acil/servis ve servis/bilgi sınırı; `urgency` ±1 basamak kayması.
 - **Cevap hızı (test, 40 çağrı):** çağrı başına ortalama 4,5-6,1 sn (tamamı: 4 agent, süre `ajan_ort` 2,4-2,8 sn, p95 5,8-7,0 sn, en uzun 10-34 sn tek yavaş LLM çağrısı); toplam ~390 bin token / 40 çağrı. Zaman aşımı yok.
 - **Sınırlar:** test kümesinde 40 çağrı = alan başına ±%5 duyarlılık; prompt sonrası 2 tekrar (3 değil: kota/süre). İlk ölçüm tek tekrar. `potential_job` yeniden etiketlemesi test kümesinde de yapıldı (yukarıda açıklandı).
+
+
+## Duygu analizi (#334)
+
+**Tarih:** 2026-11-20 · **Agent:** `sentiment_analyzer` (smart katman, `nvidia/nemotron-3.5-super-vl-120b-a12b`) · **Komut:** `python -m scripts.duygu_olcum`
+
+### Yöntem
+
+- **Veri:** 100 ana sentetik çağrı + bu iş için yazılan 19 ek çağrı (`data/synthetic/duygu_ek/`: 7 olumlu, 6 şikâyetli olumsuz, 6 nötr, 5'i sınır vaka). Ana çağrılar doğası gereği nötr ağırlıklıdır (müşteri arıza veya talep bildirir); olumlu ve olumsuz örnekler bu yüzden az, ek çağrılar bu boşluğu doldurmak içindir.
+- **Etiket:** `data/synthetic/duygu_etiketleri.json`; her çağrı için `sentiment` (olumlu/notr/olumsuz), `complaint` (firmaya açık yakınma) ve `zor` (sınır vaka). Etiketler istem yazıldıktan sonra, model çıktısı görülmeden elle verildi. Etiketleyen tek kişi (yapay zekâ asistanı) olduğu için bağımsız ikinci etiketleyici yoktur.
+- **Çalıştırma:** agent üretimdeki gibi orkestratör üzerinden koşar (şema doğrulaması, bir düzeltme hakkı, çıktı süzgeci). Yalnızca sentetik ve maskeli metin kullanıldı.
+- **Sınır vaka (`zor`, 20 çağrı):** fiyat itirazı ("çok pahalı, vazgeçiyorum"), rutin onay ifadesi ("makul, harika, teşekkürler"), sakin güvensizlik, arızadan bıkkınlık, geçmiş sitem + yeni randevu. İnsanlar arasında da ayrışabilecek çağrılardır; ayrı raporlanır.
+
+### Sonuç: istem v2, 119 çağrı
+
+| Küme | Duygu doğruluğu |
+|---|---|
+| Tümü | **%97 (116/119)** |
+| Ana 100 çağrı | %97 (97/100) |
+| Ek 19 çağrı | %100 (19/19) |
+| Geliştirme kümesi (ana, 60) | %100 (60/60) |
+| Test kümesi (ana, 40) | %92 (37/40) |
+| Sınır vakalar hariç (99) | %99 (98/99) |
+| Yalnızca sınır vakalar (20) | %90 (18/20) |
+
+Karışıklık tablosu (satır: doğru etiket, sütun: agent):
+
+| doğru \ agent | olumlu | notr | olumsuz | Doğru oran |
+|---|---|---|---|---|
+| olumlu | 8 | 0 | 0 | %100 (8/8) |
+| notr | 0 | 97 | 1 | %99 (97/98) |
+| olumsuz | 0 | 2 | 11 | %85 (11/13) |
+
+**Şikâyet bayrağı:** doğru pozitif 11, yanlış pozitif 1, kaçan 0, doğru negatif 107 → duyarlılık %100 (11/11), kesinlik %92 (11/12).
+Agent başarısız olmadı, düzeltme gerektiren çalışma yok. 19 çıktıda alıntı verildi (konuşmada geçmeyen alıntı otomatik kaldırılır); ortalama güven 0,86.
+
+**Yanlış etiketlenen 3 çağrı:**
+
+- `call_011` (sınır, test): doğru olumsuz, agent nötr. Müşteri arızadan "sinir bozucu" diye söz ediyor ama firmaya yönelik tepki yok; agent kuralı gereği nötr dedi.
+- `call_020` (sınır, test): doğru olumsuz (şikâyetsiz), agent nötr. Müşteri sakin bir dille "güvenemedim" diyor; agent firmaya yönelik açık sitem bulmadı. İki etiket de savunulabilir.
+- `call_055` (test): doğru nötr, agent olumsuz + şikâyet. Müşteri takvim uyuşmadığı için başka firmaya yöneliyor ("Salı bana çok geç… zamanım yok"); agent bunu şikâyet saydı. Aynı kalıp ilk ölçümde `call_003` ve `call_030` için de yanlıştı; istem kuralı ikisini düzeltti, `call_055`'i düzeltmedi. Gerçek bir zayıflık.
+
+### İlk ölçüm (istem v1) ve istem değişikliği
+
+İlk ölçüm istem ayarlanmadan yapıldı: **%91 (108/119)**; geliştirme %95, test %82; şikâyet kesinliği **%61** (11 doğru, 7 yanlış pozitif).
+
+| Hata türü (v1) | Çağrı | Neden |
+|---|---|---|
+| Fiyat itirazı şikâyet sayıldı | `call_005`, `013`, `057` | İstem "fiyattan açıkça yakınmak şikâyettir" diyordu; fiyat itirazı zaten satış kaybı nedeni (`loss_reason=fiyat`) olarak ölçülüyor, şikâyet sayısını şişiriyor |
+| Takvim uyuşmazlığıyla iptal şikâyet sayıldı | `call_003`, `030`, `055` | Sakin iptal, firmaya yakınma değil |
+| Rutin onay "olumlu" sayıldı | `call_007`, `019`, `070`, `duygu_ek_19` | "Makul, tamam, teşekkürler" tek başına memnuniyet değil |
+| Sınır: bıkkınlık, sakin güvensizlik | `call_011`, `020` | Etiketler tartışmalı |
+
+**v2 değişikliği:** üç kural eklendi (fiyat itirazı şikâyet değildir; takvim nedeniyle sakin iptal şikâyet değildir; onay sözleri ve rutin teşekkür olumlu değildir) ve şikâyet tanımından "fiyattan" çıkarıldı (haksız ücret iddiası şikâyet olarak kaldı). Kurallar yalnızca geliştirme kümesindeki hatalardan çıkarıldı (`call_003`, `005`, `007`). **Dürüstlük notu:** ilk raporun tamamını (test hataları dahil) gördükten sonra yazıldı; test kümesi bu yüzden tam bağımsız değildir. v2 sayıları bu nedenle iyimser okunmalı: ilk ölçümdeki test kümesi %82 daha dürüst bir "ayarsız" başlangıç değeridir. Ayrıca ek 19 çağrı ve sınır vakalar da aynı turda raporlandığı için v2'nin %100/%90 değerleri küçük örneklemdir.
+
+### Süre etkisi
+
+Aynı 10 çağrıda (her 10. çağrı) sırayla 4 agent ve 5 agent akışı çalıştırıldı; çalıştırmalar arası 10 sn beklendi (dakikadaki istek sınırı kuyruğu süreyi bozmasın diye):
+
+| Akış | Çağrı | Ortalama sn | Ortanca sn | En uzun sn |
+|---|---|---|---|---|
+| 4 agent | 10 | 5,2 | 3,6 | 19,9 |
+| 5 agent | 10 | 5,7 | 4,2 | 13,5 |
+
+**Fark: ortalama +0,5 sn/çağrı** (ortanca +0,6 sn). Beş agent tek aşamada paralel çalıştığı için uçtan uca süre en yavaş agent'a bağlıdır; duygu agent'ı tek başına tipik olarak 1-1,5 sn sürdü. Tek ölçüm turu ve 10 çağrı olduğundan sağlayıcı oynaklığı (en uzun değerler) farkın yönünü belirsizleştirir: fark ölçüm gürültüsü düzeyindedir. 119 çağrılık ölçümde görülen 43-45 sn'lik uç değerler agent'ın değil, dakikada 30 istek sınırının (kota kuyruğu) eseridir.
+
+### Sınırlar
+
+- Etiketler tek kişiden; olumlu (8) ve olumsuz (13) örnek sayısı az: bu sınıflarda ±%10 ve üzeri belirsizlik vardır.
+- Sentetik görüşmeler temiz ve kibar yazılmıştır; gerçek konuşma (yazıya çevirme hataları, kesilen cümleler, bağırma) farklı davranabilir. Ses tonu değil yalnızca yazıya dökülmüş metin değerlendirilir.
+- Tek kanallı (mono) kayıtta konuşmacı ayrımı yoktur ("Bilinmiyor"); agent bu durumda metinden müşteri tarafını ayırmaya çalışır ve ölçümde bu durum ayrıca sınanmadı.
+- Fiyat itirazı, sakin güvensizlik ve rutin onay gibi sınır vakalarda "doğru" etiket iş kararıdır; istem v2 bu kararı kurallaştırır, farklı bir iş tanımı etiketleri değiştirir.

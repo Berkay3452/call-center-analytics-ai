@@ -1,0 +1,29 @@
+{
+  "call_id": "duygu_ek_15",
+  "turns": [
+    {
+      "speaker": "rep",
+      "text": "Miço Usta, merhaba, ben [İSİM]. Size nasıl yardımcı olabilirim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "Merhaba, kış bakımı kaç para tutuyor? Biraz pahalı olur diye düşünüyorum, o yüzden önce soruyorum."
+    },
+    {
+      "speaker": "rep",
+      "text": "Teknenizin boyuna göre değişiyor, bilgi alabilir miyim?"
+    },
+    {
+      "speaker": "customer",
+      "text": "On iki metre, tek motor. Yaklaşık bir rakam öğrenmem yeterli."
+    },
+    {
+      "speaker": "rep",
+      "text": "Aşağı yukarı yetmiş ile doksan bin arası."
+    },
+    {
+      "speaker": "customer",
+      "text": "Anladım, teşekkürler, düşünüp dönerim."
+    }
+  ]
+}
