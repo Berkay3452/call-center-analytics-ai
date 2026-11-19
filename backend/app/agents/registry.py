@@ -11,12 +11,13 @@ from app.agents.call_classifier import CallClassifierAgent
 from app.agents.crm_extraction import CrmExtractionAgent
 from app.agents.orchestrator import Orchestrator, RunRecorder, Stage
 from app.agents.sales_analyzer import SalesAnalyzerAgent
+from app.agents.sentiment_analyzer import SentimentAnalyzerAgent
 from app.agents.summarizer import SummarizerAgent
 from app.core.config import Settings, get_settings
 
 
 def default_stages(settings: Settings | None = None) -> list[Stage]:
-    """Varsayılan akış: dört agent TEK aşamada, paralel (#162).
+    """Varsayılan akış: beş agent TEK aşamada, paralel (#162).
 
     Eskiden Çağrı Sınıflandırma önce çalışıp ardından (CRM Bilgi Çıkarım ‖ Satış Analiz ‖
     Özetleme) geliyordu; ancak ikinci aşamadaki hiçbir agent sınıflandırma çıktısını kullanmıyor
@@ -30,6 +31,7 @@ def default_stages(settings: Settings | None = None) -> list[Stage]:
         CrmExtractionAgent(settings=settings),
         SalesAnalyzerAgent(settings=settings),
         SummarizerAgent(settings=settings),
+        SentimentAnalyzerAgent(settings=settings),
     ]
     if (settings or get_settings()).analysis_classifier_first:
         return [[classifier], others]

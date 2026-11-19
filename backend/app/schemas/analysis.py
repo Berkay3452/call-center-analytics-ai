@@ -15,13 +15,20 @@ from uuid import UUID
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 from app.agents.base import AgentResult
-from app.agents.names import CALL_CLASSIFIER, CRM_EXTRACTION, SALES_ANALYZER, SUMMARIZER
+from app.agents.names import (
+    CALL_CLASSIFIER,
+    CRM_EXTRACTION,
+    SALES_ANALYZER,
+    SENTIMENT_ANALYZER,
+    SUMMARIZER,
+)
 from app.domain.enums import (
     CallType,
     LossReason,
     NextAction,
     RequestCategory,
     SalesOutcomeType,
+    Sentiment,
     ServiceMode,
     Urgency,
 )
@@ -127,6 +134,36 @@ class CallSummary(BaseModel):
         return value
 
 
+class CustomerSentiment(BaseModel):
+    """Duygu Analiz Agent'ının çıktısı: müşterinin görüşmedeki genel duygu durumu."""
+
+    sentiment: Sentiment = Field(
+        description="Müşterinin görüşme boyunca genel duygu durumu: olumlu, notr, olumsuz."
+    )
+    complaint: bool = Field(
+        description=(
+            "Müşteri firmadan, hizmetten, ustadan veya bekleme/geri dönüş sürecinden açıkça "
+            "şikâyet ediyorsa true. Yalnızca arızadan söz etmek şikâyet değildir. "
+            "complaint=true ise sentiment=olumsuz olmalıdır."
+        )
+    )
+    reason: str = Field(
+        min_length=1,
+        description="Kararın tek cümlelik gerekçesi; hangi ifadeye dayandığı.",
+    )
+    evidence: str | None = Field(
+        default=None,
+        description="Kararı destekleyen, müşterinin sözünden kelimesi kelimesine kısa alıntı.",
+    )
+    confidence: float = Field(ge=0, le=1, description="Kararın güveni (0 ile 1 arası).")
+
+    @model_validator(mode="after")
+    def _complaint_implies_negative(self) -> "CustomerSentiment":
+        if self.complaint and self.sentiment != Sentiment.OLUMSUZ:
+            raise ValueError("complaint=true iken sentiment=olumsuz olmalıdır.")
+        return self
+
+
 # --- Birleşik sonuç -------------------------------------------------------------------------
 
 
@@ -159,6 +196,7 @@ class AnalysisResult(BaseModel):
     crm: CrmExtraction | None = None
     sales: SalesAnalysis | None = None
     summary: CallSummary | None = None
+    sentiment: CustomerSentiment | None = None
     errors: dict[str, str] = Field(default_factory=dict)
     runs: list[AgentRun] = Field(default_factory=list)
 
@@ -184,6 +222,7 @@ class AnalysisResult(BaseModel):
             crm=pick(CRM_EXTRACTION, CrmExtraction),
             sales=pick(SALES_ANALYZER, SalesAnalysis),
             summary=pick(SUMMARIZER, CallSummary),
+            sentiment=pick(SENTIMENT_ANALYZER, CustomerSentiment),
             errors=errors,
             runs=runs,
         )

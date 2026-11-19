@@ -93,6 +93,11 @@ erDiagram
         real sales_confidence
         text summary
         jsonb key_points
+        text sentiment
+        boolean sentiment_complaint
+        text sentiment_reason
+        text sentiment_evidence
+        real sentiment_confidence
         jsonb errors
         timestamptz created_at
     }
@@ -369,7 +374,7 @@ Konuşmanın konuşmacıya göre ayrılmış parçaları.
 
 ### 3.4 `analysis_results`
 
-Dört agent'ın birleşik çıktısı. Yeniden analiz yapılırsa aynı `call_id` ile yeni `version` satırı eklenir.
+Beş agent'ın birleşik çıktısı. Yeniden analiz yapılırsa aynı `call_id` ile yeni `version` satırı eklenir.
 
 | Sütun | Tip | Zorunlu | Varsayılan | Açıklama |
 |-------|-----|---------|------------|----------|
@@ -398,6 +403,12 @@ Dört agent'ın birleşik çıktısı. Yeniden analiz yapılırsa aynı `call_id
 | — | — | — | — | **Özetleme Agent'ı** |
 | `summary` | `TEXT` | — | — | Görüşmenin en fazla 3 cümlelik özeti |
 | `key_points` | `JSONB` | — | `'[]'` | En fazla 3 kısa madde (JSON dizisi) |
+| — | — | — | — | **Duygu Analiz Agent'ı (#333)** |
+| `sentiment` | `TEXT` | — | — | Müşterinin genel duygu durumu. CHECK: enum `Sentiment` (eski analizlerde `NULL`) |
+| `sentiment_complaint` | `BOOLEAN` | — | — | Müşteri açıkça şikâyet ediyor mu (`true` ise `sentiment = 'olumsuz'`) |
+| `sentiment_reason` | `TEXT` | — | — | Kararın gerekçesi |
+| `sentiment_evidence` | `TEXT` | — | — | Müşterinin sözünden alıntı (konuşmada geçmiyorsa kaldırılır) |
+| `sentiment_confidence` | `REAL` | — | — | Duygu kararının güveni (0–1) |
 | — | — | — | — | **Meta** |
 | `errors` | `JSONB` | — | `'{}'` | Agent adı → hata mesajı (kısmi/başarısız durumda) |
 | `created_at` | `TIMESTAMPTZ` | ✅ | `now()` | Kayıt oluşturma zamanı |
@@ -417,6 +428,9 @@ Dört agent'ın birleşik çıktısı. Yeniden analiz yapılırsa aynı `call_id
 - `CHECK (loss_reason IS NULL OR sales_outcome = 'kaybedildi')` ve `CHECK (sales_outcome IS DISTINCT FROM 'kaybedildi' OR loss_reason IS NOT NULL)` — kayıp nedeni yalnızca `kaybedildi` iken dolu, `kaybedildi` iken zorunlu (`SalesAnalysis` şemasındaki kural)
 - `CHECK (call_type_confidence IS NULL OR (call_type_confidence >= 0 AND call_type_confidence <= 1))`
 - `CHECK (sales_confidence IS NULL OR (sales_confidence >= 0 AND sales_confidence <= 1))`
+- `CHECK (sentiment IS NULL OR sentiment IN ('olumlu', 'notr', 'olumsuz'))`
+- `CHECK (sentiment_confidence IS NULL OR (sentiment_confidence >= 0 AND sentiment_confidence <= 1))`
+- `CHECK (NOT COALESCE(sentiment_complaint, false) OR sentiment = 'olumsuz')` — şikâyet varsa duygu olumsuzdur (`CustomerSentiment` şemasındaki kural)
 
 **Not:** CRM alanları (7 alan) konuşmada geçmezse `NULL` kalır; agent bilgi uydurmaz (bkz. `CrmExtraction` şeması).
 
@@ -430,7 +444,7 @@ Her agent çalışmasının kaydı. Orkestratör tarafından yazılır; süre, m
 |-------|-----|---------|------------|----------|
 | `id` | `UUID` | ✅ | `gen_random_uuid()` | Birincil anahtar |
 | `analysis_id` | `UUID` | ✅ | — | `analysis_results(id)` FK |
-| `agent_name` | `TEXT` | ✅ | — | Agent adı. CHECK: `call_classifier`, `crm_extraction`, `sales_analyzer`, `summarizer` (`backend/app/agents/names.py`) |
+| `agent_name` | `TEXT` | ✅ | — | Agent adı. CHECK: `call_classifier`, `crm_extraction`, `sales_analyzer`, `summarizer`, `sentiment_analyzer` (`backend/app/agents/names.py`) |
 | `status` | `TEXT` | ✅ | — | Agent durumu. CHECK: `ok`, `failed`, `skipped` (`AgentResult.status`) |
 | `attempts` | `SMALLINT` | ✅ | `1` | Deneme sayısı (ilk çalıştırma + yeniden denemeler) |
 | `latency_ms` | `INTEGER` | — | — | Toplam süre (milisaniye) |
@@ -445,7 +459,7 @@ Her agent çalışmasının kaydı. Orkestratör tarafından yazılır; süre, m
 **Kısıtlamalar:**
 - `PK (id)`
 - `FK (analysis_id) REFERENCES analysis_results(id) ON DELETE CASCADE`
-- `CHECK (agent_name IN ('call_classifier', 'crm_extraction', 'sales_analyzer', 'summarizer'))`
+- `CHECK (agent_name IN ('call_classifier', 'crm_extraction', 'sales_analyzer', 'summarizer', 'sentiment_analyzer'))`
 - `CHECK (status IN ('ok', 'failed', 'skipped'))`
 - `CHECK (error_kind IS NULL OR error_kind IN ('validation', 'runtime', 'timeout'))`
 

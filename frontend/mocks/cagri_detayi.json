@@ -92,6 +92,13 @@
         "Yarın için usta isteniyor"
       ]
     },
+    "sentiment": {
+      "sentiment": "notr",
+      "complaint": false,
+      "reason": "Müşteri arızayı ve randevu talebini sakin, olgusal bir dille iletiyor.",
+      "evidence": null,
+      "confidence": 0.8
+    },
     "errors": {},
     "runs": [
       {

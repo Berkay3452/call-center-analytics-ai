@@ -36,6 +36,7 @@ from app.schemas.analysis import (
     CallClassification,
     CallSummary,
     CrmExtraction,
+    CustomerSentiment,
     SalesAnalysis,
 )
 from app.schemas.assistant import QuestionType, SourceRef
@@ -170,6 +171,7 @@ class AnalysisOut(BaseModel):
     crm: CrmExtraction | None = None
     sales: SalesAnalysis | None = None
     summary: CallSummary | None = None
+    sentiment: CustomerSentiment | None = None
     errors: dict[str, str] = Field(default_factory=dict)
     runs: list[AgentRun] = Field(default_factory=list)
 

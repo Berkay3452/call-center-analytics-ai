@@ -387,6 +387,8 @@ export interface components {
         /** @enum {string} */
         LossReason: "fiyat" | "gec_donus" | "rakip" | "takvim" | "guven" | "diger";
         /** @enum {string} */
+        Sentiment: "olumlu" | "notr" | "olumsuz";
+        /** @enum {string} */
         CrmReviewStatus: "bekliyor" | "onaylandi" | "reddedildi";
         /** @enum {string} */
         CallState: "beklemede" | "yaziya_cevriliyor" | "isleniyor" | "tamam" | "kismi" | "basarisiz";
@@ -448,6 +450,13 @@ export interface components {
             summary: string;
             key_points: string[];
         };
+        CustomerSentiment: {
+            sentiment: components["schemas"]["Sentiment"];
+            complaint: boolean;
+            reason: string;
+            evidence: string | null;
+            confidence: number;
+        };
         AgentRun: {
             agent: string;
             status: string;
@@ -470,6 +479,7 @@ export interface components {
             crm: components["schemas"]["CrmExtraction"];
             sales: components["schemas"]["SalesAnalysis"];
             summary: components["schemas"]["CallSummary"];
+            sentiment: components["schemas"]["CustomerSentiment"];
             errors: {
                 [key: string]: string;
             };

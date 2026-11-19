@@ -3,4 +3,5 @@
 CALL_CLASSIFIER = "call_classifier"
 CRM_EXTRACTION = "crm_extraction"
 SALES_ANALYZER = "sales_analyzer"
+SENTIMENT_ANALYZER = "sentiment_analyzer"
 SUMMARIZER = "summarizer"

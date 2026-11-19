@@ -8,6 +8,7 @@ from app.agents.call_classifier import CallClassifierAgent
 from app.agents.crm_extraction import CrmExtractionAgent
 from app.agents.llm_agent import LLMAgent
 from app.agents.sales_analyzer import SalesAnalyzerAgent
+from app.agents.sentiment_analyzer import SentimentAnalyzerAgent
 from app.agents.summarizer import SummarizerAgent
 from scripts import fake_llm
 from tests.test_agents import tuzla_ctx
@@ -17,6 +18,7 @@ AGENTS: list[type[LLMAgent]] = [
     CrmExtractionAgent,
     SalesAnalyzerAgent,
     SummarizerAgent,
+    SentimentAnalyzerAgent,
 ]
 
 
