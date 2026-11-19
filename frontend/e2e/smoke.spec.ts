@@ -683,8 +683,8 @@ test("Issue #202: erişilebilir halka grafikler, altı dilim sınırı ve canlı
   await expect(date).toBeEnabled();
   await expect(date).toHaveValue("oct2026"); // varsayılan dönem demo verisinin olduğu ay
   const charts = page.getByTestId("distribution-chart");
-  await expect(charts).toHaveCount(4);
-  for (const title of ["Talep Kategorisi", "Aciliyet Dağılımı", "En Yoğun Marinalar", "Satış Kaçırma Sebepleri"]) {
+  await expect(charts).toHaveCount(5);
+  for (const title of ["Talep Kategorisi", "Aciliyet Dağılımı", "En Yoğun Marinalar", "Satış Kaçırma Sebepleri", "Müşteri Duygusu"]) {
     const chart = charts.filter({ has: page.getByRole("heading", { name: title, exact: true }) });
     await expect(chart.getByRole("img")).toHaveAttribute("aria-label", new RegExp(title));
     const slices = chart.getByTestId("donut-slice");
@@ -714,7 +714,7 @@ test("Issue #202: erişilebilir halka grafikler, altı dilim sınırı ve canlı
   await expect(page.getByRole("heading", { name: "Henüz çağrı verisi bulunmuyor" })).toBeVisible();
   await expect(charts).toHaveCount(0);
   await date.selectOption("oct2026");
-  await expect(charts).toHaveCount(4);
+  await expect(charts).toHaveCount(5);
 });
 
 
