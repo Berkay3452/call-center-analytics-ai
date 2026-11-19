@@ -52,6 +52,15 @@ export type SalesOutcomeType =
   | "kaybedildi"
   | "beklemede";
 
+/** Müşterinin görüşmedeki genel duygu durumu (Duygu Analiz Agent'ı, #333). */
+export type Sentiment = "olumlu" | "notr" | "olumsuz";
+
+export const SENTIMENT_LABELS: Record<Sentiment, string> = {
+  olumlu: "Olumlu",
+  notr: "Nötr",
+  olumsuz: "Olumsuz",
+};
+
 export type LossReason =
   | "fiyat"
   | "gec_donus"

@@ -52,6 +52,8 @@ export type CrmReviewStatus = "bekliyor" | "onaylandi" | "reddedildi";
 
 export type MatchMethod = "telefon" | "ad_tekne" | "elle" | "yok";
 
+export type Sentiment = "olumlu" | "notr" | "olumsuz";
+
 export type ServiceOrderStatus =
   | "yeni_atandi"
   | "kesifte"
@@ -112,6 +114,15 @@ export interface CallSummary {
   key_points: string[];
 }
 
+export interface CustomerSentiment {
+  sentiment: Sentiment;
+  /** Müşteri açıkça şikâyet ediyorsa true; true ise sentiment her zaman "olumsuz"dur. */
+  complaint: boolean;
+  reason: string;
+  evidence: string | null;
+  confidence: number;
+}
+
 export interface AgentRun {
   agent: string;
   status: string;
@@ -135,6 +146,8 @@ export interface AnalysisOut {
   crm: CrmExtraction | null;
   sales: SalesAnalysis | null;
   summary: CallSummary | null;
+  /** Duygu analizi; bu agent'tan önce yapılmış eski analizlerde null. */
+  sentiment: CustomerSentiment | null;
   errors: Record<string, string>;
   runs: AgentRun[];
 }

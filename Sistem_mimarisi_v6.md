@@ -43,7 +43,7 @@
 
 - **Hazır uygulamaya entegrasyon.** Miço Usta (Next.js arayüz, .NET 10 backend, PostgreSQL, Redis, Google Cloud) olduğu gibi kalır; biz ona yeni sayfalar ekleriz.
 - **AI servisimiz ayrı bir Python servisi (FastAPI) olarak çalışır** ve REST (JSON) üzerinden konuşur. Bugün arayüz, sunucu tarafı bir proxy ve servis anahtarıyla doğrudan bizim servisimizi çağırıyor; .NET API ile entegrasyon yöntemi hocayla konuşulacak. *(Açık karar, §12.)*
-- **Orkestratör LangGraph ile kurulu.** Dört agent (sınıflandırma, CRM, satış, özet) tek aşamada paralel çalışır; `ANALYSIS_CLASSIFIER_FIRST=true` eski "önce sınıflandırma" sırasını geri getirir (#162). Yeni agent eklemek akışı değiştirmez.
+- **Orkestratör LangGraph ile kurulu.** Beş agent (sınıflandırma, CRM, satış, özet, duygu analizi) tek aşamada paralel çalışır; `ANALYSIS_CLASSIFIER_FIRST=true` eski "önce sınıflandırma" sırasını geri getirir (#162). Yeni agent eklemek akışı değiştirmez.
 - **LLM sağlayıcısı ayardan seçilir.** Geliştirmede NVIDIA'nın ücretsiz modelleri (hızlı: `nemotron-3.5-lightning-30b`, güçlü: `nemotron-3.5-super-vl-120b`) kullanılıyor; Gemini/Vertex AI uyumluluğu korunuyor. Geçici hatada (zaman aşımı, kota, sunucu hatası) bir kez **yedek modele** geçilir; istek ve agent süreleri sınırlıdır.
 - **Yapılandırılmış çıktı:** Her agent şemaya uygun JSON döner; çıktı doğrulanmadan kayda yazılmaz.
 - **Veritabanı:** Standart PostgreSQL + pgvector; şema **Alembic** migration'larıyla kurulur (Supabase Auth ve RLS'e bağımlılık yok). Geliştirmede ve demoda Docker ile yerel PostgreSQL 17 çalışır (Supabase kullanılmıyor); canlıda kendi PostgreSQL'imiz veya Cloud SQL. *(Hocaya sorulacak.)*
@@ -307,6 +307,7 @@ Arayüz ile AI servisi arasındaki sözleşme `docs/api.md` ve `frontend/openapi
 
 ## 13. Değişiklik Günlüğü
 
+- **v6 ek (2026-11-20):** Duygu Analiz Agent'ı eklendi (5. agent): müşterinin duygusu (olumlu / nötr / olumsuz) ve şikâyet bayrağı; şema, istem, orkestratöre ekleme, DB sütunları ve API alanı (#333).
 - **v6 ek (2026-11-19):** Canlı transkript akışı eklendi (§6.1): Redis Stream, SSE ucu, vekil geçişi, pop-up (#323-#327).
 - **v6 (2026-11-17):** Belge sürümü v6 oldu (dosya `Sistem_mimarisi_v6.md`). Güvenlik katmanı (§4.1) mevcut tüm güvenlik kurallarını içerecek biçimde yeniden yazıldı; güvenlik ilkeleri (§4.2); kullanıcı hesapları kararı (#278); uygulama sırası (Hafta 10, kimlik doğrulama en son). İlk hali v5 ekinde (#277) S0-S5 şemaları ve `docs/guvenlik_mimarisi.md` ile gelmişti. Mono konuşmacı ayrımı (#263) duruma işlendi.
 

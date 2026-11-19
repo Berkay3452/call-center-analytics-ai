@@ -31,6 +31,7 @@ from app.schemas.analysis import (
     CallClassification,
     CallSummary,
     CrmExtraction,
+    CustomerSentiment,
     SalesAnalysis,
 )
 from app.schemas.api import AnalysisOut
@@ -78,6 +79,14 @@ def analysis_row_values(result: AnalysisResult) -> dict[str, Any]:
         }
     if summary := result.summary:
         values |= {"summary": summary.summary, "key_points": summary.key_points}
+    if m := result.sentiment:
+        values |= {
+            "sentiment": m.sentiment.value,
+            "sentiment_complaint": m.complaint,
+            "sentiment_reason": m.reason,
+            "sentiment_evidence": m.evidence,
+            "sentiment_confidence": m.confidence,
+        }
     return values
 
 
@@ -145,6 +154,21 @@ def analysis_from_rows(row: AnalysisRow, runs: Sequence[AgentRunRow]) -> Analysi
         if row.summary
         else None
     )
+    sentiment = (
+        CustomerSentiment.model_validate(
+            {
+                "sentiment": row.sentiment,
+                "complaint": bool(row.sentiment_complaint),
+                "reason": row.sentiment_reason or "",
+                "evidence": row.sentiment_evidence,
+                "confidence": (
+                    row.sentiment_confidence if row.sentiment_confidence is not None else 0
+                ),
+            }
+        )
+        if row.sentiment is not None
+        else None
+    )
     return AnalysisOut(
         version=row.version,
         status=row.status,
@@ -153,6 +177,7 @@ def analysis_from_rows(row: AnalysisRow, runs: Sequence[AgentRunRow]) -> Analysi
         crm=crm,
         sales=sales,
         summary=summary,
+        sentiment=sentiment,
         errors=row.errors,
         runs=[
             AgentRun.model_validate(

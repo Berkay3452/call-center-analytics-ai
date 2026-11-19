@@ -8,8 +8,8 @@ from uuid import uuid4
 from app.agents.names import CRM_EXTRACTION
 from app.db.models.ai import AgentRun as AgentRunRow
 from app.db.models.ai import AnalysisResult as AnalysisRow
-from app.domain.enums import LossReason, SalesOutcomeType
-from app.schemas.analysis import AgentRun, AnalysisResult, CrmExtraction
+from app.domain.enums import LossReason, SalesOutcomeType, Sentiment
+from app.schemas.analysis import AgentRun, AnalysisResult, CrmExtraction, CustomerSentiment
 from app.services.analysis_store import analysis_from_rows, analysis_row_values, run_row_values
 
 EXAMPLE = Path(__file__).parents[2] / "docs" / "ornekler" / "analiz_sonucu_tuzla_marina.json"
@@ -19,7 +19,13 @@ def full_result() -> AnalysisResult:
     result = AnalysisResult.model_validate(json.loads(EXAMPLE.read_text(encoding="utf-8")))
     runs = [
         AgentRun(agent=a, status="ok", attempts=1, latency_ms=1200, model="m", prompt_version="v1")
-        for a in ("call_classifier", "crm_extraction", "sales_analyzer", "summarizer")
+        for a in (
+            "call_classifier",
+            "crm_extraction",
+            "sales_analyzer",
+            "summarizer",
+            "sentiment_analyzer",
+        )
     ]
     return result.model_copy(update={"runs": runs})
 
@@ -45,6 +51,8 @@ def test_full_result_round_trips_through_rows() -> None:
     assert out.crm == result.crm
     assert out.sales == result.sales
     assert out.summary == result.summary
+    assert out.sentiment == result.sentiment
+    assert out.sentiment is not None
     assert [r.agent for r in out.runs] == [r.agent for r in result.runs]
 
 
@@ -58,6 +66,25 @@ def test_row_values_use_plain_enum_strings() -> None:
     assert values["loss_reason"] is None
     assert values["crm_evidence"]["location"] == "Tuzla Marina'da teknem var"
     assert type(values["call_type"]) is str
+    assert values["sentiment"] == "notr"
+    assert values["sentiment_complaint"] is False
+    assert values["sentiment_confidence"] == 0.8
+
+
+def test_complaint_round_trips_and_old_analysis_has_no_sentiment() -> None:
+    result = full_result()
+    complaint = CustomerSentiment(
+        sentiment=Sentiment.OLUMSUZ, complaint=True, reason="Geç dönüş.",
+        evidence="kimse dönmedi", confidence=0.9,
+    )  # fmt: skip
+
+    out = analysis_from_rows(to_row(result.model_copy(update={"sentiment": complaint})), [])
+    assert out.sentiment == complaint
+
+    # Duygu agent'ından önceki analizde sütunlar NULL; API `null` döner (hata değil).
+    old = result.model_copy(update={"sentiment": None})
+    assert "sentiment" not in analysis_row_values(old)
+    assert analysis_from_rows(to_row(old), []).sentiment is None
 
 
 def test_failed_agent_leaves_its_columns_unset() -> None:

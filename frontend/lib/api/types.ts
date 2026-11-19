@@ -18,6 +18,7 @@ export type NextAction = Schema["NextAction"];
 export type SalesOutcomeType = Schema["SalesOutcomeType"];
 export type SwitchboardOutcome = Schema["SwitchboardOutcome"];
 export type LossReason = Schema["LossReason"];
+export type Sentiment = Schema["Sentiment"];
 export type CallState = Schema["CallState"];
 export type AnalysisStatus = Schema["AnalysisStatus"];
 export type Speaker = Schema["Speaker"];
@@ -43,6 +44,7 @@ export type CallClassification = Schema["CallClassification"];
 export type CrmExtraction = Schema["CrmExtraction"];
 export type SalesAnalysis = Schema["SalesAnalysis"];
 export type CallSummary = Schema["CallSummary"];
+export type CustomerSentiment = Schema["CustomerSentiment"];
 export type AgentRun = Schema["AgentRun"];
 export type AnalysisOut = Schema["AnalysisOut"];
 

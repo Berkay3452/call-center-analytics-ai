@@ -7,6 +7,7 @@ from typing import Any, get_args
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
     REAL,
+    Boolean,
     CheckConstraint,
     Computed,
     DateTime,
@@ -24,7 +25,13 @@ from sqlalchemy.dialects.postgresql import JSONB, TSVECTOR
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.agents.names import CALL_CLASSIFIER, CRM_EXTRACTION, SALES_ANALYZER, SUMMARIZER
+from app.agents.names import (
+    CALL_CLASSIFIER,
+    CRM_EXTRACTION,
+    SALES_ANALYZER,
+    SENTIMENT_ANALYZER,
+    SUMMARIZER,
+)
 from app.db.base import Base, UUIDPrimaryKeyMixin
 from app.db.checks import in_enum, in_values
 from app.domain.enums import (
@@ -35,6 +42,7 @@ from app.domain.enums import (
     NextAction,
     RequestCategory,
     SalesOutcomeType,
+    Sentiment,
     ServiceMode,
     SwitchboardOutcome,
     Urgency,
@@ -45,7 +53,13 @@ from app.schemas.assistant import QuestionType
 ANALYSIS_STATUSES = ("tamam", "kismi", "basarisiz")
 # Çağrının işlenme durumu (API sözleşmesindeki CallState ile aynı liste).
 CALL_STATES = get_args(CallState)
-AGENT_NAMES = (CALL_CLASSIFIER, CRM_EXTRACTION, SALES_ANALYZER, SUMMARIZER)
+AGENT_NAMES = (
+    CALL_CLASSIFIER,
+    CRM_EXTRACTION,
+    SALES_ANALYZER,
+    SUMMARIZER,
+    SENTIMENT_ANALYZER,
+)
 AGENT_STATUSES = ("ok", "failed", "skipped")
 AGENT_ERROR_KINDS = ("validation", "runtime", "timeout")
 SPEAKERS = ("customer", "rep")
@@ -162,6 +176,7 @@ class AnalysisResult(UUIDPrimaryKeyMixin, Base):
         in_enum("next_action", NextAction),
         in_enum("sales_outcome", SalesOutcomeType),
         in_enum("loss_reason", LossReason),
+        in_enum("sentiment", Sentiment),
         # SalesAnalysis kuralı: kayıp nedeni yalnızca kaybedildi iken dolu, o zaman zorunlu.
         CheckConstraint(
             "loss_reason IS NULL OR sales_outcome = 'kaybedildi'", name="loss_reason_only_lost"
@@ -179,9 +194,20 @@ class AnalysisResult(UUIDPrimaryKeyMixin, Base):
             "sales_confidence IS NULL OR (sales_confidence >= 0 AND sales_confidence <= 1)",
             name="sales_confidence_range",
         ),
+        CheckConstraint(
+            "sentiment_confidence IS NULL OR "
+            "(sentiment_confidence >= 0 AND sentiment_confidence <= 1)",
+            name="sentiment_confidence_range",
+        ),
+        # DuyguAnalizi kuralı: şikâyet varsa duygu olumsuzdur.
+        CheckConstraint(
+            "NOT COALESCE(sentiment_complaint, false) OR sentiment = 'olumsuz'",
+            name="sentiment_complaint_negative",
+        ),
         Index("ix_analysis_call_id", "call_id"),
         Index("ix_analysis_call_type", "call_type"),
         Index("ix_analysis_sales_outcome", "sales_outcome"),
+        Index("ix_analysis_sentiment", "sentiment"),
     )
 
     call_id: Mapped[uuid.UUID] = _uuid_fk("calls.id", ondelete="CASCADE")
@@ -212,6 +238,12 @@ class AnalysisResult(UUIDPrimaryKeyMixin, Base):
     key_points: Mapped[list[str]] = mapped_column(
         JSONB, nullable=False, server_default=text("'[]'::jsonb")
     )
+    # Duygu Analizi (#333)
+    sentiment: Mapped[str | None] = mapped_column(Text)
+    sentiment_complaint: Mapped[bool | None] = mapped_column(Boolean)
+    sentiment_reason: Mapped[str | None] = mapped_column(Text)
+    sentiment_evidence: Mapped[str | None] = mapped_column(Text)
+    sentiment_confidence: Mapped[float | None] = mapped_column(REAL)
     # Meta
     errors: Mapped[dict[str, str]] = mapped_column(
         JSONB, nullable=False, server_default=text("'{}'::jsonb")

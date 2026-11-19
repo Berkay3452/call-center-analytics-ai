@@ -79,7 +79,7 @@ Başka kullanıcının sohbet oturumu istenirse 404 döner (varlığı da sızd�
 - `CallDetail`: çağrı, `TranscriptOut` (metin + `TranscriptSegmentOut` listesi; kişisel veriler maskeli), `match_method` (`MatchMethod`: `telefon`, `ad_tekne`, `elle`, `yok`) ve en son analiz `AnalysisOut`.
 - `CallMatchIn`: çağrıyı müşteri ve tekneye elle eşleştirme istek gövdesi (`customer_id`, isteğe bağlı `boat_id`) (#119).
 - **Müşteri ve tekne eşleştirme (#119):** Analiz bitince otomatik çalışır. Önce normalize telefon numarası ile `customers.phone` üzerinden kesin eşleşme aranır ve tekneler taranır. Telefon yoksa müşteri adı + tekne adı (normalize edilmiş) üzerinden eşleşme aranır; birden fazla aday varsa belirsiz sayılıp yanlış bağlamamak için boş bırakılır (`yok`). Eşleşmeyen veya yanlış bağlanan çağrılar `PUT /calls/{id}/match` ile elle bağlanabilir (`elle`).
-- `AnalysisOut`: bir analiz sürümü. Agent çıktıları `CallClassification`, `CrmExtraction`, `SalesAnalysis`, `CallSummary`; agent kayıtları `AgentRun`. Başarısız agent'ın alanı `null`, nedeni `errors`'ta.
+- `AnalysisOut`: bir analiz sürümü. Agent çıktıları `CallClassification`, `CrmExtraction`, `SalesAnalysis`, `CallSummary`, `CustomerSentiment` (duygu: olumlu / notr / olumsuz + şikâyet bayrağı); agent kayıtları `AgentRun`. Başarısız agent'ın alanı `null`, nedeni `errors`'ta.
 - `CallFilters`: `date_from`, `date_to` (tarih sınırları Europe/Istanbul saatiyle gün başı/sonu olarak değerlendirilir, #156), `call_type`, `urgency`, `request_category`, `state`, `status`, `marina` (tam eşleşme), `q` (müşteri/tekne/marina adında arama), `page`, `page_size`.
 
 ### Çağrı durumu (`CallState`)

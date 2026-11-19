@@ -241,7 +241,7 @@ def test_llm_calls_never_bind_tools() -> None:
 def test_agents_output_schemas_are_plain_models() -> None:
     stages = default_stages()
     agents: list[BaseAgent[Any]] = [a for stage in stages for a in stage]
-    assert len(agents) == 4
+    assert len(agents) == 5
     for agent in agents:
         assert not hasattr(agent, "tools"), agent.name
         assert not hasattr(agent, "session"), agent.name

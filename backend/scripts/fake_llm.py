@@ -1,6 +1,6 @@
 """Sahte OpenAI-uyumlu LLM sunucusu: duman testinde gerçek LLM yerine (#157).
 
-Dört analiz agent'ının istediği şemaya (prompt'taki JSON şemasının başlığı) uyan sabit, geçerli bir
+Beş analiz agent'ının istediği şemaya (prompt'taki JSON şemasının başlığı) uyan sabit, geçerli bir
 JSON döner; böylece yükleme → STT → analiz hattı kota ve ağ olmadan uçtan uca denenir.
 
     python -m scripts.fake_llm --port 9101
@@ -18,7 +18,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 
 SCHEMA_TITLE = re.compile(
-    r'"title":\s*"(CallClassification|CrmExtraction|SalesAnalysis|CallSummary)"'
+    r'"title":\s*"(CallClassification|CrmExtraction|SalesAnalysis|CallSummary|CustomerSentiment)"'
 )
 
 CANNED: dict[str, dict[str, Any]] = {
@@ -31,6 +31,13 @@ CANNED: dict[str, dict[str, Any]] = {
     "SalesAnalysis": {
         "outcome": "beklemede",
         "loss_reason": None,
+        "evidence": None,
+        "confidence": 0.7,
+    },
+    "CustomerSentiment": {
+        "sentiment": "notr",
+        "complaint": False,
+        "reason": "Sahte LLM: müşteri sakin bir dille talebini iletiyor.",
         "evidence": None,
         "confidence": 0.7,
     },

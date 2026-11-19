@@ -85,7 +85,9 @@ async def test_save_analysis_writes_versions_and_agent_runs(
     assert latest.crm is not None
     assert latest.crm.location == "Tuzla Marina"
     assert latest.summary is not None
-    assert len(latest.runs) == 4
+    assert latest.sentiment is not None
+    assert latest.sentiment.sentiment == "notr"
+    assert len(latest.runs) == 5
     assert latest.runs[0].model == "m"
     count = await conn.scalar(
         text("SELECT count(*) FROM analysis_results WHERE call_id = :c"), {"c": call_id}

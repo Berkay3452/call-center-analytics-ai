@@ -1502,6 +1502,14 @@
           "diger"
         ]
       },
+      "Sentiment": {
+        "type": "string",
+        "enum": [
+          "olumlu",
+          "notr",
+          "olumsuz"
+        ]
+      },
       "CrmReviewStatus": {
         "type": "string",
         "enum": [
@@ -1753,6 +1761,34 @@
           }
         }
       },
+      "CustomerSentiment": {
+        "type": "object",
+        "required": [
+          "sentiment",
+          "complaint",
+          "reason",
+          "evidence",
+          "confidence"
+        ],
+        "properties": {
+          "sentiment": {
+            "$ref": "#/components/schemas/Sentiment"
+          },
+          "complaint": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "evidence": {
+            "type": "string",
+            "nullable": true
+          },
+          "confidence": {
+            "type": "number"
+          }
+        }
+      },
       "AgentRun": {
         "type": "object",
         "required": [
@@ -1819,6 +1855,7 @@
           "crm",
           "sales",
           "summary",
+          "sentiment",
           "errors",
           "runs"
         ],
@@ -1847,6 +1884,10 @@
           },
           "summary": {
             "$ref": "#/components/schemas/CallSummary",
+            "nullable": true
+          },
+          "sentiment": {
+            "$ref": "#/components/schemas/CustomerSentiment",
             "nullable": true
           },
           "errors": {

@@ -100,6 +100,14 @@ class SwitchboardOutcome(StrEnum):
     IPTAL = "iptal"
 
 
+class Sentiment(StrEnum):
+    """Müşterinin görüşmedeki genel duygu durumu (Duygu Analiz Agent'ı)."""
+
+    OLUMLU = "olumlu"
+    NOTR = "notr"
+    OLUMSUZ = "olumsuz"
+
+
 class LossReason(StrEnum):
     """Satışın kaybedilme nedeni (yalnızca `kaybedildi` iken)."""
 
@@ -162,6 +170,9 @@ LABELS_TR: dict[StrEnum, str] = {
     NextAction.BILGI_VER: "Bilgi ver",
     NextAction.USTA_ATA: "Usta ata",
     NextAction.AKSIYON_YOK: "Aksiyon gerekmiyor",
+    Sentiment.OLUMLU: "Olumlu",
+    Sentiment.NOTR: "Nötr",
+    Sentiment.OLUMSUZ: "Olumsuz",
     SalesOutcomeType.SATISA_DONUSTU: "Satışa dönüştü",
     SalesOutcomeType.KAYBEDILDI: "Kaybedildi",
     SalesOutcomeType.BEKLEMEDE: "Beklemede",

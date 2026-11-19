@@ -16,7 +16,13 @@ from app.agents.base import (
     CallInfo,
     Segment,
 )
-from app.agents.names import CALL_CLASSIFIER, CRM_EXTRACTION, SALES_ANALYZER, SUMMARIZER
+from app.agents.names import (
+    CALL_CLASSIFIER,
+    CRM_EXTRACTION,
+    SALES_ANALYZER,
+    SENTIMENT_ANALYZER,
+    SUMMARIZER,
+)
 from app.agents.orchestrator import OrchestrationResult, Orchestrator, run_analysis
 from app.agents.registry import build_default_orchestrator
 from app.core.config import Settings
@@ -281,6 +287,7 @@ async def test_default_flow_runs_end_to_end_without_llm(
         CRM_EXTRACTION,
         SALES_ANALYZER,
         SUMMARIZER,
+        SENTIMENT_ANALYZER,
     ]
     for run in result.runs:
         assert (run.status, run.error_kind) == ("failed", "runtime")

@@ -116,7 +116,17 @@ Miço Usta'nın iş akışı (Usta paneli ve Admin > Servis Emirleri).
 | `geri_aranacak` | Geri aranacak |
 | `iptal` | İptal |
 
-## 9. Kodda tanımlı diğer listeler
+## 9. Duygu durumu (`Sentiment`)
+
+Duygu Analiz Agent'ı müşterinin görüşme boyunca genel duygusunu seçer; ayrıca `complaint` (açık şikâyet) bayrağını verir. `complaint=true` ise duygu her zaman `olumsuz` olur.
+
+| Değer | Ekranda | Tanım |
+|---|---|---|
+| `olumlu` | Olumlu | Müşteri memnun, minnettar veya rahat; teşekkür eder |
+| `notr` | Nötr | Sakin ve olgusal; belirgin olumlu/olumsuz ifade yok (arıza bildirmek tek başına olumsuz değildir) |
+| `olumsuz` | Olumsuz | Kızgın, hayal kırıklığına uğramış veya güvensiz; sitem eder, bekletilmekten/işten yakınır |
+
+## 10. Kodda tanımlı diğer listeler
 
 | Liste | Değerler | Yer |
 |---|---|---|

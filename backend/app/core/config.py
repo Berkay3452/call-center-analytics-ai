@@ -120,6 +120,7 @@ class Settings(BaseSettings):
     llm_crm_extraction_model: str | None = None
     llm_sales_analyzer_model: str | None = None
     llm_summarizer_model: str | None = None
+    llm_sentiment_analyzer_model: str | None = None
     llm_max_concurrency: int = Field(default=2, ge=1)
     # Model başına dakikadaki en fazla istek (0 = sınırsız). Gemini ücretsiz katmanı: 5.
     # Sınır süreç içidir; birden fazla Celery işçisi varsa her biri ayrı sayar.
@@ -140,7 +141,7 @@ class Settings(BaseSettings):
     # Geçici hatada (zaman aşımı, 429, 5xx, bağlantı) bir kez denenecek yedek model. Boşsa
     # öteki katmanın modeli (fast <-> smart) yedek sayılır; o da yoksa yedek yoktur.
     llm_fallback_model: str | None = None
-    # Sınıflandırma agent'ı diğerlerinden önce ayrı aşamada mı çalışsın? Varsayılan hayır: dördü
+    # Sınıflandırma agent'ı diğerlerinden önce ayrı aşamada mı çalışsın? Varsayılan hayır: beşi
     # paralel çalışır, uçtan uca süre kısalır (#162).
     analysis_classifier_first: bool = False
 

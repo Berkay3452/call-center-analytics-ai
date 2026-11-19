@@ -9,13 +9,20 @@ from uuid import uuid4
 import pytest
 from pydantic import ValidationError
 
-from app.agents.names import CALL_CLASSIFIER, CRM_EXTRACTION, SALES_ANALYZER, SUMMARIZER
+from app.agents.names import (
+    CALL_CLASSIFIER,
+    CRM_EXTRACTION,
+    SALES_ANALYZER,
+    SENTIMENT_ANALYZER,
+    SUMMARIZER,
+)
 from app.domain import enums
 from app.schemas.analysis import (
     AnalysisResult,
     CallClassification,
     CallSummary,
     CrmExtraction,
+    CustomerSentiment,
     KpiSummary,
     SalesAnalysis,
 )
@@ -133,6 +140,34 @@ def test_summary_limits_sentences_and_key_points() -> None:
         CallSummary(summary="Kısa.", key_points=["a", "b", "c", "d"])
 
 
+# --- Duygu analizi (#333) ----------------------------------------------------------------------
+
+
+def test_sentiment_complaint_requires_negative() -> None:
+    ok = CustomerSentiment(
+        sentiment=enums.Sentiment.OLUMSUZ, complaint=True, reason="Geç dönüşten yakınıyor.",
+        confidence=0.9,
+    )  # fmt: skip
+    assert ok.evidence is None
+    for sentiment in (enums.Sentiment.NOTR, enums.Sentiment.OLUMLU):
+        with pytest.raises(ValidationError, match="complaint=true"):
+            CustomerSentiment(sentiment=sentiment, complaint=True, reason="x", confidence=0.5)
+    # Şikâyetsiz olumsuz (kızgın ama yakınmıyor) ve olumlu geçerlidir.
+    CustomerSentiment(sentiment=enums.Sentiment.OLUMSUZ, complaint=False, reason="x", confidence=0)
+    CustomerSentiment(sentiment=enums.Sentiment.OLUMLU, complaint=False, reason="x", confidence=1)
+
+
+def test_sentiment_rejects_unknown_value_and_bad_confidence() -> None:
+    with pytest.raises(ValidationError):
+        CustomerSentiment.model_validate(
+            {"sentiment": "mutlu", "complaint": False, "reason": "x", "confidence": 0.5}
+        )
+    with pytest.raises(ValidationError):
+        CustomerSentiment(sentiment=enums.Sentiment.NOTR, complaint=False, reason="x", confidence=2)
+    with pytest.raises(ValidationError):
+        CustomerSentiment(sentiment=enums.Sentiment.NOTR, complaint=False, reason="", confidence=1)
+
+
 # --- Birleşik sonuç ---------------------------------------------------------------------------
 
 
@@ -145,6 +180,12 @@ def test_analysis_result_from_partial_outputs() -> None:
         outputs={
             CALL_CLASSIFIER: {"call_type": "servis", "confidence": 0.9, "reason": "usta istiyor"},
             SUMMARIZER: {"summary": "Kısa özet.", "key_points": []},
+            SENTIMENT_ANALYZER: {
+                "sentiment": "olumsuz",
+                "complaint": True,
+                "reason": "Geç dönüşten yakınıyor.",
+                "confidence": 0.9,
+            },
         },
         errors={CRM_EXTRACTION: "bozuldu", SALES_ANALYZER: "bozuldu"},
         runs=[],
@@ -153,6 +194,8 @@ def test_analysis_result_from_partial_outputs() -> None:
     assert result.status == "kismi"
     assert result.classification is not None
     assert result.summary is not None
+    assert result.sentiment is not None
+    assert result.sentiment.complaint is True
     assert result.crm is None
     assert result.sales is None
     assert set(result.errors) == {CRM_EXTRACTION, SALES_ANALYZER}
