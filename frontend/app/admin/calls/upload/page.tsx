@@ -10,6 +10,7 @@ import {
   getCallStatus,
 } from "@/lib/api/client";
 import { useAnnounceAnalysis, useTrackAnalysis } from "@/components/AnalysisTracker";
+import { LiveTranscriptDialog } from "@/components/LiveTranscriptDialog";
 import { ApiError } from "@/lib/api/errors";
 import type { CallCreate, CallState, CallStatus } from "@/lib/api/types";
 import { MARINA_OPTIONS } from "@/lib/types";
@@ -218,6 +219,28 @@ function CallUploadContent() {
   );
   const [backendError, setBackendError] = useState<string | null>(null);
 
+  // Canlı transkript pop-up'ı (#326): yazıya çevirme başlayınca bir kez otomatik açılır; kullanıcı
+  // kapatırsa aynı çağrı için tekrar kendiliğinden açılmaz ("Canlı izle" ile elle açılır).
+  const [liveFor, setLiveFor] = useState<string | null>(null);
+  const [liveDismissedFor, setLiveDismissedFor] = useState<string | null>(null);
+  if (
+    analysisState === "yaziya_cevriliyor" &&
+    createdCallId &&
+    liveFor !== createdCallId &&
+    liveDismissedFor !== createdCallId
+  ) {
+    setLiveFor(createdCallId);
+  }
+  const liveOpen = !!createdCallId && liveFor === createdCallId && isSubmitting;
+  const liveOpenRef = useRef(false);
+  useEffect(() => {
+    liveOpenRef.current = liveOpen;
+  }, [liveOpen]);
+  const closeLive = useCallback(() => {
+    setLiveDismissedFor(liveFor);
+    setLiveFor(null);
+  }, [liveFor]);
+
   // Polling temizlik referansları
   const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -282,7 +305,8 @@ function CallUploadContent() {
             }
             if (state === "tamam" && !cancelled.current) {
               redirectTimerRef.current = setTimeout(() => {
-                if (!cancelled.current) {
+                // Canlı pop-up açıkken kullanıcıyı sayfadan koparma; kapatınca "Sonucu aç" görünür.
+                if (!cancelled.current && !liveOpenRef.current) {
                   router.push(`/admin/calls/${callId}`);
                 }
               }, AUTO_REDIRECT_MS);
@@ -587,6 +611,13 @@ function CallUploadContent() {
           </div>
 
           {renderPipelineSteps()}
+          {analysisState === "yaziya_cevriliyor" && createdCallId && !liveOpen && (
+            <div className="mb-4">
+              <Button variant="accent" size="sm" onClick={() => setLiveFor(createdCallId)}>
+                Canlı izle
+              </Button>
+            </div>
+          )}
           <ProgressBar
             value={progressPercent}
             tone={stateTone}
@@ -651,6 +682,10 @@ function CallUploadContent() {
             </div>
           )}
         </Card>
+      )}
+
+      {liveOpen && createdCallId && (
+        <LiveTranscriptDialog key={createdCallId} callId={createdCallId} onClose={closeLive} />
       )}
 
       {/* Yükleme formu — yalnızca işlem yokken */}
