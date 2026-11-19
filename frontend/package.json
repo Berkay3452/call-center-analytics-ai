@@ -10,7 +10,7 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
-    "test:unit": "node --test lib/server/browser-user-id.test.mjs",
+    "test:unit": "node --test lib/server/browser-user-id.test.mjs lib/transcript-live.test.mjs",
     "e2e": "playwright test",
     "gen:api": "openapi-typescript ./openapi.json -o ./lib/api/schema.ts"
   },
