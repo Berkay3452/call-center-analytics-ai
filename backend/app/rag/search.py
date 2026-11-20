@@ -8,24 +8,32 @@ olarak aranır (`filtr:*`).
 Sıralama: Reciprocal Rank Fusion, puan = Σ 1 / (k + sıra). İki listede de üst sıradaki parça
 öne çıkar; puanlar farklı ölçeklerde olduğu için toplanmaz, yalnızca sıralar kullanılır.
 
+Yeniden sıralama (#357): `reranker` verilirse RRF'nin ilk `RERANK_TOP` adayı soruyla birlikte
+okunup yeniden sıralanır. Reranker erişilemezse arama hata vermez, RRF sırasıyla döner.
+
 Yetki: her sorgu `owner_id` ile filtrelenir; başka bir sahibin parçası hiçbir koşulda dönmez.
 """
 
 import re
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 from typing import Literal
 from uuid import UUID
 
+import structlog
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.rag.base import Embedder
+from app.rag.rerankers import Reranker, RerankError
 from app.schemas.assistant import SourceRef
+
+log = structlog.get_logger(__name__)
 
 SearchMode = Literal["hybrid", "vector", "text"]
 RRF_K = 60
 CANDIDATES = 20  # her listeden alınan aday sayısı
+RERANK_TOP = 10  # reranker'a gönderilen en üst aday sayısı (maliyet: ~0,25 sn/aday, CPU)
 
 # Aramada anlam taşımayan sık kelimeler.
 STOPWORDS = frozenset(
@@ -52,6 +60,7 @@ class SearchHit:
     score: float
     similarity: float | None  # vektör listesinde değilse None
     text_match: bool
+    rerank_score: float | None = None  # reranker kullanıldıysa uygunluk puanı
 
 
 def turkish_lower(value: str) -> str:
@@ -144,6 +153,8 @@ async def hybrid_search(
     min_similarity: float = 0.0,
     mode: SearchMode = "hybrid",
     boat_id: UUID | None = None,
+    reranker: Reranker | None = None,
+    rerank_top: int = RERANK_TOP,
 ) -> list[SearchHit]:
     """Sahibin tekne karnesinde en ilgili parçalar (en iyiden başlayarak); yoksa boş liste.
 
@@ -151,12 +162,14 @@ async def hybrid_search(
     alt sınır; ilgisiz notların kaynak gösterilmesini önler. Tam metin eşleşmesi her zaman kalır.
     `boat_id`: verilirse yalnızca o teknenin kayıtları (sahiplik yine `owner_id` ile denetlenir).
     `mode`: karşılaştırma için yalnızca `vector` veya yalnızca `text` listesi kullanılabilir.
+    `reranker`: verilirse eşik sonrası ilk `rerank_top` aday yeniden sıralanır; hata olursa RRF.
     """
     if not query.strip():
         return []
     tsq = build_tsquery(query) if mode != "vector" else None
     use_vec = mode != "text"
     qvec = await embedder.embed_query(query) if use_vec else [0.0] * embedder.dim
+    wanted = max(limit, rerank_top) if reranker else limit  # eşik sonrası tutulacak aday sayısı
     rows = (
         await session.execute(
             text(_SQL),
@@ -169,7 +182,7 @@ async def hybrid_search(
                 "use_vec": use_vec,
                 "cand": CANDIDATES,
                 "rrf": RRF_K,
-                "limit": limit * 3,  # eşik sonrası yeterli sonuç kalsın
+                "limit": wanted * 3,  # eşik sonrası yeterli sonuç kalsın
             },
         )
     ).all()
@@ -189,6 +202,27 @@ async def hybrid_search(
                 text_match=bool(row.text_match),
             )
         )
-        if len(hits) == limit:
+        if len(hits) == wanted:
             break
-    return hits
+    if reranker is not None and len(hits) > 1:
+        hits = await _rerank(reranker, query, hits, rerank_top)
+    return hits[:limit]
+
+
+async def _rerank(
+    reranker: Reranker, query: str, hits: list[SearchHit], top: int
+) -> list[SearchHit]:
+    """İlk `top` adayı yeniden sıralar, kalanı sırasıyla ekler; hata olursa RRF sırası kalır."""
+    head, tail = hits[:top], hits[top:]
+    try:
+        scores = await reranker.rerank(query, [h.text for h in head])
+    except RerankError as exc:
+        # Sorgu metni günlüğe yazılmaz (kişisel veri içerebilir): yalnızca hata ve aday sayısı.
+        log.warning("rerank_failed_using_rrf", error=str(exc), candidates=len(head))
+        return hits
+    ranked = sorted(
+        (replace(h, rerank_score=s) for h, s in zip(head, scores, strict=True)),
+        key=lambda h: h.rerank_score if h.rerank_score is not None else 0.0,
+        reverse=True,  # sort kararlı: eşit puanda RRF sırası korunur
+    )
+    return ranked + tail

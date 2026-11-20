@@ -1,7 +1,8 @@
 """Tekne karnesi araması: servis kayıtları ve usta notlarında hibrit arama (#26, #50).
 
-Vektör (bge-m3) ve Türkçe tam metin sonuçları RRF ile birleştirilir (`app.rag.search`). Kurallar
-araçlarla aynıdır: `owner_id` zorunludur ve yalnızca o sahibin kayıtları aranır.
+Vektör (bge-m3) ve Türkçe tam metin sonuçları RRF ile birleştirilir, ilk adaylar reranker ile
+yeniden sıralanır (`app.rag.search`, #357). Kurallar araçlarla aynıdır: `owner_id` zorunludur
+ve yalnızca o sahibin kayıtları aranır.
 """
 
 from dataclasses import dataclass
@@ -14,6 +15,7 @@ from app.core.config import Settings
 from app.db.session import worker_session
 from app.rag.base import Embedder
 from app.rag.embedders import build_embedder
+from app.rag.rerankers import Reranker, build_reranker
 from app.rag.search import hybrid_search
 from app.schemas.assistant import SourceRef
 
@@ -39,6 +41,7 @@ async def _search(
     query: str,
     limit: int,
     boat_uuid: UUID | None = None,
+    reranker: Reranker | None = None,
 ) -> list[Passage]:
     hits = await hybrid_search(
         session,
@@ -48,6 +51,7 @@ async def _search(
         limit=limit,
         min_similarity=MIN_SIMILARITY,
         boat_id=boat_uuid,
+        reranker=reranker,
     )
     return [Passage(source=h.source, text=h.text) for h in hits]
 
@@ -60,6 +64,7 @@ async def search_boat_notes(
     boat_id: str | None = None,
     session: AsyncSession | None = None,
     embedder: Embedder | None = None,
+    reranker: Reranker | None = None,
 ) -> list[Passage]:
     """Sorguyla en ilgili kayıtlar (en iyiden başlayarak); eşleşme veya geçerli sahip yoksa boş."""
     clean_owner = require_owner(owner_id)
@@ -74,7 +79,8 @@ async def search_boat_notes(
 
     settings = Settings()
     embedder = embedder or build_embedder(settings)
+    reranker = reranker or build_reranker(settings)
     if session is not None:
-        return await _search(session, embedder, owner_uuid, query, limit, boat_uuid)
+        return await _search(session, embedder, owner_uuid, query, limit, boat_uuid, reranker)
     async with worker_session(settings) as sess:
-        return await _search(sess, embedder, owner_uuid, query, limit, boat_uuid)
+        return await _search(sess, embedder, owner_uuid, query, limit, boat_uuid, reranker)

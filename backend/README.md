@@ -84,14 +84,17 @@ Script sabit tohum (`SEED = 42`, `Faker('tr_TR')`) kullanır; her çalıştırma
 
 ## Miço AI araması (RAG, #26)
 
-Tekne karnesi (usta notları ve servis kayıtları) hibrit aranır: **vektör** (bge-m3) + **Türkçe tam metin**, sonuçlar RRF ile birleştirilir; her arama `owner_id` ile sınırlıdır. Embedding modeli Docker'da TEI servisiyle CPU'da çalışır (Python'a torch kurulmaz):
+Tekne karnesi (usta notları ve servis kayıtları) hibrit aranır: **vektör** (bge-m3) + **Türkçe tam metin**, sonuçlar RRF ile birleştirilir; her arama `owner_id` ile sınırlıdır. RRF'nin ilk 10 adayı **reranker** (bge-reranker-v2-m3) ile soruyla birlikte okunup yeniden sıralanır (#357). Embedding modeli ve reranker Docker'da TEI servisleriyle CPU'da çalışır (Python'a torch kurulmaz):
 
 ```
 docker compose -f ../infra/docker-compose.yml --profile rag up -d   # ilk açılışta ~2,3 GB model iner
 uv run python -m scripts.rag_index            # seed sonrası: vektörü olmayan parçaları doldurur
 uv run python -m scripts.rag_eval             # 14 örnek soruda isabet@1, isabet@3, MRR
 uv run python -m scripts.rag_eval --mode text # karşılaştırma: yalnızca tam metin (veya --mode vector)
+uv run python -m scripts.rag_eval --set hepsi --k 5 --rerank   # 62 soru, reranker ile (reranker'sız için --rerank'ı çıkar)
 ```
+
+Reranker sorgu başına ~2,4 sn (CPU) ve ~3 GB bellek ekler; `--profile rag` ile embedding'le birlikte açılır (`RERANKER_URL`, varsayılan `http://localhost:8081`). Kapatmak için `RERANKER_PROVIDER=none`. Servis kapalıysa arama hata vermez, yeniden sıralamasız (RRF sırasıyla) devam eder ve uyarı günlüğü yazar. Ölçüm: `docs/rag_olcum_raporu.md`.
 
 Servis olmadan denemek için `EMBEDDING_PROVIDER=hash` (modelsiz, yalnızca kelime örtüşmesi; gerçek kalite ölçümü için kullanılmaz).
 
@@ -142,7 +145,7 @@ Analiz arka planda Celery işçisinde çalışır (`-Q default,analysis,index`);
 | `app/agents` | Agent sözleşmesi (`base.py`), LLM agent tabanı (`llm_agent.py`), dört analiz agent'ı, prompt'lar (`prompts/`), alıntı doğrulama (`grounding.py`), LangGraph orkestratörü (`orchestrator.py`), varsayılan akış (`registry.py`) |
 | `app/assistant` | Miço AI (Tekne Sahibi asistanı): planlayıcı, hazır araçlar, tekne karnesi araması, cevap üretimi, kaynak kontrolü; dışa açılan tek giriş `answer_question` (çağrı analizinden bağımsız) |
 | `app/stt` | STT: sağlayıcı sözleşmesi (`base.py`), faster-whisper / Whisper API / stub (`providers.py`), konuşmacı ayrımı ve turlar (`pipeline.py`), WER/CER (`metrics.py`) |
-| `app/rag` | RAG: embedding sağlayıcıları (`embedders.py`: bge-m3/TEI, OpenAI uyumlu, hash), indeksleme (`indexer.py`), hibrit arama (`search.py`) |
+| `app/rag` | RAG: embedding sağlayıcıları (`embedders.py`: bge-m3/TEI, OpenAI uyumlu, hash), indeksleme (`indexer.py`), hibrit arama (`search.py`), yeniden sıralayıcı (`rerankers.py`: bge-reranker-v2-m3/TEI) |
 | `tests` | Testler (gerçek veritabanı/Redis/LLM gerektirmez) |
 
 ## Kurallar

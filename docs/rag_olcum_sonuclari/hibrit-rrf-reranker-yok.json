@@ -1,0 +1,1946 @@
+[
+  {
+    "question": "Poyraz'ın aküleri değiştirildi mi?",
+    "rank": 2,
+    "hits": [
+      {
+        "title": "10.03.2026 servis kaydı (Poyraz)",
+        "similarity": 0.6016192087277371,
+        "text_match": true,
+        "excerpt": "Poyraz servis kaydı (elektrik_elektronik): Akü grubu değişimi. Usta: Hakan Aksoy"
+      },
+      {
+        "title": "10.03.2026 usta notu (Poyraz)",
+        "similarity": 0.5021139991963476,
+        "text_match": true,
+        "excerpt": "Servis aküleri değiştirildi. Şarj regülatörü normal çalışıyor, bir sonraki akü k"
+      },
+      {
+        "title": "25.06.2025 servis kaydı (Poyraz)",
+        "similarity": 0.5068992115315275,
+        "text_match": true,
+        "excerpt": "Poyraz servis kaydı (diger): Karina yüksek basınçlı yıkama, osmoz nem ölçümü, 2 "
+      },
+      {
+        "title": "12.11.2025 usta notu (Poyraz)",
+        "similarity": 0.5196570871217169,
+        "text_match": true,
+        "excerpt": "Poyraz (Kalamış Marina): Ana makine ve jeneratör deniz suyu devreleri tatlı suyl"
+      },
+      {
+        "title": "20.05.2026 usta notu (Poyraz)",
+        "similarity": 0.557228446904264,
+        "text_match": true,
+        "excerpt": "Poyraz genel sörvey notu: Navigasyon lambaları ve direk tepesi demir feneri LED "
+      }
+    ]
+  },
+  {
+    "question": "Teknemi kışa hazırladınız mı, kışlama yapıldı mı?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "12.11.2025 usta notu (Poyraz)",
+        "similarity": 0.5955034380551224,
+        "text_match": true,
+        "excerpt": "Poyraz (Kalamış Marina): Ana makine ve jeneratör deniz suyu devreleri tatlı suyl"
+      },
+      {
+        "title": "12.11.2025 servis kaydı (Poyraz)",
+        "similarity": 0.5737298893219522,
+        "text_match": true,
+        "excerpt": "Poyraz servis kaydı (makine): Sezon sonu motor kışlama, tatlı su devridaim antif"
+      },
+      {
+        "title": "05.06.2026 usta notu (Yelkovan)",
+        "similarity": 0.5121970452910066,
+        "text_match": false,
+        "excerpt": "Yelkovan (Pendik Marinturk Marina): Bordaya 2 aşamalı pasta ve UV koruyucu marin"
+      }
+    ]
+  },
+  {
+    "question": "Sintine pompasında bir sorun var mıydı?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "15.08.2026 usta notu (Poyraz)",
+        "similarity": 0.6546868518928705,
+        "text_match": true,
+        "excerpt": "Sintine pompası şamandırası temizlendi, çalışma testi başarılı."
+      }
+    ]
+  },
+  {
+    "question": "VHF telsiz anteni kontrol edildi mi?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "20.05.2026 usta notu (Poyraz)",
+        "similarity": 0.5611786820963378,
+        "text_match": true,
+        "excerpt": "Poyraz genel sörvey notu: Navigasyon lambaları ve direk tepesi demir feneri LED "
+      },
+      {
+        "title": "15.08.2026 usta notu (Poyraz)",
+        "similarity": 0.43073976085122356,
+        "text_match": true,
+        "excerpt": "Ana makine 250 saatlik bakımı tamamlandı, impeller yenilendi. Altı ay sonra yakı"
+      },
+      {
+        "title": "10.03.2026 usta notu (Poyraz)",
+        "similarity": 0.46224684000676075,
+        "text_match": true,
+        "excerpt": "Servis aküleri değiştirildi. Şarj regülatörü normal çalışıyor, bir sonraki akü k"
+      },
+      {
+        "title": "10.07.2025 usta notu (Yelkovan)",
+        "similarity": 0.3840734980281648,
+        "text_match": true,
+        "excerpt": "Yelkovan (Pendik Marinturk Marina): Ana makine 250 saatlik periyodik bakımı tama"
+      },
+      {
+        "title": "25.06.2025 usta notu (Poyraz)",
+        "similarity": 0.36020834807928503,
+        "text_match": true,
+        "excerpt": "Poyraz (Kalamış Marina): Karina kekamozlardan arındırıldı, epoksi astar kontrolü"
+      }
+    ]
+  },
+  {
+    "question": "Yelkovan'ın deniz suyu vanaları ne durumda?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "02.09.2026 usta notu (Yelkovan)",
+        "similarity": 0.6138348166297324,
+        "text_match": true,
+        "excerpt": "Yelkovan genel sörvey notu: Deniz suyu alış kinistin vanaları (seacock) hareket "
+      },
+      {
+        "title": "20.02.2025 usta notu (Yelkovan)",
+        "similarity": 0.5255381025534305,
+        "text_match": true,
+        "excerpt": "Yelkovan (Pendik Marinturk Marina): Karina kekamozlardan arındırıldı, epoksi ast"
+      },
+      {
+        "title": "10.07.2025 servis kaydı (Yelkovan)",
+        "similarity": 0.5008657127876794,
+        "text_match": true,
+        "excerpt": "Yelkovan servis kaydı (makine): 250 saatlik periyodik motor bakımı (yağ, yağ fil"
+      },
+      {
+        "title": "05.06.2026 usta notu (Yelkovan)",
+        "similarity": 0.5091120752427603,
+        "text_match": true,
+        "excerpt": "Yelkovan (Pendik Marinturk Marina): Bordaya 2 aşamalı pasta ve UV koruyucu marin"
+      },
+      {
+        "title": "05.06.2026 servis kaydı (Yelkovan)",
+        "similarity": 0.4853803660088889,
+        "text_match": true,
+        "excerpt": "Yelkovan servis kaydı (temizlik_bakim): Gövde pasta-cila, tik güverte bakımı ve "
+      }
+    ]
+  },
+  {
+    "question": "Albatros'ta motor devir sorunu neden olmuştu?",
+    "rank": null,
+    "hits": [
+      {
+        "title": "27.06.2025 servis kaydı (Albatros)",
+        "similarity": 0.5699328693687503,
+        "text_match": true,
+        "excerpt": "Albatros servis kaydı (elektrik_elektronik): Servis akü grubu değişimi (3x 140Ah"
+      },
+      {
+        "title": "07.02.2025 servis kaydı (Albatros)",
+        "similarity": 0.5217805219757877,
+        "text_match": true,
+        "excerpt": "Albatros servis kaydı (mekanik_hidrolik): Şanzıman yağ değişimi, şaft kaplin hiz"
+      },
+      {
+        "title": "27.06.2025 usta notu (Albatros)",
+        "similarity": 0.5631774663925211,
+        "text_match": true,
+        "excerpt": "Albatros (Göcek D-Marin): Servis aküleri kapasite testinde %40'ın altına düştüğü"
+      },
+      {
+        "title": "02.06.2026 servis kaydı (Albatros)",
+        "similarity": 0.525237441062931,
+        "text_match": true,
+        "excerpt": "Albatros servis kaydı (makine): Yakıt filtresi ve enjektör temizliği. Usta: Seli"
+      },
+      {
+        "title": "07.02.2025 usta notu (Albatros)",
+        "similarity": 0.553909394378031,
+        "text_match": true,
+        "excerpt": "Albatros (Göcek D-Marin): Şanzıman ATF yağı ve süzgeci değiştirildi, şaft kaplin"
+      }
+    ]
+  },
+  {
+    "question": "Seyir sırasında titreşim vardı, ne yapıldı?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "07.02.2025 usta notu (Albatros)",
+        "similarity": 0.5669054229485141,
+        "text_match": true,
+        "excerpt": "Albatros (Göcek D-Marin): Şanzıman ATF yağı ve süzgeci değiştirildi, şaft kaplin"
+      }
+    ]
+  },
+  {
+    "question": "Kutup teknesinin klimasına bakım yapıldı mı?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "15.08.2026 usta notu (Kutup)",
+        "similarity": 0.6236223879760948,
+        "text_match": true,
+        "excerpt": "Kutup (Kalamış Marina): Klima deniz suyu süzgeci ve kondenser boruları kimyasal "
+      },
+      {
+        "title": "12.08.2026 servis kaydı (Kutup)",
+        "similarity": 0.5885666152418013,
+        "text_match": true,
+        "excerpt": "Kutup servis kaydı (iklimlendirme): Marin klima deniz suyu sirkülasyon pompası t"
+      },
+      {
+        "title": "28.03.2026 usta notu (Kutup)",
+        "similarity": 0.5742338211258038,
+        "text_match": true,
+        "excerpt": "Kutup (Kalamış Marina): Hidrofor basınç şalteri ve diyafram takımı yenilendi, su"
+      },
+      {
+        "title": "12.08.2026 usta notu (Kutup)",
+        "similarity": 0.5080664138635747,
+        "text_match": true,
+        "excerpt": "Kutup genel sörvey notu: Navigasyon lambaları ve direk tepesi demir feneri LED m"
+      },
+      {
+        "title": "28.03.2026 servis kaydı (Kutup)",
+        "similarity": 0.4969807422499479,
+        "text_match": true,
+        "excerpt": "Kutup servis kaydı (su_sihhi_tesisat): Tatlı su hidrofor pompası diyafram değişi"
+      }
+    ]
+  },
+  {
+    "question": "Rüzgar'ın motor yağı ve filtreleri en son ne zaman değişti?",
+    "rank": 2,
+    "hits": [
+      {
+        "title": "15.01.2025 servis kaydı (Rüzgar)",
+        "similarity": 0.6668894688421183,
+        "text_match": true,
+        "excerpt": "Rüzgar servis kaydı (makine): 250 saatlik periyodik motor bakımı (yağ, yağ filtr"
+      },
+      {
+        "title": "15.01.2025 usta notu (Rüzgar)",
+        "similarity": 0.6641730070114136,
+        "text_match": true,
+        "excerpt": "Rüzgar (Tuzla Marina): Ana makine 250 saatlik periyodik bakımı tamamlandı; motor"
+      },
+      {
+        "title": "22.10.2025 servis kaydı (Rüzgar)",
+        "similarity": 0.5715795755386353,
+        "text_match": true,
+        "excerpt": "Rüzgar servis kaydı (elektrik_elektronik): Servis akü grubu değişimi (3x 140Ah A"
+      },
+      {
+        "title": "04.06.2025 servis kaydı (Rüzgar)",
+        "similarity": 0.581592321395874,
+        "text_match": true,
+        "excerpt": "Rüzgar servis kaydı (mekanik_hidrolik): Şanzıman yağ değişimi, şaft kaplin hizal"
+      },
+      {
+        "title": "04.06.2025 usta notu (Rüzgar)",
+        "similarity": 0.6065538760093535,
+        "text_match": true,
+        "excerpt": "Rüzgar (Tuzla Marina): Şanzıman ATF yağı ve süzgeci değiştirildi, şaft kaplini 0"
+      }
+    ]
+  },
+  {
+    "question": "Şaft salmastrasından su kaçırıyor mu?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "01.04.2026 usta notu (Rüzgar)",
+        "similarity": 0.537207789407555,
+        "text_match": true,
+        "excerpt": "Rüzgar genel sörvey notu: Şaft salmastrası (PSS) körüğü kontrol edildi, su damla"
+      },
+      {
+        "title": "05.08.2026 usta notu (Yakamoz)",
+        "similarity": 0.5321190439214508,
+        "text_match": true,
+        "excerpt": "Yakamoz genel sörvey notu: Şaft salmastrası (PSS) körüğü kontrol edildi, su daml"
+      },
+      {
+        "title": "04.06.2025 servis kaydı (Rüzgar)",
+        "similarity": 0.40545447934760315,
+        "text_match": true,
+        "excerpt": "Rüzgar servis kaydı (mekanik_hidrolik): Şanzıman yağ değişimi, şaft kaplin hizal"
+      },
+      {
+        "title": "04.06.2025 usta notu (Rüzgar)",
+        "similarity": 0.3965590308430762,
+        "text_match": true,
+        "excerpt": "Rüzgar (Tuzla Marina): Şanzıman ATF yağı ve süzgeci değiştirildi, şaft kaplini 0"
+      }
+    ]
+  },
+  {
+    "question": "Yakamoz'da sıcak su ve su basıncı sorunu çözüldü mü?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "23.07.2026 usta notu (Yakamoz)",
+        "similarity": 0.5748114675058724,
+        "text_match": true,
+        "excerpt": "Yakamoz (Tuzla Marina): Hidrofor basınç şalteri ve diyafram takımı yenilendi, su"
+      },
+      {
+        "title": "09.04.2025 usta notu (Yakamoz)",
+        "similarity": 0.5321943519462986,
+        "text_match": true,
+        "excerpt": "Yakamoz (Tuzla Marina): Klima deniz suyu süzgeci ve kondenser boruları kimyasal "
+      },
+      {
+        "title": "05.03.2026 usta notu (Yakamoz)",
+        "similarity": 0.5088842521767953,
+        "text_match": true,
+        "excerpt": "Yakamoz (Tuzla Marina): Servis aküleri kapasite testinde %40'ın altına düştüğü i"
+      },
+      {
+        "title": "09.04.2025 servis kaydı (Yakamoz)",
+        "similarity": 0.4988863468170308,
+        "text_match": true,
+        "excerpt": "Yakamoz servis kaydı (iklimlendirme): Marin klima deniz suyu sirkülasyon pompası"
+      },
+      {
+        "title": "23.07.2026 servis kaydı (Yakamoz)",
+        "similarity": 0.5083477507052161,
+        "text_match": true,
+        "excerpt": "Yakamoz servis kaydı (su_sihhi_tesisat): Tatlı su hidrofor pompası diyafram deği"
+      }
+    ]
+  },
+  {
+    "question": "Uzun seyre çıkmadan önce yedek yakıt filtresi almalı mıyım?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "19.08.2026 usta notu (Pusula)",
+        "similarity": 0.619855523109436,
+        "text_match": true,
+        "excerpt": "Pusula genel sörvey notu: Ana yakıt tankı havalandırma filtresi temizlendi ve ya"
+      },
+      {
+        "title": "15.04.2026 usta notu (Poseidon)",
+        "similarity": 0.6122889518737793,
+        "text_match": true,
+        "excerpt": "Poseidon genel sörvey notu: Ana yakıt tankı havalandırma filtresi temizlendi ve "
+      }
+    ]
+  },
+  {
+    "question": "Yangın söndürme sistemi kontrol edildi mi?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "07.09.2026 usta notu (Pusula)",
+        "similarity": 0.5626309960768392,
+        "text_match": true,
+        "excerpt": "Pusula (Ataköy Marina): Makine dairesi FM200 otomatik yangın söndürme tüpü basın"
+      },
+      {
+        "title": "07.09.2026 servis kaydı (Pusula)",
+        "similarity": 0.4979991918804749,
+        "text_match": true,
+        "excerpt": "Pusula servis kaydı (tekne_guvenligi): Makine dairesi otomatik yangın söndürme t"
+      },
+      {
+        "title": "07.12.2025 servis kaydı (Poseidon)",
+        "similarity": 0.43198393416788994,
+        "text_match": true,
+        "excerpt": "Poseidon servis kaydı (iklimlendirme): Marin klima deniz suyu sirkülasyon pompas"
+      },
+      {
+        "title": "20.04.2026 servis kaydı (Pusula)",
+        "similarity": 0.42645670298518,
+        "text_match": true,
+        "excerpt": "Pusula servis kaydı (iklimlendirme): Marin klima deniz suyu sirkülasyon pompası "
+      }
+    ]
+  },
+  {
+    "question": "Güvertede su sızıntısı riski var mı?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "22.04.2026 usta notu (Lodos)",
+        "similarity": 0.570229513590468,
+        "text_match": true,
+        "excerpt": "Lodos genel sörvey notu: Tik güverte (teak deck) derz dolgularında güneş kaynakl"
+      }
+    ]
+  },
+  {
+    "question": "Kutup'ta kabin soğutması için ne yapıldı?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "15.08.2026 usta notu (Kutup)",
+        "similarity": 0.6215012669563293,
+        "text_match": true,
+        "excerpt": "Kutup (Kalamış Marina): Klima deniz suyu süzgeci ve kondenser boruları kimyasal "
+      },
+      {
+        "title": "28.03.2026 usta notu (Kutup)",
+        "similarity": 0.5346913975109374,
+        "text_match": true,
+        "excerpt": "Kutup (Kalamış Marina): Hidrofor basınç şalteri ve diyafram takımı yenilendi, su"
+      },
+      {
+        "title": "12.08.2026 servis kaydı (Kutup)",
+        "similarity": 0.501440078105932,
+        "text_match": true,
+        "excerpt": "Kutup servis kaydı (iklimlendirme): Marin klima deniz suyu sirkülasyon pompası t"
+      },
+      {
+        "title": "12.08.2026 usta notu (Kutup)",
+        "similarity": 0.45443856716156006,
+        "text_match": true,
+        "excerpt": "Kutup genel sörvey notu: Navigasyon lambaları ve direk tepesi demir feneri LED m"
+      },
+      {
+        "title": "28.03.2026 servis kaydı (Kutup)",
+        "similarity": 0.47189159607564224,
+        "text_match": true,
+        "excerpt": "Kutup servis kaydı (su_sihhi_tesisat): Tatlı su hidrofor pompası diyafram değişi"
+      }
+    ]
+  },
+  {
+    "question": "Pusula'da makine dairesindeki otomatik söndürücü sistem sağlam mı?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "07.09.2026 usta notu (Pusula)",
+        "similarity": 0.602951169013977,
+        "text_match": true,
+        "excerpt": "Pusula (Ataköy Marina): Makine dairesi FM200 otomatik yangın söndürme tüpü basın"
+      },
+      {
+        "title": "07.09.2026 servis kaydı (Pusula)",
+        "similarity": 0.5636531374661254,
+        "text_match": true,
+        "excerpt": "Pusula servis kaydı (tekne_guvenligi): Makine dairesi otomatik yangın söndürme t"
+      },
+      {
+        "title": "20.04.2026 usta notu (Pusula)",
+        "similarity": 0.5813201589572595,
+        "text_match": true,
+        "excerpt": "Pusula (Ataköy Marina): Klima deniz suyu süzgeci ve kondenser boruları kimyasal "
+      },
+      {
+        "title": "19.08.2026 usta notu (Pusula)",
+        "similarity": 0.5398433208465576,
+        "text_match": true,
+        "excerpt": "Pusula genel sörvey notu: Ana yakıt tankı havalandırma filtresi temizlendi ve ya"
+      },
+      {
+        "title": "25.05.2025 usta notu (Pusula)",
+        "similarity": 0.4772575795650482,
+        "text_match": true,
+        "excerpt": "Pusula (Ataköy Marina): Bordaya 2 aşamalı pasta ve UV koruyucu marin wax uygulan"
+      }
+    ]
+  },
+  {
+    "question": "Fora'da baş tarafındaki yardımcı itici ne durumda?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "29.07.2026 usta notu (Fora)",
+        "similarity": 0.4436067804352839,
+        "text_match": true,
+        "excerpt": "Fora genel sörvey notu: Baş pervane (bow thruster) tünel pervanesi ve kesme pimi"
+      }
+    ]
+  },
+  {
+    "question": "Albatros'un haberleşme telsizi iyi çalışıyor mu?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "08.04.2026 usta notu (Albatros)",
+        "similarity": 0.6437723513813446,
+        "text_match": true,
+        "excerpt": "Albatros genel sörvey notu: Navigasyon lambaları ve direk tepesi demir feneri LE"
+      },
+      {
+        "title": "27.06.2025 servis kaydı (Albatros)",
+        "similarity": 0.5461889021870939,
+        "text_match": true,
+        "excerpt": "Albatros servis kaydı (elektrik_elektronik): Servis akü grubu değişimi (3x 140Ah"
+      },
+      {
+        "title": "27.06.2025 usta notu (Albatros)",
+        "similarity": 0.5326128757539149,
+        "text_match": true,
+        "excerpt": "Albatros (Göcek D-Marin): Servis aküleri kapasite testinde %40'ın altına düştüğü"
+      },
+      {
+        "title": "12.08.2026 usta notu (Kutup)",
+        "similarity": 0.4690509272491621,
+        "text_match": true,
+        "excerpt": "Kutup genel sörvey notu: Navigasyon lambaları ve direk tepesi demir feneri LED m"
+      },
+      {
+        "title": "07.02.2025 servis kaydı (Albatros)",
+        "similarity": 0.48693665161317823,
+        "text_match": true,
+        "excerpt": "Albatros servis kaydı (mekanik_hidrolik): Şanzıman yağ değişimi, şaft kaplin hiz"
+      }
+    ]
+  },
+  {
+    "question": "Zıpkın'ın ahşap güvertesindeki derzler için ne planlandı?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "26.08.2026 usta notu (Zıpkın)",
+        "similarity": 0.48516705190153564,
+        "text_match": true,
+        "excerpt": "Zıpkın genel sörvey notu: Tik güverte (teak deck) derz dolgularında güneş kaynak"
+      },
+      {
+        "title": "28.01.2025 servis kaydı (Zıpkın)",
+        "similarity": 0.4391274379643848,
+        "text_match": true,
+        "excerpt": "Zıpkın servis kaydı (temizlik_bakim): Gövde pasta-cila, tik güverte bakımı ve bi"
+      },
+      {
+        "title": "28.01.2025 usta notu (Zıpkın)",
+        "similarity": 0.3923605306900698,
+        "text_match": true,
+        "excerpt": "Zıpkın (Çeşme Marina): Bordaya 2 aşamalı pasta ve UV koruyucu marin wax uyguland"
+      },
+      {
+        "title": "22.01.2026 usta notu (Martı)",
+        "similarity": 0.2980566139356191,
+        "text_match": true,
+        "excerpt": "Martı (Yalıkavak Marina): Bordaya 2 aşamalı pasta ve UV koruyucu marin wax uygul"
+      },
+      {
+        "title": "22.01.2026 servis kaydı (Martı)",
+        "similarity": 0.32455010999444,
+        "text_match": true,
+        "excerpt": "Martı servis kaydı (temizlik_bakim): Gövde pasta-cila, tik güverte bakımı ve bim"
+      }
+    ]
+  },
+  {
+    "question": "Meltem'in musluk suyundaki basınç oynaması giderildi mi?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "20.01.2026 usta notu (Meltem)",
+        "similarity": 0.5990366935730023,
+        "text_match": true,
+        "excerpt": "Meltem (Ataköy Marina): Hidrofor basınç şalteri ve diyafram takımı yenilendi, su"
+      },
+      {
+        "title": "06.06.2026 servis kaydı (Meltem)",
+        "similarity": 0.5104289942724122,
+        "text_match": true,
+        "excerpt": "Meltem servis kaydı (iklimlendirme): Marin klima deniz suyu sirkülasyon pompası "
+      },
+      {
+        "title": "09.06.2026 usta notu (Meltem)",
+        "similarity": 0.560368759621123,
+        "text_match": true,
+        "excerpt": "Meltem (Ataköy Marina): Klima deniz suyu süzgeci ve kondenser boruları kimyasal "
+      },
+      {
+        "title": "10.06.2026 usta notu (Meltem)",
+        "similarity": 0.5113886289960973,
+        "text_match": true,
+        "excerpt": "Meltem genel sörvey notu: Deniz suyu alış kinistin vanaları (seacock) hareket et"
+      },
+      {
+        "title": "02.09.2025 usta notu (Meltem)",
+        "similarity": 0.5019232927606536,
+        "text_match": true,
+        "excerpt": "Meltem (Ataköy Marina): Servis aküleri kapasite testinde %40'ın altına düştüğü i"
+      }
+    ]
+  },
+  {
+    "question": "Karayel'i kış için nasıl koruma altına aldınız?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "09.03.2026 usta notu (Karayel)",
+        "similarity": 0.502007395148719,
+        "text_match": true,
+        "excerpt": "Karayel (Tuzla Marina): Ana makine ve jeneratör deniz suyu devreleri tatlı suyla"
+      },
+      {
+        "title": "09.03.2026 servis kaydı (Karayel)",
+        "similarity": 0.5537885821679689,
+        "text_match": true,
+        "excerpt": "Karayel servis kaydı (makine): Sezon sonu motor kışlama, tatlı su devridaim anti"
+      },
+      {
+        "title": "20.10.2025 servis kaydı (Karayel)",
+        "similarity": 0.501166850397996,
+        "text_match": true,
+        "excerpt": "Karayel servis kaydı (diger): Karina yüksek basınçlı yıkama, osmoz nem ölçümü, 2"
+      },
+      {
+        "title": "02.06.2025 servis kaydı (Karayel)",
+        "similarity": 0.49512019724370315,
+        "text_match": true,
+        "excerpt": "Karayel servis kaydı (temizlik_bakim): Gövde pasta-cila, tik güverte bakımı ve b"
+      },
+      {
+        "title": "20.10.2025 usta notu (Karayel)",
+        "similarity": 0.44314810294795737,
+        "text_match": true,
+        "excerpt": "Karayel (Tuzla Marina): Karina kekamozlardan arındırıldı, epoksi astar kontrolü "
+      }
+    ]
+  },
+  {
+    "question": "Rüzgar'ın şanzıman ile pervane mili arasındaki hizalama yapıldı mı?",
+    "rank": 2,
+    "hits": [
+      {
+        "title": "04.06.2025 servis kaydı (Rüzgar)",
+        "similarity": 0.6172154368933013,
+        "text_match": true,
+        "excerpt": "Rüzgar servis kaydı (mekanik_hidrolik): Şanzıman yağ değişimi, şaft kaplin hizal"
+      },
+      {
+        "title": "04.06.2025 usta notu (Rüzgar)",
+        "similarity": 0.6302725166895093,
+        "text_match": true,
+        "excerpt": "Rüzgar (Tuzla Marina): Şanzıman ATF yağı ve süzgeci değiştirildi, şaft kaplini 0"
+      },
+      {
+        "title": "15.01.2025 servis kaydı (Rüzgar)",
+        "similarity": 0.582343344474068,
+        "text_match": true,
+        "excerpt": "Rüzgar servis kaydı (makine): 250 saatlik periyodik motor bakımı (yağ, yağ filtr"
+      },
+      {
+        "title": "22.10.2025 servis kaydı (Rüzgar)",
+        "similarity": 0.5387502451242238,
+        "text_match": true,
+        "excerpt": "Rüzgar servis kaydı (elektrik_elektronik): Servis akü grubu değişimi (3x 140Ah A"
+      },
+      {
+        "title": "15.01.2025 usta notu (Rüzgar)",
+        "similarity": 0.5601322269912936,
+        "text_match": true,
+        "excerpt": "Rüzgar (Tuzla Marina): Ana makine 250 saatlik periyodik bakımı tamamlandı; motor"
+      }
+    ]
+  },
+  {
+    "question": "Kalyon'un yakıt filtresinin değiştirilmesinden sonra neler söylendi?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "09.09.2026 usta notu (Kalyon)",
+        "similarity": 0.604844061355045,
+        "text_match": true,
+        "excerpt": "Kalyon (Marmaris Netsel Marina): Yakıt filtresi değişti, 6 ay sonra tekrar kontr"
+      },
+      {
+        "title": "08.07.2026 usta notu (Kalyon)",
+        "similarity": 0.6423345934742449,
+        "text_match": true,
+        "excerpt": "Kalyon genel sörvey notu: Ana yakıt tankı havalandırma filtresi temizlendi ve ya"
+      },
+      {
+        "title": "11.11.2026 servis kaydı (Kalyon)",
+        "similarity": 0.5616325442159603,
+        "text_match": true,
+        "excerpt": "Kalyon servis kaydı (makine): Ana makine devir düşüklüğü tespiti, Racor yakıt fi"
+      },
+      {
+        "title": "22.04.2026 usta notu (Kalyon)",
+        "similarity": 0.5262004012106534,
+        "text_match": true,
+        "excerpt": "Kalyon (Marmaris Netsel Marina): Karina kekamozlardan arındırıldı, epoksi astar "
+      },
+      {
+        "title": "22.04.2026 servis kaydı (Kalyon)",
+        "similarity": 0.5172336327651631,
+        "text_match": true,
+        "excerpt": "Kalyon servis kaydı (diger): Karina yüksek basınçlı yıkama, osmoz nem ölçümü, 2 "
+      }
+    ]
+  },
+  {
+    "question": "Yakamoz'daki akülerin kapasitesi test edilmiş miydi?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "05.03.2026 usta notu (Yakamoz)",
+        "similarity": 0.6135651428803648,
+        "text_match": true,
+        "excerpt": "Yakamoz (Tuzla Marina): Servis aküleri kapasite testinde %40'ın altına düştüğü i"
+      },
+      {
+        "title": "22.10.2025 usta notu (Rüzgar)",
+        "similarity": 0.4641940381064621,
+        "text_match": true,
+        "excerpt": "Rüzgar (Tuzla Marina): Servis aküleri kapasite testinde %40'ın altına düştüğü iç"
+      },
+      {
+        "title": "05.03.2026 servis kaydı (Yakamoz)",
+        "similarity": 0.5672256786285576,
+        "text_match": true,
+        "excerpt": "Yakamoz servis kaydı (elektrik_elektronik): Servis akü grubu değişimi (3x 140Ah "
+      },
+      {
+        "title": "23.07.2026 servis kaydı (Yakamoz)",
+        "similarity": 0.42090957733705203,
+        "text_match": true,
+        "excerpt": "Yakamoz servis kaydı (su_sihhi_tesisat): Tatlı su hidrofor pompası diyafram deği"
+      },
+      {
+        "title": "22.10.2025 servis kaydı (Rüzgar)",
+        "similarity": 0.38090807768463464,
+        "text_match": true,
+        "excerpt": "Rüzgar servis kaydı (elektrik_elektronik): Servis akü grubu değişimi (3x 140Ah A"
+      }
+    ]
+  },
+  {
+    "question": "Çapariz'ın klimasındaki süzgeçler temizlenmiş miydi?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "18.10.2025 usta notu (Çapariz)",
+        "similarity": 0.6517945219312654,
+        "text_match": true,
+        "excerpt": "Çapariz (Bodrum Milta Marina): Klima deniz suyu süzgeci ve kondenser boruları ki"
+      },
+      {
+        "title": "18.10.2025 servis kaydı (Çapariz)",
+        "similarity": 0.559428980725004,
+        "text_match": true,
+        "excerpt": "Çapariz servis kaydı (iklimlendirme): Marin klima deniz suyu sirkülasyon pompası"
+      },
+      {
+        "title": "25.07.2026 usta notu (Çapariz)",
+        "similarity": 0.4767120051060534,
+        "text_match": true,
+        "excerpt": "Çapariz (Bodrum Milta Marina): Bordaya 2 aşamalı pasta ve UV koruyucu marin wax "
+      },
+      {
+        "title": "22.07.2026 servis kaydı (Çapariz)",
+        "similarity": 0.4511421076235802,
+        "text_match": true,
+        "excerpt": "Çapariz servis kaydı (temizlik_bakim): Gövde pasta-cila, tik güverte bakımı ve b"
+      },
+      {
+        "title": "07.03.2026 usta notu (Çapariz)",
+        "similarity": 0.5278809781856026,
+        "text_match": true,
+        "excerpt": "Çapariz (Bodrum Milta Marina): Makine dairesi FM200 otomatik yangın söndürme tüp"
+      }
+    ]
+  },
+  {
+    "question": "Yıldız'ın jeneratörünün kışlanması nasıl yapıldı?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "18.07.2025 usta notu (Yıldız)",
+        "similarity": 0.6177898873215992,
+        "text_match": true,
+        "excerpt": "Yıldız (Göcek D-Marin): Ana makine ve jeneratör deniz suyu devreleri tatlı suyla"
+      },
+      {
+        "title": "18.07.2025 servis kaydı (Yıldız)",
+        "similarity": 0.5283465070517962,
+        "text_match": true,
+        "excerpt": "Yıldız servis kaydı (makine): Sezon sonu motor kışlama, tatlı su devridaim antif"
+      },
+      {
+        "title": "27.05.2026 usta notu (Yıldız)",
+        "similarity": 0.4722851970110794,
+        "text_match": true,
+        "excerpt": "Yıldız genel sörvey notu: Ana yakıt tankı havalandırma filtresi temizlendi ve ya"
+      },
+      {
+        "title": "24.04.2026 servis kaydı (Yıldız)",
+        "similarity": 0.4914902751749599,
+        "text_match": true,
+        "excerpt": "Yıldız servis kaydı (elektrik_elektronik): Servis akü grubu değişimi (3x 140Ah A"
+      },
+      {
+        "title": "24.04.2026 usta notu (Yıldız)",
+        "similarity": 0.41944746433042357,
+        "text_match": true,
+        "excerpt": "Yıldız (Göcek D-Marin): Servis aküleri kapasite testinde %40'ın altına düştüğü i"
+      }
+    ]
+  },
+  {
+    "question": "İmbat'ın egzozundaki kurumlar temizlendi mi?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "15.05.2026 usta notu (İmbat)",
+        "similarity": 0.44986069202423096,
+        "text_match": true,
+        "excerpt": "İmbat (Çeşme Marina): Yakıt filtresi değişti, 6 ay sonra tekrar kontrol önerilir"
+      },
+      {
+        "title": "26.12.2025 usta notu (İmbat)",
+        "similarity": 0.4463205273533528,
+        "text_match": true,
+        "excerpt": "İmbat (Çeşme Marina): Karina kekamozlardan arındırıldı, epoksi astar kontrolü so"
+      },
+      {
+        "title": "26.12.2025 servis kaydı (İmbat)",
+        "similarity": 0.40299081802368164,
+        "text_match": true,
+        "excerpt": "İmbat servis kaydı (diger): Karina yüksek basınçlı yıkama, osmoz nem ölçümü, 2 k"
+      },
+      {
+        "title": "15.07.2026 usta notu (İmbat)",
+        "similarity": 0.33650406220579576,
+        "text_match": true,
+        "excerpt": "İmbat genel sörvey notu: Tik güverte (teak deck) derz dolgularında güneş kaynakl"
+      },
+      {
+        "title": "12.05.2026 servis kaydı (İmbat)",
+        "similarity": 0.36634866199799476,
+        "text_match": true,
+        "excerpt": "İmbat servis kaydı (makine): Ana makine devir düşüklüğü tespiti, Racor yakıt fil"
+      }
+    ]
+  },
+  {
+    "question": "Lodos'un güvertesindeki sızıntılara karşı önlem alındı mı?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "22.04.2026 usta notu (Lodos)",
+        "similarity": 0.5689916446229036,
+        "text_match": true,
+        "excerpt": "Lodos genel sörvey notu: Tik güverte (teak deck) derz dolgularında güneş kaynakl"
+      },
+      {
+        "title": "25.03.2025 servis kaydı (Lodos)",
+        "similarity": 0.49354106341814885,
+        "text_match": true,
+        "excerpt": "Lodos servis kaydı (su_sihhi_tesisat): Tatlı su hidrofor pompası diyafram değişi"
+      },
+      {
+        "title": "12.08.2025 usta notu (Lodos)",
+        "similarity": 0.525461071619747,
+        "text_match": true,
+        "excerpt": "Lodos (Kalamış Marina): Klima deniz suyu süzgeci ve kondenser boruları kimyasal "
+      },
+      {
+        "title": "25.03.2025 usta notu (Lodos)",
+        "similarity": 0.5448959309234905,
+        "text_match": true,
+        "excerpt": "Lodos (Kalamış Marina): Hidrofor basınç şalteri ve diyafram takımı yenilendi, su"
+      },
+      {
+        "title": "12.08.2025 servis kaydı (Lodos)",
+        "similarity": 0.45853886996774307,
+        "text_match": true,
+        "excerpt": "Lodos servis kaydı (iklimlendirme): Marin klima deniz suyu sirkülasyon pompası t"
+      }
+    ]
+  },
+  {
+    "question": "Pruva'nın fenerlerinin ledlerle değiştirildiğini hatırlıyor musun?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "01.07.2026 usta notu (Pruva)",
+        "similarity": 0.5635896552525879,
+        "text_match": true,
+        "excerpt": "Pruva genel sörvey notu: Navigasyon lambaları ve direk tepesi demir feneri LED m"
+      }
+    ]
+  },
+  {
+    "question": "Bora'nın pervanelerindeki kireçlenme temizlendi mi?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "17.06.2026 usta notu (Bora)",
+        "similarity": 0.5269425921797105,
+        "text_match": true,
+        "excerpt": "Bora genel sörvey notu: Baş pervane (bow thruster) tünel pervanesi ve kesme pimi"
+      },
+      {
+        "title": "25.09.2025 usta notu (Bora)",
+        "similarity": 0.5364963266536635,
+        "text_match": true,
+        "excerpt": "Bora (Pendik Marinturk Marina): Hidrofor basınç şalteri ve diyafram takımı yenil"
+      },
+      {
+        "title": "12.02.2026 servis kaydı (Bora)",
+        "similarity": 0.40668516437987945,
+        "text_match": true,
+        "excerpt": "Bora servis kaydı (iklimlendirme): Marin klima deniz suyu sirkülasyon pompası te"
+      },
+      {
+        "title": "12.02.2026 usta notu (Bora)",
+        "similarity": 0.515910260041213,
+        "text_match": true,
+        "excerpt": "Bora (Pendik Marinturk Marina): Klima deniz suyu süzgeci ve kondenser boruları k"
+      }
+    ]
+  },
+  {
+    "question": "Poseidon hidrofor",
+    "rank": 2,
+    "hits": [
+      {
+        "title": "20.07.2025 servis kaydı (Poseidon)",
+        "similarity": 0.5908269882202148,
+        "text_match": true,
+        "excerpt": "Poseidon servis kaydı (su_sihhi_tesisat): Tatlı su hidrofor pompası diyafram değ"
+      },
+      {
+        "title": "20.07.2025 usta notu (Poseidon)",
+        "similarity": 0.5445390939712524,
+        "text_match": true,
+        "excerpt": "Poseidon (Bodrum Milta Marina): Hidrofor basınç şalteri ve diyafram takımı yenil"
+      },
+      {
+        "title": "02.03.2025 servis kaydı (Poseidon)",
+        "similarity": 0.535528838634491,
+        "text_match": true,
+        "excerpt": "Poseidon servis kaydı (elektrik_elektronik): Servis akü grubu değişimi (3x 140Ah"
+      },
+      {
+        "title": "15.04.2026 usta notu (Poseidon)",
+        "similarity": 0.5172309279441833,
+        "text_match": true,
+        "excerpt": "Poseidon genel sörvey notu: Ana yakıt tankı havalandırma filtresi temizlendi ve "
+      },
+      {
+        "title": "07.12.2025 servis kaydı (Poseidon)",
+        "similarity": 0.4880130887031555,
+        "text_match": true,
+        "excerpt": "Poseidon servis kaydı (iklimlendirme): Marin klima deniz suyu sirkülasyon pompas"
+      }
+    ]
+  },
+  {
+    "question": "Martı seacock",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "29.04.2026 usta notu (Martı)",
+        "similarity": 0.4992711691093781,
+        "text_match": true,
+        "excerpt": "Martı genel sörvey notu: Deniz suyu alış kinistin vanaları (seacock) hareket ett"
+      }
+    ]
+  },
+  {
+    "question": "Ufuk wax",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "27.09.2025 usta notu (Ufuk)",
+        "similarity": 0.4858419034858118,
+        "text_match": true,
+        "excerpt": "Ufuk (Göcek D-Marin): Bordaya 2 aşamalı pasta ve UV koruyucu marin wax uygulandı"
+      },
+      {
+        "title": "27.09.2025 servis kaydı (Ufuk)",
+        "similarity": 0.49274039441577533,
+        "text_match": true,
+        "excerpt": "Ufuk servis kaydı (temizlik_bakim): Gövde pasta-cila, tik güverte bakımı ve bimi"
+      },
+      {
+        "title": "10.05.2025 servis kaydı (Ufuk)",
+        "similarity": 0.48308901740776844,
+        "text_match": true,
+        "excerpt": "Ufuk servis kaydı (tekne_guvenligi): Makine dairesi otomatik yangın söndürme tüp"
+      },
+      {
+        "title": "06.05.2026 usta notu (Ufuk)",
+        "similarity": 0.41284509590982277,
+        "text_match": true,
+        "excerpt": "Ufuk genel sörvey notu: Baş pervane (bow thruster) tünel pervanesi ve kesme pimi"
+      },
+      {
+        "title": "10.05.2025 usta notu (Ufuk)",
+        "similarity": 0.4277530612268772,
+        "text_match": true,
+        "excerpt": "Ufuk (Göcek D-Marin): Makine dairesi FM200 otomatik yangın söndürme tüpü basınç "
+      }
+    ]
+  },
+  {
+    "question": "Akdeniz tik güverte",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "03.06.2026 usta notu (Akdeniz)",
+        "similarity": 0.5885108113288879,
+        "text_match": true,
+        "excerpt": "Akdeniz genel sörvey notu: Tik güverte (teak deck) derz dolgularında güneş kayna"
+      }
+    ]
+  },
+  {
+    "question": "Pusula Racor",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "19.08.2026 usta notu (Pusula)",
+        "similarity": 0.4612377011038251,
+        "text_match": true,
+        "excerpt": "Pusula genel sörvey notu: Ana yakıt tankı havalandırma filtresi temizlendi ve ya"
+      },
+      {
+        "title": "25.05.2025 usta notu (Pusula)",
+        "similarity": 0.3512598662817564,
+        "text_match": true,
+        "excerpt": "Pusula (Ataköy Marina): Bordaya 2 aşamalı pasta ve UV koruyucu marin wax uygulan"
+      },
+      {
+        "title": "20.04.2026 usta notu (Pusula)",
+        "similarity": 0.3675525297985276,
+        "text_match": true,
+        "excerpt": "Pusula (Ataköy Marina): Klima deniz suyu süzgeci ve kondenser boruları kimyasal "
+      },
+      {
+        "title": "07.09.2026 usta notu (Pusula)",
+        "similarity": 0.3339213529872094,
+        "text_match": true,
+        "excerpt": "Pusula (Ataköy Marina): Makine dairesi FM200 otomatik yangın söndürme tüpü basın"
+      },
+      {
+        "title": "25.05.2025 servis kaydı (Pusula)",
+        "similarity": 0.35586066772214564,
+        "text_match": true,
+        "excerpt": "Pusula servis kaydı (temizlik_bakim): Gövde pasta-cila, tik güverte bakımı ve bi"
+      }
+    ]
+  },
+  {
+    "question": "Zıpkın FM200",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "13.05.2026 usta notu (Zıpkın)",
+        "similarity": 0.5190851711136454,
+        "text_match": true,
+        "excerpt": "Zıpkın (Çeşme Marina): Makine dairesi FM200 otomatik yangın söndürme tüpü basınç"
+      },
+      {
+        "title": "04.09.2025 usta notu (Martı)",
+        "similarity": 0.42707668430985013,
+        "text_match": true,
+        "excerpt": "Martı (Yalıkavak Marina): Makine dairesi FM200 otomatik yangın söndürme tüpü bas"
+      }
+    ]
+  },
+  {
+    "question": "Yıldırım şanzıman",
+    "rank": 2,
+    "hits": [
+      {
+        "title": "07.06.2026 servis kaydı (Yıldırım)",
+        "similarity": 0.6821445688612887,
+        "text_match": true,
+        "excerpt": "Yıldırım servis kaydı (mekanik_hidrolik): Şanzıman yağ değişimi, şaft kaplin hiz"
+      },
+      {
+        "title": "07.06.2026 usta notu (Yıldırım)",
+        "similarity": 0.6312628073660432,
+        "text_match": true,
+        "excerpt": "Yıldırım (İstinye Tekne Park): Şanzıman ATF yağı ve süzgeci değiştirildi, şaft k"
+      },
+      {
+        "title": "18.01.2026 servis kaydı (Yıldırım)",
+        "similarity": 0.6109790784934032,
+        "text_match": true,
+        "excerpt": "Yıldırım servis kaydı (makine): Ana makine devir düşüklüğü tespiti, Racor yakıt "
+      },
+      {
+        "title": "22.02.2025 servis kaydı (Yıldırım)",
+        "similarity": 0.6377799597722614,
+        "text_match": true,
+        "excerpt": "Yıldırım servis kaydı (elektrik_elektronik): Servis akü grubu değişimi (3x 140Ah"
+      },
+      {
+        "title": "22.02.2025 usta notu (Yıldırım)",
+        "similarity": 0.4637919673114044,
+        "text_match": true,
+        "excerpt": "Yıldırım (İstinye Tekne Park): Servis aküleri kapasite testinde %40'ın altına dü"
+      }
+    ]
+  },
+  {
+    "question": "Kutup LED",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "12.08.2026 usta notu (Kutup)",
+        "similarity": 0.5397571921348572,
+        "text_match": true,
+        "excerpt": "Kutup genel sörvey notu: Navigasyon lambaları ve direk tepesi demir feneri LED m"
+      },
+      {
+        "title": "28.03.2026 usta notu (Kutup)",
+        "similarity": 0.4472061928756499,
+        "text_match": true,
+        "excerpt": "Kutup (Kalamış Marina): Hidrofor basınç şalteri ve diyafram takımı yenilendi, su"
+      },
+      {
+        "title": "15.08.2026 usta notu (Kutup)",
+        "similarity": 0.42174646258354187,
+        "text_match": true,
+        "excerpt": "Kutup (Kalamış Marina): Klima deniz suyu süzgeci ve kondenser boruları kimyasal "
+      },
+      {
+        "title": "28.03.2026 servis kaydı (Kutup)",
+        "similarity": 0.44335402379495004,
+        "text_match": true,
+        "excerpt": "Kutup servis kaydı (su_sihhi_tesisat): Tatlı su hidrofor pompası diyafram değişi"
+      },
+      {
+        "title": "12.08.2026 servis kaydı (Kutup)",
+        "similarity": 0.38386549853476937,
+        "text_match": true,
+        "excerpt": "Kutup servis kaydı (iklimlendirme): Marin klima deniz suyu sirkülasyon pompası t"
+      }
+    ]
+  },
+  {
+    "question": "Rüzgar'a kaç adet AGM akü takıldı?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "22.10.2025 usta notu (Rüzgar)",
+        "similarity": 0.6269031176105507,
+        "text_match": true,
+        "excerpt": "Rüzgar (Tuzla Marina): Servis aküleri kapasite testinde %40'ın altına düştüğü iç"
+      },
+      {
+        "title": "22.10.2025 servis kaydı (Rüzgar)",
+        "similarity": 0.6283063529816502,
+        "text_match": true,
+        "excerpt": "Rüzgar servis kaydı (elektrik_elektronik): Servis akü grubu değişimi (3x 140Ah A"
+      },
+      {
+        "title": "05.03.2026 usta notu (Yakamoz)",
+        "similarity": 0.5169120203486024,
+        "text_match": true,
+        "excerpt": "Yakamoz (Tuzla Marina): Servis aküleri kapasite testinde %40'ın altına düştüğü i"
+      },
+      {
+        "title": "15.01.2025 servis kaydı (Rüzgar)",
+        "similarity": 0.5595958517055162,
+        "text_match": true,
+        "excerpt": "Rüzgar servis kaydı (makine): 250 saatlik periyodik motor bakımı (yağ, yağ filtr"
+      },
+      {
+        "title": "05.03.2026 servis kaydı (Yakamoz)",
+        "similarity": 0.46195993993759243,
+        "text_match": true,
+        "excerpt": "Yakamoz servis kaydı (elektrik_elektronik): Servis akü grubu değişimi (3x 140Ah "
+      }
+    ]
+  },
+  {
+    "question": "Yıldırım'da şaft kaplini kaç mm toleransla hizalandı?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "07.06.2026 usta notu (Yıldırım)",
+        "similarity": 0.6203311764601761,
+        "text_match": true,
+        "excerpt": "Yıldırım (İstinye Tekne Park): Şanzıman ATF yağı ve süzgeci değiştirildi, şaft k"
+      },
+      {
+        "title": "07.06.2026 servis kaydı (Yıldırım)",
+        "similarity": 0.5332759738019788,
+        "text_match": true,
+        "excerpt": "Yıldırım servis kaydı (mekanik_hidrolik): Şanzıman yağ değişimi, şaft kaplin hiz"
+      },
+      {
+        "title": "18.01.2026 servis kaydı (Yıldırım)",
+        "similarity": 0.4736518891272711,
+        "text_match": true,
+        "excerpt": "Yıldırım servis kaydı (makine): Ana makine devir düşüklüğü tespiti, Racor yakıt "
+      },
+      {
+        "title": "22.02.2025 usta notu (Yıldırım)",
+        "similarity": 0.3930267223087909,
+        "text_match": true,
+        "excerpt": "Yıldırım (İstinye Tekne Park): Servis aküleri kapasite testinde %40'ın altına dü"
+      },
+      {
+        "title": "18.01.2026 usta notu (Yıldırım)",
+        "similarity": 0.45589954449542636,
+        "text_match": true,
+        "excerpt": "Yıldırım (İstinye Tekne Park): Yakıt filtresi değişti, 6 ay sonra tekrar kontrol"
+      }
+    ]
+  },
+  {
+    "question": "Kalyon'un motoru kaç devire sorunsuz çıkıyor?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "09.09.2026 usta notu (Kalyon)",
+        "similarity": 0.6192578942689592,
+        "text_match": true,
+        "excerpt": "Kalyon (Marmaris Netsel Marina): Yakıt filtresi değişti, 6 ay sonra tekrar kontr"
+      },
+      {
+        "title": "11.11.2026 servis kaydı (Kalyon)",
+        "similarity": 0.5480412456915623,
+        "text_match": true,
+        "excerpt": "Kalyon servis kaydı (makine): Ana makine devir düşüklüğü tespiti, Racor yakıt fi"
+      },
+      {
+        "title": "08.07.2026 usta notu (Kalyon)",
+        "similarity": 0.4527045601118692,
+        "text_match": true,
+        "excerpt": "Kalyon genel sörvey notu: Ana yakıt tankı havalandırma filtresi temizlendi ve ya"
+      },
+      {
+        "title": "03.12.2025 usta notu (Kalyon)",
+        "similarity": 0.39536492283763547,
+        "text_match": true,
+        "excerpt": "Kalyon (Marmaris Netsel Marina): Bordaya 2 aşamalı pasta ve UV koruyucu marin wa"
+      },
+      {
+        "title": "22.04.2026 servis kaydı (Kalyon)",
+        "similarity": 0.4855213778589651,
+        "text_match": true,
+        "excerpt": "Kalyon servis kaydı (diger): Karina yüksek basınçlı yıkama, osmoz nem ölçümü, 2 "
+      }
+    ]
+  },
+  {
+    "question": "Fora'nın tutyası yüzde kaç durumda?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "29.07.2026 usta notu (Fora)",
+        "similarity": 0.5105689028414123,
+        "text_match": true,
+        "excerpt": "Fora genel sörvey notu: Baş pervane (bow thruster) tünel pervanesi ve kesme pimi"
+      },
+      {
+        "title": "30.06.2026 usta notu (Fora)",
+        "similarity": 0.5315283732903562,
+        "text_match": false,
+        "excerpt": "Fora (Göcek D-Marin): Servis aküleri kapasite testinde %40'ın altına düştüğü içi"
+      },
+      {
+        "title": "10.02.2026 usta notu (Fora)",
+        "similarity": 0.5069931308914918,
+        "text_match": false,
+        "excerpt": "Fora (Göcek D-Marin): Şanzıman ATF yağı ve süzgeci değiştirildi, şaft kaplini 0."
+      }
+    ]
+  },
+  {
+    "question": "Albatros'un VHF anten SWR değeri kaç çıktı?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "08.04.2026 usta notu (Albatros)",
+        "similarity": 0.6578548738783494,
+        "text_match": true,
+        "excerpt": "Albatros genel sörvey notu: Navigasyon lambaları ve direk tepesi demir feneri LE"
+      },
+      {
+        "title": "12.08.2026 usta notu (Kutup)",
+        "similarity": 0.4965509470165941,
+        "text_match": true,
+        "excerpt": "Kutup genel sörvey notu: Navigasyon lambaları ve direk tepesi demir feneri LED m"
+      },
+      {
+        "title": "27.06.2025 servis kaydı (Albatros)",
+        "similarity": 0.48657394745557914,
+        "text_match": true,
+        "excerpt": "Albatros servis kaydı (elektrik_elektronik): Servis akü grubu değişimi (3x 140Ah"
+      },
+      {
+        "title": "07.02.2025 servis kaydı (Albatros)",
+        "similarity": 0.4172278543982362,
+        "text_match": true,
+        "excerpt": "Albatros servis kaydı (mekanik_hidrolik): Şanzıman yağ değişimi, şaft kaplin hiz"
+      },
+      {
+        "title": "27.06.2025 usta notu (Albatros)",
+        "similarity": 0.4802530694158791,
+        "text_match": true,
+        "excerpt": "Albatros (Göcek D-Marin): Servis aküleri kapasite testinde %40'ın altına düştüğü"
+      }
+    ]
+  },
+  {
+    "question": "Karayel'de antifriz kaç derece?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "09.03.2026 usta notu (Karayel)",
+        "similarity": 0.5791988183978202,
+        "text_match": true,
+        "excerpt": "Karayel (Tuzla Marina): Ana makine ve jeneratör deniz suyu devreleri tatlı suyla"
+      },
+      {
+        "title": "09.03.2026 servis kaydı (Karayel)",
+        "similarity": 0.5431036301728083,
+        "text_match": true,
+        "excerpt": "Karayel servis kaydı (makine): Sezon sonu motor kışlama, tatlı su devridaim anti"
+      },
+      {
+        "title": "20.10.2025 servis kaydı (Karayel)",
+        "similarity": 0.4958165297945808,
+        "text_match": true,
+        "excerpt": "Karayel servis kaydı (diger): Karina yüksek basınçlı yıkama, osmoz nem ölçümü, 2"
+      },
+      {
+        "title": "20.10.2025 usta notu (Karayel)",
+        "similarity": 0.4287790527870652,
+        "text_match": true,
+        "excerpt": "Karayel (Tuzla Marina): Karina kekamozlardan arındırıldı, epoksi astar kontrolü "
+      },
+      {
+        "title": "02.06.2025 servis kaydı (Karayel)",
+        "similarity": 0.43582452873600075,
+        "text_match": true,
+        "excerpt": "Karayel servis kaydı (temizlik_bakim): Gövde pasta-cila, tik güverte bakımı ve b"
+      }
+    ]
+  },
+  {
+    "question": "Yelkovan'ın 250 saatlik bakımı yapıldı mı?",
+    "rank": 2,
+    "hits": [
+      {
+        "title": "10.07.2025 servis kaydı (Yelkovan)",
+        "similarity": 0.6810421131799135,
+        "text_match": true,
+        "excerpt": "Yelkovan servis kaydı (makine): 250 saatlik periyodik motor bakımı (yağ, yağ fil"
+      },
+      {
+        "title": "10.07.2025 usta notu (Yelkovan)",
+        "similarity": 0.5785952289168397,
+        "text_match": true,
+        "excerpt": "Yelkovan (Pendik Marinturk Marina): Ana makine 250 saatlik periyodik bakımı tama"
+      },
+      {
+        "title": "15.08.2026 usta notu (Poyraz)",
+        "similarity": 0.5095852005976236,
+        "text_match": true,
+        "excerpt": "Ana makine 250 saatlik bakımı tamamlandı, impeller yenilendi. Altı ay sonra yakı"
+      },
+      {
+        "title": "05.06.2026 servis kaydı (Yelkovan)",
+        "similarity": 0.5261064140669843,
+        "text_match": true,
+        "excerpt": "Yelkovan servis kaydı (temizlik_bakim): Gövde pasta-cila, tik güverte bakımı ve "
+      },
+      {
+        "title": "20.02.2025 servis kaydı (Yelkovan)",
+        "similarity": 0.530846620050678,
+        "text_match": true,
+        "excerpt": "Yelkovan servis kaydı (diger): Karina yüksek basınçlı yıkama, osmoz nem ölçümü, "
+      }
+    ]
+  },
+  {
+    "question": "Fora'da akü kapasitesi yüzde kaçın altına düştüğü için değiştirildi?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "30.06.2026 usta notu (Fora)",
+        "similarity": 0.7099296200359523,
+        "text_match": true,
+        "excerpt": "Fora (Göcek D-Marin): Servis aküleri kapasite testinde %40'ın altına düştüğü içi"
+      },
+      {
+        "title": "27.06.2026 servis kaydı (Fora)",
+        "similarity": 0.5738912136684564,
+        "text_match": true,
+        "excerpt": "Fora servis kaydı (elektrik_elektronik): Servis akü grubu değişimi (3x 140Ah AGM"
+      },
+      {
+        "title": "10.02.2026 usta notu (Fora)",
+        "similarity": 0.5436072893611003,
+        "text_match": true,
+        "excerpt": "Fora (Göcek D-Marin): Şanzıman ATF yağı ve süzgeci değiştirildi, şaft kaplini 0."
+      },
+      {
+        "title": "10.02.2026 servis kaydı (Fora)",
+        "similarity": 0.44815156790884836,
+        "text_match": true,
+        "excerpt": "Fora servis kaydı (mekanik_hidrolik): Şanzıman yağ değişimi, şaft kaplin hizalam"
+      }
+    ]
+  },
+  {
+    "question": "Poyraz akulerı degistirildi mi",
+    "rank": null,
+    "hits": [
+      {
+        "title": "25.06.2025 usta notu (Poyraz)",
+        "similarity": 0.5548153154276843,
+        "text_match": true,
+        "excerpt": "Poyraz (Kalamış Marina): Karina kekamozlardan arındırıldı, epoksi astar kontrolü"
+      },
+      {
+        "title": "20.05.2026 usta notu (Poyraz)",
+        "similarity": 0.5529029001150938,
+        "text_match": true,
+        "excerpt": "Poyraz genel sörvey notu: Navigasyon lambaları ve direk tepesi demir feneri LED "
+      },
+      {
+        "title": "10.03.2026 servis kaydı (Poyraz)",
+        "similarity": 0.5445944286278589,
+        "text_match": true,
+        "excerpt": "Poyraz servis kaydı (elektrik_elektronik): Akü grubu değişimi. Usta: Hakan Aksoy"
+      },
+      {
+        "title": "12.11.2025 usta notu (Poyraz)",
+        "similarity": 0.5146004439056866,
+        "text_match": true,
+        "excerpt": "Poyraz (Kalamış Marina): Ana makine ve jeneratör deniz suyu devreleri tatlı suyl"
+      },
+      {
+        "title": "25.06.2025 servis kaydı (Poyraz)",
+        "similarity": 0.5219885888678771,
+        "text_match": true,
+        "excerpt": "Poyraz servis kaydı (diger): Karina yüksek basınçlı yıkama, osmoz nem ölçümü, 2 "
+      }
+    ]
+  },
+  {
+    "question": "Albatros yakit filtresi tikanmisti",
+    "rank": 5,
+    "hits": [
+      {
+        "title": "02.06.2026 servis kaydı (Albatros)",
+        "similarity": 0.6240450220027538,
+        "text_match": true,
+        "excerpt": "Albatros servis kaydı (makine): Yakıt filtresi ve enjektör temizliği. Usta: Seli"
+      },
+      {
+        "title": "27.06.2025 servis kaydı (Albatros)",
+        "similarity": 0.5713338341116521,
+        "text_match": true,
+        "excerpt": "Albatros servis kaydı (elektrik_elektronik): Servis akü grubu değişimi (3x 140Ah"
+      },
+      {
+        "title": "07.02.2025 servis kaydı (Albatros)",
+        "similarity": 0.5107781278159502,
+        "text_match": true,
+        "excerpt": "Albatros servis kaydı (mekanik_hidrolik): Şanzıman yağ değişimi, şaft kaplin hiz"
+      },
+      {
+        "title": "07.02.2025 usta notu (Albatros)",
+        "similarity": 0.56133156283718,
+        "text_match": true,
+        "excerpt": "Albatros (Göcek D-Marin): Şanzıman ATF yağı ve süzgeci değiştirildi, şaft kaplin"
+      },
+      {
+        "title": "02.06.2026 usta notu (Albatros)",
+        "similarity": 0.4902205478882171,
+        "text_match": true,
+        "excerpt": "Yakıt filtresi tıkanmıştı, değiştirildi. Enjektörler temizlendi, devir sorunu gi"
+      }
+    ]
+  },
+  {
+    "question": "Poyraz sinitne pompasi sorunu",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "15.08.2026 usta notu (Poyraz)",
+        "similarity": 0.45982079740066795,
+        "text_match": true,
+        "excerpt": "Sintine pompası şamandırası temizlendi, çalışma testi başarılı."
+      },
+      {
+        "title": "25.06.2025 servis kaydı (Poyraz)",
+        "similarity": 0.521639440352825,
+        "text_match": true,
+        "excerpt": "Poyraz servis kaydı (diger): Karina yüksek basınçlı yıkama, osmoz nem ölçümü, 2 "
+      },
+      {
+        "title": "15.08.2026 servis kaydı (Poyraz)",
+        "similarity": 0.5003494322924871,
+        "text_match": true,
+        "excerpt": "Poyraz servis kaydı (makine): 250 saatlik periyodik bakım. Usta: Mehmet Şimşek."
+      },
+      {
+        "title": "12.11.2025 usta notu (Poyraz)",
+        "similarity": 0.45743953166950835,
+        "text_match": true,
+        "excerpt": "Poyraz (Kalamış Marina): Ana makine ve jeneratör deniz suyu devreleri tatlı suyl"
+      },
+      {
+        "title": "12.11.2025 servis kaydı (Poyraz)",
+        "similarity": 0.4792835377365793,
+        "text_match": true,
+        "excerpt": "Poyraz servis kaydı (makine): Sezon sonu motor kışlama, tatlı su devridaim antif"
+      }
+    ]
+  },
+  {
+    "question": "Poseidon klımanın gaz basıncı",
+    "rank": 2,
+    "hits": [
+      {
+        "title": "07.12.2025 servis kaydı (Poseidon)",
+        "similarity": 0.5771666801126025,
+        "text_match": true,
+        "excerpt": "Poseidon servis kaydı (iklimlendirme): Marin klima deniz suyu sirkülasyon pompas"
+      },
+      {
+        "title": "07.12.2025 usta notu (Poseidon)",
+        "similarity": 0.5936707043572683,
+        "text_match": true,
+        "excerpt": "Poseidon (Bodrum Milta Marina): Klima deniz suyu süzgeci ve kondenser boruları k"
+      },
+      {
+        "title": "20.07.2025 usta notu (Poseidon)",
+        "similarity": 0.513566398170523,
+        "text_match": true,
+        "excerpt": "Poseidon (Bodrum Milta Marina): Hidrofor basınç şalteri ve diyafram takımı yenil"
+      },
+      {
+        "title": "02.03.2025 servis kaydı (Poseidon)",
+        "similarity": 0.5152588731181539,
+        "text_match": true,
+        "excerpt": "Poseidon servis kaydı (elektrik_elektronik): Servis akü grubu değişimi (3x 140Ah"
+      },
+      {
+        "title": "20.04.2026 usta notu (Pusula)",
+        "similarity": 0.4926923461144771,
+        "text_match": true,
+        "excerpt": "Pusula (Ataköy Marina): Klima deniz suyu süzgeci ve kondenser boruları kimyasal "
+      }
+    ]
+  },
+  {
+    "question": "Meltem hidirofor baskı şalteri",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "20.01.2026 usta notu (Meltem)",
+        "similarity": 0.5666387935496187,
+        "text_match": true,
+        "excerpt": "Meltem (Ataköy Marina): Hidrofor basınç şalteri ve diyafram takımı yenilendi, su"
+      },
+      {
+        "title": "06.06.2026 servis kaydı (Meltem)",
+        "similarity": 0.4304382585956772,
+        "text_match": true,
+        "excerpt": "Meltem servis kaydı (iklimlendirme): Marin klima deniz suyu sirkülasyon pompası "
+      },
+      {
+        "title": "20.01.2026 servis kaydı (Meltem)",
+        "similarity": 0.506069361440023,
+        "text_match": true,
+        "excerpt": "Meltem servis kaydı (su_sihhi_tesisat): Tatlı su hidrofor pompası diyafram değiş"
+      },
+      {
+        "title": "10.06.2026 usta notu (Meltem)",
+        "similarity": 0.4058004133939279,
+        "text_match": true,
+        "excerpt": "Meltem genel sörvey notu: Deniz suyu alış kinistin vanaları (seacock) hareket et"
+      },
+      {
+        "title": "02.09.2025 servis kaydı (Meltem)",
+        "similarity": 0.4775295284355283,
+        "text_match": true,
+        "excerpt": "Meltem servis kaydı (elektrik_elektronik): Servis akü grubu değişimi (3x 140Ah A"
+      }
+    ]
+  },
+  {
+    "question": "Ufuk bow trasterr pervanesi",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "06.05.2026 usta notu (Ufuk)",
+        "similarity": 0.5623288676346738,
+        "text_match": true,
+        "excerpt": "Ufuk genel sörvey notu: Baş pervane (bow thruster) tünel pervanesi ve kesme pimi"
+      },
+      {
+        "title": "10.05.2025 servis kaydı (Ufuk)",
+        "similarity": 0.3980517566784779,
+        "text_match": true,
+        "excerpt": "Ufuk servis kaydı (tekne_guvenligi): Makine dairesi otomatik yangın söndürme tüp"
+      },
+      {
+        "title": "27.09.2025 servis kaydı (Ufuk)",
+        "similarity": 0.4085157026629831,
+        "text_match": true,
+        "excerpt": "Ufuk servis kaydı (temizlik_bakim): Gövde pasta-cila, tik güverte bakımı ve bimi"
+      },
+      {
+        "title": "27.09.2025 usta notu (Ufuk)",
+        "similarity": 0.4242653340977063,
+        "text_match": true,
+        "excerpt": "Ufuk (Göcek D-Marin): Bordaya 2 aşamalı pasta ve UV koruyucu marin wax uygulandı"
+      },
+      {
+        "title": "10.05.2025 usta notu (Ufuk)",
+        "similarity": 0.3418547801505264,
+        "text_match": true,
+        "excerpt": "Ufuk (Göcek D-Marin): Makine dairesi FM200 otomatik yangın söndürme tüpü basınç "
+      }
+    ]
+  },
+  {
+    "question": "Yildiz yakıt tankı havalandrma filtresi",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "27.05.2026 usta notu (Yıldız)",
+        "similarity": 0.6541611908606854,
+        "text_match": true,
+        "excerpt": "Yıldız genel sörvey notu: Ana yakıt tankı havalandırma filtresi temizlendi ve ya"
+      },
+      {
+        "title": "05.12.2025 usta notu (Yıldız)",
+        "similarity": 0.5070994966654502,
+        "text_match": false,
+        "excerpt": "Yıldız (Göcek D-Marin): Şanzıman ATF yağı ve süzgeci değiştirildi, şaft kaplini "
+      }
+    ]
+  },
+  {
+    "question": "Kalyon karina zehrili boya",
+    "rank": 3,
+    "hits": [
+      {
+        "title": "11.11.2026 servis kaydı (Kalyon)",
+        "similarity": 0.44150843867709944,
+        "text_match": true,
+        "excerpt": "Kalyon servis kaydı (makine): Ana makine devir düşüklüğü tespiti, Racor yakıt fi"
+      },
+      {
+        "title": "03.12.2025 usta notu (Kalyon)",
+        "similarity": 0.43299358284396927,
+        "text_match": true,
+        "excerpt": "Kalyon (Marmaris Netsel Marina): Bordaya 2 aşamalı pasta ve UV koruyucu marin wa"
+      },
+      {
+        "title": "22.04.2026 usta notu (Kalyon)",
+        "similarity": 0.530623229183152,
+        "text_match": true,
+        "excerpt": "Kalyon (Marmaris Netsel Marina): Karina kekamozlardan arındırıldı, epoksi astar "
+      },
+      {
+        "title": "09.09.2026 usta notu (Kalyon)",
+        "similarity": 0.43477840138480695,
+        "text_match": true,
+        "excerpt": "Kalyon (Marmaris Netsel Marina): Yakıt filtresi değişti, 6 ay sonra tekrar kontr"
+      },
+      {
+        "title": "22.04.2026 servis kaydı (Kalyon)",
+        "similarity": 0.5694097959291692,
+        "text_match": true,
+        "excerpt": "Kalyon servis kaydı (diger): Karina yüksek basınçlı yıkama, osmoz nem ölçümü, 2 "
+      }
+    ]
+  },
+  {
+    "question": "Kalyon'un yedek filtresi teknede bırakıldı mı?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "08.07.2026 usta notu (Kalyon)",
+        "similarity": 0.7038149657139274,
+        "text_match": true,
+        "excerpt": "Kalyon genel sörvey notu: Ana yakıt tankı havalandırma filtresi temizlendi ve ya"
+      },
+      {
+        "title": "11.11.2026 servis kaydı (Kalyon)",
+        "similarity": 0.5540167753716478,
+        "text_match": true,
+        "excerpt": "Kalyon servis kaydı (makine): Ana makine devir düşüklüğü tespiti, Racor yakıt fi"
+      },
+      {
+        "title": "09.09.2026 usta notu (Kalyon)",
+        "similarity": 0.5562743777445543,
+        "text_match": true,
+        "excerpt": "Kalyon (Marmaris Netsel Marina): Yakıt filtresi değişti, 6 ay sonra tekrar kontr"
+      },
+      {
+        "title": "03.12.2025 usta notu (Kalyon)",
+        "similarity": 0.47788181505474214,
+        "text_match": true,
+        "excerpt": "Kalyon (Marmaris Netsel Marina): Bordaya 2 aşamalı pasta ve UV koruyucu marin wa"
+      },
+      {
+        "title": "22.04.2026 usta notu (Kalyon)",
+        "similarity": 0.4921612134172013,
+        "text_match": true,
+        "excerpt": "Kalyon (Marmaris Netsel Marina): Karina kekamozlardan arındırıldı, epoksi astar "
+      }
+    ]
+  },
+  {
+    "question": "Poyraz'ın VHF anteni kontrol edildi mi?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "20.05.2026 usta notu (Poyraz)",
+        "similarity": 0.5941954047824616,
+        "text_match": true,
+        "excerpt": "Poyraz genel sörvey notu: Navigasyon lambaları ve direk tepesi demir feneri LED "
+      },
+      {
+        "title": "12.11.2025 servis kaydı (Poyraz)",
+        "similarity": 0.46375523961806076,
+        "text_match": true,
+        "excerpt": "Poyraz servis kaydı (makine): Sezon sonu motor kışlama, tatlı su devridaim antif"
+      },
+      {
+        "title": "25.06.2025 usta notu (Poyraz)",
+        "similarity": 0.3960823080098739,
+        "text_match": true,
+        "excerpt": "Poyraz (Kalamış Marina): Karina kekamozlardan arındırıldı, epoksi astar kontrolü"
+      },
+      {
+        "title": "12.11.2025 usta notu (Poyraz)",
+        "similarity": 0.4388757341501376,
+        "text_match": true,
+        "excerpt": "Poyraz (Kalamış Marina): Ana makine ve jeneratör deniz suyu devreleri tatlı suyl"
+      },
+      {
+        "title": "15.08.2026 servis kaydı (Poyraz)",
+        "similarity": 0.486755169582644,
+        "text_match": true,
+        "excerpt": "Poyraz servis kaydı (makine): 250 saatlik periyodik bakım. Usta: Mehmet Şimşek."
+      }
+    ]
+  },
+  {
+    "question": "Rüzgar'da motor yağı ve filtreler kaç saatte yenilendi?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "15.01.2025 usta notu (Rüzgar)",
+        "similarity": 0.7096077838189437,
+        "text_match": true,
+        "excerpt": "Rüzgar (Tuzla Marina): Ana makine 250 saatlik periyodik bakımı tamamlandı; motor"
+      },
+      {
+        "title": "15.01.2025 servis kaydı (Rüzgar)",
+        "similarity": 0.7067864398340049,
+        "text_match": true,
+        "excerpt": "Rüzgar servis kaydı (makine): 250 saatlik periyodik motor bakımı (yağ, yağ filtr"
+      },
+      {
+        "title": "22.10.2025 servis kaydı (Rüzgar)",
+        "similarity": 0.6007499039843617,
+        "text_match": true,
+        "excerpt": "Rüzgar servis kaydı (elektrik_elektronik): Servis akü grubu değişimi (3x 140Ah A"
+      },
+      {
+        "title": "01.04.2026 usta notu (Rüzgar)",
+        "similarity": 0.5061183579109151,
+        "text_match": true,
+        "excerpt": "Rüzgar genel sörvey notu: Şaft salmastrası (PSS) körüğü kontrol edildi, su damla"
+      },
+      {
+        "title": "04.06.2025 servis kaydı (Rüzgar)",
+        "similarity": 0.5948964889255031,
+        "text_match": true,
+        "excerpt": "Rüzgar servis kaydı (mekanik_hidrolik): Şanzıman yağ değişimi, şaft kaplin hizal"
+      }
+    ]
+  },
+  {
+    "question": "Yakamoz'un kelepçeleri hangi türde?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "05.08.2026 usta notu (Yakamoz)",
+        "similarity": 0.5251651785824996,
+        "text_match": true,
+        "excerpt": "Yakamoz genel sörvey notu: Şaft salmastrası (PSS) körüğü kontrol edildi, su daml"
+      },
+      {
+        "title": "23.07.2026 servis kaydı (Yakamoz)",
+        "similarity": 0.41100090414260537,
+        "text_match": true,
+        "excerpt": "Yakamoz servis kaydı (su_sihhi_tesisat): Tatlı su hidrofor pompası diyafram deği"
+      },
+      {
+        "title": "01.04.2026 usta notu (Rüzgar)",
+        "similarity": 0.353848362426918,
+        "text_match": true,
+        "excerpt": "Rüzgar genel sörvey notu: Şaft salmastrası (PSS) körüğü kontrol edildi, su damla"
+      },
+      {
+        "title": "05.03.2026 usta notu (Yakamoz)",
+        "similarity": 0.4019891613754327,
+        "text_match": true,
+        "excerpt": "Yakamoz (Tuzla Marina): Servis aküleri kapasite testinde %40'ın altına düştüğü i"
+      },
+      {
+        "title": "05.03.2026 servis kaydı (Yakamoz)",
+        "similarity": 0.4922095555759851,
+        "text_match": true,
+        "excerpt": "Yakamoz servis kaydı (elektrik_elektronik): Servis akü grubu değişimi (3x 140Ah "
+      }
+    ]
+  },
+  {
+    "question": "Martı'nın can salı hidrostatik kilit tarihi doğrulandı mı?",
+    "rank": 2,
+    "hits": [
+      {
+        "title": "13.05.2026 usta notu (Zıpkın)",
+        "similarity": 0.5707691396199793,
+        "text_match": true,
+        "excerpt": "Zıpkın (Çeşme Marina): Makine dairesi FM200 otomatik yangın söndürme tüpü basınç"
+      },
+      {
+        "title": "04.09.2025 usta notu (Martı)",
+        "similarity": 0.6474296416216552,
+        "text_match": true,
+        "excerpt": "Martı (Yalıkavak Marina): Makine dairesi FM200 otomatik yangın söndürme tüpü bas"
+      }
+    ]
+  },
+  {
+    "question": "Martı'nın tente fermuarları yenilendi mi?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "22.01.2026 usta notu (Martı)",
+        "similarity": 0.6195385086811577,
+        "text_match": true,
+        "excerpt": "Martı (Yalıkavak Marina): Bordaya 2 aşamalı pasta ve UV koruyucu marin wax uygul"
+      },
+      {
+        "title": "28.01.2025 usta notu (Zıpkın)",
+        "similarity": 0.5523565513768957,
+        "text_match": true,
+        "excerpt": "Zıpkın (Çeşme Marina): Bordaya 2 aşamalı pasta ve UV koruyucu marin wax uyguland"
+      },
+      {
+        "title": "22.01.2026 servis kaydı (Martı)",
+        "similarity": 0.5074941809478971,
+        "text_match": true,
+        "excerpt": "Martı servis kaydı (temizlik_bakim): Gövde pasta-cila, tik güverte bakımı ve bim"
+      },
+      {
+        "title": "28.01.2025 servis kaydı (Zıpkın)",
+        "similarity": 0.41404800163841293,
+        "text_match": true,
+        "excerpt": "Zıpkın servis kaydı (temizlik_bakim): Gövde pasta-cila, tik güverte bakımı ve bi"
+      },
+      {
+        "title": "26.08.2026 usta notu (Zıpkın)",
+        "similarity": 0.3786375224590409,
+        "text_match": true,
+        "excerpt": "Zıpkın genel sörvey notu: Tik güverte (teak deck) derz dolgularında güneş kaynak"
+      }
+    ]
+  },
+  {
+    "question": "Poseidon'un yakıt kesme valfi yağlandı mı?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "15.04.2026 usta notu (Poseidon)",
+        "similarity": 0.6677658948050478,
+        "text_match": true,
+        "excerpt": "Poseidon genel sörvey notu: Ana yakıt tankı havalandırma filtresi temizlendi ve "
+      },
+      {
+        "title": "19.08.2026 usta notu (Pusula)",
+        "similarity": 0.5725295366154409,
+        "text_match": true,
+        "excerpt": "Pusula genel sörvey notu: Ana yakıt tankı havalandırma filtresi temizlendi ve ya"
+      },
+      {
+        "title": "20.07.2025 servis kaydı (Poseidon)",
+        "similarity": 0.4914178010467267,
+        "text_match": true,
+        "excerpt": "Poseidon servis kaydı (su_sihhi_tesisat): Tatlı su hidrofor pompası diyafram değ"
+      },
+      {
+        "title": "02.03.2025 servis kaydı (Poseidon)",
+        "similarity": 0.4711227010281078,
+        "text_match": true,
+        "excerpt": "Poseidon servis kaydı (elektrik_elektronik): Servis akü grubu değişimi (3x 140Ah"
+      },
+      {
+        "title": "20.07.2025 usta notu (Poseidon)",
+        "similarity": 0.5073706757381199,
+        "text_match": true,
+        "excerpt": "Poseidon (Bodrum Milta Marina): Hidrofor basınç şalteri ve diyafram takımı yenil"
+      }
+    ]
+  },
+  {
+    "question": "Yelkovan'ın mutfak gider vanası sertleşmiş mi?",
+    "rank": 1,
+    "hits": [
+      {
+        "title": "02.09.2026 usta notu (Yelkovan)",
+        "similarity": 0.6776068594924427,
+        "text_match": true,
+        "excerpt": "Yelkovan genel sörvey notu: Deniz suyu alış kinistin vanaları (seacock) hareket "
+      },
+      {
+        "title": "05.06.2026 servis kaydı (Yelkovan)",
+        "similarity": 0.4963258807270705,
+        "text_match": true,
+        "excerpt": "Yelkovan servis kaydı (temizlik_bakim): Gövde pasta-cila, tik güverte bakımı ve "
+      },
+      {
+        "title": "10.07.2025 servis kaydı (Yelkovan)",
+        "similarity": 0.511918841371678,
+        "text_match": true,
+        "excerpt": "Yelkovan servis kaydı (makine): 250 saatlik periyodik motor bakımı (yağ, yağ fil"
+      },
+      {
+        "title": "20.02.2025 servis kaydı (Yelkovan)",
+        "similarity": 0.5330367923313164,
+        "text_match": true,
+        "excerpt": "Yelkovan servis kaydı (diger): Karina yüksek basınçlı yıkama, osmoz nem ölçümü, "
+      },
+      {
+        "title": "05.06.2026 usta notu (Yelkovan)",
+        "similarity": 0.43617860243575857,
+        "text_match": true,
+        "excerpt": "Yelkovan (Pendik Marinturk Marina): Bordaya 2 aşamalı pasta ve UV koruyucu marin"
+      }
+    ]
+  }
+]
