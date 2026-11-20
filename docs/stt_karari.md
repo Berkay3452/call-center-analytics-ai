@@ -126,6 +126,49 @@ Hata öbekleri (109): genel sözcük 67, biçim farkı 15, parça 9, yer 8, say�
 
 **Sınırlar:** 6 sentetik çağrı, tek TTS motoru (Edge). Terim sayısı küçük (91 geçiş), yüzdeler ±birkaç puan oynar. Gerçek aksan ve gürültüde farklı çıkabilir.
 
+## Parametre deneyi: model, beam, VAD, hotwords ve initial_prompt (#329)
+
+**Tarih:** 2026-11-20 · **Ses:** #328'deki 6 sentetik çağrı (Edge TTS, stereo, telefon bozulmalı, ~9,5 dk) · **CPU:** int8, GPU yok · **Her satır ayrı süreçte**, stereo temsilci sol, VAD 0,2 (aksi belirtilmedikçe), beam 1 (aksi belirtilmedikçe) · **Komut:** `python -m scripts.stt_benchmark --audio <klasör> --model <m> [--beam 5] [--vad-threshold 0.3] [--initial-prompt "..."] [--hotwords "..."] --out sonuc.json`
+
+Ölçütler: WER (çağrı ortalaması), **terim doğruluğu** (#328, 91 terim geçişi), toplam RTF, tepe çalışma kümesi. Süre bütçesi: 3 dakikalık çağrı için STT ≤ 2 dk, yani **RTF ≤ 0,67** (1 dk'lık çağrıda ≤ 40 sn).
+
+| Yapılandırma | WER | Terim doğruluğu | RTF | Tepe bellek |
+|---|---|---|---|---|
+| `small`, beam 1, mevcut istem (**şimdiki varsayılan**) | %25,3 | %72,5 (66/91) | 0,09 | 723 MB |
+| `small`, beam 5 | %23,3 | %78,0 (71/91) | 0,14 | 723 MB |
+| `small`, istem kapalı | %28,0 | %69,2 (63/91) | 0,15 | 1063 MB |
+| `small`, genişletilmiş istem | %25,6 | %82,4 (75/91) | 0,15 | 723 MB |
+| `small`, yalnız hotwords | %26,9 | %84,6 (77/91) | 0,20 | 1106 MB |
+| `small`, genişletilmiş istem + hotwords | %27,2 | %86,8 (79/91) | 0,15 | 1095 MB |
+| `small`, VAD 0,3 | %24,3 | %75,8 (69/91) | 0,10 | 723 MB |
+| `small`, beam 5 + istem + hotwords + VAD 0,3 | **%22,2** | %82,4 (75/91) | 0,23 | 736 MB |
+| `medium`, beam 1 | %15,0 | %83,5 (76/91) | 0,27 | 1771 MB |
+| `medium`, istem + hotwords | %16,9 | %91,2 (83/91) | 0,47 | 2842 MB |
+| **`large-v3-turbo`, beam 1** | **%14,1** | **%91,2 (83/91)** | 0,28 | 1936 MB |
+| `large-v3-turbo`, istem + hotwords | %18,1 | **%92,3 (84/91)** | 0,35 | 1908 MB |
+
+Genişletilmiş istem: mevcut istem + parça (jeneratör, enjektör, şanzıman...), marka (Jeanneau, Bavaria, Cummins...) ve yer (Tuzla, Göcek, Bodrum...) adları. Hotwords: aynı sözcüklerin istemsiz listesi. Metinler `scratchpad/matris.py` deney betiğinde; varsayılan değişirse `config.py`'ye taşınır (#330).
+
+### Bulgular
+
+- **Model en büyük kaldıraç.** `large-v3-turbo`, `medium`'dan hem daha doğru (WER %14,1 - %15,0) hem de daha az bellek kullanıyor ve aynı hızda (RTF 0,28): `small`'a göre WER 11 puan düşüyor, RTF 3 kat artıyor ama süre bütçesinin çok altında (3 dk'lık çağrı ~50 sn). Bellek 0,7 GB → ~1,9 GB; 15,7 GB RAM'de makul, ama Docker ile birlikte çalışırken boş bellek daralıyor.
+- **Alan sözlüğü (istem + hotwords) terimi düzeltir, genel WER'i bozar.** `small`'da terim doğruluğu %72,5 → %86,8 (WER +1,9 puan); `medium` ve `turbo`'da WER 2-4 puan kötüleşiyor (terim dışı sözcüklerde uydurma ve yanlış öneri). Güçlü modelde sözlük gereksiz, `small`'da değerli.
+- **Beam 5**: `small`'da WER -2 puan, terim +5,5 puan, ama RTF 0,09 → 0,14 (#163'teki "fark <0,5 puan" bulgusu bu sette geçerli değil; telefon sesinde ve terim ölçümünde fark var).
+- **VAD 0,3** telefon sesinde zararsız ve hafif iyi (WER -1 puan, RTF aynı). Daha fazla deney gerekir; varsayılan 0,2 kalır.
+- **İstemi kapatmak** her ölçütü kötüleştirir; mevcut istem değerli.
+- **Hepsi bir arada** (beam 5 + istem + hotwords + VAD 0,3) `small`'da en düşük WER'i (%22,2) verir, ama terim doğruluğu yalnız istem + hotwords kadar yüksek değil; `turbo` bunun hepsini geçer.
+
+### Sınırlar
+
+- 6 çağrı, ~9,5 dk, tek TTS motoru; WER çağrı başına %8-%38 dalgalanır, 1-2 puanlık farklar gürültü sınırında. Terim sayısı 91; terim yüzdeleri ±birkaç puan oynar.
+- Tepe bellek çalışma kümesidir ve ölçüm sırasında açık Docker/uygulamalara göre dalgalanır (aynı model 723-1106 MB).
+- `large-v3-turbo` ilk çalıştırmada ~1,6 GB iner (yükleme süresi 100 sn bunu içerir; sonraki yükleme ~4 sn).
+- Dar bant ön işleme (8 kHz yeniden örnekleme etkisi): bu sette ses zaten 8 kHz telefon bozulmalı; temiz ses (16 kHz) ayrıca ölçülmedi, #332'de ele alınır.
+
+### Karar ve sonraki adım
+
+Bu issue yalnız ölçer; **varsayılan değişikliği #330'da** yapılır (`config.py` ve `.env.example`). Öneri: `large-v3-turbo`, beam 1, mevcut istem (hotwords kapalı); bellek kısıtlı ortamda yedek: `small` + genişletilmiş istem + hotwords. Karar #332'deki model karşılaştırmasıyla birlikte netleşir (aynı turbo adayı).
+
 ## Gerçek ekip kayıtları (#150): betik hazır, kayıt bekleniyor
 
 Gerçek kayıtlar henüz yok; üretilmiş seslerle yetinilmiyor, issue açık kalır. Kayıt geldiğinde (kişisel veri: repoya koymayın, repo dışı bir klasör, ör. `D:\gercek_kayitlar`):

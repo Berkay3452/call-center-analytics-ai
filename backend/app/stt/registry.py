@@ -29,6 +29,7 @@ def build_transcriber(settings: Settings, provider: str | None = None) -> Transc
             vad_threshold=settings.whisper_vad_threshold,
             download_root=settings.whisper_download_root,
             initial_prompt=settings.whisper_initial_prompt,
+            hotwords=settings.whisper_hotwords,
         )
     if name == "openai_compatible":
         log.warning("stt.external_enabled", base_url=settings.stt_api_base_url)
