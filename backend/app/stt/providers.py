@@ -89,9 +89,11 @@ class FasterWhisperTranscriber:
         vad_threshold: float = 0.2,
         download_root: str | None = None,
         initial_prompt: str | None = None,
+        hotwords: str | None = None,
         model: Any = None,
     ) -> None:
         self.initial_prompt = initial_prompt or None
+        self.hotwords = hotwords or None
         self.model_size = model_size
         self.download_root = download_root
         self.compute_type = compute_type
@@ -120,6 +122,7 @@ class FasterWhisperTranscriber:
             vad_filter=True,  # sessizlikleri atlar: hız ve uydurma metne karşı
             vad_parameters={"threshold": self.vad_threshold},
             initial_prompt=self.initial_prompt,
+            hotwords=self.hotwords,
             condition_on_previous_text=False,  # uzun kayıtta tekrar döngüsünü önler
             word_timestamps=split_pauses,
         )

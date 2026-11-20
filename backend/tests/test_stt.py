@@ -452,3 +452,13 @@ async def test_faster_whisper_passes_initial_prompt(tmp_path: Path) -> None:
     )
     await transcriber.transcribe(tmp_path / "a.wav")
     assert model.kwargs.get("initial_prompt") == "impeller, Volvo Penta"
+
+
+async def test_faster_whisper_passes_hotwords(tmp_path: Path) -> None:
+    model = _FakeWhisperModel()
+    transcriber = FasterWhisperTranscriber("small", model=model, hotwords="Yanmar Tuzla")
+    await transcriber.transcribe(tmp_path / "a.wav")
+    assert model.kwargs.get("hotwords") == "Yanmar Tuzla"
+    off = FasterWhisperTranscriber("small", model=_FakeWhisperModel())
+    await off.transcribe(tmp_path / "a.wav")
+    assert off.hotwords is None

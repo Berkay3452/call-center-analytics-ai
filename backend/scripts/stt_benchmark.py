@@ -132,6 +132,10 @@ async def run(args: argparse.Namespace) -> list[dict[str, Any]]:
         overrides["whisper_compute_type"] = args.compute_type
     if args.vad_threshold is not None:
         overrides["whisper_vad_threshold"] = args.vad_threshold
+    if args.initial_prompt is not None:  # "" ile istemi kapatır
+        overrides["whisper_initial_prompt"] = args.initial_prompt or None
+    if args.hotwords is not None:
+        overrides["whisper_hotwords"] = args.hotwords or None
     if overrides:
         settings = settings.model_copy(update=overrides)
     providers = args.providers.split(",") if args.providers else [settings.stt_provider]
@@ -255,6 +259,8 @@ def main() -> None:
     parser.add_argument("--threads", type=int, help="WHISPER_CPU_THREADS'i ez (0: otomatik)")
     parser.add_argument("--compute-type", help="WHISPER_COMPUTE_TYPE'ı ez (int8, int8_float32...)")
     parser.add_argument("--vad-threshold", type=float, help="WHISPER_VAD_THRESHOLD'u ez")
+    parser.add_argument("--initial-prompt", help="WHISPER_INITIAL_PROMPT'u ez (boş: kapat)")
+    parser.add_argument("--hotwords", help="faster-whisper hotwords (boşluklu sözcük listesi)")
     parser.add_argument("--layout", choices=["mono", "stereo_rep_left", "stereo_rep_right"])
     parser.add_argument("--out", help="Sonuçları JSON olarak kaydet")
     args = parser.parse_args()

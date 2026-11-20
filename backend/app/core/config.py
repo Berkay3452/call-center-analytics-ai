@@ -176,6 +176,9 @@ class Settings(BaseSettings):
         "Miço Usta tekne servisi. Tekne bakımı, motor, şaft, pervane, impeller, yakıt filtresi, "
         "akü, sintine, kışlama, marina, Volvo Penta, Yanmar, Mercury, antifouling, bakım randevusu."
     )
+    # Hotwords: faster-whisper'ın ek ipucu parametresi (boşluklu sözcük listesi); varsayılan kapalı,
+    # deney sonucuna göre açılır (docs/stt_karari.md, #329).
+    whisper_hotwords: str | None = None
     whisper_vad_threshold: float = Field(default=0.2, gt=0, lt=1)
     # Modelin indirileceği klasör; boşsa Hugging Face varsayılanı (~/.cache/huggingface).
     whisper_download_root: str | None = None
