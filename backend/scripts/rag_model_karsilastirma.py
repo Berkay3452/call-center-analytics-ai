@@ -69,14 +69,22 @@ def load_notes() -> list[dict[str, Any]]:
     return notes
 
 
+Reranker = Callable[[str, list[str]], list[float]]
+RERANK_TOP = 10
+
+
 def rank_of(
     qvec: list[float],
     note_vecs: list[list[float]],
     notes: list[dict[str, Any]],
     question: dict[str, Any],
     scope: str,
+    reranker: Reranker | None = None,
 ) -> int | None:
-    """Beklenen notlardan birinin sırası (1 tabanlı) ya da None. Vektörler normalize varsayılır."""
+    """Beklenen notlardan birinin sırası (1 tabanlı) ya da None. Vektörler normalize varsayılır.
+
+    `reranker` verilirse vektör aramasının ilk `RERANK_TOP` adayı yeniden sıralanır; sonrası
+    vektör sırasıyla kalır (üretimdeki "ara, sonra ilk N'i yeniden sırala" akışı)."""
     expected = {n["id"] for n in notes if n["code"] in question["expected_notes"]}
     scored = sorted(
         (
@@ -86,7 +94,14 @@ def rank_of(
         ),
         reverse=True,
     )
-    return next((i + 1 for i, (_, note_id) in enumerate(scored) if note_id in expected), None)
+    order = [note_id for _, note_id in scored]
+    if reranker is not None:
+        by_id = {n["id"]: n["content"] for n in notes}
+        head = order[:RERANK_TOP]
+        scores = reranker(question["question"], [by_id[i] for i in head])
+        reordered = [i for _, i in sorted(zip(scores, head, strict=True), reverse=True)]
+        order = reordered + order[RERANK_TOP:]
+    return next((i + 1 for i, note_id in enumerate(order) if note_id in expected), None)
 
 
 def summarize(ranks: list[int | None]) -> dict[str, float]:
@@ -102,6 +117,7 @@ def evaluate(
     embed_passages: Embed,
     questions: list[dict[str, Any]],
     notes: list[dict[str, Any]],
+    reranker: Reranker | None = None,
 ) -> dict[str, Any]:
     """Tüm kapsamlar ve kategoriler için ölçütleri hesaplar (gecikme ayrıca ölçülür)."""
     started = time.perf_counter()
@@ -113,7 +129,8 @@ def evaluate(
     result: dict[str, Any] = {"index_s": round(index_s, 2), "dim": len(note_vecs[0])}
     for scope in SCOPES:
         ranks = [
-            rank_of(qv, note_vecs, notes, q, scope) for qv, q in zip(qvecs, questions, strict=True)
+            rank_of(qv, note_vecs, notes, q, scope, reranker)
+            for qv, q in zip(qvecs, questions, strict=True)
         ]
         by_cat: dict[str, dict[str, float]] = {}
         for cat in dict.fromkeys(q["kategori"] for q in questions):
@@ -181,20 +198,55 @@ def openai_embed(
     return embed
 
 
-def st_embed(model: str, trust_remote_code: bool) -> Callable[[list[str]], list[list[float]]]:
+def st_embed(
+    model: str, trust_remote_code: bool, revision: str | None = None
+) -> Callable[[list[str], str | None], list[list[float]]]:
+    """Yerel sentence-transformers. `task`: görev adaptörlü modeller için (ör. jina-v3)."""
     try:
         from sentence_transformers import SentenceTransformer
     except ImportError:
         sys.exit(
             "sentence-transformers yok: uv run --with torch --with sentence-transformers python ..."
         )
-    encoder = SentenceTransformer(model, device="cpu", trust_remote_code=trust_remote_code)
+    encoder = SentenceTransformer(
+        model, device="cpu", trust_remote_code=trust_remote_code, revision=revision
+    )
 
-    def embed(texts: list[str]) -> list[list[float]]:
-        vectors = encoder.encode(texts, normalize_embeddings=True, batch_size=16)
+    def embed(texts: list[str], task: str | None = None) -> list[list[float]]:
+        extra: dict[str, Any] = {"task": task} if task else {}
+        vectors = encoder.encode(texts, normalize_embeddings=True, batch_size=16, **extra)
         return [[float(x) for x in v] for v in vectors]
 
     return embed
+
+
+def cross_encoder(model: str) -> Reranker:
+    """Yerel yeniden sıralayıcı (sentence-transformers CrossEncoder, CPU)."""
+    try:
+        from sentence_transformers import CrossEncoder
+    except ImportError:
+        sys.exit(
+            "sentence-transformers yok: uv run --with torch --with sentence-transformers python ..."
+        )
+    encoder = CrossEncoder(model, device="cpu")
+
+    def score(query: str, passages: list[str]) -> list[float]:
+        return [float(s) for s in encoder.predict([(query, p) for p in passages])]
+
+    return score
+
+
+def rerank_latency(
+    reranker: Reranker, questions: list[dict[str, Any]], notes: list[dict[str, Any]]
+) -> float:
+    """Bir sorgu için `RERANK_TOP` adayı yeniden sıralamanın medyan süresi (ms)."""
+    passages = [n["content"] for n in notes[:RERANK_TOP]]
+    times = []
+    for q in questions:
+        started = time.perf_counter()
+        reranker(q["question"], passages)
+        times.append((time.perf_counter() - started) * 1000)
+    return round(statistics.median(times), 1)
 
 
 def _normalize(vec: list[float]) -> list[float]:
@@ -234,7 +286,10 @@ def comparison_table(results: list[dict[str, Any]]) -> str:
         ]
         for r in results:
             t = r[scope]["toplam"]
-            lat = r["gecikme"]
+            lat = dict(r["gecikme"])
+            extra = lat.get("rerank_ms", 0.0)  # yeniden sıralama sorgu süresine eklenir
+            lat["medyan_ms"] += extra
+            lat["p95_ms"] += extra
             mem = r.get("bellek_mb")
             mem_text = f"{mem:.0f} MB" if mem else (r.get("konteyner_bellek") or "—")
             lines.append(
@@ -271,6 +326,12 @@ def main() -> None:
     parser.add_argument(
         "--trust-remote-code", action="store_true", help="st: model kodunu çalıştır"
     )
+    parser.add_argument("--revision", help="st: model sürümü (commit) sabitle")
+    parser.add_argument("--st-task-query", help="st: sorgu görev adaptörü (ör. retrieval.query)")
+    parser.add_argument("--st-task-passage", help="st: not görev adaptörü (ör. retrieval.passage)")
+    parser.add_argument(
+        "--rerank-model", help="Yeniden sıralayıcı (CrossEncoder, ör. BAAI/bge-reranker-v2-m3)"
+    )
     parser.add_argument("--set", dest="qset", choices=["eski", "zor", "hepsi"], default="hepsi")
     parser.add_argument("--tei-container", help="TEI konteyner adı (bellek için docker stats)")
     parser.add_argument("--out", help="Sonucu JSON olarak kaydet")
@@ -285,37 +346,50 @@ def main() -> None:
         parser.error("--backend ya da --compare gerekli")
 
     if args.backend == "tei":
-        raw = tei_embed(args.url)
+        plain = tei_embed(args.url)
+        raw_query = raw_passage = plain
     elif args.backend == "openai":
         key = os.environ.get(args.api_key_env)
         if not (args.base_url and args.model and key):
             parser.error(
                 f"openai: --base-url, --model ve {args.api_key_env} ortam değişkeni gerekli"
             )
-        raw = openai_embed(args.base_url, args.model, key)
+        plain = openai_embed(args.base_url, args.model, key)
+        raw_query = raw_passage = plain
     else:
         if not args.model:
             parser.error("st: --model gerekli")
-        raw = st_embed(args.model, args.trust_remote_code)
+        local = st_embed(args.model, args.trust_remote_code, args.revision)
+
+        def raw_query(texts: list[str]) -> list[list[float]]:
+            return local(texts, args.st_task_query)
+
+        def raw_passage(texts: list[str]) -> list[list[float]]:
+            return local(texts, args.st_task_passage)
 
     def embed_queries(texts: list[str]) -> list[list[float]]:
-        return raw([args.query_prefix + t for t in texts])
+        return raw_query([args.query_prefix + t for t in texts])
 
     def embed_passages(texts: list[str]) -> list[list[float]]:
-        return raw([args.passage_prefix + t for t in texts])
+        return raw_passage([args.passage_prefix + t for t in texts])
 
     questions = load_questions(args.qset)
     notes = load_notes()
     name = args.name or args.model or args.backend
     print(f"{name}: {len(questions)} soru, {len(notes)} not", flush=True)
-    result = evaluate(embed_queries, embed_passages, questions, notes)
+    reranker = cross_encoder(args.rerank_model) if args.rerank_model else None
+    result = evaluate(embed_queries, embed_passages, questions, notes, reranker)
     result["gecikme"] = latency(embed_queries, questions)
+    if reranker is not None:
+        result["rerank_model"] = args.rerank_model
+        result["gecikme"]["rerank_ms"] = rerank_latency(reranker, questions, notes)
     result["ad"] = name
     result["set"] = args.qset
     result["sorular"] = len(questions)
     from scripts.stt_benchmark import peak_memory_mb
 
-    result["bellek_mb"] = peak_memory_mb() if args.backend == "st" else None
+    local_model = args.backend == "st" or reranker is not None
+    result["bellek_mb"] = peak_memory_mb() if local_model else None
     if args.tei_container:
         result["konteyner_bellek"] = container_memory(args.tei_container)
     if result["dim"] != 1024:
