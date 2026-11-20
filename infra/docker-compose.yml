@@ -55,6 +55,19 @@ services:
     volumes:
       - hf-cache:/data
 
+  # Arama sonuçlarını yeniden sıralayan servis (bge-reranker-v2-m3, CPU, #357). "rag" profiliyle
+  # embeddings ile birlikte açılır; ~3 GB bellek. Kapalıysa arama hata vermeden RRF sırasıyla
+  # çalışır. Kapatmak için backend/.env: RERANKER_PROVIDER=none.
+  # İlk açılışta model indirilir (~2,3 GB); `hf-cache` volume'unda saklanır.
+  reranker:
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.7
+    profiles: ["rag"]
+    command: ["--model-id", "BAAI/bge-reranker-v2-m3", "--max-client-batch-size", "16", "--max-batch-tokens", "2048"]
+    ports:
+      - "8081:80"
+    volumes:
+      - hf-cache:/data
+
   # -----------------------------------------------------------------------------------
   # "app" Profili: Tüm sistemi tek komutla ayağa kaldıran uygulama servisleri (#120)
   # -----------------------------------------------------------------------------------
@@ -80,6 +93,7 @@ services:
       - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/call_center
       - REDIS_URL=redis://redis:6379/0
       - TEI_URL=http://embeddings:80
+      - RERANKER_URL=http://reranker:80
       # Seed çağrılarının sesi: generate (varsayılan, ilk açılışta Piper ile üretir) | skip
       - SEED_AUDIO=${SEED_AUDIO:-generate}
     volumes:
@@ -113,6 +127,7 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/1
       - CELERY_RESULT_BACKEND=redis://redis:6379/2
       - TEI_URL=http://embeddings:80
+      - RERANKER_URL=http://reranker:80
     volumes:
       - ../data:/data:ro
       - audio-storage:/app/storage/audio
@@ -149,6 +164,7 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/1
       - CELERY_RESULT_BACKEND=redis://redis:6379/2
       - TEI_URL=http://embeddings:80
+      - RERANKER_URL=http://reranker:80
     volumes:
       - ../data:/data:ro
       - audio-storage:/app/storage/audio

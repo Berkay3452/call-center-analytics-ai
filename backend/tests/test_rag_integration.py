@@ -152,3 +152,51 @@ async def test_empty_question_returns_nothing(session: AsyncSession) -> None:
     owner = await owner_with_notes(session, "Sahip A", "Poyraz")
 
     assert await hybrid_search(session, EMBEDDER, owner, "   ") == []
+
+
+class PreferLast:
+    """Sahte reranker: her zaman en alttaki adayı en ilgili bulur; gördüğü metinleri kaydeder."""
+
+    model_name = "fake"
+
+    def __init__(self) -> None:
+        self.seen: list[str] = []
+
+    async def rerank(self, query: str, texts: list[str]) -> list[float]:
+        self.seen = texts
+        return [float(i) for i in range(len(texts))]
+
+
+async def test_reranker_reorders_candidates_and_only_sees_own_notes(session: AsyncSession) -> None:
+    owner_a = await owner_with_notes(session, "Sahip A", "Poyraz")
+    await owner_with_notes(session, "Sahip B", "Rüzgar")
+    await index_chunks(session, EMBEDDER)
+    question = "akü klima yakıt filtresi"
+
+    plain = await hybrid_search(session, EMBEDDER, owner_a, question, limit=3)
+    reranker = PreferLast()
+    ranked = await hybrid_search(session, EMBEDDER, owner_a, question, limit=3, reranker=reranker)
+
+    assert [h.text for h in ranked] == [h.text for h in reversed(plain)]
+    assert all(h.rerank_score is not None for h in ranked)
+    assert set(reranker.seen) == {content for content, _ in NOTES}  # B'nin notu hiç gitmedi
+    assert all(h.rerank_score is None for h in plain)
+
+
+async def test_reranker_failure_does_not_break_search(session: AsyncSession) -> None:
+    from app.rag.rerankers import RerankError
+
+    class Down:
+        model_name = "down"
+
+        async def rerank(self, query: str, texts: list[str]) -> list[float]:
+            raise RerankError("servis kapalı")
+
+    owner = await owner_with_notes(session, "Sahip A", "Poyraz")
+    await index_chunks(session, EMBEDDER)
+    question = "akü klima yakıt filtresi"
+
+    plain = await hybrid_search(session, EMBEDDER, owner, question, limit=3)
+    fallback = await hybrid_search(session, EMBEDDER, owner, question, limit=3, reranker=Down())
+
+    assert [h.chunk_id for h in fallback] == [h.chunk_id for h in plain]

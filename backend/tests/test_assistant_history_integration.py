@@ -40,6 +40,7 @@ QUESTION = "Yakıt filtresi için usta ne önermişti?"
 @pytest.fixture
 async def session(monkeypatch: pytest.MonkeyPatch) -> AsyncIterator[AsyncSession]:
     monkeypatch.setattr(retrieval, "build_embedder", lambda settings: EMBEDDER)
+    monkeypatch.setattr(retrieval, "build_reranker", lambda settings: None)  # servis gerekmez
     engine = create_async_engine(Settings().database_url)
     async with engine.connect() as conn:
         transaction = await conn.begin()

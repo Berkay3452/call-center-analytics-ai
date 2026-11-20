@@ -132,6 +132,7 @@ Tüm ayarlar `backend/.env` dosyasından okunur (`backend/.env.example` açıkla
 | `LLM_PROVIDER`, `LLM_API_KEY`, `LLM_FAST_MODEL`, `LLM_SMART_MODEL`, `LLM_FALLBACK_MODEL` | LLM sağlayıcısı, anahtar ve modeller |
 | `STT_PROVIDER`, `WHISPER_MODEL`, `STT_CHANNEL_LAYOUT`, `WHISPER_INITIAL_PROMPT` | Konuşma tanıma: sağlayıcı, model boyutu, kanal düzeni, alan sözcükleri |
 | `EMBEDDING_PROVIDER`, `TEI_URL` | Embedding servisi |
+| `RERANKER_PROVIDER`, `RERANKER_URL` | Arama sonuçlarını yeniden sıralayan servis (`none` ile kapatılır) |
 | `AUDIO_STORAGE_BACKEND` | Ses depolama: `local` veya `gcs` |
 | `ANALYSIS_CLASSIFIER_FIRST` | `true` ise eski "önce sınıflandırma" sırası |
 | `LLM_SENTIMENT_ANALYZER_MODEL` | Duygu analizi agent'ının modeli (boşsa güçlü model) |

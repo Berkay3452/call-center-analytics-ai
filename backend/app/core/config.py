@@ -212,6 +212,14 @@ class Settings(BaseSettings):
     embedding_timeout_s: float = 60.0
     embedding_batch_size: int = Field(default=16, ge=1)
 
+    # --- Yeniden sıralayıcı --- (#357; `app/rag/rerankers.py`)
+    # tei: bge-reranker-v2-m3, Docker'da TEI servisi (rag profili). none: yeniden sıralama kapalı.
+    # Servis kapalıysa arama hata vermez, RRF sırasıyla devam eder.
+    reranker_provider: Literal["tei", "none"] = "tei"
+    reranker_url: str = "http://localhost:8081"
+    reranker_model: str = "BAAI/bge-reranker-v2-m3"
+    reranker_timeout_s: float = Field(default=20.0, gt=0)
+
     # --- Türetilmiş değerler ---
     @field_validator("llm_fallback_model", mode="before")
     @classmethod

@@ -263,6 +263,22 @@ def wait_embeddings() -> bool:
     return ok
 
 
+def check_reranker() -> None:
+    """Reranker servisini kısaca bekler; hazır değilse uyarır (arama RRF sırasıyla çalışır)."""
+    from app.core.config import get_settings
+
+    settings = get_settings()
+    if settings.reranker_provider != "tei":
+        return
+    if wait_until(lambda: http_ok(f"{settings.reranker_url}/health"), timeout=120, interval=5):
+        info("Reranker servisi hazır.")
+    else:
+        warn(
+            "Reranker servisi henüz hazır değil (ilk açılışta model iniyor olabilir); hazır olana "
+            "kadar arama yeniden sıralamasız çalışır. Kapatmak için RERANKER_PROVIDER=none."
+        )
+
+
 def migrate() -> None:
     step("Veritabanı şeması (alembic)")
     if run([sys.executable, "-m", "alembic", "upgrade", "head"]) != 0:
@@ -386,6 +402,7 @@ def main(argv: list[str] | None = None) -> None:
         start_infrastructure(docker, rag=not args.no_rag)
         if not args.no_rag:
             embeddings_ready = wait_embeddings()
+            check_reranker()
     migrate()
     if args.reset_db:
         step("Veritabanı sıfırlanıyor")

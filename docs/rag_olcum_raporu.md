@@ -186,3 +186,55 @@ cümlesi kartlardaki genel arama talimatıdır (alana özel talimat denenmedi).
    ek gecikme (10 aday), ~3 GB ek bellek. Üretimde şu an yeniden sıralama yok. Eklenip
    eklenmeyeceği (ve hangi gecikmeyle, TEI reranker ya da GPU ile) Berkay'ın kararıdır;
    verilirse ayrı issue olarak ele alınır.
+
+## 3. Yeniden sıralayıcının sisteme eklenmesi (#357)
+
+Karar (Berkay, 20 Kasım 2026): reranker eklenecek; sorgu başına ~2,4 sn kabul edilebilir.
+
+### Nasıl çalışıyor
+
+1. Hibrit arama (vektör + tam metin, RRF) eskisi gibi çalışır; sahip filtresi ve
+   `min_similarity` eşiği aynıdır.
+2. Eşikten geçen ilk **10** aday (`RERANK_TOP`), soruyla birlikte reranker'a (TEI üzerinde
+   `BAAI/bge-reranker-v2-m3`, `POST /rerank`) gönderilir; adaylar puana göre yeniden dizilir,
+   ilk `limit` (asistanda 3) döner. Eşit puanda RRF sırası korunur.
+3. **Reranker erişilemezse arama hata vermez:** RRF sırasıyla döner ve uyarı günlüğü yazılır
+   (`rerank_failed_using_rrf`; sorgu metni günlüğe yazılmaz).
+4. Reranker yalnızca zaten sahip filtresinden geçmiş notları görür; başka sahibin notu ona da
+   gitmez (`tests/test_rag_integration.py`).
+
+Ayarlar (`backend/.env`): `RERANKER_PROVIDER` (`tei` varsayılan | `none`), `RERANKER_URL`
+(`http://localhost:8081`), `RERANKER_MODEL`, `RERANKER_TIMEOUT_S` (20). Servis `infra/docker-compose.yml`
+içinde `reranker` adıyla `rag` profilindedir; Docker içindeki servisler `http://reranker:80` adresini
+kullanır. Smoke testi `RERANKER_PROVIDER=none` ile koşar.
+
+Maliyet: ~3 GB ek bellek ve ilk açılışta ~2,3 GB model indirme. Belleği dar makinede
+`RERANKER_PROVIDER=none` yazılırsa arama eskisi gibi çalışır.
+
+### Üretim aramasında ölçüm: reranker'sız taban (20 Kasım 2026)
+
+`python -m scripts.rag_eval --set hepsi --k 5 --min-similarity 0.5` (gerçek veritabanı,
+hibrit arama, 62 soru; ham sonuç `docs/rag_olcum_sonuclari/hibrit-rrf-reranker-yok.json`):
+
+| Arama | isabet@1 | isabet@5 | MRR |
+|---|---|---|---|
+| Hibrit (RRF), reranker yok | 0,81 | 0,97 | 0,88 |
+
+### Reranker'lı hibrit ölçüm: **henüz yapılmadı**
+
+Bölüm 2'deki "bge-m3 + reranker" ölçümü saf vektör aramasının adaylarıyla yapılmıştı
+(MRR 0,91 → 1,00). Üretimdeki hibrit aramanın reranker'lı hali bu makinede ölçülemedi:
+Windows'un ayrılabilir bellek alanı (sayfa dosyası C: diskinde, C: dolu) Docker + embedding
+servisi açıkken modeli yüklemeye yetmedi (`os error 1455`). Denemede Docker motoru da
+çöktü ve servisler yeniden başlatıldı. Yeterli bellekle şu iki komutla ölçülür (ikincisi
+`reranker` servisi açıkken, `.env`'de `RERANKER_PROVIDER=tei`):
+
+```powershell
+uv run python -m scripts.rag_eval --set hepsi --k 5 --min-similarity 0.5
+uv run python -m scripts.rag_eval --set hepsi --k 5 --min-similarity 0.5 --rerank
+```
+
+TEI'nin `/rerank` ucuyla uçtan uca bağlantı da bu makinede denenemedi; istemci TEI'nin
+belgelenmiş sözleşmesine (`{"query","texts","truncate"}` → `[{"index","score"}]`) ve sahte
+HTTP testlerine dayanıyor. Ilk açılışta `docker compose ... logs reranker` ve `rag_eval --rerank`
+ile doğrulanmalıdır.

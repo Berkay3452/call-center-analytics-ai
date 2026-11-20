@@ -21,6 +21,7 @@ x-smoke-env: &smoke-env
   - LLM_FALLBACK_MODEL=
   - LLM_REQUESTS_PER_MINUTE=0
   - EMBEDDING_PROVIDER=hash
+  - RERANKER_PROVIDER=none
   - STT_PROVIDER=faster_whisper
   - WHISPER_MODEL=${SMOKE_WHISPER_MODEL:-tiny}
   - WHISPER_DOWNLOAD_ROOT=/app/storage/models/whisper

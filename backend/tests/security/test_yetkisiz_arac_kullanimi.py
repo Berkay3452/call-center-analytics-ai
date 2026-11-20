@@ -105,7 +105,8 @@ def test_llm_never_receives_tool_bindings_or_a_database_handle() -> None:
 
 
 def test_ssrf_surface_is_a_single_configured_http_client() -> None:
-    """API7: dış HTTP çağrısı yapan tek modül gömme istemcisidir; adresi ortam ayarından gelir."""
+    """API7: dış HTTP çağrısı yapan modüller gömme ve reranker istemcileridir (#357); adresleri
+    ortam ayarından gelir, kullanıcı girdisinden değil."""
     markers = ("import httpx", "import requests", "aiohttp")
     users = sorted(
         p.relative_to(APP).as_posix()
@@ -113,8 +114,9 @@ def test_ssrf_surface_is_a_single_configured_http_client() -> None:
         if any(m in p.read_text(encoding="utf-8") for m in markers)
     )
 
-    assert users == ["rag/embedders.py"]
-    assert "settings." in (APP / "rag" / "embedders.py").read_text(encoding="utf-8")
+    assert users == ["rag/embedders.py", "rag/rerankers.py"]
+    for module in users:
+        assert "settings." in (APP / module).read_text(encoding="utf-8")
 
 
 def test_analysis_agents_cannot_import_the_write_layer() -> None:
