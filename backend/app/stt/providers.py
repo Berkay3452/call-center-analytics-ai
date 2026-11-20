@@ -22,6 +22,7 @@ import structlog
 from app.agents.base import Speaker
 from app.services.transcript_text import parse_transcript, with_timings
 from app.stt.base import SttError, SttSegment, TranscriptionResult
+from app.stt.duzeltme import Corrector
 
 log = structlog.get_logger(__name__)
 
@@ -71,6 +72,14 @@ def split_at_pauses(words: Any, gap_s: float = PAUSE_SPLIT_S) -> list[SttSegment
     return [p for p in parts if p.text]
 
 
+def _corrected(segment: SttSegment, corrector: Corrector | None) -> SttSegment:
+    """Düzeltme sözlüğünü uygular (#330); sözlük yoksa ya da metin değişmediyse aynı nesne."""
+    if corrector is None:
+        return segment
+    text = corrector(segment.text)
+    return segment if text == segment.text else segment.model_copy(update={"text": text})
+
+
 def _words_segment(words: list[Any]) -> SttSegment:
     text = "".join(w.word for w in words).strip()
     return SttSegment(start_ms=_ms(words[0].start), end_ms=_ms(words[-1].end), text=text)
@@ -90,10 +99,12 @@ class FasterWhisperTranscriber:
         download_root: str | None = None,
         initial_prompt: str | None = None,
         hotwords: str | None = None,
+        corrector: Corrector | None = None,
         model: Any = None,
     ) -> None:
         self.initial_prompt = initial_prompt or None
         self.hotwords = hotwords or None
+        self.corrector = corrector  # alan düzeltme sözlüğü (#330); segment metnine uygulanır
         self.model_size = model_size
         self.download_root = download_root
         self.compute_type = compute_type
@@ -134,9 +145,13 @@ class FasterWhisperTranscriber:
                     continue
                 words = getattr(s, "words", None)
                 if split_pauses and words:
-                    yield from split_at_pauses(words)
+                    for part in split_at_pauses(words):
+                        yield _corrected(part, self.corrector)
                 else:
-                    yield SttSegment(start_ms=_ms(s.start), end_ms=_ms(s.end), text=s.text.strip())
+                    yield _corrected(
+                        SttSegment(start_ms=_ms(s.start), end_ms=_ms(s.end), text=s.text.strip()),
+                        self.corrector,
+                    )
 
         return produce(), info
 
@@ -250,8 +265,10 @@ class OpenAICompatibleTranscriber:
         api_key: str | None,
         model: str = "whisper-large-v3",
         timeout_s: float = 300.0,
+        corrector: Corrector | None = None,
         client: Any = None,
     ) -> None:
+        self.corrector = corrector
         self.base_url = base_url
         self.api_key = api_key
         self.model = model
@@ -291,12 +308,17 @@ class OpenAICompatibleTranscriber:
             ) from exc
 
         segments = [
-            SttSegment(start_ms=_ms(s.start), end_ms=_ms(s.end), text=s.text.strip())
+            _corrected(
+                SttSegment(start_ms=_ms(s.start), end_ms=_ms(s.end), text=s.text.strip()),
+                self.corrector,
+            )
             for s in (getattr(resp, "segments", None) or [])
             if s.text and s.text.strip()
         ]
         if not segments and getattr(resp, "text", "").strip():
-            segments = [SttSegment(start_ms=0, end_ms=0, text=resp.text.strip())]
+            segments = [
+                _corrected(SttSegment(start_ms=0, end_ms=0, text=resp.text.strip()), self.corrector)
+            ]
         return TranscriptionResult(
             language=getattr(resp, "language", None) or language,
             duration_sec=float(getattr(resp, "duration", 0.0) or 0.0),

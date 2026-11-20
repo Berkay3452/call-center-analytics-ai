@@ -73,7 +73,7 @@ Detailed architecture, decisions and current status: [`Sistem_mimarisi_v6.1.md`]
 | Background jobs | Celery 5.7 + Redis (Beat for periodic tasks; Redis Stream for the live transcript) |
 | Database | PostgreSQL 17 + pgvector (18 tables, Alembic 0008) |
 | Agents | LangGraph 1.2 + LangChain 1.5 (5 agents); the LLM provider is selected by configuration (NVIDIA Nemotron in development: fast + strong + fallback model) |
-| Speech recognition | faster-whisper 1.2 (local, CPU; `small` by default, `medium` is more accurate); Whisper API and a stub as alternatives |
+| Speech recognition | faster-whisper 1.2 (local, CPU; `large-v3-turbo` by default, `small` on low-memory machines); Whisper API and a stub as alternatives |
 | Embeddings | bge-m3 (TEI container), 1024 dimensions |
 | Frontend | Next.js 16.4, React 19.3, TypeScript 5, Tailwind CSS 4 |
 | Tests | pytest (~2,460 tests), Playwright 1.65 (e2e + accessibility/axe), ruff, mypy, ESLint |

@@ -94,7 +94,7 @@ Bir çağrı analizi 4 istektir. Kota 40 istek/dk, uygulama sınırı 30 istek/d
 | 4 | Tüm alanları isteğe bağlı CRM şeması alakasız JSON'u "başarılı" sayıyor (sessiz boş sonuç) | Orta | `CrmExtraction` için "en az bir alan dolu" doğrulaması; **ayrı issue önerilir** (ajan alanı) |
 | 5 | Semafor, SDK'nın kendi Retry-After uykusunu da tutuyor | Düşük | `LLM_MAX_RETRIES=0` ve beklemeyi ajan katmanında yapmak (kısmen #221'de) |
 | 6 | Model yanıt vermezse eşzamanlılık 2 olduğundan ajanlar sırada bekliyor, yedek modele sıra gelmeden 90 sn doluyor | Düşük | Ajan bütçesini 120 sn yapmak ya da `LLM_TIMEOUT_S`'yi 20 sn'ye çekmek |
-| 7 | Bellek kısıtlı makinede `small` STT modeli yüklenemiyor (`mkl_malloc`) | Orta (ortama bağlı) | Sunumda `WHISPER_MODEL=base` yedeği; işçi RAM'ini ≥ 2 GB boş tutun |
+| 7 | Bellek kısıtlı makinede `small` STT modeli yüklenemiyor (`mkl_malloc`) | Orta (ortama bağlı) | Varsayılan model artık `large-v3-turbo` (~1,9 GB, #330): işçi RAM'ini ≥ 3 GB boş tutun; sığmazsa `WHISPER_MODEL=small` ya da `base` yedeği |
 | 8 | `task_acks_late` + Redis: öldürülen işçinin mesajı 1 saat (visibility timeout) sonra yeniden teslim edilebilir; çağrı arada kurtarıldıysa aynı çağrı ikinci kez analiz edilir (yeni sürüm) | Düşük | Zararsız ama gereksiz LLM kullanımı; görevin başında çağrı zaten `tamam` ise atlamak |
 | 9 | `agent_runs.fallback_from` yazılmıyor; yedek modele ne sıklıkla geçildiği panelden/veritabanından görülemiyor | Düşük | `analysis_store` kaydına `fallback_from` eklenmeli (ek nullable sütun gerekirse migration) |
 | 10 | Çağrı kaybolması (sessizce) | — | **Gözlenmedi:** her senaryoda çağrı `basarisiz`/`kismi`/`tamam` oldu; işçi ölümü kurtarma ile toparlandı |

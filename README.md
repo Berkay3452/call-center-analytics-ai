@@ -71,7 +71,7 @@ Ayrıntılı mimari, kararlar ve mevcut durum: [`Sistem_mimarisi_v6.1.md`](Siste
 | Arka plan işleri | Celery 5.7 + Redis (Beat ile periyodik görevler; canlı transkript için Redis Stream) |
 | Veritabanı | PostgreSQL 17 + pgvector (18 tablo, Alembic 0008) |
 | Agent'lar | LangGraph 1.2 + LangChain 1.5 (5 agent); LLM sağlayıcısı ayardan seçilir (geliştirmede NVIDIA Nemotron: hızlı + güçlü + yedek model) |
-| Konuşma tanıma | faster-whisper 1.2 (yerel, CPU; `small` varsayılan, `medium` daha doğru); Whisper API ve stub yedek |
+| Konuşma tanıma | faster-whisper 1.2 (yerel, CPU; `large-v3-turbo` varsayılan, bellek kısıtlıysa `small`); Whisper API ve stub yedek |
 | Embedding | bge-m3 (TEI konteyneri), 1024 boyut |
 | Frontend | Next.js 16.4, React 19.3, TypeScript 5, Tailwind CSS 4 |
 | Test | pytest (~2.460 test), Playwright 1.65 (e2e + erişilebilirlik/axe), ruff, mypy, ESLint |

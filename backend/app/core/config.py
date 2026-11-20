@@ -164,7 +164,9 @@ class Settings(BaseSettings):
     live_transcript_maxlen: int = Field(default=5000, ge=100)
     # Mono kayıtta dil modeliyle metin tabanlı konuşmacı ayrımı (akustik ayrım değildir).
     stt_llm_diarization: bool = True
-    whisper_model: str = "small"  # CPU için small/medium; GPU varsa large-v3
+    # large-v3-turbo: CPU'da medium'dan hem doğru hem hızlı (WER ~%14, RTF ~0,3, ~1,9 GB; #329).
+    # Bellek kısıtlıysa small (WER ~%25, RTF ~0,1, ~0,7 GB). GPU varsa float16 ile large-v3.
+    whisper_model: str = "large-v3-turbo"
     whisper_compute_type: str = "int8"  # CPU: int8; GPU varsa float16
     whisper_cpu_threads: int = Field(default=0, ge=0)  # 0: otomatik
     # 1: beam 5 ile aynı doğrulukta (WER farkı <0,5 puan) yaklaşık 1,3-2 kat hızlı (#163 ölçümü).
@@ -180,6 +182,10 @@ class Settings(BaseSettings):
     # deney sonucuna göre açılır (docs/stt_karari.md, #329).
     whisper_hotwords: str | None = None
     whisper_vad_threshold: float = Field(default=0.2, gt=0, lt=1)
+    # Alan düzeltme sözlüğü (#330): STT çıktısındaki sistematik yanlış yazımları maskelemeden önce
+    # düzeltir. Dosya (isteğe bağlı) varsayılan kurallara eklenir (`app/stt/duzeltme_sozlugu.json`).
+    stt_correction_enabled: bool = True
+    stt_correction_file: str | None = None
     # Modelin indirileceği klasör; boşsa Hugging Face varsayılanı (~/.cache/huggingface).
     whisper_download_root: str | None = None
 
