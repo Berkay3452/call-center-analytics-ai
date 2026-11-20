@@ -84,7 +84,7 @@ Script sabit tohum (`SEED = 42`, `Faker('tr_TR')`) kullanır; her çalıştırma
 
 ## Miço AI araması (RAG, #26)
 
-Tekne karnesi (usta notları ve servis kayıtları) hibrit aranır: **vektör** (bge-m3) + **Türkçe tam metin**, sonuçlar RRF ile birleştirilir; her arama `owner_id` ile sınırlıdır. RRF'nin ilk 10 adayı **reranker** (bge-reranker-v2-m3) ile soruyla birlikte okunup yeniden sıralanır (#357). Embedding modeli ve reranker Docker'da TEI servisleriyle CPU'da çalışır (Python'a torch kurulmaz):
+Tekne karnesi (usta notları ve servis kayıtları) hibrit aranır: **vektör** (bge-m3) + **Türkçe tam metin**, sonuçlar RRF ile birleştirilir; her arama `owner_id` ile sınırlıdır. Açıksa RRF'nin ilk 10 adayı **reranker** (bge-reranker-v2-m3) ile soruyla birlikte okunup yeniden sıralanır (#357; varsayılan kapalı). Embedding modeli ve reranker Docker'da TEI servisleriyle CPU'da çalışır (Python'a torch kurulmaz):
 
 ```
 docker compose -f ../infra/docker-compose.yml --profile rag up -d   # ilk açılışta ~2,3 GB model iner
@@ -94,7 +94,7 @@ uv run python -m scripts.rag_eval --mode text # karşılaştırma: yalnızca tam
 uv run python -m scripts.rag_eval --set hepsi --k 5 --rerank   # 62 soru, reranker ile (reranker'sız için --rerank'ı çıkar)
 ```
 
-Reranker sorgu başına ~2,4 sn (CPU) ve ~3 GB bellek ekler; `--profile rag` ile embedding'le birlikte açılır (`RERANKER_URL`, varsayılan `http://localhost:8081`). Kapatmak için `RERANKER_PROVIDER=none`. Servis kapalıysa arama hata vermez, yeniden sıralamasız (RRF sırasıyla) devam eder ve uyarı günlüğü yazar. Ölçüm: `docs/rag_olcum_raporu.md`.
+Reranker sorgu başına ~2,4 sn (CPU) ve ~3-5 GB bellek ekler. Açmak için `.env`'de `RERANKER_PROVIDER=tei` ve `docker compose -f ../infra/docker-compose.yml --profile rag --profile rerank up -d` (`RERANKER_URL`, varsayılan `http://localhost:8081`). Açıkken servis kapalıysa arama hata vermez, yeniden sıralamasız (RRF sırasıyla) devam eder ve uyarı günlüğü yazar. **Uçtan uca doğrulanmadı** ve bellek dar makinede Docker'ı çökertti: `docs/rag_olcum_raporu.md` bölüm 3.
 
 Servis olmadan denemek için `EMBEDDING_PROVIDER=hash` (modelsiz, yalnızca kelime örtüşmesi; gerçek kalite ölçümü için kullanılmaz).
 

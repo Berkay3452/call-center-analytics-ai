@@ -55,14 +55,17 @@ services:
     volumes:
       - hf-cache:/data
 
-  # Arama sonuçlarını yeniden sıralayan servis (bge-reranker-v2-m3, CPU, #357). "rag" profiliyle
-  # embeddings ile birlikte açılır; ~3 GB bellek. Kapalıysa arama hata vermeden RRF sırasıyla
-  # çalışır. Kapatmak için backend/.env: RERANKER_PROVIDER=none.
-  # İlk açılışta model indirilir (~2,3 GB); `hf-cache` volume'unda saklanır.
+  # Arama sonuçlarını yeniden sıralayan servis (bge-reranker-v2-m3, CPU, #357). İsteğe bağlı:
+  # yalnızca "rerank" profiliyle açılır ve backend/.env'de RERANKER_PROVIDER=tei gerekir.
+  #   docker compose -f infra/docker-compose.yml --profile rag --profile rerank up -d
+  # Model ONNX sürümüdür: TEI'nin CPU imajı ONNX dosyası ister; BAAI/bge-reranker-v2-m3 deposunda
+  # yoktur ve safetensors'a düşen yedek motor bu imajda çöker (segfault, 20 Kasım 2026 denemesi).
+  # İlk açılışta ~2,3 GB iner (`hf-cache` volume'u); çalışırken ~3-5 GB bellek tutar. Bellek dar
+  # makinede (embedding ile birlikte) Docker çökebilir; bkz. docs/rag_olcum_raporu.md bölüm 3.
   reranker:
     image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.7
-    profiles: ["rag"]
-    command: ["--model-id", "BAAI/bge-reranker-v2-m3", "--max-client-batch-size", "16", "--max-batch-tokens", "2048"]
+    profiles: ["rerank"]
+    command: ["--model-id", "onnx-community/bge-reranker-v2-m3-ONNX", "--max-client-batch-size", "16", "--max-batch-tokens", "2048"]
     ports:
       - "8081:80"
     volumes:

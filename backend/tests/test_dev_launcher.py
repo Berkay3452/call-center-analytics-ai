@@ -69,6 +69,15 @@ def test_compose_command_includes_rag_profile_only_when_asked() -> None:
     assert with_rag[-2:] == ["up", "-d"] and str(dev.COMPOSE_FILE) in with_rag
 
 
+def test_compose_command_starts_reranker_only_when_asked() -> None:
+    plain = dev.compose_command("docker", rag=True)
+    with_rerank = dev.compose_command("docker", rag=True, rerank=True)
+
+    assert "rerank" not in plain  # varsayılan: reranker servisi açılmaz (bellek)
+    profiles = [with_rerank[i + 1] for i, a in enumerate(with_rerank) if a == "--profile"]
+    assert profiles == ["rag", "rerank"]
+
+
 def test_parse_args_defaults_start_everything() -> None:
     args = dev.parse_args([])
     assert not (args.no_rag or args.no_audio or args.no_celery or args.skip_docker or args.reset_db)

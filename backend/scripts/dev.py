@@ -175,10 +175,12 @@ def find_docker() -> str | None:
     return None
 
 
-def compose_command(docker: str, *, rag: bool) -> list[str]:
+def compose_command(docker: str, *, rag: bool, rerank: bool = False) -> list[str]:
     cmd = [docker, "compose", "-f", str(COMPOSE_FILE)]
     if rag:
         cmd += ["--profile", "rag"]
+    if rerank:
+        cmd += ["--profile", "rerank"]
     return [*cmd, "up", "-d"]
 
 
@@ -234,8 +236,17 @@ def db_ready() -> bool:
 
 
 def start_infrastructure(docker: str, *, rag: bool) -> None:
-    step("Altyapı (PostgreSQL, Redis" + (", embedding" if rag else "") + ")")
-    if run(compose_command(docker, rag=rag), env={"REDIS_PORT": str(redis_port())}) != 0:
+    from app.core.config import get_settings
+
+    rerank = rag and get_settings().reranker_provider == "tei"  # reranker yalnızca isteyene
+    step(
+        "Altyapı (PostgreSQL, Redis"
+        + (", embedding" if rag else "")
+        + (", reranker" if rerank else "")
+        + ")"
+    )
+    command = compose_command(docker, rag=rag, rerank=rerank)
+    if run(command, env={"REDIS_PORT": str(redis_port())}) != 0:
         fail("`docker compose up` başarısız.")
     if not wait_until(db_ready, timeout=90):
         fail("PostgreSQL hazır olmadı (localhost:15432).")

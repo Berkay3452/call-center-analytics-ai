@@ -33,7 +33,7 @@ class TeiReranker:
         self,
         url: str,
         *,
-        model_name: str = "BAAI/bge-reranker-v2-m3",
+        model_name: str = "onnx-community/bge-reranker-v2-m3-ONNX",
         timeout_s: float = 20.0,
         transport: httpx.AsyncBaseTransport | None = None,
     ) -> None:

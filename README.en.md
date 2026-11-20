@@ -134,7 +134,7 @@ All settings are read from `backend/.env` (`backend/.env.example` is commented).
 | `LLM_PROVIDER`, `LLM_API_KEY`, `LLM_FAST_MODEL`, `LLM_SMART_MODEL`, `LLM_FALLBACK_MODEL` | LLM provider, key and models |
 | `STT_PROVIDER`, `WHISPER_MODEL`, `STT_CHANNEL_LAYOUT`, `WHISPER_INITIAL_PROMPT` | Speech recognition: provider, model size, channel layout, domain vocabulary |
 | `EMBEDDING_PROVIDER`, `TEI_URL` | Embedding service |
-| `RERANKER_PROVIDER`, `RERANKER_URL` | Service that re-ranks search results (`none` disables it) |
+| `RERANKER_PROVIDER`, `RERANKER_URL` | Service that re-ranks search results (optional, default `none`) |
 | `AUDIO_STORAGE_BACKEND` | Audio storage: `local` or `gcs` |
 | `ANALYSIS_CLASSIFIER_FIRST` | If `true`, restores the older "classify first" ordering |
 | `LLM_SENTIMENT_ANALYZER_MODEL` | Model for the sentiment agent (the strong model if empty) |
