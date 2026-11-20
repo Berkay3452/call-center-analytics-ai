@@ -84,6 +84,29 @@ def test_scope_filters_other_owners(notes: list[dict[str, Any]]) -> None:
     assert rank_of(qvec, vecs, sub, question, "tum") == 2
 
 
+def test_reranker_reorders_only_the_top_candidates(notes: list[dict[str, Any]]) -> None:
+    sub = notes[:4]
+    target = sub[3]
+    vecs = [[1.0, 0.0], [0.9, 0.1], [0.8, 0.2], [0.7, 0.3]]  # vektör sırası: 0, 1, 2, 3
+    question = {"question": "q", "owner_id": 0, "expected_notes": [target["code"]]}
+    qvec = [1.0, 0.0]
+    assert rank_of(qvec, vecs, sub, question, "tum") == 4
+
+    def prefers_target(_query: str, passages: list[str]) -> list[float]:
+        return [1.0 if p == target["content"] else 0.0 for p in passages]
+
+    assert rank_of(qvec, vecs, sub, question, "tum", prefers_target) == 1
+    # İlk N'in dışındaki notlar yeniden sıralanmaz: hedef 4. sıradaysa ve N=2 ise 4 kalır.
+    import scripts.rag_model_karsilastirma as mod
+
+    original = mod.RERANK_TOP
+    try:
+        mod.RERANK_TOP = 2
+        assert rank_of(qvec, vecs, sub, question, "tum", prefers_target) == 4
+    finally:
+        mod.RERANK_TOP = original
+
+
 def test_oracle_embedder_scores_perfectly(notes: list[dict[str, Any]]) -> None:
     questions = load_questions("hepsi")
     index = {n["content"]: i for i, n in enumerate(notes)}
