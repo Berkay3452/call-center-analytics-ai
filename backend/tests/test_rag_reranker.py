@@ -74,7 +74,7 @@ def test_build_reranker_selects_provider() -> None:
     built = build_reranker(make_settings(reranker_provider="tei", reranker_url="http://rr:80"))
     assert isinstance(built, TeiReranker)
     assert built.url == "http://rr:80"
-    assert built.model_name == "BAAI/bge-reranker-v2-m3"
+    assert built.model_name == "onnx-community/bge-reranker-v2-m3-ONNX"
 
 
 # --- Sıralama mantığı ---------------------------------------------------------------------

@@ -203,13 +203,17 @@ Karar (Berkay, 20 Kasım 2026): reranker eklenecek; sorgu başına ~2,4 sn kabul
 4. Reranker yalnızca zaten sahip filtresinden geçmiş notları görür; başka sahibin notu ona da
    gitmez (`tests/test_rag_integration.py`).
 
-Ayarlar (`backend/.env`): `RERANKER_PROVIDER` (`tei` varsayılan | `none`), `RERANKER_URL`
-(`http://localhost:8081`), `RERANKER_MODEL`, `RERANKER_TIMEOUT_S` (20). Servis `infra/docker-compose.yml`
-içinde `reranker` adıyla `rag` profilindedir; Docker içindeki servisler `http://reranker:80` adresini
-kullanır. Smoke testi `RERANKER_PROVIDER=none` ile koşar.
+Ayarlar (`backend/.env`): `RERANKER_PROVIDER` (**varsayılan `none`**, açmak için `tei`),
+`RERANKER_URL` (`http://localhost:8081`), `RERANKER_MODEL`, `RERANKER_TIMEOUT_S` (20). Servis
+`infra/docker-compose.yml` içinde `reranker` adıyla **`rerank` profilindedir** (embedding'in `rag`
+profiliyle otomatik açılmaz):
 
-Maliyet: ~3 GB ek bellek ve ilk açılışta ~2,3 GB model indirme. Belleği dar makinede
-`RERANKER_PROVIDER=none` yazılırsa arama eskisi gibi çalışır.
+```powershell
+docker compose -f infra/docker-compose.yml --profile rag --profile rerank up -d
+```
+
+Docker içindeki servisler `http://reranker:80` adresini kullanır; smoke testi `none` ile koşar.
+`dev.py`, yalnızca `RERANKER_PROVIDER=tei` ise reranker'ı da başlatır ve hazır olmasını bekler.
 
 ### Üretim aramasında ölçüm: reranker'sız taban (20 Kasım 2026)
 
@@ -220,21 +224,40 @@ hibrit arama, 62 soru; ham sonuç `docs/rag_olcum_sonuclari/hibrit-rrf-reranker-
 |---|---|---|---|
 | Hibrit (RRF), reranker yok | 0,81 | 0,97 | 0,88 |
 
-### Reranker'lı hibrit ölçüm: **henüz yapılmadı**
+### Reranker'lı hibrit ölçüm ve uçtan uca doğrulama: **yapılamadı** (20 Kasım 2026)
 
 Bölüm 2'deki "bge-m3 + reranker" ölçümü saf vektör aramasının adaylarıyla yapılmıştı
-(MRR 0,91 → 1,00). Üretimdeki hibrit aramanın reranker'lı hali bu makinede ölçülemedi:
-Windows'un ayrılabilir bellek alanı (sayfa dosyası C: diskinde, C: dolu) Docker + embedding
-servisi açıkken modeli yüklemeye yetmedi (`os error 1455`). Denemede Docker motoru da
-çöktü ve servisler yeniden başlatıldı. Yeterli bellekle şu iki komutla ölçülür (ikincisi
-`reranker` servisi açıkken, `.env`'de `RERANKER_PROVIDER=tei`):
+(MRR 0,91 → 1,00). Üretimdeki hibrit aramanın reranker'lı hali ve TEI servisiyle uçtan uca
+bağlantı bu makinede **denendi ama çalıştırılamadı**; ne denendi ve ne öğrenildi:
+
+| Deneme | Sonuç |
+|---|---|
+| TEI `cpu-1.7`, `BAAI/bge-reranker-v2-m3` (safetensors) | Model indi (190 sn) ama CPU imajı ONNX arıyor; depoda ONNX yok, yedek motor (candle) "Starting Bert model on Cpu" sonrası **segfault (çıkış 139)** |
+| TEI `cpu-1.7`, `onnx-community/bge-reranker-v2-m3-ONNX` (ONNX, 2,3 GB) | Model arka ucu başlarken **Docker motoru çöktü** (çıkış 255); tüm konteynerler yeniden başladı |
+| Yerel işlemde CrossEncoder (aynı model), gerçek veritabanı | `os error 1455` (Windows ayrılabilir bellek alanı yetmedi) |
+
+Çıkarımlar:
+
+- Compose'a ilk eklediğim `BAAI/bge-reranker-v2-m3` kimlikli servis TEI CPU imajında **çalışmaz**;
+  servis ONNX sürümüne (`onnx-community/bge-reranker-v2-m3-ONNX`, üçüncü taraf ama HF'nin
+  Xenova/onnx-community ekibinin dönüşümü) çevrildi. Bu sürümün TEI'de çalıştığı bu makinede
+  **doğrulanmadı** (bellek yüzünden arka uç başlarken motor çöktü).
+- Çökme nedeni büyük olasılıkla bellek: Docker VM'i ~7-10 GB tutarken reranker yüklemesi
+  Windows'un ayrılabilir bellek alanını aşıyor; WSL'nin swap dosyası da C: diskinde (C: ~%100 dolu,
+  deneme sırasında boş alan 62 MB'a düştü). Bu yüzden reranker **varsayılan olarak kapalı** ve
+  ayrı profilde.
+- Reranker'sız hibrit taban ölçüldü (yukarıda). Reranker'lı sayılar yok.
+
+Yeterli belleği olan bir makinede (ya da embedding Hugging Face API'ye taşınıp yerel RAM
+boşaldığında) şu sırayla doğrulanır:
 
 ```powershell
-uv run python -m scripts.rag_eval --set hepsi --k 5 --min-similarity 0.5
-uv run python -m scripts.rag_eval --set hepsi --k 5 --min-similarity 0.5 --rerank
+# backend/.env: RERANKER_PROVIDER=tei
+docker compose -f infra/docker-compose.yml --profile rag --profile rerank up -d
+docker compose -f infra/docker-compose.yml logs reranker          # "Ready" görülmeli
+uv run python -m scripts.rag_eval --set hepsi --k 5 --min-similarity 0.5            # reranker'sız
+uv run python -m scripts.rag_eval --set hepsi --k 5 --min-similarity 0.5 --rerank   # reranker'lı
 ```
 
-TEI'nin `/rerank` ucuyla uçtan uca bağlantı da bu makinede denenemedi; istemci TEI'nin
-belgelenmiş sözleşmesine (`{"query","texts","truncate"}` → `[{"index","score"}]`) ve sahte
-HTTP testlerine dayanıyor. Ilk açılışta `docker compose ... logs reranker` ve `rag_eval --rerank`
-ile doğrulanmalıdır.
+İstemci, TEI'nin belgelenmiş `/rerank` sözleşmesine (`{"query","texts","truncate"}` →
+`[{"index","score"}]`) ve sahte HTTP testlerine dayanıyor; gerçek servisle çalıştığı görülmedi.

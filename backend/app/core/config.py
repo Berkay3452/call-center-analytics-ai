@@ -213,11 +213,13 @@ class Settings(BaseSettings):
     embedding_batch_size: int = Field(default=16, ge=1)
 
     # --- Yeniden sıralayıcı --- (#357; `app/rag/rerankers.py`)
-    # tei: bge-reranker-v2-m3, Docker'da TEI servisi (rag profili). none: yeniden sıralama kapalı.
-    # Servis kapalıysa arama hata vermez, RRF sırasıyla devam eder.
-    reranker_provider: Literal["tei", "none"] = "tei"
+    # tei: bge-reranker-v2-m3 (ONNX), Docker'da TEI servisi ("rerank" profili). none: kapalı.
+    # Varsayılan kapalı: bellek dar makinede servis Docker'ı çökertti, uçtan uca doğrulama
+    # yapılamadı (docs/rag_olcum_raporu.md bölüm 3). Açıkken servis kapalıysa arama hata vermez,
+    # RRF sırasıyla devam eder.
+    reranker_provider: Literal["tei", "none"] = "none"
     reranker_url: str = "http://localhost:8081"
-    reranker_model: str = "BAAI/bge-reranker-v2-m3"
+    reranker_model: str = "onnx-community/bge-reranker-v2-m3-ONNX"
     reranker_timeout_s: float = Field(default=20.0, gt=0)
 
     # --- Türetilmiş değerler ---
