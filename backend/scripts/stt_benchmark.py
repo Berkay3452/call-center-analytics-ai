@@ -13,6 +13,9 @@ Referans metin: ses dosyasıyla aynı adlı sentetik çağrı (`data/synthetic/c
 - WER / CER: kelime ve karakter hata oranı (düşük iyi; maskeli adlar hesaba katılmaz)
 - RTF: işlem süresi / ses süresi (1'den küçükse gerçek zamandan hızlı)
 - Bellek: sürecin tepe çalışma kümesi (MB); her modeli ayrı süreçte koşarak ölçün.
+- Alan terimi doğruluğu (`terms`, `errors`): marka, parça, yer, tekne adı, gün/ay ve sayı
+  sözcüklerinin doğru yazılma oranı (`tests/data/stt_referans/terimler.json`, #328); `errors`
+  kelime düzeyinde hata listesidir (tür, referans, çıktı, terim sınıfı).
 - Konuşmacı WER'i (`wer_rep`, `wer_customer`): her konuşmacının metni ayrı karşılaştırılır.
   Konuşmacılar doğru ayrılmazsa (ör. mono kayıt) bu değerler genel WER'den çok yüksek çıkar.
 """
@@ -28,11 +31,20 @@ from typing import Any
 from app.core.config import Settings
 from app.services.transcript_text import parse_transcript
 from app.stt.base import SttError
-from app.stt.metrics import cer, wer
+from app.stt.metrics import (
+    cer,
+    error_class,
+    is_format_only,
+    load_terms,
+    term_accuracy,
+    wer,
+    word_errors,
+)
 from app.stt.pipeline import transcribe_call
 from app.stt.registry import build_transcriber
 
 DATA = Path(__file__).parents[2] / "data" / "synthetic" / "calls"
+TERM_CLASSES = ("marka", "parca", "yer", "tekne_adi", "gun_ay", "sayi")
 AUDIO_EXT = {".wav", ".mp3", ".m4a", ".ogg", ".flac", ".aac"}
 
 
@@ -125,6 +137,7 @@ async def run(args: argparse.Namespace) -> list[dict[str, Any]]:
     providers = args.providers.split(",") if args.providers else [settings.stt_provider]
     layout = args.layout or settings.stt_channel_layout
 
+    terms = load_terms()
     rows: list[dict[str, Any]] = []
     for provider in providers:
         transcriber = build_transcriber(settings, provider)
@@ -171,6 +184,18 @@ async def run(args: argparse.Namespace) -> list[dict[str, Any]]:
                 else None,
                 "text": text,
             }
+            if ref:
+                acc = term_accuracy(ref, text, terms)
+                row["terms"] = {cat: list(pair) for cat, pair in acc.items()}
+                row["errors"] = [
+                    {
+                        "tur": kind,
+                        "ref": r,
+                        "cikti": h,
+                        "sinif": "biçim" if is_format_only(r, h) else error_class(r, terms),
+                    }
+                    for kind, r, h in word_errors(ref, text)
+                ]
             rows.append(row)
             print(
                 f"  {provider:18} {audio.name:20} WER={row['wer']}  CER={row['cer']}  "
@@ -197,6 +222,19 @@ def summarize(rows: list[dict[str, Any]]) -> None:
         peak = max((r["peak_mb"] for r in ok if r.get("peak_mb")), default=None)
         proc = sum(r["processing_s"] for r in ok)
         audio = sum(r["duration_s"] for r in ok)
+        hit = {c: 0 for c in TERM_CLASSES}
+        total = {c: 0 for c in TERM_CLASSES}
+        for r in ok:
+            for cat, (h, t) in (r.get("terms") or {}).items():
+                hit[cat] = hit.get(cat, 0) + h
+                total[cat] = total.get(cat, 0) + t
+        if any(total.values()):
+            parts = [f"{c} {hit[c]}/{total[c]}" for c in total if total[c]]
+            all_hit, all_total = sum(hit.values()), sum(total.values())
+            print(
+                f"  {provider:18} terim doğruluğu: %{100 * all_hit / all_total:.1f} "
+                f"({all_hit}/{all_total}); " + ", ".join(parts)
+            )
         print(
             f"  {provider:18} dosya={len(ok)}  hata={len(mine) - len(ok)}"
             f"  toplam-RTF={round(proc / audio, 2) if audio else None}  tepe-bellek={peak} MB"

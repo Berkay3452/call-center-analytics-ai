@@ -1,0 +1,35 @@
+{
+  "_aciklama": "STT alan terimi sözlüğü (#328). Her girdi bir kök: referansta ve çıktıda ek almış hâli de sayılır (akü, aküyü, aküsü). \"=\" ile başlayan kök yalnız tam eşleşir (kısa ya da başka sözcüğün önü olan kökler). Çok sözcüklü girdide son sözcük kök, öncekiler tam eşleşir. Kaynak: data/synthetic (boats, marinas, calls). Yalnız sentetik veri.",
+  "marka": [
+    "volvo penta", "yanmar", "mercury", "cummins", "perkins", "iveco", "=cat",
+    "jeanneau", "bavaria", "beneteau", "azimut", "absolute", "dufour", "=elan",
+    "fairline", "ferretti", "fountaine pajot", "grand banks", "hanse", "lagoon",
+    "princess", "saxdor", "sealine", "sirena", "sunseeker"
+  ],
+  "parca": [
+    "akü", "sintine", "impeller", "yakıt filtre", "filtre", "egzoz", "jeneratör",
+    "enjektör", "şanzıman", "alternatör", "pervane", "şaft", "pompa", "kışlama",
+    "soğutma", "hidrolik", "otopilot", "bimini", "inverter", "radar", "vinç",
+    "dümen", "klima", "tente", "çapa", "devir", "turbo", "antifouling", "marş",
+    "termostat", "buji", "halat", "anten"
+  ],
+  "yer": [
+    "tuzla", "kalamış", "ataköy", "pendik", "marinturk", "istinye", "göcek",
+    "d marin", "bodrum", "milta", "yalıkavak", "marmaris", "netsel", "çeşme",
+    "marina", "akdeniz", "=ege", "marmara"
+  ],
+  "tekne_adi": [
+    "albatros", "=bora", "=fora", "kalyon", "karayel", "=kutup", "lodos", "martı",
+    "meltem", "poseidon", "poyraz", "pruva", "pusula", "rüzgar", "=ufuk",
+    "yakamoz", "yelkovan", "yıldırım", "yıldız", "zıpkın", "çapariz", "imbat"
+  ],
+  "gun_ay": [
+    "pazartesi", "salı", "çarşamba", "perşembe", "cuma", "cumartesi", "=pazar",
+    "ocak", "şubat", "=mart", "nisan", "mayıs", "haziran", "temmuz", "ağustos",
+    "eylül", "ekim", "kasım", "aralık"
+  ],
+  "sayi": [
+    "=iki", "üç", "dört", "beş", "altı", "yedi", "sekiz", "dokuz", "=on", "yirmi",
+    "otuz", "kırk", "elli", "altmış", "yetmiş", "seksen", "doksan", "=yüz", "=bin"
+  ]
+}
