@@ -1,0 +1,880 @@
+[
+  {
+    "provider": "faster_whisper",
+    "file": "call_001.wav",
+    "model": "faster_whisper",
+    "load_s": 1.6,
+    "peak_mb": 721,
+    "duration_s": 103.4,
+    "processing_s": 9.5,
+    "rtf": 0.09,
+    "turns": 15,
+    "wer": 0.258,
+    "cer": 0.109,
+    "wer_rep": 0.188,
+    "wer_customer": 0.322,
+    "text": "Miço Usta, merhaba, ben Ahmet Bey. Size nasıl yardımcı olabilirim? Merhaba, tuzla marina'da Teknan var. Motor çalışıyor ama gaz verdiğimde devir yükselmiyor. Yarın bir usta gelebilir mi? Geçmiş olsun. Teknenin adı ve modeline de. Rüzgar ve anne husan odisi 440'cü. Tamam. Motor boşta düzgün çalışıyor diyorsunuz. Gaz verince delil mi düşüyor yoksa hiç ertmiyor mu? Gaz kolunu gittiğimde devir 1300'e takılıyor, daha fazla çıkmıyor. Exozdan biraz siyah sumanda geliyor. Anladım, yakıt filtresi ya da turbo tarafı olabilir, yerinde bakmak gerekir. Tekne şu an iskelede mi? Yarın Evet, tuzla marina'da C-Ponton'unda bağlı. Olur sabah 9 ile 11 arası bir ustamız o bölgede olacak. Arıza tesbiti için yerinde servis yazayım mı? lütfen. Detni ic mariteti denize çıkarmam lazım. Anladım. Yerinde Arıza tesbiti 1500 lira yapılacak iş çıkarsa tutarı onamazlık ediyoruz. Tamam zorun değil. O zaman yarın sabah 9 buçuğa randevunu oluşturuyorum. Telefonunuza onay mesajı gelecek. Teşekkürler, görüşürüz. Rica ederim. İyi günler.",
+    "terms": {
+      "marka": [
+        0,
+        1
+      ],
+      "parca": [
+        5,
+        7
+      ],
+      "yer": [
+        4,
+        4
+      ],
+      "tekne_adi": [
+        1,
+        1
+      ],
+      "gun_ay": [
+        0,
+        2
+      ],
+      "sayi": [
+        11,
+        11
+      ]
+    },
+    "errors": [
+      {
+        "tur": "eklendi",
+        "ref": "",
+        "cikti": "ahmet bey",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "teknem",
+        "cikti": "teknan",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "modeli nedir",
+        "cikti": "modeline de",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "jeanneau sun odyssey",
+        "cikti": "ve anne husan odisi",
+        "sinif": "marka"
+      },
+      {
+        "tur": "eklendi",
+        "ref": "",
+        "cikti": "cü",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "devir",
+        "cikti": "delil",
+        "sinif": "parca"
+      },
+      {
+        "tur": "değişti",
+        "ref": "artmıyor",
+        "cikti": "ertmiyor",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "ittiğimde",
+        "cikti": "gittiğimde",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "bin üç yüzde",
+        "cikti": "1300 e",
+        "sinif": "sayi"
+      },
+      {
+        "tur": "değişti",
+        "ref": "egzozdan",
+        "cikti": "exozdan",
+        "sinif": "parca"
+      },
+      {
+        "tur": "değişti",
+        "ref": "duman da",
+        "cikti": "sumanda",
+        "sinif": "genel"
+      },
+      {
+        "tur": "eklendi",
+        "ref": "",
+        "cikti": "yarın",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "pontonunda",
+        "cikti": "ponton unda",
+        "sinif": "biçim"
+      },
+      {
+        "tur": "değişti",
+        "ref": "yarın",
+        "cikti": "olur",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "dokuz",
+        "cikti": "9",
+        "sinif": "biçim"
+      },
+      {
+        "tur": "değişti",
+        "ref": "on bir",
+        "cikti": "11",
+        "sinif": "biçim"
+      },
+      {
+        "tur": "değişti",
+        "ref": "tespiti",
+        "cikti": "tesbiti",
+        "sinif": "genel"
+      },
+      {
+        "tur": "silindi",
+        "ref": "olur",
+        "cikti": "",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "tekneyi cumartesi",
+        "cikti": "detni ic mariteti",
+        "sinif": "gun_ay"
+      },
+      {
+        "tur": "değişti",
+        "ref": "tespiti bin beş yüz",
+        "cikti": "tesbiti 1500",
+        "sinif": "sayi"
+      },
+      {
+        "tur": "değişti",
+        "ref": "ona mahsup",
+        "cikti": "onamazlık",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "sorun",
+        "cikti": "zorun",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "dokuz",
+        "cikti": "9",
+        "sinif": "biçim"
+      },
+      {
+        "tur": "değişti",
+        "ref": "randevunuzu",
+        "cikti": "randevunu",
+        "sinif": "genel"
+      }
+    ]
+  },
+  {
+    "provider": "faster_whisper",
+    "file": "call_005.wav",
+    "model": "faster_whisper",
+    "load_s": 1.6,
+    "peak_mb": 721,
+    "duration_s": 96.1,
+    "processing_s": 9.8,
+    "rtf": 0.1,
+    "turns": 15,
+    "wer": 0.224,
+    "cer": 0.074,
+    "wer_rep": 0.218,
+    "wer_customer": 0.231,
+    "text": "Miço Usta, merhaba, buyurun. Merhaba, Yalıkavak marinada Martı adında katamaranım var. Kış bakımı için fiyat teklifi almak istiyorum. Tabii. Miş bakımına neler dahil olsun. Karaya çekme, motor kışlama, gövde yakamaz. Hepsi olsun. Kimotor var, generator de var. Kışlama, antifü, akı bakımı, tekne ortası. Tekneyi karaya çekip atölyede mi bekletmek isterseniz. Karaya çekilsin, atölyede kalsın, nisan da indiririm. Karaya çekme de winch kapasitesi önemli, katamayanın genişliği kaçmette. 7 metre 20. Le Boncris 2 için karaya çekme ve 5 aylık bekleme dahil, tüm kalemleriyle toplam 120 bin lira civarında bir teklif çıkıyor. Ya 120 bin mi? Çok pahalı, bu bütçen değil. Geçen yıl bunun yarısına yaptırmıştım. da ağırlıklı karaya çekme ve bekleme bedelinden oluşuyor. Monol kışlamasını ayrı alırsak biraz düşer. Yine de çok yüksek bu fiyatla çalışamam. Fiyat yüzünden vazgeçiyorum. Anlıyorum, ileride bir kampanya olursa size haber verebiliriz. Gerek yok. Teşekkürler. İyi günler dilerim.",
+    "terms": {
+      "marka": [
+        0,
+        1
+      ],
+      "parca": [
+        3,
+        6
+      ],
+      "yer": [
+        2,
+        2
+      ],
+      "tekne_adi": [
+        1,
+        1
+      ],
+      "gun_ay": [
+        1,
+        1
+      ],
+      "sayi": [
+        10,
+        12
+      ]
+    },
+    "errors": [
+      {
+        "tur": "değişti",
+        "ref": "marina da",
+        "cikti": "marinada",
+        "sinif": "biçim"
+      },
+      {
+        "tur": "değişti",
+        "ref": "kış",
+        "cikti": "miş",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "yıkama",
+        "cikti": "yakamaz",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "iki motor",
+        "cikti": "kimotor",
+        "sinif": "sayi"
+      },
+      {
+        "tur": "değişti",
+        "ref": "jeneratör",
+        "cikti": "generator",
+        "sinif": "parca"
+      },
+      {
+        "tur": "değişti",
+        "ref": "antifriz akü",
+        "cikti": "antifü akı",
+        "sinif": "parca"
+      },
+      {
+        "tur": "değişti",
+        "ref": "örtüsü",
+        "cikti": "ortası",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "istersiniz",
+        "cikti": "isterseniz",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "nisanda",
+        "cikti": "nisan da",
+        "sinif": "biçim"
+      },
+      {
+        "tur": "değişti",
+        "ref": "çekmede vinç",
+        "cikti": "çekme de winch",
+        "sinif": "parca"
+      },
+      {
+        "tur": "değişti",
+        "ref": "katamaranın",
+        "cikti": "katamayanın",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "kaç",
+        "cikti": "kaçmette 7",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "yedi metre yirmi lagoon 42",
+        "cikti": "20 le boncris 2",
+        "sinif": "marka"
+      },
+      {
+        "tur": "değişti",
+        "ref": "beş",
+        "cikti": "5",
+        "sinif": "biçim"
+      },
+      {
+        "tur": "değişti",
+        "ref": "yüz yirmi",
+        "cikti": "120",
+        "sinif": "biçim"
+      },
+      {
+        "tur": "değişti",
+        "ref": "yüz yirmi",
+        "cikti": "ya 120",
+        "sinif": "sayi"
+      },
+      {
+        "tur": "değişti",
+        "ref": "bütçem",
+        "cikti": "bütçen",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "fiyat",
+        "cikti": "da",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "motor",
+        "cikti": "monol",
+        "sinif": "genel"
+      }
+    ]
+  },
+  {
+    "provider": "faster_whisper",
+    "file": "call_010.wav",
+    "model": "faster_whisper",
+    "load_s": 1.6,
+    "peak_mb": 721,
+    "duration_s": 79.9,
+    "processing_s": 7.6,
+    "rtf": 0.1,
+    "turns": 15,
+    "wer": 0.243,
+    "cer": 0.047,
+    "wer_rep": 0.319,
+    "wer_customer": 0.103,
+    "text": "Miço Usta acil has buyurun. Motor dairesinden duman çıkıyor. Yangın alarmı östü. Önce güvenlik, motoru durdurdunuz mu? Yangın söndürme sistemi var mı? Motoru durdurdum, otomatik söndürücü devreye girdi sanırım, duman azaldı. Yuman hala çıkıyor mu? Kokunatın, yalıt kablamı yakıtma. Yanık plastik gibi kokuyor, koyu duman azaldı. Tekneden içgeleyen bilir misiniz? Marina güvenlik ekibini de arıyorum. Tekne adı ve konumunuz. Akdemiz, Bodrum, Miysa marina, ve iskelesi. Kimseye zarar yok değil mi? Yok, hepimiz iskeledeyiz. Marina'ya bildirdim. Bebeçi ustamızı motor ve elektrik tarafını incelemek için yönlendiriyorum. Güvenlik ekibiyizin berene kadar makinedairetine girmeyin. Tamam, Usta ne zaman gelir? Yemin akika içinde yanınızda olur. Peki, bekliyorum. Hatta ayrılmayın, ben buradayım.",
+    "terms": {
+      "yer": [
+        4,
+        6
+      ],
+      "sayi": [
+        0,
+        1
+      ]
+    },
+    "errors": [
+      {
+        "tur": "değişti",
+        "ref": "hat",
+        "cikti": "has",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "öttü",
+        "cikti": "östü",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "duman hâlâ",
+        "cikti": "yuman hala",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "koku nasıl yanık kablo mu yakıt mı",
+        "cikti": "kokunatın yalıt kablamı yakıtma",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "iskeleye inebilir",
+        "cikti": "içgeleyen bilir",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "akdeniz",
+        "cikti": "akdemiz",
+        "sinif": "yer"
+      },
+      {
+        "tur": "değişti",
+        "ref": "milta",
+        "cikti": "miysa",
+        "sinif": "yer"
+      },
+      {
+        "tur": "değişti",
+        "ref": "d",
+        "cikti": "ve",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "marinaya",
+        "cikti": "marina ya",
+        "sinif": "biçim"
+      },
+      {
+        "tur": "değişti",
+        "ref": "nöbetçi",
+        "cikti": "bebeçi",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "ekibi izin verene",
+        "cikti": "ekibiyizin berene",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "makine dairesine",
+        "cikti": "makinedairetine",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "yirmi dakika",
+        "cikti": "yemin akika",
+        "sinif": "sayi"
+      },
+      {
+        "tur": "değişti",
+        "ref": "hattan",
+        "cikti": "hatta",
+        "sinif": "genel"
+      }
+    ]
+  },
+  {
+    "provider": "faster_whisper",
+    "file": "call_017.wav",
+    "model": "faster_whisper",
+    "load_s": 1.6,
+    "peak_mb": 721,
+    "duration_s": 80.9,
+    "processing_s": 7.3,
+    "rtf": 0.09,
+    "turns": 17,
+    "wer": 0.376,
+    "cer": 0.083,
+    "wer_rep": 0.338,
+    "wer_customer": 0.447,
+    "text": "Miço Usta acil has buyurun. Merhaba, tekne hem de su girişi var. Tuvaletin Giler Vanası Kralı galiba su fışkırıyor. Canımız tehlike demiz. Tekne içinde kimse var mı? İki kişiyiz, güvenliyiz, aması yükseliyor. Bana kolu var mı? Kapatabiliyor musunuz? Folu kırıldığı kapanmıyor. Sahta sapaya da aşahta koz var mı? Deliye sıkıştırın. Bez ile destekleyin. Tekne adı ve konum. Bora Göcekdemarin Katamaran C-iz gelesi. Sintine pompası çalışıyor mu? Dışarıya ama yetişemiyor. Ellerde pompalayın. Yöceklik'in öbetçi ustamızı hemen yönlendiriyorum. Mariner'e haber veriyorum. Ne kadar sürer? 15 dakika. Sakoz'u sıkı tutun, hattan ayrılmayın. Tamam, tamam. Ustamız bana değiştirmeye gerekli parçayla geliyor. Çok teşekkürler. Geçmiş olsun, ekibimizi yolda.",
+    "terms": {
+      "parca": [
+        3,
+        3
+      ],
+      "yer": [
+        1,
+        4
+      ],
+      "tekne_adi": [
+        0,
+        1
+      ],
+      "sayi": [
+        3,
+        3
+      ]
+    },
+    "errors": [
+      {
+        "tur": "değişti",
+        "ref": "hat",
+        "cikti": "has",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "teknemde",
+        "cikti": "tekne hem de",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "gider",
+        "cikti": "giler",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "kırıldı",
+        "cikti": "kralı",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "canınız tehlikede mi",
+        "cikti": "canımız tehlike demiz",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "güvendeyiz ama su",
+        "cikti": "güvenliyiz aması",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "vana",
+        "cikti": "bana",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "kolu kırıldı",
+        "cikti": "folu kırıldığı",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "tahta tapa ya",
+        "cikti": "sahta sapaya",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "ahşap takoz",
+        "cikti": "aşahta koz",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "deliğe",
+        "cikti": "deliye",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "fora göcek d marin",
+        "cikti": "bora göcekdemarin",
+        "sinif": "yer"
+      },
+      {
+        "tur": "değişti",
+        "ref": "iskelesi",
+        "cikti": "iz gelesi",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "çalışıyor",
+        "cikti": "dışarıya",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "elle de",
+        "cikti": "ellerde",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "göcek teki nöbetçi",
+        "cikti": "yöceklik in öbetçi",
+        "sinif": "yer"
+      },
+      {
+        "tur": "değişti",
+        "ref": "marinaya da",
+        "cikti": "mariner e",
+        "sinif": "yer"
+      },
+      {
+        "tur": "değişti",
+        "ref": "on beş",
+        "cikti": "15",
+        "sinif": "biçim"
+      },
+      {
+        "tur": "değişti",
+        "ref": "takozu",
+        "cikti": "sakoz u",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "vanayı",
+        "cikti": "bana",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "ekibimiz",
+        "cikti": "ekibimizi",
+        "sinif": "genel"
+      }
+    ]
+  },
+  {
+    "provider": "faster_whisper",
+    "file": "call_023.wav",
+    "model": "faster_whisper",
+    "load_s": 1.6,
+    "peak_mb": 721,
+    "duration_s": 88.3,
+    "processing_s": 9.3,
+    "rtf": 0.11,
+    "turns": 17,
+    "wer": 0.236,
+    "cer": 0.08,
+    "wer_rep": 0.169,
+    "wer_customer": 0.29,
+    "text": "Miço Usta, merhaba, buyurun. Merhaba, teknende servis akülerini yenilemek ve güneş paneli taktırmak istiyorum. Güzel bir yatırım. Tekne adı ve marina. Meltem Ataköy Marina, Mevcut Aki grubunuz kaç amper, ne kadar eski. müşadet 120 amtar, yaklaşık 5 yıllık. Kapasite düştü, gece buzdolabı yetmiyor. Litim geçişte düşünebilirsiniz ama maliyeti yüksek. AGM'de olur. İsi içinde fiyat alabilir miyim? Panel içinde 300 watt civarı düşünüyorum. Hane için güverteye yer var mı? Diminin üstüne mi koyacaksınız? Biminin üstüne ölçülere atölyeden alıp size göndereyim. Olur. İki seçenekli yazılı teknik hazırlarım. Montaj işçiliği dahil. Kere, Montaj yerinde mi olacak? Settifi Ataköy'de tekne de yapılır. İki gün süren. gönderin, bakıp karar vereceğim. Kış öncesi bitsin yeter. Anladım, bu hafta içinde göndereceğim. Teşekkürler. Rica ederim, iyi günler.",
+    "terms": {
+      "parca": [
+        2,
+        4
+      ],
+      "yer": [
+        4,
+        4
+      ],
+      "tekne_adi": [
+        1,
+        1
+      ],
+      "sayi": [
+        7,
+        8
+      ]
+    },
+    "errors": [
+      {
+        "tur": "değişti",
+        "ref": "teknemde",
+        "cikti": "teknende",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "akü",
+        "cikti": "aki",
+        "sinif": "parca"
+      },
+      {
+        "tur": "değişti",
+        "ref": "üç adet yüz yirmi amper",
+        "cikti": "müşadet 120 amtar",
+        "sinif": "sayi"
+      },
+      {
+        "tur": "değişti",
+        "ref": "beş",
+        "cikti": "5",
+        "sinif": "biçim"
+      },
+      {
+        "tur": "değişti",
+        "ref": "lityum geçiş de",
+        "cikti": "litim geçişte",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "ikisi için de",
+        "cikti": "isi içinde",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "için de üç yüz",
+        "cikti": "içinde 300",
+        "sinif": "biçim"
+      },
+      {
+        "tur": "değişti",
+        "ref": "panel",
+        "cikti": "hane",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "bimini",
+        "cikti": "diminin",
+        "sinif": "parca"
+      },
+      {
+        "tur": "değişti",
+        "ref": "bimini",
+        "cikti": "biminin",
+        "sinif": "parca"
+      },
+      {
+        "tur": "değişti",
+        "ref": "ölçüleri",
+        "cikti": "ölçülere",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "teklif",
+        "cikti": "teknik",
+        "sinif": "genel"
+      },
+      {
+        "tur": "eklendi",
+        "ref": "",
+        "cikti": "kere",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "evet",
+        "cikti": "settifi",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "teknede",
+        "cikti": "tekne de",
+        "sinif": "biçim"
+      },
+      {
+        "tur": "değişti",
+        "ref": "sürer iyi teklifi",
+        "cikti": "süren",
+        "sinif": "genel"
+      }
+    ]
+  },
+  {
+    "provider": "faster_whisper",
+    "file": "call_031.wav",
+    "model": "faster_whisper",
+    "load_s": 1.6,
+    "peak_mb": 721,
+    "duration_s": 102.8,
+    "processing_s": 11.2,
+    "rtf": 0.11,
+    "turns": 16,
+    "wer": 0.178,
+    "cer": 0.053,
+    "wer_rep": 0.139,
+    "wer_customer": 0.19,
+    "text": "Miço Usta, merhaba, buyurun. Merhaba, acil bir durum var. Buza marina dayı, Karayelin makine dairesinden duman geliyor. Hemen anlıyorum. Motor şuan çalışıyor mu? Az önce çalıştırdım, sonra yanık kokusu geldi. Motoru kapattım ama duman hala biraz var. Çok doğru yapmışsınız. Aki ana şalterini kapatabilir misiniz? Kapattım, şimdi kapattım. Kokunun kablo kokusu gibi olduğunu düşünüyorum. Yangın söndürücünüz yanınızda mı? Alev görüyor musunuz? Döndürücü elimde, alev yok, sadece duman ve kokus. Tamam. Kimse içeride kalmasın, kapağa açıp tutun. Suzla'daki elektrikçi ustamızı hemen yönlendiriyorum. Ne kadar sürede gelir? Usta 20 dakika içinde orada olur. Malina görevlisine de haber verelim mi? Ben söyledim, yanımızdalar. Tamam Çok iyi. Ustamız gelince teşhisatı kontrol edecek. Kısa devre olan yeri bulacağız. bekliyoruz. Numaram 0532 111 22 33 musta ararsa açarım. Not aldım. Lütfen motoru tekrar çalıştırmayın. Ustamız size dönecek. Anladım. Teşekkürler. Çabuk olsun lütfen.",
+    "terms": {
+      "parca": [
+        0,
+        1
+      ],
+      "yer": [
+        1,
+        4
+      ],
+      "tekne_adi": [
+        1,
+        1
+      ],
+      "sayi": [
+        1,
+        1
+      ]
+    },
+    "errors": [
+      {
+        "tur": "değişti",
+        "ref": "tuzla",
+        "cikti": "buza",
+        "sinif": "yer"
+      },
+      {
+        "tur": "değişti",
+        "ref": "dayız karayel in",
+        "cikti": "dayı karayelin",
+        "sinif": "tekne_adi"
+      },
+      {
+        "tur": "değişti",
+        "ref": "şu an",
+        "cikti": "şuan",
+        "sinif": "biçim"
+      },
+      {
+        "tur": "değişti",
+        "ref": "hâlâ",
+        "cikti": "hala",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "akü",
+        "cikti": "aki",
+        "sinif": "parca"
+      },
+      {
+        "tur": "değişti",
+        "ref": "söndürücü",
+        "cikti": "döndürücü",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "koku",
+        "cikti": "kokus",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "kapağı açık",
+        "cikti": "kapağa açıp",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "tuzla",
+        "cikti": "suzla",
+        "sinif": "yer"
+      },
+      {
+        "tur": "değişti",
+        "ref": "yirmi",
+        "cikti": "20",
+        "sinif": "biçim"
+      },
+      {
+        "tur": "değişti",
+        "ref": "marina",
+        "cikti": "malina",
+        "sinif": "yer"
+      },
+      {
+        "tur": "eklendi",
+        "ref": "",
+        "cikti": "tamam",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "tesisatı",
+        "cikti": "teşhisatı",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "bulacak tamam",
+        "cikti": "bulacağız",
+        "sinif": "genel"
+      },
+      {
+        "tur": "değişti",
+        "ref": "usta",
+        "cikti": "0532 111 22 33 musta",
+        "sinif": "genel"
+      }
+    ]
+  }
+]

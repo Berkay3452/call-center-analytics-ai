@@ -78,6 +78,54 @@ Telefon bozulması: `scripts.telephone_audio` (8 kHz dar bant, SNR 18 dB). Edge 
 - **Seed/demo sesleri için Edge TTS önerilir** (iki ayrı nöral ses, daha gerçekçi tempo). Piper çevrimdışı yedek olarak kalır ve varsayılan motordur: `uv run --extra stt --with edge-tts python -m scripts.generate_audio --engine edge`. Edge internet gerektirir; üretilen `.wav` dosyaları üretildikten sonra çevrimdışı çalışır, dolayısıyla demo internetsiz de çalışır.
 - Üretim akışı değişmedi: STT hâlâ yerel faster-whisper; yalnızca sentetik ses üretim aracına bir motor seçeneği eklendi.
 
+## Hata tablosu ve alan terimi ölçümü (#328)
+
+**Tarih:** 2026-11-20 · **Ses:** `call_001, 005, 010, 017, 023, 031` (Edge TTS, stereo, telefon bozulmalı 8 kHz SNR 18 dB; 6 çağrı, ~9,5 dk) · **Model:** `small`, beam 1, VAD 0,2, int8 · **Komut:**
+
+```
+python -m scripts.stt_benchmark --audio <klasör> --model small --beam 1 --layout stereo_rep_left --out sonuc.json
+python -m scripts.stt_hata_tablosu sonuc.json
+```
+
+Genel WER, "ve" ve "bir" gibi sözcüklerle seyrelir. Bu yüzden benchmark artık **alan terimi doğruluğunu** da yazdırır: marka, parça, yer, tekne adı, gün/ay ve sayı sözcüklerinin doğru yazılma oranı. Sözlük `backend/tests/data/stt_referans/terimler.json` (kök bazlı: `akü` için `aküyü` de sayılır; `=` önekli kısa kökler yalnız tam eşleşir). Referans metin `data/synthetic/calls` içindeki sentetik görüşmelerdir. Taban ölçüm çıktısı `backend/tests/data/stt_referans/small_telefon_baz.json`.
+
+**Ölçüm düzeltmesi:** Whisper sayıları rakamla yazar ("1300", "15"), referans sözcükle ("bin üç yüz", "on beş"); ayrıca "Marina'da" referansta iki sözcük, çıktıda tek sözcüktür. Bunlar tanıma hatası değildir. Sayı terimi ölçümünde rakamlar sözcüğe çevrilir ve bu farklar hata tablosunda ayrı `biçim` sınıfına girer. Genel WER'in tanımı **değişmedi**, önceki ölçümlerle karşılaştırılabilir.
+
+| Ölçüt | Değer |
+|---|---|
+| WER (telefon, `small`) | %25,3 (çağrı başına %17,8 - %37,6) |
+| Konuşmacı WER'i | %24,6 |
+| RTF | 0,10 (tepe bellek ~720 MB) |
+| **Alan terimi doğruluğu** | **%72,5 (66/91)** |
+
+| Terim sınıfı | Doğru / toplam | Doğruluk |
+|---|---|---|
+| marka | 0 / 2 | %0 |
+| parça | 13 / 21 | %62 |
+| yer | 16 / 24 | %67 |
+| tekne adı | 4 / 5 | %80 |
+| gün/ay | 1 / 3 | %33 |
+| sayı | 32 / 36 | %89 |
+
+Hata öbekleri (109): genel sözcük 67, biçim farkı 15, parça 9, yer 8, sayı 6, marka 2, gün/ay 1, tekne adı 1.
+
+### Hata sınıfları ve çözüm notları
+
+| Sınıf | Örnek (beklenen → yazılan) | Kök neden | Hangi çözüm işe yarar |
+|---|---|---|---|
+| Marka/model | Jeanneau Sun Odyssey → "ve anne husan odisi"; Lagoon 42 → "le boncris 2" | Yabancı ad, Türkçe okunuşla duyuluyor | `initial_prompt`/`hotwords` ile marka listesi; büyük model; düzeltme sözlüğü (çok sınırlı sayıda yazım) |
+| Parça adı | akü → "aki"/"akı"; devir → "delil"; vinç → "winch"; jeneratör → "generator"; egzoz → "exozdan"; bimini → "diminin" | Benzer sesli Türkçe sözcüğe kayma ya da İngilizce yazım | `hotwords`; `medium`; düzeltme sözlüğü (`generator`→`jeneratör`, `winch`→`vinç` güvenli; "aki" gerçek Türkçe sözcük olduğu için bağlam gerekir) |
+| Yer/marina | Tuzla → "buza"/"suzla"; Milta → "miysa"; Fora Göcek D-Marin → "bora göcekdemarin" | Özel ad, ek, birleştirme | `hotwords`/`initial_prompt` yer listesi; düzeltme sözlüğü |
+| Sayı | yirmi dakika → "yemin akika"; üç adet → "müşadet" | Dar bant sesinde heceler karışıyor | Büyük model; ses ön işleme |
+| Biçim | on beş ↔ "15"; Marina'da ↔ "marinada" | Yazım tercihi | Düzeltme gerekmez; ölçümde ayrı tutulur |
+| Genel | Terim olmayan sözcükler | Ses kalitesi, model kapasitesi | Büyük model |
+
+**Sonuç (#329 ve #330 için):** terim hatalarının çoğu `small`'ın dar bant sesinde özel ad ve yabancı sözcükte yanılmasından geliyor. Önce model/`hotwords`/`initial_prompt` deneyi (#329), sonra yalnızca güvenli, bağlamdan bağımsız yazım hataları için düzeltme sözlüğü (#330) mantıklı.
+
+**Berkay'ın gözlemleri:** gerçek kullanımda gördüğü yanlış yazımlar (ses/çağrı → beklenen → yazılan) henüz eklenmedi; geldiğinde bu tabloya ve `terimler.json`'a işlenecek.
+
+**Sınırlar:** 6 sentetik çağrı, tek TTS motoru (Edge). Terim sayısı küçük (91 geçiş), yüzdeler ±birkaç puan oynar. Gerçek aksan ve gürültüde farklı çıkabilir.
+
 ## Gerçek ekip kayıtları (#150): betik hazır, kayıt bekleniyor
 
 Gerçek kayıtlar henüz yok; üretilmiş seslerle yetinilmiyor, issue açık kalır. Kayıt geldiğinde (kişisel veri: repoya koymayın, repo dışı bir klasör, ör. `D:\gercek_kayitlar`):
