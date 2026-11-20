@@ -1,5 +1,7 @@
 # STT kararı: telefon sesi, stereo ve model boyutu (#124)
 
+> **Güncel karar (#330, 2026-11-20):** varsayılan model `large-v3-turbo` (beam 1, VAD 0,2, mevcut `initial_prompt`, hotwords kapalı) ve alan düzeltme sözlüğü açık. Aşağıdaki `small` kararları tarihsel kayıttır; ölçümler için "Parametre deneyi (#329)" ve "Alan düzeltme sözlüğü (#330)" bölümlerine bakın. Bellek kısıtlıysa `WHISPER_MODEL=small`.
+
 **Tarih:** 2026-10-20 · **Ses:** 12 sentetik çağrı (Piper, Türkçe), toplam ~15 dk · **Donanım:** CPU (int8)
 
 ## Ne ölçüldü
@@ -168,6 +170,54 @@ Genişletilmiş istem: mevcut istem + parça (jeneratör, enjektör, şanzıman.
 ### Karar ve sonraki adım
 
 Bu issue yalnız ölçer; **varsayılan değişikliği #330'da** yapılır (`config.py` ve `.env.example`). Öneri: `large-v3-turbo`, beam 1, mevcut istem (hotwords kapalı); bellek kısıtlı ortamda yedek: `small` + genişletilmiş istem + hotwords. Karar #332'deki model karşılaştırmasıyla birlikte netleşir (aynı turbo adayı).
+
+## Alan düzeltme sözlüğü ve varsayılan ayarın güncellenmesi (#330)
+
+**Tarih:** 2026-11-20 · **Ses:** #328/#329'daki 6 sentetik telefon çağrısı · **Komut:** `python -m scripts.stt_benchmark --audio <klasör> --model <m> --beam 1 --layout stereo_rep_left`
+
+### Düzeltme sözlüğü
+
+`backend/app/stt/duzeltme.py` + `duzeltme_sozlugu.json`. Sağlayıcı katmanında segment metnine uygulanır (normal, canlı, mono/stereo ve benchmark aynı yolu kullanır). Sıra: **STT çıktısı → düzeltme → maskeleme** (`store_segments`); düzeltme yalnız alan sözcüklerine dokunur, kişisel veriye ve günlüğe dokunmaz.
+
+- **Yalnız Türkçe'de karşılığı olmayan yazımlar** var: `generator`→`jeneratör`, `winch`→`vinç`, `exoz/eksoz`→`egzoz`, `malina`→`marina`, `akdemiz`→`akdeniz`, `suzla/duzla`→`tuzla`, `aküller`→`aküler`, `dimini`→`bimini`. Hata tablosunda en sık görünen ama **gerçek Türkçe sözcüğe** dönüşenler (`akı`, `delil`, `buza`, `bora`, `limin`) bilerek yok: bağlam olmadan doğru kelimeyi bozarlar.
+- Tam sözcük eşleşir, büyük/küçük harf korunur, `ek: true` kuralda Türkçe ek korunur (`exozdan`→`egzozdan`), tek geçiştir.
+- Ayarlar: `STT_CORRECTION_ENABLED` (varsayılan açık), `STT_CORRECTION_FILE` (ek kurallar, varsayılanları geçersiz kılamaz).
+- **Yanlış pozitif testi:** 100 sentetik görüşmenin (>1000 tur) ve usta notlarının doğru metninde sıfır değişiklik (`tests/test_stt_duzeltme.py`).
+
+### LLM ile düzeltme (yalnız denendi, eklenmedi)
+
+STT çıktısı (sentetik, kişisel veri yok) LLM'e "yalnız açıkça yanlış duyulmuş parça/marka/yer adlarını düzelt" istemiyle verildi.
+
+| STT | WER önce → sonra | Terim doğruluğu önce → sonra | LLM süresi |
+|---|---|---|---|
+| `small` | %25,3 → %24,7 | 66/91 → 68/91 | ~5 sn/çağrı |
+| `large-v3-turbo` | %14,1 → %13,9 | 83/91 → 84/91 | ~3 sn/çağrı |
+
+Kazanç 1-2 terim; çağrıların bir kısmında LLM geçerli çıktı üretemedi (şema hatası), ek gecikme ve harici servise metin gitmesi var. **Eklenmedi:** sözlük aynı kazancın çoğunu bedavaya veriyor.
+
+### Önce / sonra
+
+| Yapılandırma | WER | Terim doğruluğu | RTF | Bellek |
+|---|---|---|---|---|
+| `small`, beam 1, sözlük yok (önceki varsayılan) | %25,3 | %72,5 (66/91) | 0,09 | 723 MB |
+| `small`, beam 1, + sözlük | %24,5 | %79,1 (72/91) | ~0,1* | 723 MB |
+| `large-v3-turbo`, beam 1, sözlük yok | %14,1 | %91,2 (83/91) | 0,28 | 1936 MB |
+| **`large-v3-turbo`, beam 1, + sözlük (yeni varsayılan)** | **%13,8** | **%93,4 (85/91)** | 0,30 | 1908 MB |
+
+\* `small` + sözlük koşusunda RTF 0,33 görünüyor; aynı anda LLM deneyi koştuğu için gürültü. Sözlük metin üzerinde çalışır, STT süresine ölçülebilir katkısı yoktur.
+
+Toplam kazanç: **WER %25,3 → %13,8** (11,5 puan), **terim doğruluğu %72,5 → %93,4** (+21 puan), RTF 0,09 → 0,30 (3 dk'lık çağrıda ~54 sn; bütçe ≤ 2 dk).
+
+### Karar
+
+- **Varsayılan model `small` → `large-v3-turbo`** (`config.py`, `.env.example`; beam 1, VAD 0,2, mevcut `initial_prompt`, hotwords kapalı). #329'da genel WER'i bozduğu için `initial_prompt` genişletmesi ve hotwords varsayılan yapılmadı; `small`'a düşen ortamlarda `WHISPER_INITIAL_PROMPT` + `WHISPER_HOTWORDS` ile terim doğruluğu %72,5 → %86,8 çıkarılabilir.
+- **Bedel:** bellek 0,7 → ~1,9 GB, ilk çalıştırmada ~1,6 GB indirme. Bellek kısıtlı makinede `WHISPER_MODEL=small`.
+- **Sözlük açık.** Yeni kural ekleme: Berkay'ın gerçek kullanımdaki yanlış yazımları geldikçe `duzeltme_sozlugu.json`'a eklenir; her yeni kural yanlış pozitif testinden geçmelidir.
+
+### Sınırlar
+
+- Sözlük kuralları bu 6 çağrının hatalarından türetildi; **aynı sette ölçülen kazanç iyimserdir** (kapalı bir sınama kümesi yok). Yanlış pozitif tarafı 100 görüşmeyle güvence altında, ama gerçek ses ve gerçek yanlış yazımlar farklı olabilir.
+- 6 sentetik çağrı, 91 terim: yüzdeler ±birkaç puan oynar; gerçek aksan/gürültüde fark değişir.
 
 ## Gerçek ekip kayıtları (#150): betik hazır, kayıt bekleniyor
 

@@ -1,0 +1,16 @@
+{
+  "_aciklama": "STT düzeltme sözlüğü (#330). Yalnız Türkçe'de karşılığı olmayan yanlış yazımlar: gerçek sözcüğe dönüşen hatalar (akı, delil, buza, bora) bilerek yok. 'ek': true ise yanlış sözcüğün önü eşleşir ve Türkçe ek korunur. Kaynak: docs/stt_karari.md hata tablosu (sentetik ses).",
+  "kurallar": [
+    {"yanlis": "generator", "dogru": "jeneratör", "ek": true},
+    {"yanlis": "generatör", "dogru": "jeneratör", "ek": true},
+    {"yanlis": "winch", "dogru": "vinç", "ek": true},
+    {"yanlis": "exoz", "dogru": "egzoz", "ek": true},
+    {"yanlis": "eksoz", "dogru": "egzoz", "ek": true},
+    {"yanlis": "dimini", "dogru": "bimini"},
+    {"yanlis": "akdemiz", "dogru": "akdeniz", "ek": true},
+    {"yanlis": "malina", "dogru": "marina", "ek": true},
+    {"yanlis": "suzla", "dogru": "tuzla", "ek": true},
+    {"yanlis": "duzla", "dogru": "tuzla", "ek": true},
+    {"yanlis": "aküller", "dogru": "aküler", "ek": true}
+  ]
+}

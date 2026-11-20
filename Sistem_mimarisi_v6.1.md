@@ -315,7 +315,7 @@ Arayüz ile AI servisi arasındaki sözleşme `docs/api.md` ve `frontend/openapi
 | Admin'deki mevcut AI Asistan'ın iyileştirilmesi kapsama dahil mi? | Hocaya sorulacak |
 | "Kimlik doğrulama" giriş ekranı mı, servisler arası doğrulama mı? (#265) | Hocaya sorulacak; hesaplar yine de DB'de tutulacak (#278) |
 
-**Karara bağlananlar:** Çağrı verisi 100'e çıkarıldı (#148), toplu ölçümler yapıldı (#149, #151, #216).  STT: yerel faster-whisper, stereo; varsayılan `small`, doğruluk için `medium` (#124). Hızlı LLM katmanı: NVIDIA lightning-30b, 404'te yedek model (#122). Veritabanı geliştirmede yerel PostgreSQL, Supabase yok.
+**Karara bağlananlar:** Çağrı verisi 100'e çıkarıldı (#148), toplu ölçümler yapıldı (#149, #151, #216).  STT: yerel faster-whisper, stereo; varsayılan `large-v3-turbo` (WER ~%14, #329/#330), bellek kısıtlıysa `small`; alan düzeltme sözlüğü maskelemeden önce. Hızlı LLM katmanı: NVIDIA lightning-30b, 404'te yedek model (#122). Veritabanı geliştirmede yerel PostgreSQL, Supabase yok.
 
 ## 13. Değişiklik Günlüğü
 

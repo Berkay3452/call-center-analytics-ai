@@ -4,6 +4,7 @@ import structlog
 
 from app.core.config import Settings
 from app.stt.base import Transcriber
+from app.stt.duzeltme import build_corrector
 from app.stt.providers import (
     FasterWhisperTranscriber,
     OpenAICompatibleTranscriber,
@@ -20,6 +21,7 @@ def build_transcriber(settings: Settings, provider: str | None = None) -> Transc
         raise ValueError(
             "Harici STT kapalı: STT_ALLOW_EXTERNAL=true verilmeden ham ses gönderilmez."
         )
+    corrector = build_corrector(settings.stt_correction_enabled, settings.stt_correction_file)
     if name == "faster_whisper":
         return FasterWhisperTranscriber(
             settings.whisper_model,
@@ -30,6 +32,7 @@ def build_transcriber(settings: Settings, provider: str | None = None) -> Transc
             download_root=settings.whisper_download_root,
             initial_prompt=settings.whisper_initial_prompt,
             hotwords=settings.whisper_hotwords,
+            corrector=corrector,
         )
     if name == "openai_compatible":
         log.warning("stt.external_enabled", base_url=settings.stt_api_base_url)
@@ -38,6 +41,7 @@ def build_transcriber(settings: Settings, provider: str | None = None) -> Transc
             api_key=settings.stt_api_key.get_secret_value() if settings.stt_api_key else None,
             model=settings.stt_api_model,
             timeout_s=settings.stt_timeout_s,
+            corrector=corrector,
         )
     if name == "stub":
         return StubTranscriber()
