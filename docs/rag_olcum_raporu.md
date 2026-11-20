@@ -177,8 +177,8 @@ cümlesi kartlardaki genel arama talimatıdır (alana özel talimat denenmedi).
 1. **Varsayılan embedding değişmez: bge-m3 kalır.** Hiçbir aday kararlı bir üstünlük
    göstermedi. En iyi aday e5-large: sahip kapsamında isabet@3 0,95→1,00 (62 sorunun
    ~3'ü) ve "yazim" kategorisinde 0,62→1,00 iyileşme var, ama fark küçük, bu sette
-   gecikme 3-4 kat yüksek çıktı ve geçişte 85 nottan büyük gerçek veride tüm notların yeniden
-   indekslenmesi gerekir. arctic-l-v2 bge-m3 ile aynı düzeyde (MRR 0,91 / 0,85), Qwen3 ve
+   gecikme 3-4 kat yüksek çıktı (birebir kıyas değil, yukarıya bakın) ve geçişte tüm notların
+   yeniden indekslenmesi gerekir. arctic-l-v2 bge-m3 ile aynı düzeyde (MRR 0,91 / 0,85), Qwen3 ve
    e5-instruct daha iyi değil. Bu yüzden yeniden indeksleme issue'su açılmadı.
 2. **Asıl kazanç yeniden sıralayıcıdan geliyor.** bge-m3 + bge-reranker-v2-m3: sahip
    kapsamında isabet@1 0,85→1,00 ve MRR 0,91→1,00; tüm notlarda MRR 0,84→0,93; zayıf
