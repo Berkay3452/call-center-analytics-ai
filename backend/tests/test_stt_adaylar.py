@@ -2,6 +2,7 @@
 
 import json
 from pathlib import Path
+from typing import Any
 
 import numpy as np
 import pytest
@@ -91,7 +92,7 @@ def test_hf_ctc_without_transformers_gives_clear_error(monkeypatch: pytest.Monke
 
     real_import = builtins.__import__
 
-    def fake_import(name: str, *args: object, **kwargs: object) -> object:
+    def fake_import(name: str, *args: Any, **kwargs: Any) -> Any:
         if name == "transformers":
             raise ImportError("yok")
         return real_import(name, *args, **kwargs)
