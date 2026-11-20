@@ -23,6 +23,7 @@ Referans metin: ses dosyasıyla aynı adlı sentetik çağrı (`data/synthetic/c
 import argparse
 import asyncio
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -30,6 +31,7 @@ from typing import Any
 
 from app.core.config import Settings
 from app.services.transcript_text import parse_transcript
+from app.stt.adaylar import CANDIDATES
 from app.stt.base import SttError
 from app.stt.metrics import (
     cer,
@@ -119,9 +121,25 @@ def audio_files(target: Path) -> list[Path]:
     return sorted(p for p in target.iterdir() if p.suffix.lower() in AUDIO_EXT)
 
 
+def candidate_overrides(name: str) -> tuple[str, dict[str, Any]]:
+    """Aday tanımından (sağlayıcı, ayar ezmeleri) üretir; harici aday anahtar ister (#331)."""
+    candidate = CANDIDATES.get(name)
+    if candidate is None:
+        sys.exit(f"Bilinmeyen aday: {name}. Seçenekler: {', '.join(CANDIDATES)}")
+    if candidate.provider == "openai_compatible":
+        if not os.environ.get("STT_API_KEY"):
+            sys.exit(
+                f"{name}: STT_API_KEY ortam değişkeni gerekir (yalnız sentetik ses gönderilir)."
+            )
+        return candidate.provider, {"stt_api_model": candidate.model, "stt_allow_external": True}
+    return candidate.provider, {"whisper_model": candidate.model}
+
+
 async def run(args: argparse.Namespace) -> list[dict[str, Any]]:
     settings = Settings()
     overrides: dict[str, Any] = {}
+    if args.candidate:
+        args.providers, overrides = candidate_overrides(args.candidate)
     if args.model:
         overrides["whisper_model"] = args.model
     if args.beam is not None:
@@ -252,7 +270,14 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawTextHelpFormatter
     )
-    parser.add_argument("--audio", required=True, help="Ses dosyası veya klasörü")
+    parser.add_argument("--audio", help="Ses dosyası veya klasörü")
+    parser.add_argument(
+        "--candidate",
+        help="Aday model (app/stt/adaylar.py): "
+        + ", ".join(CANDIDATES)
+        + ". Sağlayıcıyı ve modeli seçer.",
+    )
+    parser.add_argument("--list-candidates", action="store_true", help="Adayları listele ve çık")
     parser.add_argument("--providers", help="Virgülle: faster_whisper,openai_compatible,stub")
     parser.add_argument("--model", help="faster-whisper model boyutu (tiny/base/small/medium)")
     parser.add_argument("--beam", type=int, help="WHISPER_BEAM_SIZE'ı ez (1 en hızlı)")
@@ -265,6 +290,15 @@ def main() -> None:
     parser.add_argument("--out", help="Sonuçları JSON olarak kaydet")
     args = parser.parse_args()
 
+    if args.list_candidates:
+        for c in CANDIDATES.values():
+            print(
+                f"{c.name:16} {c.provider:16} {c.model}  [{c.license}, ~{c.download_gb} GB]"
+                f"  {c.note}"
+            )
+        return
+    if not args.audio:
+        parser.error("--audio gerekli")
     if not Path(args.audio).exists():
         sys.exit(f"Bulunamadı: {args.audio}")
     rows = asyncio.run(run(args))
