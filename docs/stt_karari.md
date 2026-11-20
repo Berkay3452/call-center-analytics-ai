@@ -259,6 +259,42 @@ uv run --extra stt python -m scripts.stt_benchmark --candidate large-v3 --audio 
 
 Her aday ayrı süreçte koşar (tepe bellek ve model yükleme süresi karışmaz); sonunda Markdown tablo basılır. Harici aday için `STT_API_KEY` ortam değişkeni gerekir; yoksa atlanır. `STT_ALLOW_EXTERNAL=false` varsayılanı ve `.env` değişmez: harici izin yalnız o koşunun sürecinde verilir. Üretim varsayılanı bu adaylardan etkilenmez. `torch` ve `transformers` projenin bağımlılığı değildir; yalnız `xlsr-tr` için geçici eklenir.
 
+## Model karşılaştırması: ölçüm sonuçları ve karar (#332)
+
+**Tarih:** 2026-11-20 · **Ses:** #328'deki 6 sentetik çağrı (`call_001, 005, 010, 017, 023, 031`), **Edge TTS, stereo, telefon bozulmalı** (8 kHz, SNR 18 dB; ~9,5 dk) · **Ayar:** beam 1, VAD 0,2, mevcut `initial_prompt`, düzeltme sözlüğü açık (#330) · **CPU:** int8, GPU yok, 15,7 GB RAM (ölçüm sırasında ~3 GB boş) · **Komut:** `python -m scripts.stt_aday_kosusu --audio <klasör> --out-dir <klasör>` (her aday ayrı süreçte)
+
+| Aday | WER | Konuşmacı WER | Terim doğruluğu | RTF | Tepe bellek | Model yükleme |
+|---|---|---|---|---|---|---|
+| `small` | %24,5 | %23,8 | %79,1 (72/91) | 0,11 | 731 MB | 5,8 sn |
+| `medium` | %14,7 | %15,0 | %86,8 (79/91) | 0,29 | 1778 MB | 5,5 sn |
+| `large-v3` | ölçülemedi | | | | | `mkl_malloc` bellek hatası |
+| **`large-v3-turbo`** (varsayılan) | **%13,8** | %12,6 | **%93,4 (85/91)** | 0,29 | 1916 MB | 5,1 sn |
+| `large-v3-tr` (Türkçe ince ayar) | ölçülemedi | | | | | `mkl_malloc` bellek hatası |
+| `turbo-tr-itu` (turbo Türkçe ince ayar) | %13,0 | **%10,1** | %87,9 (80/91) | 0,32 | 1940 MB | 100,5 sn* |
+| `xlsr-tr` (wav2vec2 CTC) | %93,3 | %69,1 | %33,0 (30/91) | 1,31 | 3203 MB | — |
+| `groq-large-v3` (bulut) | ölçülemedi | | | | | API anahtarı yok |
+
+\* `turbo-tr-itu`'nun yükleme süresi ilk indirmeyi içerir (~1,6 GB); sonraki yüklemeler diğer turbo gibi ~5 sn.
+
+### Bulgular
+
+- **`large-v3-turbo` en iyi denge:** `small`'a göre WER 10,7 puan ve terim doğruluğu 14 puan daha iyi; `medium`'dan hem daha doğru hem aynı hızda. 3 dakikalık çağrı ~52 sn (bütçe ≤ 2 dk).
+- **Türkçe ince ayar (`turbo-tr-itu`) turbo'yu geçmiyor:** genel WER 0,8 puan ve konuşmacı WER'i 2,5 puan düşük, ama terim doğruluğu 5,5 puan kötü ve RTF biraz yüksek. Fark 6 çağrıda gürültü sınırında; model kartındaki ölçütler yazarın kendi setinden. Değiştirmeye değmez.
+- **`xlsr-tr` (wav2vec2) bu veride işe yaramıyor:** WER %93, RTF 1,31 (gerçek zamandan yavaş), ~3,2 GB bellek. Model okuma sesiyle (Common Voice) eğitilmiş; 8 kHz μ-law dar bant telefon sesine ve TTS tempolarına uymuyor; ayrıca noktalama/rakam üretmez. Elendi.
+- **`large-v3` ve `large-v3-tr` bu makinede yüklenemedi:** `RuntimeError: mkl_malloc: failed to allocate memory`. Boş RAM ~3 GB ve C: diski dolu olduğu için sayfa dosyası da dar; model 3,09 GB (int8 yükleme ~3 GB+). Bu, "15,7 GB RAM, GPU yok, Docker açıkken" koşulunda bu iki adayın **kullanılamaz** olduğu anlamına gelir; ayrıca turbo (`large-v3`'ün damıtılmışı) zaten benzer doğruluk veriyor.
+- **Bulut (Groq) ölçülemedi:** projede anahtar yok (`LLM_PROVIDER=nvidia`). Altyapı hazır (`STT_PROVIDER=openai_compatible`); anahtar alınırsa aynı komutla ölçülür. Ses üçüncü tarafa gideceği için güvenlik katmanı gereği yine yalnız sentetik ses ve bilinçli onayla.
+
+### Karar
+
+**Model değişmiyor:** varsayılan `large-v3-turbo` (beam 1, #330) kalır. Hiçbir aday doğruluk, hız ve bellek bütçesini birlikte turbo'dan daha iyi karşılamıyor. Değişiklik gerektirirse (ör. gerçek ses sonrası) `turbo-tr-itu` ilk bakılacak adaydır; bunun için `stt/registry.py` değişikliği gerekmez (`WHISPER_MODEL=RsGoksel/RsGoksel_ITU_Mainframe-ct2`).
+
+### Sınırlar
+
+- **Yalnız Edge + telefon seti ölçüldü** (6 çağrı, ~9,5 dk). Issue'nun istediği Piper ve temiz ses setleri koşulmadı; kalan zamanda adayların çoğu elendi ya da ölçülemedi, tablodaki sıralamanın temiz seste değişmesi beklenmez ama doğrulanmadı.
+- **Gerçek müşteri sesi kullanılmadı.** Sentetik seste (TTS, düz tempo) sonuçlar gerçek aksan, gürültü ve üst üste konuşmada farklı olabilir; telefon bozulması simülasyondur.
+- 6 çağrı, 91 terim: yüzdeler ±birkaç puan oynar; 1-2 puanlık farklar (ör. turbo ile turbo-tr arasındaki WER) anlamlı sayılmamalı.
+- Tepe bellek çalışma kümesidir ve ölçüm sırasındaki bellek baskısına göre dalgalanır. `large-v3`/`large-v3-tr` bu makinedeki o anki boş belleğe göre yüklenemedi; 16 GB'ın tamamı boş bir makinede çalışabilir.
+
 ## Gerçek ekip kayıtları (#150): betik hazır, kayıt bekleniyor
 
 Gerçek kayıtlar henüz yok; üretilmiş seslerle yetinilmiyor, issue açık kalır. Kayıt geldiğinde (kişisel veri: repoya koymayın, repo dışı bir klasör, ör. `D:\gercek_kayitlar`):
