@@ -219,6 +219,46 @@ Toplam kazanç: **WER %25,3 → %13,8** (11,5 puan), **terim doğruluğu %72,5 �
 - Sözlük kuralları bu 6 çağrının hatalarından türetildi; **aynı sette ölçülen kazanç iyimserdir** (kapalı bir sınama kümesi yok). Yanlış pozitif tarafı 100 görüşmeyle güvence altında, ama gerçek ses ve gerçek yanlış yazımlar farklı olabilir.
 - 6 sentetik çağrı, 91 terim: yüzdeler ±birkaç puan oynar; gerçek aksan/gürültüde fark değişir.
 
+## Karşılaştırma adayları ve elenenler (#331)
+
+**Tarih:** 2026-11-20 · Bilgiler Hugging Face model sayfaları ve API'sinden alındı (boyut, lisans, Türkçe etiketi, CT2 yapısı). Model kartlarındaki WER değerleri **yazarların kendi doğrulama setlerinden** ve okuma sesindendir; telefon sesi için karşılaştırılamaz, bu yüzden karar yalnız bizim sentetik telefon setimizdeki ölçümle verilir (#332).
+
+### Ölçülecek adaylar (`app/stt/adaylar.py`)
+
+| Aday | Sağlayıcı / model | İndirme | Lisans | Zaman damgası | Not |
+|---|---|---|---|---|---|
+| `small` | faster-whisper `small` | 0,48 GB | MIT | segment + kelime | Önceki varsayılan (referans) |
+| `medium` | faster-whisper `medium` | 1,53 GB | MIT | segment + kelime | #124/#329'da ölçüldü |
+| `large-v3` | `Systran/faster-whisper-large-v3` | 3,09 GB | MIT | segment + kelime | int8 ~2-3 GB bellek |
+| `large-v3-turbo` | faster-whisper `large-v3-turbo` | 1,62 GB | MIT | segment + kelime | **Mevcut varsayılan** (#330) |
+| `large-v3-tr` | `oguzhangokboru/whisper-large-v3-tr` (CT2) | 3,09 GB | Apache-2.0 | segment + kelime | large-v3'ün Türkçe ince ayarı, ~272 saat herkese açık Türkçe ses |
+| `turbo-tr-itu` | `RsGoksel/RsGoksel_ITU_Mainframe-ct2` (CT2) | 1,62 GB | MIT | segment + kelime | large-v3-turbo'nun Türkçe ince ayarı |
+| `xlsr-tr` | `mpoyraz/wav2vec2-xls-r-300m-cv8-turkish` (CTC) | 1,26 GB | Apache-2.0 | kelime (CTC çerçevesi) | Kart WER %10,6 (Common Voice 8, okuma sesi); noktalama, büyük harf, rakam yok |
+| `groq-large-v3` | OpenAI uyumlu API (Groq `whisper-large-v3`) | — | MIT (model) | segment | Ses üçüncü tarafa gider; yalnız sentetik ses; **`STT_API_KEY` gerekir** |
+
+Tüm Whisper adayları Türkçeyi (`tr`) destekler (model sayfası etiketi); CT2 adayları `faster-whisper` ile doğrudan çalışır (repo adı `--model` olarak verilir). 15,7 GB RAM ve GPU'suz CPU sınırı: `large-v3` ve `large-v3-tr` bellek bakımından sınırda.
+
+### Elenenler
+
+| Aday | Gerekçe |
+|---|---|
+| `distil-whisper` | Yalnız İngilizce (daha önce elendi, #124). |
+| `facebook/mms-1b-all` (Türkçe adaptör) | Lisans **CC-BY-NC-4.0** (ticari olmayan), ~3,9 GB / 1 milyar parametre, CTC (noktalama ve rakam yok); CPU ve bellek bütçesine ve lisansa uymuyor. |
+| `m3hrdadfi/wav2vec2-large-xlsr-turkish`, `cahya/wav2vec2-large-xlsr-turkish` | Eski XLSR-53 modelleri, kartlarda Common Voice TR WER %27,5 ve %21,1; aynı aileden `mpoyraz` (%10,6) daha iyi ve daha yeni, o ölçülür. |
+| `Huseyin/whisper-large-v3-turkish-finetuned`, `BuzzASR/turkish`, `selimc/whisper-large-v3-turbo-turkish` | Kartlarda CTranslate2 (faster-whisper) yapısı yok; PyTorch Transformers ile çalışır, CPU'da ağır ve canlı transkript yolu (faster-whisper) dışında kalır. CT2 dönüşümü ayrı iş; ölçüm sonucu Türkçe ince ayarın değer kattığını gösterirse (`large-v3-tr`, `turbo-tr-itu`) yeniden bakılır. |
+| Ücretsiz kotalı bulut (Groq) | Elenmedi, ama **ölçülemiyor**: projede Groq anahtarı yok (`LLM_PROVIDER=nvidia`). Altyapı hazır; anahtar alınırsa aynı komutla ölçülür. |
+
+### Tek komutla çalıştırma
+
+```
+cd backend
+uv run --extra stt --with torch --with transformers python -m scripts.stt_aday_kosusu --audio <ses klasörü> --out-dir <sonuç klasörü>
+uv run --extra stt python -m scripts.stt_benchmark --list-candidates          # adaylar
+uv run --extra stt python -m scripts.stt_benchmark --candidate large-v3 --audio <klasör>   # tek aday
+```
+
+Her aday ayrı süreçte koşar (tepe bellek ve model yükleme süresi karışmaz); sonunda Markdown tablo basılır. Harici aday için `STT_API_KEY` ortam değişkeni gerekir; yoksa atlanır. `STT_ALLOW_EXTERNAL=false` varsayılanı ve `.env` değişmez: harici izin yalnız o koşunun sürecinde verilir. Üretim varsayılanı bu adaylardan etkilenmez. `torch` ve `transformers` projenin bağımlılığı değildir; yalnız `xlsr-tr` için geçici eklenir.
+
 ## Gerçek ekip kayıtları (#150): betik hazır, kayıt bekleniyor
 
 Gerçek kayıtlar henüz yok; üretilmiş seslerle yetinilmiyor, issue açık kalır. Kayıt geldiğinde (kişisel veri: repoya koymayın, repo dışı bir klasör, ör. `D:\gercek_kayitlar`):

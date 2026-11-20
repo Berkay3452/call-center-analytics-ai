@@ -34,6 +34,10 @@ def build_transcriber(settings: Settings, provider: str | None = None) -> Transc
             hotwords=settings.whisper_hotwords,
             corrector=corrector,
         )
+    if name == "hf_ctc":  # yalnız karşılaştırma (#331): üretim sağlayıcısı değildir
+        from app.stt.benchmark_providers import HfCtcTranscriber
+
+        return HfCtcTranscriber(settings.whisper_model, corrector=corrector)
     if name == "openai_compatible":
         log.warning("stt.external_enabled", base_url=settings.stt_api_base_url)
         return OpenAICompatibleTranscriber(
