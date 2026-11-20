@@ -158,7 +158,7 @@ def test_period_longer_than_a_year_is_rejected() -> None:
     from app.services.analytics_service import _resolve_period
 
     with pytest.raises(AppError):
-        _resolve_period(PeriodFilter(date_from=date(1900, 1, 1)))
+        _resolve_period(PeriodFilter(date_from=date(2001, 1, 1)))
     start, end = _resolve_period(
         PeriodFilter(date_from=date(2026, 1, 1), date_to=date(2026, 12, 31))
     )

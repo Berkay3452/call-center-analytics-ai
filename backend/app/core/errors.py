@@ -6,10 +6,12 @@ Tüm hatalar şu gövdeyle döner (frontend tek bir biçimi işler):
 
 from typing import Any
 
+import asyncpg
 import structlog
 from fastapi import FastAPI, Request, status
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from sqlalchemy.exc import DBAPIError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.core.middleware import REQUEST_ID_HEADER
@@ -117,6 +119,18 @@ def _error_response(
     )
 
 
+def is_bad_input_db_error(exc: DBAPIError) -> bool:
+    """Veritabanı, istemcinin gönderdiği değeri reddetti mi (NUL karakteri, sayı/tarih taşması)?
+
+    PostgreSQL "veri istisnası" sınıfı (SQLSTATE 22xxx) ve asyncpg'nin sürücü tarafı
+    `DataError`'ı değerin kendisinden kaynaklanır; sunucu arızası değildir.
+    """
+    cause = getattr(exc.orig, "__cause__", None)
+    if isinstance(cause, asyncpg.exceptions.DataError):
+        return True
+    return str(getattr(cause, "sqlstate", "") or "").startswith("22")
+
+
 def register_exception_handlers(app: FastAPI) -> None:
     @app.exception_handler(AppError)
     async def _app_error(request: Request, exc: AppError) -> JSONResponse:
@@ -134,6 +148,25 @@ def register_exception_handlers(app: FastAPI) -> None:
             # `ctx` (ör. model doğrulayıcının ValueError'u) JSON'a çevrilemez; yalnızca
             # alan yolu, mesaj ve tür gönderilir.
             {"errors": [{k: e[k] for k in ("loc", "msg", "type")} for e in exc.errors()]},
+        )
+
+    @app.exception_handler(DBAPIError)
+    async def _db_error(request: Request, exc: DBAPIError) -> JSONResponse:
+        # Şema katmanının kaçırdığı geçersiz değer: 500 yerine 422 (değer günlüğe yazılmaz).
+        if not is_bad_input_db_error(exc):
+            return await _unhandled(request, exc)
+        logger.warning(
+            "db_bad_input",
+            path=request.url.path,
+            method=request.method,
+            request_id=getattr(request.state, "request_id", None),
+            error_type=type(getattr(exc.orig, "__cause__", None)).__name__,
+        )
+        return _error_response(
+            request,
+            status.HTTP_422_UNPROCESSABLE_CONTENT,
+            "validation_error",
+            "İstekteki bir değer veritabanı tarafından kabul edilmedi.",
         )
 
     @app.exception_handler(StarletteHTTPException)

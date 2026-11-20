@@ -10,6 +10,8 @@ from uuid import UUID
 
 import structlog
 from fastapi import APIRouter, Depends, File, Form, UploadFile, status
+from fastapi.exceptions import RequestValidationError
+from pydantic import ValidationError
 from starlette.concurrency import run_in_threadpool
 
 from app.api.deps import AdminCallerDep, AudioStorageDep, SessionDep, SettingsDep
@@ -125,17 +127,22 @@ async def create_audio_call(
     Form alanları `AudioCallMeta` ile aynıdır (FastAPI dosya + model formunu birlikte açamadığı
     için alanlar tek tek alınır).
     """
-    meta = AudioCallMeta(
-        started_at=started_at,
-        duration_s=duration_s,
-        answer_delay_s=answer_delay_s,
-        switchboard_outcome=switchboard_outcome,
-        customer_name=customer_name or None,
-        customer_phone=customer_phone or None,
-        boat_name=boat_name or None,
-        boat_model=boat_model or None,
-        marina=marina or None,
-    )
+    try:
+        meta = AudioCallMeta(
+            started_at=started_at,
+            duration_s=duration_s,
+            answer_delay_s=answer_delay_s,
+            switchboard_outcome=switchboard_outcome,
+            customer_name=customer_name or None,
+            customer_phone=customer_phone or None,
+            boat_name=boat_name or None,
+            boat_model=boat_model or None,
+            marina=marina or None,
+        )
+    except ValidationError as exc:
+        # Form alanları elle modele çevrildiği için FastAPI doğrulaması bu hatayı görmez; 500
+        # yerine diğer uçlarla aynı 422 gövdesi (NUL karakteri, sınır dışı süre/tarih, uzun ad).
+        raise RequestValidationError(exc.errors()) from exc
     stored = await run_in_threadpool(
         audio_ingest.store_audio,
         file.file,

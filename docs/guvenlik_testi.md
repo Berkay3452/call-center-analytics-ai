@@ -83,6 +83,8 @@ uv run python -m scripts.guvenlik_testi --markdown   # tabloyu Markdown olarak y
 | `/openapi.json` üretimde kimliksiz erişilebiliyordu (API8/API9: tüm uç envanteri ve şemalar görünüyordu; `/docs` kapalıydı ama şema açıktı) | **Düzeltildi** bu PR'da: `openapi_url` prod'da `None` (`backend/app/main.py`); test `test_api_docs_are_closed_in_production` |
 | Durum değiştiren 7 uç yalnızca servis anahtarı istiyordu; tekne sahibi kimliğiyle gelen çağrı da erişebiliyordu (API5) | **Kapandı** (#275): sunucuda imzalı rol denetimi; `test_yetki_haritasi.py` açık uç kümesini sıfıra sabitledi, `backend/tests/test_role_enforcement.py` her yönetici/sahip ucunu dener |
 
+Kara kutu QA turu (#320, #338, 2026-11-20): paketin dışından, çalışan sunucuya saldırı ve schemathesis fuzzing ile 7 ek bulgu (elle eşleştirme ucunun 500'ü, NUL karakteri, uç tarih ve sayı taşması, `Cache-Control`) bulundu ve düzeltildi. Ayrıntı ve manuel kontrol listesi: [docs/qa_kara_kutu_raporu.md](qa_kara_kutu_raporu.md).
+
 ## 6. Bilinen sınırlamalar
 
 | No | Sınırlama | Neden / azaltma | İzleme |

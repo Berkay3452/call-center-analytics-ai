@@ -189,6 +189,8 @@ class SecurityHeadersMiddleware:
             (b"x-content-type-options", b"nosniff"),
             (b"referrer-policy", b"no-referrer"),
             (b"x-frame-options", b"DENY"),
+            # Kişisel veri içeren yanıtlar tarayıcı/ara sunucu önbelleğine yazılmasın.
+            (b"cache-control", b"no-store"),
         ]
         if hsts:
             self.extra.append(

@@ -6,6 +6,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from app.domain.audit import AuditAction, AuditActorRole, AuditOutcome
+from app.schemas.safe import SaneDateTime
 
 
 class AuditLogItem(BaseModel):
@@ -34,8 +35,8 @@ class AuditLogFilters(BaseModel):
     actor_id: UUID | None = None
     target_type: str | None = Field(default=None, max_length=64)
     target_id: str | None = Field(default=None, max_length=64)
-    since: datetime | None = Field(default=None, description="Bu andan itibaren (dahil, UTC).")
-    until: datetime | None = Field(default=None, description="Bu ana kadar (hariç, UTC).")
+    since: SaneDateTime | None = Field(default=None, description="Bu andan itibaren (dahil, UTC).")
+    until: SaneDateTime | None = Field(default=None, description="Bu ana kadar (hariç, UTC).")
     page: int = Field(default=1, ge=1)
     page_size: int = Field(default=20, ge=1, le=100)
 

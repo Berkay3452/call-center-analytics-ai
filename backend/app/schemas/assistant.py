@@ -10,6 +10,8 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
 
+from app.schemas.safe import SafeStr
+
 
 class QuestionType(StrEnum):
     """Sorgu planlayıcının soru sınıfları (diyagram 03)."""
@@ -47,13 +49,13 @@ class HistoryTurn(BaseModel):
     """Oturumdaki önceki bir mesaj (takip sorularını anlamak için)."""
 
     role: Literal["user", "assistant"]
-    content: str = Field(min_length=1)
+    content: SafeStr = Field(min_length=1)
 
 
 class AssistantRequest(BaseModel):
     """Tekne sahibinin sorusu. `owner_id` .NET API'nin doğruladığı oturum kullanıcısıdır."""
 
-    question: str = Field(min_length=1, max_length=5000)
+    question: SafeStr = Field(min_length=1, max_length=5000)
     owner_id: str = Field(min_length=1, description="Oturumdaki tekne sahibi; zorunlu.")
     history: list[HistoryTurn] = Field(
         default_factory=list,

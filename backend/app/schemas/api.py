@@ -11,7 +11,7 @@ Kurallar:
 - Tekne sahibi uçlarında kullanıcı kimliği gövdede değil, `X-User-Id` başlığında gelir (#24).
 """
 
-from datetime import date, datetime
+from datetime import datetime
 from typing import Annotated, Any, Literal
 from uuid import UUID
 
@@ -41,6 +41,14 @@ from app.schemas.analysis import (
     SalesAnalysis,
 )
 from app.schemas.assistant import QuestionType, SourceRef
+from app.schemas.safe import (
+    Millis,
+    NameStr,
+    SafeStr,
+    SaneDate,
+    SaneDateTime,
+    Seconds,
+)
 
 # Çağrının işlenme durumu. İlk üçü agent sonucunu (AnalysisStatus) değil, sürecin aşamasını
 # anlatır: beklemede → (ses varsa) yazıya_cevriliyor → isleniyor → tamam | kismi | basarisiz.
@@ -69,10 +77,10 @@ Speaker = Literal["customer", "rep"]
 class CallFilters(BaseModel):
     """`GET /calls` ve `GET /crm` sorgu parametreleri. Hepsi isteğe bağlıdır."""
 
-    date_from: date | None = Field(
+    date_from: SaneDate | None = Field(
         default=None, description="Bu günden itibaren (dahil, Europe/Istanbul)."
     )
-    date_to: date | None = Field(
+    date_to: SaneDate | None = Field(
         default=None, description="Bu güne kadar (dahil, Europe/Istanbul)."
     )
     call_type: CallType | None = None
@@ -83,8 +91,10 @@ class CallFilters(BaseModel):
         default=None,
         description="CRM inceleme durumu filtresi (bekliyor | onaylandi | reddedildi).",
     )
-    marina: str | None = Field(default=None, description="Marina adına göre tam eşleşme filtresi.")
-    q: str | None = Field(
+    marina: SafeStr | None = Field(
+        default=None, max_length=200, description="Marina adına göre tam eşleşme filtresi."
+    )
+    q: SafeStr | None = Field(
         default=None, max_length=100, description="Müşteri, tekne veya marina adında arama."
     )
     page: int = Field(default=1, ge=1)
@@ -100,13 +110,15 @@ class CallFilters(BaseModel):
 class PeriodFilter(BaseModel):
     """`GET /analytics/summary` sorgu parametreleri; boşsa son 30 gün."""
 
-    date_from: date | None = Field(
+    date_from: SaneDate | None = Field(
         default=None, description="Bu günden itibaren (dahil, Europe/Istanbul)."
     )
-    date_to: date | None = Field(
+    date_to: SaneDate | None = Field(
         default=None, description="Bu güne kadar (dahil, Europe/Istanbul)."
     )
-    marina: str | None = Field(default=None, description="Marina adına göre tam eşleşme filtresi.")
+    marina: SafeStr | None = Field(
+        default=None, max_length=200, description="Marina adına göre tam eşleşme filtresi."
+    )
 
     @model_validator(mode="after")
     def _dates_ordered(self) -> "PeriodFilter":
@@ -283,19 +295,19 @@ class CrmApproveIn(BaseModel):
     """`POST /crm/{call_id}/approve`: isteğe bağlı düzenlenmiş 7 alan ve onay notu (#106)."""
 
     request_category: RequestCategory | None = None
-    location: str | None = None
-    problem: str | None = None
+    location: SafeStr | None = None
+    problem: SafeStr | None = None
     service_mode: ServiceMode | None = None
     urgency: Urgency | None = None
-    potential_job: str | None = None
+    potential_job: SafeStr | None = None
     next_action: NextAction | None = None
-    note: str | None = Field(default=None, description="İsteğe bağlı onay notu.")
+    note: SafeStr | None = Field(default=None, description="İsteğe bağlı onay notu.")
 
 
 class CrmRejectIn(BaseModel):
     """`POST /crm/{call_id}/reject`: red nedeni veya not (#106)."""
 
-    note: str | None = Field(default=None, description="Red nedeni veya not.")
+    note: SafeStr | None = Field(default=None, description="Red nedeni veya not.")
 
 
 class CrmReviewOut(BaseModel):
@@ -316,9 +328,9 @@ class CrmReviewOut(BaseModel):
 
 class SegmentIn(BaseModel):
     speaker: Speaker
-    text: str = Field(min_length=1)
-    start_ms: int | None = Field(default=None, ge=0)
-    end_ms: int | None = Field(default=None, ge=0)
+    text: SafeStr = Field(min_length=1)
+    start_ms: Millis | None = None
+    end_ms: Millis | None = None
 
 
 class CallCreate(BaseModel):
@@ -327,16 +339,18 @@ class CallCreate(BaseModel):
     `transcript` veya `segments`ten en az biri gerekir. Analiz hemen kuyruğa alınır.
     """
 
-    started_at: datetime
-    duration_s: int | None = Field(default=None, ge=0)
-    answer_delay_s: int | None = Field(default=None, ge=0)
+    started_at: SaneDateTime
+    duration_s: Seconds | None = None
+    answer_delay_s: Seconds | None = None
     switchboard_outcome: SwitchboardOutcome | None = None
-    customer_name: str | None = None
-    customer_phone: str | None = None
-    boat_name: str | None = None
-    boat_model: str | None = None
-    marina: str | None = None
-    transcript: str | None = Field(default=None, description="Düz metin; satır başında konuşmacı.")
+    customer_name: NameStr | None = None
+    customer_phone: NameStr | None = None
+    boat_name: NameStr | None = None
+    boat_model: NameStr | None = None
+    marina: NameStr | None = None
+    transcript: SafeStr | None = Field(
+        default=None, description="Düz metin; satır başında konuşmacı."
+    )
     segments: list[SegmentIn] = Field(default_factory=list)
 
     @model_validator(mode="after")
@@ -352,15 +366,15 @@ class AudioCallMeta(BaseModel):
     `CallCreate` ile aynı çağrı bilgileri, transkript hariç: metin STT ile üretilir.
     """
 
-    started_at: datetime
-    duration_s: int | None = Field(default=None, ge=0)
-    answer_delay_s: int | None = Field(default=None, ge=0)
+    started_at: SaneDateTime
+    duration_s: Seconds | None = None
+    answer_delay_s: Seconds | None = None
     switchboard_outcome: SwitchboardOutcome | None = None
-    customer_name: str | None = None
-    customer_phone: str | None = None
-    boat_name: str | None = None
-    boat_model: str | None = None
-    marina: str | None = None
+    customer_name: NameStr | None = None
+    customer_phone: NameStr | None = None
+    boat_name: NameStr | None = None
+    boat_model: NameStr | None = None
+    marina: NameStr | None = None
 
 
 class CallAccepted(BaseModel):
@@ -405,7 +419,7 @@ class CallStatus(BaseModel):
 class ChatQuestion(BaseModel):
     """`POST /chat/messages`. `session_id` boşsa yeni oturum açılır."""
 
-    question: str = Field(min_length=1, max_length=5000)
+    question: SafeStr = Field(min_length=1, max_length=5000)
     session_id: UUID | None = None
 
 
@@ -492,14 +506,16 @@ class ServiceOrderFilters(BaseModel):
     status: ServiceOrderStatus | None = Field(
         default=None, description="Servis emri durumu filtresi."
     )
-    date_from: date | None = Field(
+    date_from: SaneDate | None = Field(
         default=None, description="Bu tarihten itibaren (dahil, Europe/Istanbul)."
     )
-    date_to: date | None = Field(
+    date_to: SaneDate | None = Field(
         default=None, description="Bu tarihe kadar (dahil, Europe/Istanbul)."
     )
-    marina: str | None = Field(default=None, description="Marina adına göre tam eşleşme filtresi.")
-    q: str | None = Field(
+    marina: SafeStr | None = Field(
+        default=None, max_length=200, description="Marina adına göre tam eşleşme filtresi."
+    )
+    q: SafeStr | None = Field(
         default=None,
         max_length=100,
         description="Müşteri adı, tekne adı, usta adı veya açıklamada arama.",

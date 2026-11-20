@@ -507,8 +507,21 @@ async def test_stream_waits_between_words(
     assert len(waits) == len(deltas) and all(w > 0 for w in waits)
 
 
-async def test_expense_source_excerpt_uses_turkish_number_format(client: AsyncClient) -> None:
+async def test_expense_source_excerpt_uses_turkish_number_format(
+    client: AsyncClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
     """Kaynak kartı alıntısı da cevap metni gibi `14.250,00 TL` biçiminde olmalı."""
+    from datetime import date
+
+    from app.assistant import assistant as assistant_module
+
+    class OctoberDate(date):
+        # Seed gideri 1 Ekim 2026'dadır; "Bu ay" gerçek saate bağlı kalıp zamanla bozulmasın (#320).
+        @classmethod
+        def today(cls) -> "OctoberDate":
+            return cls(2026, 10, 15)
+
+    monkeypatch.setattr(assistant_module, "date", OctoberDate)
     headers = {"X-Service-Key": TEST_SERVICE_KEY, "X-User-Id": str(AHMET_ID)}
 
     resp = await client.post(

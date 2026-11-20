@@ -190,7 +190,7 @@ async def test_period_longer_than_a_year_is_rejected(
 ) -> None:
     async with factory() as session:
         with pytest.raises(AppError):
-            await get_kpi_summary(session, PeriodFilter(date_from=date(1900, 1, 1)))
+            await get_kpi_summary(session, PeriodFilter(date_from=date(2001, 1, 1)))
 
 
 async def test_kpi_summary_marina_filter(
