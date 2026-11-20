@@ -258,7 +258,10 @@ async def test_reanalysis_reverts_to_bekliyor(
         await session.flush()
 
         # Yeni sürüm için durum 'bekliyor' olmalıdır
-        page_waiting = await list_crm_records(session, CallFilters(status=CrmReviewStatus.BEKLIYOR))
+        # Seed'de çok sayıda bekleyen kayıt var: tek sayfada görünsün diye sayfa boyutu en üstte.
+        page_waiting = await list_crm_records(
+            session, CallFilters(status=CrmReviewStatus.BEKLIYOR, page_size=100)
+        )
         matching = [item for item in page_waiting.items if item.call_id == call.id]
         assert len(matching) == 1
         assert matching[0].review_status == CrmReviewStatus.BEKLIYOR

@@ -91,6 +91,9 @@ class Call(UUIDPrimaryKeyMixin, Base):
     """Çağrı meta verisi (santral bilgisi); ses dosyası yüklendikten sonra oluşturulur."""
 
     __tablename__ = "calls"
+    # `updated_at` UPDATE'te sunucuda (now()) üretilir; eager_defaults değeri RETURNING ile hemen
+    # alır. Yoksa nitelik expire olur ve async oturumda okunurken MissingGreenlet → 500 olur.
+    __mapper_args__ = {"eager_defaults": True}  # noqa: RUF012 (SQLAlchemy deseni)
     __table_args__ = (
         in_enum("switchboard_outcome", SwitchboardOutcome),
         in_values("state", CALL_STATES, nullable=False, name="state"),
@@ -280,6 +283,9 @@ class CrmReview(UUIDPrimaryKeyMixin, Base):
     """CRM önerisi inceleme kaydı (#106): onayla, reddet, düzenle."""
 
     __tablename__ = "crm_reviews"
+    # `updated_at` UPDATE'te sunucuda (now()) üretilir; eager_defaults değeri RETURNING ile hemen
+    # alır. Yoksa nitelik expire olur ve async oturumda okunurken MissingGreenlet → 500 olur.
+    __mapper_args__ = {"eager_defaults": True}  # noqa: RUF012 (SQLAlchemy deseni)
     __table_args__ = (
         UniqueConstraint("analysis_id", name="uq_crm_reviews_analysis_id"),
         in_enum("status", CrmReviewStatus, nullable=False),
@@ -309,6 +315,9 @@ class ChatSession(UUIDPrimaryKeyMixin, Base):
     """Miço AI sohbet oturumu; yetkilendirme `owner_id` ile yapılır."""
 
     __tablename__ = "chat_sessions"
+    # `updated_at` UPDATE'te sunucuda (now()) üretilir; eager_defaults değeri RETURNING ile hemen
+    # alır. Yoksa nitelik expire olur ve async oturumda okunurken MissingGreenlet → 500 olur.
+    __mapper_args__ = {"eager_defaults": True}  # noqa: RUF012 (SQLAlchemy deseni)
     __table_args__ = (Index("ix_sessions_owner_id", "owner_id"),)
 
     owner_id: Mapped[uuid.UUID] = _uuid_fk("customers.id")
