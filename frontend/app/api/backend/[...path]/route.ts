@@ -24,7 +24,7 @@ function signUserId(userId: string, key: string): string {
 // Yol → izinli HTTP yöntemleri (#271). Listede olmayan yöntem 405 döner.
 const R: Array<[RegExp, readonly string[]]> = [
   [/^calls$/, ["GET", "POST"]],
-  [/^calls\/[^/]+$/, ["GET"]],
+  [/^calls\/[^/]+$/, ["GET", "DELETE"]], // DELETE: çağrıyı sil (KVKK), yalnızca yönetici
   [/^calls\/[^/]+\/analyze$/, ["POST"]],
   [/^calls\/[^/]+\/status$/, ["GET"]],
   [/^calls\/[^/]+\/match$/, ["PUT"]],
