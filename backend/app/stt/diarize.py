@@ -37,11 +37,16 @@ Her cümlenin kimin söylediğini belirle.
   olabilir.
 - Emin olamadığın cümlede önceki cümlenin konuşmacısını koru.
 
-Her cümle için tam olarak bir etiket ver ("rep" veya "customer"), cümle sırasını koru."""
+Her cümle için bir etiket ver: cümle numarası (`n`) ve `speaker` ("rep" veya "customer")."""
+
+
+class SentenceLabel(BaseModel):
+    n: int
+    speaker: Literal["rep", "customer"]
 
 
 class SpeakerLabels(BaseModel):
-    labels: list[Literal["rep", "customer"]]
+    labels: list[SentenceLabel]
 
 
 def split_sentences(segments: list[SttSegment]) -> list[SttSegment]:
@@ -77,17 +82,23 @@ async def label_speakers(segments: list[SttSegment], llm: AssistantLLM) -> list[
             "smart",
             SYSTEM_PROMPT,
             f"## Cümleler ({len(sentences)} adet)\n{numbered}\n\n"
-            f"`labels` listesi tam olarak {len(sentences)} etiket içermeli. Şemayı tekrar yazma, "
-            'değerleri ver. Örnek biçim: {"labels": ["rep", "customer", "customer", "rep"]}',
+            f"`labels` listesinde 1'den {len(sentences)}'e her numara için bir öğe olmalı. Şemayı "
+            "tekrar yazma, değerleri ver. Örnek biçim: "
+            '{"labels": [{"n": 1, "speaker": "rep"}, {"n": 2, "speaker": "customer"}]}',
             SpeakerLabels,
         )
     except AssistantLLMError as exc:
         log.warning("stt.diarize_failed", error=str(exc))
         return segments
-    if len(reply.labels) != len(sentences):
-        log.warning("stt.diarize_length_mismatch", got=len(reply.labels), want=len(sentences))
+    by_number = {item.n: item.speaker for item in reply.labels}
+    if len(by_number) < len(sentences) // 2:
+        log.warning("stt.diarize_length_mismatch", got=len(by_number), want=len(sentences))
         return segments
-    return [
-        s.model_copy(update={"speaker": lab})
-        for s, lab in zip(sentences, reply.labels, strict=True)
-    ]
+    # Eksik numarayı önceki cümlenin konuşmacısıyla doldur (ilk cümle için sonrakini al).
+    first = next((by_number[n] for n in sorted(by_number)), "rep")
+    out: list[SttSegment] = []
+    current = by_number.get(1, first)
+    for number, sentence in enumerate(sentences, start=1):
+        current = by_number.get(number, current)
+        out.append(sentence.model_copy(update={"speaker": current}))
+    return out

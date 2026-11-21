@@ -32,9 +32,25 @@ def test_split_sentences_shares_time_by_length() -> None:
     assert all(a.end_ms == b.start_ms for a, b in pairwise(parts))
 
 
+def _lab(*speakers: str) -> list[dict[str, object]]:
+    return [{"n": i, "speaker": s} for i, s in enumerate(speakers, start=1)]
+
+
+async def test_missing_label_inherits_previous_speaker() -> None:
+    # 4 cümleden yalnız 3'üne etiket geldi: eskiden tüm çağrı tek bloğa düşerdi.
+    labels = [
+        {"n": 1, "speaker": "rep"},
+        {"n": 2, "speaker": "customer"},
+        {"n": 4, "speaker": "rep"},
+    ]
+    llm = AssistantLLM(model=scripted(json.dumps({"labels": labels})))
+    turns = merge_turns(await label_speakers([seg(0, 4000, TEXT)], llm))
+    assert [t.speaker for t in turns] == ["rep", "customer", "rep"]
+
+
 async def test_labels_sentences_and_merges_into_turns() -> None:
     llm = AssistantLLM(
-        model=scripted(json.dumps({"labels": ["rep", "customer", "rep", "customer"]}))
+        model=scripted(json.dumps({"labels": _lab("rep", "customer", "rep", "customer")}))
     )
     labeled = await label_speakers([seg(0, 4000, TEXT)], llm)
     turns = merge_turns(labeled)
@@ -44,14 +60,14 @@ async def test_labels_sentences_and_merges_into_turns() -> None:
 
 async def test_consecutive_same_speaker_sentences_merge() -> None:
     llm = AssistantLLM(
-        model=scripted(json.dumps({"labels": ["rep", "customer", "customer", "customer"]}))
+        model=scripted(json.dumps({"labels": _lab("rep", "customer", "customer", "customer")}))
     )
     turns = merge_turns(await label_speakers([seg(0, 4000, TEXT)], llm))
     assert [t.speaker for t in turns] == ["rep", "customer"]
 
 
-async def test_length_mismatch_keeps_original() -> None:
-    llm = AssistantLLM(model=scripted(json.dumps({"labels": ["rep", "customer"]})))
+async def test_too_few_labels_keeps_original() -> None:
+    llm = AssistantLLM(model=scripted(json.dumps({"labels": _lab("rep")})))
     original = [seg(0, 4000, TEXT)]
     assert await label_speakers(original, llm) == original
 
@@ -85,7 +101,7 @@ async def test_transcribe_call_uses_diarizer_for_mono(tmp_path: Path) -> None:
     audio = tmp_path / "a.wav"
     audio.write_bytes(b"x")
     llm = AssistantLLM(
-        model=scripted(json.dumps({"labels": ["rep", "customer", "rep", "customer"]}))
+        model=scripted(json.dumps({"labels": _lab("rep", "customer", "rep", "customer")}))
     )
 
     async def diarizer(segments: list[SttSegment]) -> list[SttSegment]:
