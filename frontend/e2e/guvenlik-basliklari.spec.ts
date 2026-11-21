@@ -25,9 +25,11 @@ test.describe("Güvenlik başlıkları ve vekil kısıtları (#271)", () => {
   });
 
   test("vekil izinli olmayan yöntemi 405 ile reddeder", async ({ request }) => {
-    const res = await request.delete("/api/backend/calls/abc");
+    // calls/{id} için GET ve DELETE (çağrı silme) izinlidir; PUT yasaktır.
+    const res = await request.put("/api/backend/calls/abc");
     expect(res.status()).toBe(405);
     expect(res.headers()["allow"]).toContain("GET");
+    expect(res.headers()["allow"]).toContain("DELETE");
     const body = await res.json();
     expect(body.error.code).toBe("method_not_allowed");
   });
