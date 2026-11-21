@@ -1,5 +1,6 @@
 import { connection } from "next/server";
 import { CallAnalysisBadge } from "@/components/AnalysisTracker";
+import { DeleteCallButton } from "@/components/DeleteCallButton";
 import { SentimentBadge } from "@/components/SentimentBadge";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
@@ -235,12 +236,15 @@ async function CallsListContent({
                 <SentimentBadge sentiment={call.sentiment} complaint={call.complaint} />
               </Td>
               <Td className="whitespace-nowrap text-right">
-                <Link
-                  href={`/admin/calls/${call.id}`}
-                  className={buttonClasses("accent", "sm", "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2")}
-                >
-                  Detay
-                </Link>
+                <div className="flex items-center justify-end gap-2">
+                  <Link
+                    href={`/admin/calls/${call.id}`}
+                    className={buttonClasses("accent", "sm", "cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2")}
+                  >
+                    Detay
+                  </Link>
+                  <DeleteCallButton callId={call.id} />
+                </div>
               </Td>
             </Tr>
           ))}

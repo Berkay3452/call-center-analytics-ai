@@ -642,6 +642,11 @@ async function handleMockRequest<T>(
     } as unknown as T;
   }
 
+  // DELETE /calls/:id (mock: kayıt silinmiş gibi davranmaz, yalnızca başarı döner)
+  if (method === "DELETE" && /^\/calls\/[^/]+$/.test(path)) {
+    return undefined as T;
+  }
+
   // In-memory mock progress tracking for simulated live analysis (#110)
   // 4. POST /calls/:id/analyze
   if (method === "POST" && /^\/calls\/[^/]+\/analyze$/.test(path)) {
@@ -1443,6 +1448,13 @@ export async function analyzeCall(callId: string): Promise<CallAccepted> {
  */
 export async function reanalyzeCall(callId: string): Promise<CallAccepted> {
   return analyzeCall(callId);
+}
+
+/**
+ * DELETE /calls/{call_id} - Çağrıyı, sesini, transkriptini, analizini ve CRM önerisini sil (KVKK)
+ */
+export async function deleteCall(callId: string): Promise<void> {
+  await apiFetch<void>(`/calls/${callId}`, { method: "DELETE" });
 }
 
 /**

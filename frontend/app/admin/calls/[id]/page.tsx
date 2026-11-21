@@ -14,6 +14,7 @@ import { CallDetailSkeleton } from "@/components/skeletons";
 import { AudioPlayer } from "@/components/AudioPlayer";
 import { AnalysisBanner } from "@/components/AnalysisTracker";
 import { ReanalyzeButton } from "@/components/ReanalyzeButton";
+import { DeleteCallButton } from "@/components/DeleteCallButton";
 import { CrmSuggestionCard } from "@/components/crm";
 import {
   CALL_TYPE_LABELS,
@@ -232,6 +233,7 @@ async function CallDetailContent({ params }: Props) {
             {!(isPartial && !inProgress) && (
               <ReanalyzeButton callId={call.id} currentState={call.state} variant="header" />
             )}
+            <DeleteCallButton callId={call.id} redirectTo="/admin/calls" />
           </div>
         </div>
       </Card>
