@@ -75,6 +75,7 @@ export function useTranscriptStream(callId: string | null, enabled: boolean): Li
     };
     source.onopen = () => send({ type: "open" });
     source.addEventListener("segment", (e) => send({ type: "segment", data: parse(e as MessageEvent) }));
+    source.addEventListener("turn", (e) => send({ type: "turn", data: parse(e as MessageEvent) }));
     for (const type of ["done", "timeout"] as const) {
       source.addEventListener(type, () => {
         send({ type });

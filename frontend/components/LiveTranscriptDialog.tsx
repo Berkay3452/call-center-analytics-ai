@@ -22,7 +22,22 @@ const STATUS_INFO: Record<LiveStatus, { label: string; tone: "brand" | "success"
 
 const STICK_THRESHOLD_PX = 48;
 /** Yazıya çevirme bitince pencere bu süre sonra kendiliğinden kapanır; analiz adımları görünür kalır. */
-export const AUTO_CLOSE_MS = 4000;
+export const AUTO_CLOSE_MS = 6000;
+/** Canlı yazımda kelimeler bu aralıkla tek tek görünür. */
+const WORD_DELAY_MS = 45;
+
+/** Metni kelime kelime açar (daktilo etkisi); `active` değilse metnin tamamı görünür. */
+function TypedText({ text, active }: { text: string; active: boolean }) {
+  const words = useMemo(() => text.split(/(\s+)/), [text]);
+  const [count, setCount] = useState(0);
+  const shown = active ? Math.min(count, words.length) : words.length;
+  useEffect(() => {
+    if (!active || shown >= words.length) return;
+    const timer = setTimeout(() => setCount(shown + 2), WORD_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [active, shown, words]);
+  return <>{words.slice(0, shown).join("")}</>;
+}
 
 /**
  * Yazıya çevirme (2. adım) sürerken açılan pop-up: cümleler konuşmacıya göre (temsilci solda,
@@ -37,8 +52,12 @@ export function LiveTranscriptDialog({
   callId: string;
   onClose: () => void;
 }) {
-  const { segments, status } = useTranscriptStream(callId, true);
-  const turns = useMemo(() => groupTurns(segments), [segments]);
+  const { segments, finalSegments, status } = useTranscriptStream(callId, true);
+  const hasFinal = finalSegments.length > 0;
+  const turns = useMemo(
+    () => groupTurns(hasFinal ? finalSegments : segments),
+    [hasFinal, finalSegments, segments],
+  );
   const modalRef = useFocusTrap<HTMLDivElement>({ isOpen: true, onClose });
   const logRef = useRef<HTMLDivElement>(null);
   const [stuck, setStuck] = useState(true);
@@ -125,7 +144,9 @@ export function LiveTranscriptDialog({
                     <p className="mb-0.5 text-xs font-semibold text-slate-500">
                       {SPEAKER_LABEL[turn.speaker]} · {formatMs(turn.start_ms)}
                     </p>
-                    <p className="whitespace-pre-wrap break-words">{turn.text}</p>
+                    <p className="whitespace-pre-wrap break-words">
+                      <TypedText text={turn.text} active={!hasFinal && live} />
+                    </p>
                   </div>
                 </div>
               );

@@ -37,6 +37,7 @@ async def _transcribe(call_id: UUID) -> str:
     try:
         storage = build_audio_storage(settings)
         diarizer: Diarizer | None = None
+        publisher = TranscriptPublisher.from_settings(settings, call_id)
         if settings.stt_llm_diarization:
             from app.assistant.llm import AssistantLLM
             from app.stt.diarize import label_speakers
@@ -44,11 +45,13 @@ async def _transcribe(call_id: UUID) -> str:
             llm = AssistantLLM(settings=settings)
 
             async def _diarize(segments: list[SttSegment]) -> list[SttSegment]:
-                return await label_speakers(segments, llm)
+                labeled = await label_speakers(segments, llm)
+                if publisher.enabled and any(s.speaker for s in labeled):
+                    await asyncio.to_thread(publisher.publish_turns, labeled)
+                return labeled
 
             diarizer = _diarize
 
-        publisher = TranscriptPublisher.from_settings(settings, call_id)
         try:
             state = await run_transcription(
                 call_id,

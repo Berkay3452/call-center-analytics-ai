@@ -1,7 +1,8 @@
 """Canlı transkript yayını (#323): STT segmentlerini Redis Stream'ine yazar.
 
 İşçi (Celery, senkron iş parçacığı) yazar; API (#324) okur. Anahtar `transcript:{call_id}`.
-Olay türleri: `segment` (konuşma parçası), `done` (STT bitti), `error` (STT başarısız).
+Olay türleri: `segment` (konuşma parçası), `turn` (konuşmacı ayrımı sonrası nihai cümle),
+`done` (STT bitti), `error` (STT başarısız).
 
 Güvenlik/dayanıklılık:
 - Akıştaki metin **ham** transkripttir (yalnızca yönetici bağlamındaki uç okur); metin günlüğe ve
@@ -23,7 +24,7 @@ from app.stt.base import SttSegment
 
 log = structlog.get_logger(__name__)
 
-EventType = Literal["segment", "done", "error"]
+EventType = Literal["segment", "turn", "done", "error"]
 ERROR_CODE = "stt_failed"  # sabit kod; ham hata metni yayınlanmaz
 
 
@@ -100,6 +101,25 @@ class TranscriptPublisher:
                     "text": segment.text.strip(),
                 }
             )
+
+    def publish_turns(self, segments: list[SttSegment]) -> None:
+        """Konuşmacı ayrımı bitince nihai, etiketli cümleleri yayınlar (pop-up canlı metni
+        bunlarla değiştirir). Asla hata fırlatmaz."""
+        with self._lock:
+            for seg in sorted(segments, key=lambda x: (x.start_ms, x.end_ms)):
+                if not seg.text.strip():
+                    continue
+                self._seq += 1
+                self._add(
+                    {
+                        "type": "turn",
+                        "seq": self._seq,
+                        "speaker": seg.speaker or "unknown",
+                        "start_ms": seg.start_ms,
+                        "end_ms": seg.end_ms,
+                        "text": seg.text.strip(),
+                    }
+                )
 
     def publish_done(self) -> None:
         with self._lock:
