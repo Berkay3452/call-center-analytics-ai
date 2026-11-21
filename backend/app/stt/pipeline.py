@@ -184,7 +184,9 @@ async def transcribe_call(
         layout = "mono"
 
     if layout == "mono":
-        if live is not None and sink is not None and diarizer is None:
+        if live is not None and sink is not None:
+            # Canlı akış her zaman çalışır (pop-up satır satır dolar); konuşmacı ayrımı bitişte
+            # yalnız kaydedilen metne uygulanır.
             result = await live(
                 {"unknown": str(audio_path)}, language=language, on_segment=sink, split_pauses=False
             )
@@ -192,8 +194,8 @@ async def transcribe_call(
         else:
             result = await transcriber.transcribe(audio_path, language=language)
             segments, notified = result.segments, False
-            if diarizer is not None:
-                segments = await diarizer(segments)  # mono: metin tabanlı konuşmacı ayrımı
+        if diarizer is not None:
+            segments = await diarizer(segments)  # mono: metin tabanlı konuşmacı ayrımı
         turns = merge_turns(segments)
         duration, model = result.duration_sec, result.model
     else:
