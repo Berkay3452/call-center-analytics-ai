@@ -22,12 +22,15 @@ export type LiveStatus = "baglaniyor" | "canli" | "bitti" | "hata" | "kopuk" | "
 
 export interface LiveState {
   segments: LiveSegment[];
+  /** Konuşmacı ayrımından sonra gelen nihai cümleler; varsa canlı metnin yerine gösterilir. */
+  finalSegments: LiveSegment[];
   status: LiveStatus;
 }
 
 export type LiveEvent =
   | { type: "open" }
   | { type: "segment"; data: unknown }
+  | { type: "turn"; data: unknown }
   | { type: "done" }
   | { type: "error" }
   | { type: "timeout" }
@@ -35,7 +38,7 @@ export type LiveEvent =
 
 export const MAX_SEGMENTS = 2000;
 export const MAX_TEXT_LENGTH = 2000;
-export const initialLiveState: LiveState = { segments: [], status: "baglaniyor" };
+export const initialLiveState: LiveState = { segments: [], finalSegments: [], status: "baglaniyor" };
 
 const SPEAKERS = new Set<LiveSpeaker>(["rep", "customer", "unknown"]);
 
@@ -74,7 +77,15 @@ export function reduceLive(state: LiveState, event: LiveEvent): LiveState {
         .slice(-MAX_SEGMENTS);
       const finished =
         state.status === "bitti" || state.status === "hata" || state.status === "zaman_asimi";
-      return { segments, status: finished ? state.status : "canli" };
+      return { ...state, segments, status: finished ? state.status : "canli" };
+    }
+    case "turn": {
+      const turn = parseSegment(event.data);
+      if (!turn || state.finalSegments.some((s) => s.seq === turn.seq)) return state;
+      const finalSegments = [...state.finalSegments, turn]
+        .sort((a, b) => a.start_ms - b.start_ms || a.seq - b.seq)
+        .slice(-MAX_SEGMENTS);
+      return { ...state, finalSegments };
     }
     case "done":
       return { ...state, status: "bitti" };

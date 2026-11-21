@@ -96,3 +96,15 @@ test("süre biçimi", () => {
   assert.equal(formatMs(0), "0:00");
   assert.equal(formatMs(65_000), "1:05");
 });
+
+test("turn olayları nihai cümleleri ayrı listeye koyar ve tekilleştirir", () => {
+  const turn = (seq, speaker) => ({ type: "turn", data: { seq, speaker, start_ms: seq * 1000, end_ms: seq * 1000 + 500, text: `c${seq}` } });
+  const s = feed([
+    { type: "segment", data: { seq: 1, speaker: "unknown", start_ms: 0, end_ms: 900, text: "hepsi" } },
+    turn(2, "rep"),
+    turn(3, "customer"),
+    turn(3, "customer"),
+  ]);
+  assert.equal(s.segments.length, 1);
+  assert.deepEqual(s.finalSegments.map((x) => x.speaker), ["rep", "customer"]);
+});
