@@ -14,7 +14,7 @@ from app.main import create_app
 from tests.conftest import TEST_SERVICE_KEY, _client_for, make_settings
 
 # Yalnızca tekne sahibi oturumuna bağlı uçlar (admin uçlarında X-User-Id isteğe bağlıdır).
-OWNER_PREFIXES = ("/api/v1/chat", "/api/v1/assistant")
+OWNER_PREFIXES = ("/api/v1/chat", "/api/v1/assistant", "/api/v1/boats")
 OWNER_ID = str(uuid4())
 
 

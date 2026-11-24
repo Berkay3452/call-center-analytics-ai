@@ -7,6 +7,7 @@ from app.api.routes import (
     assistant,
     audit,
     auth,
+    boats,
     call_intake,
     calls,
     crm,
@@ -16,6 +17,7 @@ from app.api.routes import (
 
 api_v1_router = APIRouter()
 api_v1_router.include_router(auth.router)
+api_v1_router.include_router(boats.router)
 api_v1_router.include_router(audit.router)
 api_v1_router.include_router(call_intake.router)
 api_v1_router.include_router(calls.router)
