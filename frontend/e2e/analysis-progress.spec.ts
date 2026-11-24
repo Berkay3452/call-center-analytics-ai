@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 
 test.describe("Canlı analiz takibi (#217)", () => {
   test("arka planda devam eder; yenilemede şerit, listede rozet ve sayfa değişince bildirim görünür", async ({ page }) => {

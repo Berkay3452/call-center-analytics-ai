@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useRole } from "@/lib/role-context";
+import { useState } from "react";
+import { useSession } from "@/lib/session-context";
 import type { Role } from "@/lib/types";
 
 interface TabItem {
@@ -51,7 +52,8 @@ function isTabActive(pathname: string, href: string): boolean {
 export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { role, setRole } = useRole();
+  const session = useSession();
+  const [signingOut, setSigningOut] = useState(false);
 
   // Giriş sayfasında kabuk (üst bar, sekmeler) gösterilmez (#371).
   if (pathname.startsWith("/login")) return <>{children}</>;
@@ -60,13 +62,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     ? "owner"
     : pathname.startsWith("/admin")
       ? "admin"
-      : role;
+      : (session?.role ?? "admin");
   const tabs = TABS[effectiveRole];
   const workspace = WORKSPACE_TITLES[effectiveRole];
 
-  const handleRoleChange = (next: Role) => {
-    setRole(next);
-    router.push(ROLE_HOME[next]);
+  const handleSignOut = async () => {
+    setSigningOut(true);
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } finally {
+      router.replace("/login");
+      router.refresh();
+    }
   };
 
   return (
@@ -87,24 +94,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
-            <label htmlFor="header-role-select" className="hidden text-xs text-white/70 sm:inline">
-              Rol (simülasyon)
-            </label>
-            <select
-              id="header-role-select"
-              value={effectiveRole}
-              onChange={(e) => handleRoleChange(e.target.value as Role)}
-              className="rounded-lg border border-white/20 bg-white/10 px-2.5 py-1.5 text-xs font-medium text-white"
-              aria-label="Rol seç"
+          <div className="flex items-center gap-3">
+            {session && (
+              <span className="hidden max-w-[16rem] truncate text-xs text-white/80 sm:inline" data-testid="session-name">
+                {session.name}
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={handleSignOut}
+              disabled={signingOut}
+              className="rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-white/20 disabled:opacity-60"
             >
-              <option value="admin" className="text-slate-900">
-                {ROLE_LABELS.admin}
-              </option>
-              <option value="owner" className="text-slate-900">
-                {ROLE_LABELS.owner}
-              </option>
-            </select>
+              {signingOut ? "Çıkılıyor…" : "Çıkış"}
+            </button>
           </div>
         </div>
       </header>

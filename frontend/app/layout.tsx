@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { Geist_Mono, Inter, Source_Serif_4 } from "next/font/google";
 import "./globals.css";
-import { RoleProvider } from "@/lib/role-context";
-import { AnalysisTracker } from "@/components/AnalysisTracker";
-import { AppShell } from "@/components/layout/AppShell";
+import { Suspense } from "react";
+import { SessionBoundary } from "@/components/SessionBoundary";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -34,9 +33,9 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${serifHeading.variable} ${geistMono.variable} antialiased`}
       >
-        <RoleProvider>
-          <AnalysisTracker><AppShell>{children}</AppShell></AnalysisTracker>
-        </RoleProvider>
+        <Suspense fallback={null}>
+          <SessionBoundary>{children}</SessionBoundary>
+        </Suspense>
       </body>
     </html>
   );

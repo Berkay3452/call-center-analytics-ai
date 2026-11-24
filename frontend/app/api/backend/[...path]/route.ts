@@ -3,23 +3,16 @@
  *
  * Servis anahtarı (SERVICE_KEY) yalnızca bu sunucu tarafında bulunur; tarayıcı kodu hiçbir
  * zaman görmez. Yalnızca API sözleşmesindeki yollar (docs/api.md) iletilir.
- * Tekne sahibi kimliği (X-User-Id) HMAC ile imzalanarak iletilir (#266): backend, imzasız veya
- * süresi geçmiş kimliği reddeder. İmza anahtarı (USER_SIGNING_KEY) yalnızca bu sunucuda bulunur.
- * Oturum/giriş akışı (#265) henüz yok; bu yüzden tarayıcının gönderdiği kimlik YALNIZCA
- * ALLOW_BROWSER_USER_ID=true (yerel geliştirme) iken imzalanıp iletilir. Varsayılanda tarayıcı
- * kimliği düşürülür: tarayıcı istediği kullanıcı kimliğini imzalatamaz.
+ * Kimlik (kullanıcı, rol) tarayıcının gönderdiği başlıklardan DEĞİL, imzalı oturum çerezinden
+ * alınır (#372): `x-user-id`, `x-user-role` ve `x-user-signature` bu sunucuda üretilir; tarayıcının
+ * gönderdiği aynı adlı başlıklar yok sayılır. Tekne sahibi için kimlik müşteri kimliğidir, yönetici
+ * için hesap kimliğidir (denetim günlüğünde izlenebilir). Oturum yoksa istek hiç iletilmez (401).
+ * İmza (HMAC) USER_SIGNING_KEY ile atılır; backend imzasız veya süresi geçmiş kimliği reddeder.
  */
 
-import { createHmac } from "node:crypto";
 import type { NextRequest } from "next/server";
-import { decideBrowserUserId } from "@/lib/server/browser-user-id";
-
-/** `<unix_zaman>.<hex(HMAC-SHA256(user_id.zaman))>`: backend `sign_user_id` ile aynı biçim. */
-function signUserId(userId: string, key: string): string {
-  const ts = Math.floor(Date.now() / 1000);
-  const mac = createHmac("sha256", key).update(`${userId}.${ts}`).digest("hex");
-  return `${ts}.${mac}`;
-}
+import { identityHeaders } from "@/lib/server/identity";
+import { SESSION_COOKIE, getSessionKey, verifySessionToken } from "@/lib/server/session";
 
 // Yol → izinli HTTP yöntemleri (#271). Listede olmayan yöntem 405 döner.
 const R: Array<[RegExp, readonly string[]]> = [
@@ -81,6 +74,19 @@ async function forward(
     );
   }
 
+  // Kimlik yalnızca imzalı oturum çerezinden gelir (#372). `proxy.ts` oturumsuz isteği zaten keser;
+  // bu ikinci denetim vekil doğrudan çağrılsa da kimliksiz iletim olmasını engeller.
+  const sessionKey = await getSessionKey(process.env);
+  const session = sessionKey
+    ? await verifySessionToken(req.cookies.get(SESSION_COOKIE)?.value, sessionKey)
+    : null;
+  if (!session) {
+    return Response.json(
+      { error: { code: "unauthorized", message: "Oturum gerekli.", details: {}, request_id: null } },
+      { status: 401, headers: { "cache-control": "no-store" } },
+    );
+  }
+
   const isAudioRequest = joined.startsWith("calls/") && joined.endsWith("/audio");
 
   // Mock modu açıksa ve ses isteniyorsa doğrudan örnek ses verisi dön
@@ -100,16 +106,8 @@ async function forward(
   const headers = new Headers();
   const contentType = req.headers.get("content-type");
   if (contentType) headers.set("content-type", contentType);
-  const userId = req.headers.get("x-user-id");
-  const gate = decideBrowserUserId(process.env);
-  if (userId && gate.refusedInProduction) {
-    // Canlıda bayrak açık bırakılmışsa kimlik imzalanmaz (herkes istediği sahibi taklit ederdi).
-    console.error("ALLOW_BROWSER_USER_ID canlıda reddedildi: x-user-id imzalanmadı, düşürüldü.");
-  }
-  if (userId && gate.allow) {
-    headers.set("x-user-id", userId);
-    const signingKey = process.env.USER_SIGNING_KEY;
-    if (signingKey) headers.set("x-user-signature", signUserId(userId, signingKey));
+  for (const [name, value] of Object.entries(identityHeaders(session, process.env.USER_SIGNING_KEY))) {
+    headers.set(name, value);
   }
   const range = req.headers.get("range");
   if (range) headers.set("range", range);

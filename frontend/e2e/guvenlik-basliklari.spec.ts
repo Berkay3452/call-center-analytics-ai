@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 
 test.describe("Güvenlik başlıkları ve vekil kısıtları (#271)", () => {
   test("sayfa yanıtında güvenlik başlıkları var", async ({ request }) => {

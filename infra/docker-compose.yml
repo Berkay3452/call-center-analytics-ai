@@ -192,8 +192,8 @@ services:
       - API_URL=http://api:8000/api/v1
       - SERVICE_KEY=${SERVICE_API_KEY:-change-me-in-local-env}
       - USER_SIGNING_KEY=${USER_SIGNING_KEY:-}
+      - SESSION_SECRET=${SESSION_SECRET:-}
       - APP_ENV=${APP_ENV:-local}
-      - ALLOW_BROWSER_USER_ID=${ALLOW_BROWSER_USER_ID:-false}  # yerel için .env'de true; canlıda false
       - NEXT_PUBLIC_USE_MOCKS=false
     healthcheck:
       test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:3000 || exit 1"]
