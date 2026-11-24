@@ -593,33 +593,50 @@ Denetim günlüğü (#267): kim, ne zaman, hangi nesneye ne yaptı. **Yalnızca 
 
 **Kişisel veri kuralı:** ad, telefon, e-posta, transkript, soru metni, dosya adı, anahtar değeri yazılmaz; yalnızca kimlikler, türler ve sabit değerler. `record_audit_event` bu kuralı kodla uygular (serbest metin, `@`, boşluk, 9+ haneli sayı reddedilir). `ip` kişisel veri sayılabilir; tablo eklemeli olduğu için saklama süresiyle silinmez (bkz. `docs/kisisel_veri_envanteri.md` §3, kalan risk).
 
-### 3.11 `admin_accounts` ve `owner_accounts`
+### 3.11 `admin_accounts`
 
-Kullanıcı hesapları (#278, #368): yönetici ve tekne sahibi giriş bilgileri **ayrı tablolarda** tutulur; bir tekne sahibi hesabı hiçbir koşulda yönetici yetkisi taşıyamaz ve iki grubun kilit/politika ayarı bağımsız değişebilir. Giriş sırasında seçilen rol hangi tabloya bakılacağını belirler (`verify_credentials(role, ...)`, `app/services/accounts.py`). Parola yalnızca **argon2id** karması olarak saklanır; düz parola hiçbir yerde tutulmaz. Eski `user_accounts` tablosu migration `0009` ile bu ikisine bölündü.
-
-Ortak sütunlar (iki tabloda da aynı):
+Yönetici hesapları (#278, #368). Yönetici ve tekne sahibi giriş bilgileri **ayrı tablolarda** tutulur (`owner_accounts`, bkz. §3.12): bir tekne sahibi hesabı hiçbir koşulda yönetici yetkisi taşıyamaz ve iki grubun kilit/politika ayarı bağımsız değişebilir. Giriş sırasında seçilen rol hangi tabloya bakılacağını belirler (`verify_credentials(role, ...)`, `app/services/accounts.py`). Parola yalnızca **argon2id** karması olarak saklanır; düz parola hiçbir yerde tutulmaz. Eski `user_accounts` tablosu migration `0009` ile ikiye bölündü.
 
 | Sütun | Tip | Zorunlu | Varsayılan | Açıklama |
 |-------|-----|---------|------------|----------|
 | `id` | `UUID` | ✅ | `gen_random_uuid()` | Birincil anahtar |
-| `username` | `TEXT` | ✅ | — | Benzersiz, küçük harf (tablo içinde) |
+| `username` | `TEXT` | ✅ | — | Benzersiz, küçük harf |
 | `password_hash` | `TEXT` | ✅ | — | argon2id karması (`$argon2id$...`); parola politikası: en az 12 karakter |
+| `display_name` | `TEXT` | ✅ | — | Arayüzde gösterilen ad |
 | `is_active` | `BOOLEAN` | ✅ | `true` | Pasif hesap giriş yapamaz |
 | `failed_attempts` | `INTEGER` | ✅ | `0` | Üst üste başarısız deneme sayısı; başarıda sıfırlanır |
 | `locked_until` | `TIMESTAMPTZ` | — | — | 5 başarısız denemeden sonra 15 dakikalık geçici kilit |
 | `password_changed_at` | `TIMESTAMPTZ` | ✅ | `now()` | Parolanın son değiştiği an |
 | `created_at` | `TIMESTAMPTZ` | ✅ | `now()` | Oluşturulma zamanı |
 
-Tabloya özgü sütunlar:
+**Kısıtlamalar ve indeksler:**
+- `PK (id)`
+- `CHECK (username = lower(username) AND length(username) > 0)`, `CHECK (failed_attempts >= 0)`
+- Benzersiz indeks: `username`
 
-| Tablo | Sütun | Tip | Zorunlu | Açıklama |
-|-------|-------|-----|---------|----------|
-| `admin_accounts` | `display_name` | `TEXT` | ✅ | Arayüzde gösterilen ad |
-| `owner_accounts` | `customer_id` | `UUID` | ✅ | `customers.id`; FK `ON DELETE CASCADE`, benzersiz (bir tekne sahibinin en çok bir hesabı olur) |
+**Seed:** `uv run python -m scripts.seed_accounts` (Docker başlatıcısı da çağırır): `yonetici1`, `yonetici2` ve her müşteriye bir tekne sahibi hesabı. Parolalar rastgele üretilir ve yalnızca git'e girmeyen `backend/.local/seed_credentials.csv` dosyasına yazılır; repoda, belgede veya günlükte bulunmaz.
 
-**Kısıtlamalar ve indeksler (her iki tablo):** `PK (id)`, `CHECK (username = lower(username) AND length(username) > 0)`, `CHECK (failed_attempts >= 0)`, benzersiz indeks `username`.
+### 3.12 `owner_accounts`
 
-**Seed:** `uv run python -m scripts.seed_accounts` (Docker başlatıcısı da çağırır): her müşteriye bir `owner_accounts` satırı ve `yonetici1`, `yonetici2` için `admin_accounts` satırı. Parolalar rastgele üretilir ve yalnızca git'e girmeyen `backend/.local/seed_credentials.csv` dosyasına yazılır; repoda, belgede veya günlükte bulunmaz.
+Tekne sahibi hesapları (#278, #368): her müşterinin en fazla bir hesabı olur. Sütun anlamları `admin_accounts` ile aynıdır; `display_name` yerine müşteri bağlantısı vardır.
+
+| Sütun | Tip | Zorunlu | Varsayılan | Açıklama |
+|-------|-----|---------|------------|----------|
+| `id` | `UUID` | ✅ | `gen_random_uuid()` | Birincil anahtar |
+| `username` | `TEXT` | ✅ | — | Benzersiz, küçük harf |
+| `password_hash` | `TEXT` | ✅ | — | argon2id karması (`$argon2id$...`); parola politikası: en az 12 karakter |
+| `customer_id` | `UUID` | ✅ | — | `customers.id`; sahibin kendi verisine erişimini belirler |
+| `is_active` | `BOOLEAN` | ✅ | `true` | Pasif hesap giriş yapamaz |
+| `failed_attempts` | `INTEGER` | ✅ | `0` | Üst üste başarısız deneme sayısı; başarıda sıfırlanır |
+| `locked_until` | `TIMESTAMPTZ` | — | — | 5 başarısız denemeden sonra 15 dakikalık geçici kilit |
+| `password_changed_at` | `TIMESTAMPTZ` | ✅ | `now()` | Parolanın son değiştiği an |
+| `created_at` | `TIMESTAMPTZ` | ✅ | `now()` | Oluşturulma zamanı |
+
+**Kısıtlamalar ve indeksler:**
+- `PK (id)`
+- `CHECK (username = lower(username) AND length(username) > 0)`, `CHECK (failed_attempts >= 0)`
+- `FK (customer_id) REFERENCES customers(id) ON DELETE CASCADE`
+- Benzersiz indeksler: `username`, `customer_id`
 
 ---
 
