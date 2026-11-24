@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
 import { LoginForm } from "@/components/LoginForm";
 
@@ -21,8 +22,14 @@ export default function LoginPage() {
         <Suspense fallback={null}>
           <LoginForm />
         </Suspense>
-        <p className="mt-6 text-center text-xs text-slate-500">
-          Hesabınız yoksa veya parolanızı unuttuysanız yöneticinizle iletişime geçin.
+        <p className="mt-6 text-center text-sm text-slate-600">
+          Tekne sahibi misiniz, hesabınız yok mu?{" "}
+          <Link href="/register" className="font-medium text-brand-700 hover:underline">
+            Kaydolun
+          </Link>
+        </p>
+        <p className="mt-2 text-center text-xs text-slate-500">
+          Parolanızı unuttuysanız yöneticinizle iletişime geçin.
         </p>
       </div>
     </div>

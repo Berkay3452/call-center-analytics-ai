@@ -8,6 +8,7 @@ import { mockAnalysisRuns as mockReanalyzeMap, readMockAnalysis, startMockAnalys
  */
 
 import { ApiError } from "./errors";
+import type { BoatCreate, BoatOut } from "./types";
 import type {
   CallAccepted,
   CallCreate,
@@ -523,12 +524,40 @@ export async function apiFetch<T>(
  * Mock yönlendirme mekanizması.
  * docs/ornekler/api/ altındaki 10 adet örnek JSON dosyasını döndürür.
  */
+const mockBoats: BoatOut[] = [];
+
 async function handleMockRequest<T>(
   endpoint: string,
   options: RequestOptions,
 ): Promise<T> {
   const method = (options.method || "GET").toUpperCase();
   const path = endpoint.split("?")[0].replace(/\/+$/, "");
+
+  // 0. Tekne sahibi tekneleri (#384): GET/POST /boats (mock: bellekte tutulur)
+  if (path === "/boats" && method === "GET") {
+    return [...mockBoats] as unknown as T;
+  }
+  if (path === "/boats" && method === "POST") {
+    const input = JSON.parse(String(options.body ?? "{}")) as BoatCreate;
+    if (mockBoats.some((b) => b.name.toLowerCase() === input.name.trim().toLowerCase())) {
+      throw new ApiError({
+        status: 409,
+        code: "conflict",
+        message: "Bu adla kayıtlı bir tekneniz zaten var.",
+        requestId: null,
+      });
+    }
+    const boat: BoatOut = {
+      id: `mock-boat-${mockBoats.length + 1}`,
+      name: input.name.trim(),
+      model: input.model?.trim() || null,
+      year: input.year ?? null,
+      marina: input.marina?.trim() || null,
+      created_at: new Date().toISOString(),
+    };
+    mockBoats.push(boat);
+    return boat as unknown as T;
+  }
 
   // 1. GET /calls
   if (method === "GET" && path === "/calls") {
@@ -2098,4 +2127,18 @@ export async function updateServiceOrderStatus(
     method: "PATCH",
     body: JSON.stringify({ status }),
   });
+}
+
+/**
+ * GET /boats - Oturumdaki tekne sahibinin tekneleri (#384)
+ */
+export async function getMyBoats(): Promise<BoatOut[]> {
+  return apiFetch<BoatOut[]>("/boats", { method: "GET" });
+}
+
+/**
+ * POST /boats - Oturumdaki tekne sahibi adına tekne ekler (#384). Sahip istekten değil oturumdan alınır.
+ */
+export async function addMyBoat(payload: BoatCreate): Promise<BoatOut> {
+  return apiFetch<BoatOut>("/boats", { method: "POST", body: JSON.stringify(payload) });
 }

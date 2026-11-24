@@ -4,7 +4,8 @@
  *
  * - Oturum yok: sayfalar `/login?next=...`e yönlenir, `/api/backend/*` 401 JSON döner.
  * - Yönetici `/owner/*`e, tekne sahibi `/admin/*`e giremez: kendi ana sayfasına yönlenir.
- * - Oturumlu kullanıcı `/login` veya `/` açarsa rolünün ana sayfasına gider.
+ * - `/login` ve `/register` oturumsuz herkese açıktır.
+ * - Oturumlu kullanıcı `/login`, `/register` veya `/` açarsa rolünün ana sayfasına gider.
  *
  * Asıl yetki yine backend'dedir (rol ve sahip denetimi); bu katman kullanıcıya erken, doğru
  * yönlendirme verir ve yetkisiz isteğin vekile bile girmesini önler.
@@ -33,7 +34,7 @@ export async function proxy(request: NextRequest) {
   }
 
   if (!session) {
-    if (pathname === "/login") return NextResponse.next();
+    if (pathname === "/login" || pathname === "/register") return NextResponse.next();
     const url = new URL("/login", request.url);
     if (pathname.startsWith("/admin") || pathname.startsWith("/owner")) {
       url.searchParams.set("next", `${pathname}${search}`);
@@ -45,7 +46,7 @@ export async function proxy(request: NextRequest) {
   const wrongArea =
     (pathname.startsWith("/admin") && session.role !== "admin") ||
     (pathname.startsWith("/owner") && session.role !== "owner");
-  if (pathname === "/login" || pathname === "/" || wrongArea) {
+  if (pathname === "/login" || pathname === "/register" || pathname === "/" || wrongArea) {
     return NextResponse.redirect(new URL(home, request.url));
   }
   return NextResponse.next();

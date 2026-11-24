@@ -50,6 +50,10 @@ test.describe("yönetici oturumu", () => {
   test("kendi alanında kalır; sahip alanı ve giriş sayfası ana sayfaya yönlenir", async ({ page }) => {
     await page.goto("/owner/assistant");
     await expect(page).toHaveURL(/\/admin\/analytics$/);
+    await page.goto("/owner/boats");
+    await expect(page).toHaveURL(/\/admin\/analytics$/);
+    await page.goto("/register");
+    await expect(page).toHaveURL(/\/admin\/analytics$/);
     await page.goto("/login");
     await expect(page).toHaveURL(/\/admin\/analytics$/);
     await page.goto("/");

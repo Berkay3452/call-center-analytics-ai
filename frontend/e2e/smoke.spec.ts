@@ -399,8 +399,9 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
     await expect(page.getByLabel("Rol seç")).toHaveCount(0);
     await page.goto("/owner/assistant");
     await expect(page).toHaveURL(/\/owner\/assistant/);
-    await expect(nav.getByRole("link")).toHaveCount(1);
+    await expect(nav.getByRole("link")).toHaveCount(2);
     await expect(nav.getByRole("link", { name: "Miço AI" })).toBeVisible();
+    await expect(nav.getByRole("link", { name: "Teknelerim" })).toBeVisible();
   });
   // ──────────────────────────────────────────────────────────────────────────
   // Senaryo 8: Çağrı Yükle (#171) — metin yükleme baştan sona, otomatik detaya geçiş
