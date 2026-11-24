@@ -53,6 +53,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { role, setRole } = useRole();
 
+  // Giriş sayfasında kabuk (üst bar, sekmeler) gösterilmez (#371).
+  if (pathname.startsWith("/login")) return <>{children}</>;
+
   const effectiveRole: Role = pathname.startsWith("/owner")
     ? "owner"
     : pathname.startsWith("/admin")
