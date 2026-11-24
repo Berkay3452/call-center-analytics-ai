@@ -1047,7 +1047,7 @@
    "fk": null
   }
  ],
- "user_accounts": [
+ "admin_accounts": [
   {
    "name": "id",
    "type": "uuid",
@@ -1067,7 +1067,57 @@
    "fk": null
   },
   {
-   "name": "role",
+   "name": "display_name",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "is_active",
+   "type": "boolean",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "failed_attempts",
+   "type": "integer",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "locked_until",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "password_changed_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "created_at",
+   "type": "datetime",
+   "pk": false,
+   "fk": null
+  }
+ ],
+ "owner_accounts": [
+  {
+   "name": "id",
+   "type": "uuid",
+   "pk": true,
+   "fk": null
+  },
+  {
+   "name": "username",
+   "type": "text",
+   "pk": false,
+   "fk": null
+  },
+  {
+   "name": "password_hash",
    "type": "text",
    "pk": false,
    "fk": null

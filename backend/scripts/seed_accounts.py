@@ -19,7 +19,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import Settings
-from app.db.models.accounts import UserAccount
+from app.db.models.accounts import AdminAccount, OwnerAccount
 from app.db.models.external import Customer
 from app.db.session import worker_session
 from app.domain.accounts import AccountRole
@@ -54,9 +54,11 @@ async def seed_accounts(
     Düz parolalar önce yerel dosyaya yazılır, sonra veritabanı işlemi çağıran tarafından
     onaylanır (işlem başarısız olursa dosyada fazladan satır kalabilir; zararsızdır).
     """
-    existing = list((await session.scalars(select(UserAccount))).all())
-    taken = {a.username for a in existing}
-    has_account = {a.customer_id for a in existing if a.customer_id is not None}
+    owners_existing = list((await session.scalars(select(OwnerAccount))).all())
+    admins_existing = list((await session.scalars(select(AdminAccount))).all())
+    taken = {a.username for a in owners_existing} | {a.username for a in admins_existing}
+    has_account = {a.customer_id for a in owners_existing}
+    admin_taken = {a.username for a in admins_existing}
 
     customers = (
         await session.scalars(select(Customer).order_by(Customer.created_at, Customer.id))
@@ -68,8 +70,8 @@ async def seed_accounts(
         username = derive_username(customer.full_name, taken)
         plan.append((username, generate_password(), AccountRole.OWNER, customer.id))
     for admin_name in ADMIN_USERNAMES:
-        if admin_name not in taken:
-            taken.add(admin_name)
+        if admin_name not in admin_taken:
+            admin_taken.add(admin_name)
             plan.append((admin_name, generate_password(), AccountRole.ADMIN, None))
 
     if not plan:
@@ -77,7 +79,12 @@ async def seed_accounts(
     _append_credentials(credentials_path, [(u, r.value, p) for u, p, r, _ in plan])
     for username, password, role, customer_id in plan:
         await create_account(
-            session, username=username, password=password, role=role, customer_id=customer_id
+            session,
+            username=username,
+            password=password,
+            role=role,
+            customer_id=customer_id,
+            display_name=username if role is AccountRole.ADMIN else None,
         )
     owners = sum(1 for _, _, role, _ in plan if role is AccountRole.OWNER)
     return owners, len(plan) - owners

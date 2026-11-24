@@ -19,6 +19,7 @@ from app.core.config import Settings
 from app.core.errors import TooManyRequestsError, UnauthorizedError
 from app.core.ratelimit import InMemorySlidingWindow
 from app.core.security import sign_user_id, verify_service_key, verify_user_signature
+from app.domain.accounts import AccountRole
 from app.main import create_app
 from app.services import accounts
 from app.services.accounts import enforce_login_ip_limit, record_login_failure_ip
@@ -210,6 +211,7 @@ async def test_verify_credentials_runs_hash_off_event_loop(
 
     result = await accounts.verify_credentials(
         FakeSession(),  # type: ignore[arg-type]
+        AccountRole.OWNER,
         "yok",
         secrets.token_urlsafe(16),
     )

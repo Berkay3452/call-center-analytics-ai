@@ -27,7 +27,8 @@ COLS = [0, 38, 76, 114, 152]
 # (sütun, y) — y aşağı doğru artar
 LAYOUT: dict[str, tuple[int, float]] = {
     "customers": (0, 0),
-    "user_accounts": (0, 21),
+    "owner_accounts": (0, 21),
+    "admin_accounts": (3, 0),
     "chat_sessions": (0, 48),
     "chat_messages": (0, 66),
     "boats": (1, 0),

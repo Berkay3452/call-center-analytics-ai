@@ -29,7 +29,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.errors import TooManyRequestsError
 from app.core.ratelimit import RateLimiter
-from app.db.models.accounts import UserAccount
+from app.db.models.accounts import AdminAccount, OwnerAccount
 from app.domain.accounts import (
     LOCK_MINUTES,
     MAX_FAILED_ATTEMPTS,
@@ -38,6 +38,8 @@ from app.domain.accounts import (
 )
 
 log = structlog.get_logger(__name__)
+
+Account = AdminAccount | OwnerAccount
 
 # argon2-cffi varsayılanı argon2id'dir (RFC 9106 düşük bellek profili).
 _hasher = PasswordHasher()
@@ -68,6 +70,7 @@ class LoginResult:
     role: AccountRole | None = None
     customer_id: UUID | None = None
     just_locked: bool = False
+    display_name: str | None = None
 
 
 def validate_password_policy(password: str) -> None:
@@ -111,7 +114,7 @@ def _verify_hash(stored_hash: str, password: str) -> bool:
         return False
 
 
-def evaluate_login(account: UserAccount | None, password: str, now: datetime) -> LoginResult:
+def evaluate_login(account: Account | None, password: str, now: datetime) -> LoginResult:
     """Giriş kararını verir ve sayaç/kilit alanlarını günceller (veritabanına dokunmaz)."""
     if account is None:
         _verify_hash(_DUMMY_HASH, password)  # süre, hesabın varlığını belli etmesin
@@ -146,20 +149,33 @@ def evaluate_login(account: UserAccount | None, password: str, now: datetime) ->
     return LoginResult(
         True,
         account_id=account.id,
-        role=AccountRole(account.role),
-        customer_id=account.customer_id,
+        role=AccountRole.OWNER if isinstance(account, OwnerAccount) else AccountRole.ADMIN,
+        customer_id=account.customer_id if isinstance(account, OwnerAccount) else None,
+        display_name=getattr(account, "display_name", None),
     )
 
 
+def _table(role: AccountRole) -> type[Account]:
+    return OwnerAccount if role is AccountRole.OWNER else AdminAccount
+
+
 async def verify_credentials(
-    session: AsyncSession, username: str, password: str, *, now: datetime | None = None
+    session: AsyncSession,
+    role: AccountRole,
+    username: str,
+    password: str,
+    *,
+    now: datetime | None = None,
 ) -> LoginResult:
-    """Kullanıcı adı + parolayı doğrular; başarısız denemeyi sayar, gerekirse hesabı kilitler."""
+    """Seçilen rolün tablosunda kullanıcı adı + parolayı doğrular.
+
+    Rol hangi tabloya bakılacağını belirler: yönetici parolası `owner` rolüyle (ve tersi)
+    asla çalışmaz. Başarısız denemeyi sayar, gerekirse hesabı kilitler.
+    """
     now = now or datetime.now(UTC)
-    account = await session.scalar(
-        select(UserAccount)
-        .where(UserAccount.username == normalize_username(username))
-        .with_for_update()
+    model = _table(role)
+    account: Account | None = await session.scalar(
+        select(model).where(model.username == normalize_username(username)).with_for_update()
     )
     # argon2id CPU/bellek yoğundur: olay döngüsünü (tüm istekleri) bloklamasın diye iş parçacığına
     # alınır (#266). `account` bu sırada yalnızca düz öznitelik atamasıyla değişir (G/Ç yok);
@@ -168,9 +184,16 @@ async def verify_credentials(
     if account is not None:
         await session.flush()
     if result.just_locked:
-        log.warning("accounts.locked", account_id=str(result.account_id), minutes=LOCK_MINUTES)
+        log.warning(
+            "accounts.locked", account_id=str(result.account_id), role=role, minutes=LOCK_MINUTES
+        )
     elif not result.ok:
-        log.info("accounts.login_failed", reason=result.failure, account_id=str(result.account_id))
+        log.info(
+            "accounts.login_failed",
+            reason=result.failure,
+            role=role,
+            account_id=str(result.account_id),
+        )
     return result
 
 
@@ -181,16 +204,24 @@ async def create_account(
     password: str,
     role: AccountRole,
     customer_id: UUID | None = None,
-) -> UserAccount:
+    display_name: str | None = None,
+) -> Account:
     """Hesap oluşturur (parola politikası denetlenir, karması saklanır)."""
-    account = UserAccount(
-        username=normalize_username(username),
-        password_hash=hash_password(password),
-        role=role.value,
-        customer_id=customer_id,
-        failed_attempts=0,
-        is_active=True,
-    )
+    common = {
+        "username": normalize_username(username),
+        "password_hash": hash_password(password),
+        "failed_attempts": 0,
+        "is_active": True,
+    }
+    account: Account
+    if role is AccountRole.OWNER:
+        if customer_id is None:
+            raise ValueError("Tekne sahibi hesabı için customer_id zorunludur.")
+        account = OwnerAccount(**common, customer_id=customer_id)
+    else:
+        if customer_id is not None:
+            raise ValueError("Yönetici hesabı bir müşteriye bağlanamaz.")
+        account = AdminAccount(**common, display_name=display_name or common["username"])
     session.add(account)
     await session.flush()
     return account

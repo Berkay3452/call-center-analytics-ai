@@ -21,7 +21,8 @@ silindiğini listeler (KVKK madde 7: silme, yok etme, anonim hale getirme). Veri
 | `boats`, `boat_notes`, `expenses`, `subscriptions` | Tekne, not, gider, abonelik | İş kaydı | Hayır | Çağrı silme kapsamı dışı (§3) |
 | `rag_chunks` | Tekne karnesi parçaları + embedding | İş kaydı içeriği | Hayır | Çağrıdan üretilmez; kaynak kayıt silinince (ayrı süreç) |
 | `chat_sessions`, `chat_messages` | Asistana sorulan sorular ve cevaplar | İçerik | Hayır | Sahibi `DELETE /assistant/sessions...` ile siler (#176) |
-| `user_accounts` | Kullanıcı adı, parola özeti | Kimlik | — (parola düz değil) | Müşteri silinince CASCADE |
+| `owner_accounts` | Kullanıcı adı, parola özeti | Kimlik | — (parola düz değil) | Müşteri silinince CASCADE |
+| `admin_accounts` | Kullanıcı adı, görünen ad, parola özeti | Kimlik | — (parola düz değil) | Yönetici hesabı kaldırılınca |
 | `audit_log` | `actor_id`, `ip`, olay türü, kimlikler | Teknik; IP kişisel veri sayılabilir | Metin/PII yazılmaz (kodla zorunlu) | **Silinmez** (yalnızca ekleme; §4) |
 | Uygulama günlükleri | İstek kimliği, durum | Teknik | Ham kişisel veri yazılmaz (#268 testi) | Günlük döndürme (altyapı) |
 
