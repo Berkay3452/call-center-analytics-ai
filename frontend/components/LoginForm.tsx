@@ -8,7 +8,7 @@ import { LOGIN_ROLES, loginErrorMessage, safeNext, type LoginRole } from "@/lib/
 const ROLES: LoginRole[] = ["admin", "owner"];
 
 /**
- * Giriş formu (#371): Yönetici / Tekne sahibi seçimi, kullanıcı adı ve parola. Seçilen rol, sunucuda
+ * Giriş formu (#371): Yönetici / Tekne sahibi seçimi, e-posta ve parola. Seçilen rol, sunucuda
  * hangi hesap tablosuna bakılacağını belirler. Hata iletisi genel tutulur (hesabın varlığı belli olmaz).
  */
 export function LoginForm() {
@@ -89,10 +89,12 @@ export function LoginForm() {
           <p className="mt-2 text-xs text-slate-500">{LOGIN_ROLES[role].hint}</p>
         </div>
 
-        <Field id="login-username" label="Kullanıcı adı">
+        <Field id="login-username" label="E-posta">
           <Input
             id="login-username"
             name="username"
+            type="email"
+            inputMode="email"
             autoComplete="username"
             autoCapitalize="none"
             autoCorrect="off"

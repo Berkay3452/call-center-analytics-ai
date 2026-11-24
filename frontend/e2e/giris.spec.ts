@@ -29,19 +29,19 @@ test("boş alanla gönderilemez; yanlış parolada genel hata gösterilir ve par
     await route.fulfill({
       status: 401,
       contentType: "application/json",
-      body: JSON.stringify({ error: { code: "unauthorized", message: "Kullanıcı adı veya parola hatalı." } }),
+      body: JSON.stringify({ error: { code: "unauthorized", message: "E-posta veya parola hatalı." } }),
     });
   });
   await page.goto("/login", { waitUntil: "networkidle" }); // form etkileşime hazır (hidrasyon bitti)
 
   await page.getByRole("button", { name: "Yönetici olarak giriş yap" }).click();
-  await expect(page.locator("form [role=alert]")).toContainText("Kullanıcı adı ve parolayı girin");
+  await expect(page.locator("form [role=alert]")).toContainText("E-posta ve parolayı girin");
   expect(calls).toBe(0);
 
-  await page.getByLabel("Kullanıcı adı").fill("yonetici1");
+  await page.getByLabel("E-posta").fill("yonetici1@micousta.test");
   await page.getByLabel("Parola").fill("yanlis-parola-123");
   await page.getByRole("button", { name: "Yönetici olarak giriş yap" }).click();
-  await expect(page.locator("form [role=alert]")).toContainText("Kullanıcı adı veya parola hatalı.");
+  await expect(page.locator("form [role=alert]")).toContainText("E-posta veya parola hatalı.");
   await expect(page.getByLabel("Parola")).toHaveValue("");
 });
 
@@ -67,9 +67,9 @@ test("başarılı girişte seçilen rolün ana sayfasına gidilir ve rol bilgisi
   });
   await page.goto("/login");
   await page.getByRole("radio", { name: "Tekne sahibi" }).click();
-  await page.getByLabel("Kullanıcı adı").fill("ahmet.yilmaz");
+  await page.getByLabel("E-posta").fill("ahmet.yilmaz@example.com");
   await page.getByLabel("Parola").fill("herhangi-bir-parola");
   await page.getByRole("button", { name: "Tekne sahibi olarak giriş yap" }).click();
   await expect(page).toHaveURL(/\/owner\/assistant/);
-  expect(sent).toMatchObject({ role: "owner", username: "ahmet.yilmaz" });
+  expect(sent).toMatchObject({ role: "owner", username: "ahmet.yilmaz@example.com" });
 });

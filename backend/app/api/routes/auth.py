@@ -25,7 +25,7 @@ from app.services.audit import record_audit_event_isolated
 
 router = APIRouter(tags=["auth"])
 
-GENERIC_LOGIN_ERROR = "Kullanıcı adı veya parola hatalı."
+GENERIC_LOGIN_ERROR = "E-posta veya parola hatalı."
 
 
 @router.get(
