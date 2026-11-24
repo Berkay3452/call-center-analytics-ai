@@ -165,18 +165,14 @@ async def test_phone_formats_are_normalized(
     assert spy.calls[-1]["phone"] == "+905321234567"
 
 
-async def test_weak_password_is_rejected_by_policy(
+async def test_service_policy_error_is_a_safety_net(
     client: httpx.AsyncClient, spy: Spy, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     async def weak(_session: object, **_kwargs: Any) -> Any:
         raise auth_routes.PasswordPolicyError("Parola en az 12 karakter olmalı.")
 
     monkeypatch.setattr(auth_routes, "register_owner", weak)
-    resp = await client.post(
-        "/api/v1/auth/register",
-        json=payload(password="kisa", password_confirm="kisa"),
-        headers=HEADERS,
-    )
+    resp = await client.post("/api/v1/auth/register", json=payload(), headers=HEADERS)
     assert resp.status_code == 409
     assert "12 karakter" in resp.json()["error"]["message"]
 
