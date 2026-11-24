@@ -63,7 +63,7 @@ Users (admin and boat owner) use the Next.js interface. It calls the Python AI s
 | ![ER](docs/diagrams/er_diagram.png) | Database ER diagram (18 tables) |
 | ![Security layer](docs/diagrams/S0_guvenlik_katmani_mimarisi.png) | Security-layer architecture; the five perspectives' diagrams and details: [`docs/guvenlik_mimarisi.md`](docs/guvenlik_mimarisi.md) (Turkish) |
 
-Detailed architecture, decisions and current status: [`Sistem_mimarisi_v6.1.md`](Sistem_mimarisi_v6.1.md) (Turkish).
+Detailed architecture, decisions and current status: [`Sistem_mimarisi_v7.0.md`](Sistem_mimarisi_v7.0.md) (Turkish).
 
 ## Tech stack
 
@@ -223,7 +223,7 @@ All documents below are in Turkish.
 
 | Document | Content |
 |---|---|
-| [`Sistem_mimarisi_v6.1.md`](Sistem_mimarisi_v6.1.md) | Architecture, decisions, security layer, current status (v6.1) |
+| [`Sistem_mimarisi_v7.0.md`](Sistem_mimarisi_v7.0.md) | Architecture, decisions, security layer, current status (v7.0) |
 | [`docs/db_schema.md`](docs/db_schema.md) | Database schema and ER diagram |
 | [`docs/api.md`](docs/api.md) | API contract |
 | [`docs/enums.md`](docs/enums.md) | Field value lists |

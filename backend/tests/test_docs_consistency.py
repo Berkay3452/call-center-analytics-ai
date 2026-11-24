@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[2]
 MARKDOWN = [
     ROOT / "README.md",
     ROOT / "README.en.md",
-    ROOT / "Sistem_mimarisi_v6.1.md",
+    ROOT / "Sistem_mimarisi_v7.0.md",
     ROOT / "backend" / "README.md",
     ROOT / "frontend" / "README.md",
     *sorted((ROOT / "docs").glob("*.md")),
@@ -35,7 +35,7 @@ def test_relative_links_and_images_exist(path: Path) -> None:
 
 
 def test_diagrams_referenced_by_architecture_exist() -> None:
-    text = (ROOT / "Sistem_mimarisi_v6.1.md").read_text(encoding="utf-8")
+    text = (ROOT / "Sistem_mimarisi_v7.0.md").read_text(encoding="utf-8")
     images = re.findall(r"!\[[^\]]*\]\((docs/diagrams/[^)]+)\)", text)
     assert images, "mimari belgede diyagram yok"
     for image in images:
@@ -71,7 +71,7 @@ def test_every_table_is_in_db_schema_doc() -> None:
 
 def test_main_dependencies_are_listed_in_architecture() -> None:
     """Projenin ana çerçeveleri mimari belgenin teknoloji tablosunda yazılı olmalı."""
-    text = (ROOT / "Sistem_mimarisi_v6.1.md").read_text(encoding="utf-8")
+    text = (ROOT / "Sistem_mimarisi_v7.0.md").read_text(encoding="utf-8")
     for name in (
         "FastAPI",
         "Celery",
@@ -88,7 +88,7 @@ def test_main_dependencies_are_listed_in_architecture() -> None:
         "Alembic",
         "Docker",
     ):
-        assert name in text, f"Sistem_mimarisi_v6.1.md teknoloji tablosunda {name} yok"
+        assert name in text, f"Sistem_mimarisi_v7.0.md teknoloji tablosunda {name} yok"
 
 
 def test_er_diagram_source_matches_models() -> None:
