@@ -33,6 +33,9 @@ class AuditAction(StrEnum):
     ASISTAN_INJECTION = "asistan_injection"
     ASISTAN_BASKA_TARAF = "asistan_baska_taraf"  # başka müşteri/tekne verisi isteği
     DENETIM_GORUNTULENDI = "denetim_goruntulendi"
+    GIRIS_BASARILI = "giris_basarili"  # #369 (kullanıcı girişi)
+    GIRIS_BASARISIZ = "giris_basarisiz"
+    HESAP_KILITLENDI = "hesap_kilitlendi"
 
 
 class AuditActorRole(StrEnum):
