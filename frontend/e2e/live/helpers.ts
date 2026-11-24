@@ -1,4 +1,4 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect, type Page } from "../fixtures";
 
 /**
  * Canlı testler gerçek backend'e (mock'suz, seed'li veritabanı) karşı çalışır.

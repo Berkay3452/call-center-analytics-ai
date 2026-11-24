@@ -1,5 +1,6 @@
 "use client";
 
+import { useSession } from "@/lib/session-context";
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import type { ChatMessage, CitationCard } from "@/lib/types";
 import type {
@@ -14,7 +15,6 @@ import {
   getChatSessionDetail,
   deleteChatSession,
   deleteAllChatSessions,
-  DEFAULT_OWNER_ID,
 } from "@/lib/api/client";
 import { isApiError } from "@/lib/api/errors";
 import { Button } from "@/components/ui";
@@ -61,6 +61,7 @@ function mapSourceRefsToCitationCards(sources?: SourceRef[]): CitationCard[] {
 // ──────────────────────────────────────────────────────────────────────────────
 
 export default function AssistantPage() {
+  const ownerId = useSession()?.customerId ?? "";
   // ── Sohbet durumu ──────────────────────────────────────────────────────────
   const [messages, setMessages] = useState<ChatMessage[]>(INITIAL_MESSAGES);
   const [currentStage, setCurrentStage] = useState<
@@ -94,7 +95,7 @@ export default function AssistantPage() {
   const loadSessions = useCallback(async () => {
     try {
       setSessionsError(null);
-      const list = await getChatSessions(DEFAULT_OWNER_ID);
+      const list = await getChatSessions(ownerId);
       // Yeniden eskiye sıralama (API zaten bunu yapıyor, ama garantiye alalım)
       const sorted = [...list].sort(
         (a, b) =>
@@ -109,7 +110,7 @@ export default function AssistantPage() {
     } finally {
       setSessionsLoading(false);
     }
-  }, []);
+  }, [ownerId]);
 
   useEffect(() => {
     void loadSessions();
@@ -128,7 +129,7 @@ export default function AssistantPage() {
       setLastQuestion(null);
 
       try {
-        const detail = await getChatSessionDetail(sessionId, DEFAULT_OWNER_ID);
+        const detail = await getChatSessionDetail(sessionId, ownerId);
         const history: ChatMessage[] = detail.messages.map((m) => ({
           id: m.id,
           role: m.role as "user" | "assistant",
@@ -154,7 +155,7 @@ export default function AssistantPage() {
         ]);
       }
     },
-    [isLoading],
+    [isLoading, ownerId],
   );
 
   // ── Yeni sohbet ──────────────────────────────────────────────────────────
@@ -235,8 +236,8 @@ export default function AssistantPage() {
       try {
         await streamAssistantChat(
           { question: trimmed, session_id: sessionIdRef.current },
-          DEFAULT_OWNER_ID,
-          {
+          ownerId,
+                  {
             onStatus: (stage) => {
               setCurrentStage(stage);
             },
@@ -332,7 +333,7 @@ export default function AssistantPage() {
         );
       }
     },
-    [isLoading, loadSessions],
+    [isLoading, loadSessions, ownerId],
   );
 
   // ── Yeniden dene ─────────────────────────────────────────────────────────
@@ -346,19 +347,19 @@ export default function AssistantPage() {
   // ── Sohbet silme (#176) ──────────────────────────────────────────────────
   const handleDeleteSession = useCallback(
     async (sessionId: string) => {
-      await deleteChatSession(sessionId, DEFAULT_OWNER_ID);
+      await deleteChatSession(sessionId, ownerId);
       setSessions((prev) => prev.filter((x) => x.id !== sessionId));
       // Açık sohbet silindiyse boş sohbete dön
       if (sessionIdRef.current === sessionId) handleNewChat();
     },
-    [handleNewChat],
+    [handleNewChat, ownerId],
   );
 
   const handleDeleteAll = useCallback(async () => {
-    await deleteAllChatSessions(DEFAULT_OWNER_ID);
+    await deleteAllChatSessions(ownerId);
     setSessions([]);
     handleNewChat();
-  }, [handleNewChat]);
+  }, [handleNewChat, ownerId]);
 
   // ─────────────────────────────────────────────────────────────────────────
   // Render

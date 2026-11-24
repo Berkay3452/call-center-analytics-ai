@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 import { AxeBuilder } from "@axe-core/playwright";
 
 test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
@@ -395,8 +395,9 @@ test.describe("Miço Usta — Uçtan Uca Duman Testleri (#116)", () => {
     await nav.getByRole("link", { name: "CRM Önerileri" }).click();
     await expect(page).toHaveURL(/\/admin\/crm/);
 
-    // Rol seçici: Tekne Sahibi yalnızca Miço AI sekmesini gösterir
-    await page.getByLabel("Rol seç").selectOption("owner");
+    // Rol seçici yok (#372): rol oturumdan gelir. Tekne sahibi yalnızca Miço AI sekmesini görür.
+    await expect(page.getByLabel("Rol seç")).toHaveCount(0);
+    await page.goto("/owner/assistant");
     await expect(page).toHaveURL(/\/owner\/assistant/);
     await expect(nav.getByRole("link")).toHaveCount(1);
     await expect(nav.getByRole("link", { name: "Miço AI" })).toBeVisible();

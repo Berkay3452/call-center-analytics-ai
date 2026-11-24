@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { test, expect } from "./fixtures";
 
 // Canlı transkript pop-up'ı (#326). Sahte modda akış senaryolu konuşma üretir (gerçek STT yok).
 test.describe("Canlı transkript pop-up (#326)", () => {

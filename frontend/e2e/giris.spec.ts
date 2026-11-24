@@ -1,10 +1,14 @@
 import { expect, test } from "@playwright/test";
+import { sessionToken } from "./auth";
 
 /**
  * Giriş sayfası (#371). Backend'e ihtiyaç duymaz: `/api/auth/login` yanıtı taklit edilir; bu
  * testler formun davranışını (rol seçimi, hata iletisi, yönlendirme) doğrular. Sunucu tarafı
  * (çerez imzası, genel hata) birim ve backend testlerindedir.
  */
+
+// Giriş sayfası oturumsuz kullanıcı içindir (oturumlu kullanıcı ana sayfaya yönlenir).
+test.use({ storageState: { cookies: [], origins: [] } });
 
 test("giriş sayfası kabuksuz açılır ve rol seçimi etiketi değiştirir", async ({ page }) => {
   await page.goto("/login");
@@ -53,9 +57,11 @@ test("başarılı girişte seçilen rolün ana sayfasına gidilir ve rol bilgisi
   let sent: Record<string, string> | null = null;
   await page.route("**/api/auth/login", async (route) => {
     sent = route.request().postDataJSON();
+    // Gerçek sunucu imzalı çerezi kurar; burada aynı biçimde üretilmiş çerez taklit edilir.
     await route.fulfill({
       status: 200,
       contentType: "application/json",
+      headers: { "set-cookie": `mico_session=${await sessionToken("owner")}; Path=/; HttpOnly; SameSite=Lax` },
       body: JSON.stringify({ role: "owner", display_name: "Ahmet Yılmaz", home: "/owner/assistant" }),
     });
   });
