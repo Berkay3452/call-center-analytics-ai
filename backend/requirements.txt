@@ -72,9 +72,9 @@ ctranslate2==4.9.0
     # via faster-whisper
 distro==1.9.0
     # via langsmith
-faker==40.54.0
+faker==40.63.0
     # via call-center-backend
-fastapi==0.162.7
+fastapi==0.165.0
     # via call-center-backend
 faster-whisper==1.2.1
     # via call-center-backend
@@ -145,13 +145,13 @@ langchain-core==1.8.4
     #   langgraph-checkpoint
     #   langgraph-prebuilt
     #   langgraph-sdk
-langchain-openai==1.8.4
+langchain-openai==1.8.5
     # via call-center-backend
 langchain-protocol==0.0.22
     # via
     #   langchain-core
     #   langgraph-sdk
-langgraph==1.2.23
+langgraph==1.2.24
     # via
     #   call-center-backend
     #   langchain
