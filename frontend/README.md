@@ -121,7 +121,7 @@ frontend/
 
 ## Rol Sistemi
 
-Giriş `/login` sayfasından yapılır (Yönetici / Tekne sahibi seçimi, kullanıcı adı + parola); rol imzalı `mico_session` çerezinden gelir ve `proxy.ts` her sayfayı/API'yi buna göre korur. `SESSION_SECRET` env değeri zorunludur. Test hesapları `backend/scripts/seed_accounts.py` ile üretilir.
+Giriş `/login` sayfasından yapılır (Yönetici / Tekne sahibi seçimi, e-posta + parola); rol imzalı `mico_session` çerezinden gelir ve `proxy.ts` her sayfayı/API'yi buna göre korur. `SESSION_SECRET` env değeri zorunludur. Test hesapları `backend/scripts/seed_accounts.py` ile üretilir. Tekne sahipleri `/register` sayfasından kaydolur (ad, soyad, telefon, e-posta, parola; parola en az 12 karakter, büyük/küçük harf ve özel sembol içermeli) ve `/owner/boats` sayfasında "Tekne ekle" ile kendi teknelerini kaydeder.
 
 - **Admin**: Çağrı Analitiği, Çağrı Listesi, CRM Önerileri
 - **Tekne Sahibi**: Asistan Sohbet Ekranı

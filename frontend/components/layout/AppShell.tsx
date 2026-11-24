@@ -18,7 +18,10 @@ const ADMIN_TABS: TabItem[] = [
   { href: "/admin/service-orders", label: "Servis Emirleri" },
 ];
 
-const OWNER_TABS: TabItem[] = [{ href: "/owner/assistant", label: "Miço AI" }];
+const OWNER_TABS: TabItem[] = [
+  { href: "/owner/assistant", label: "Miço AI" },
+  { href: "/owner/boats", label: "Teknelerim" },
+];
 
 const TABS: Record<Role, TabItem[]> = {
   admin: ADMIN_TABS,
@@ -55,8 +58,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const session = useSession();
   const [signingOut, setSigningOut] = useState(false);
 
-  // Giriş sayfasında kabuk (üst bar, sekmeler) gösterilmez (#371).
-  if (pathname.startsWith("/login")) return <>{children}</>;
+  // Giriş ve kaydol sayfalarında kabuk (üst bar, sekmeler) gösterilmez (#371, #384).
+  if (pathname.startsWith("/login") || pathname.startsWith("/register")) return <>{children}</>;
 
   const effectiveRole: Role = pathname.startsWith("/owner")
     ? "owner"

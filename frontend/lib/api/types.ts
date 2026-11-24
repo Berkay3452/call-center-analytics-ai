@@ -193,3 +193,20 @@ export type DeltaEvent = Schema["DeltaEvent"];
 export type DoneEvent = Schema["DoneEvent"];
 export type ErrorEvent = Schema["ErrorEvent"];
 export type ChatStreamEvent = StatusEvent | DeltaEvent | DoneEvent | ErrorEvent;
+
+// Tekne sahibinin tekneleri (#383, #384) — `GET/POST /boats`
+export interface BoatOut {
+  id: string;
+  name: string;
+  model: string | null;
+  year: number | null;
+  marina: string | null;
+  created_at: string;
+}
+
+export interface BoatCreate {
+  name: string;
+  model?: string | null;
+  year?: number | null;
+  marina?: string | null;
+}

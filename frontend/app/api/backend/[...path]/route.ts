@@ -35,6 +35,7 @@ const R: Array<[RegExp, readonly string[]]> = [
   [/^service-orders\/[^/]+$/, ["GET"]],
   [/^service-orders\/[^/]+\/status$/, ["PATCH"]],
   [/^analytics\/summary$/, ["GET"]],
+  [/^boats$/, ["GET", "POST"]], // tekne sahibi: kendi tekneleri (#383)
   [/^chat\/.+$/, ["GET", "POST", "DELETE"]],
   [/^assistant\/.+$/, ["GET", "POST", "DELETE"]],
 ];
