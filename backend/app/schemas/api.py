@@ -18,6 +18,7 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field, TypeAdapter, model_validator
 
+from app.domain.accounts import MIN_PASSWORD_LENGTH
 from app.domain.enums import (
     CallType,
     CrmReviewStatus,
@@ -270,6 +271,8 @@ class RegisterIn(BaseModel):
         if not _EMAIL_RE.match(self.email):
             raise ValueError("Geçerli bir e-posta adresi girin.")
         self.phone = normalize_phone(self.phone)
+        if len(self.password) < MIN_PASSWORD_LENGTH:
+            raise ValueError(f"Parola en az {MIN_PASSWORD_LENGTH} karakter olmalı.")
         if self.password != self.password_confirm:
             raise ValueError("Parola ve tekrarı aynı olmalı.")
         return self

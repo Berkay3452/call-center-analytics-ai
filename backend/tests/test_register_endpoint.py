@@ -135,6 +135,7 @@ async def test_duplicate_email_is_conflict_with_generic_message(
     "over",
     [
         {"password_confirm": "baska-bir-parola-123"},
+        {"password": "kisa", "password_confirm": "kisa"},
         {"email": "gecersiz"},
         {"email": "a@b"},
         {"phone": "12345"},
