@@ -1,7 +1,9 @@
-# Sistem Mimarisi v6.1
+# Sistem Mimarisi v7.0
 
 **Proje:** Yapay Zekâ Destekli Sesli Asistan ve Çağrı Merkezi Analitiği Sistemi
-**Sürüm:** v6.1 · **Tarih:** 2026-11-20 · **Durum:** Güncel · **Önceki sürümler:** v1, v2, v3.0, v3.1, v4, v4.1, v4.2, v5, v6 (git geçmişinde)
+**Sürüm:** v7.0 · **Tarih:** 2026-11-24 · **Durum:** Güncel · **Önceki sürümler:** v1, v2, v3.0, v3.1, v4, v4.1, v4.2, v5, v6, v6.1 (git geçmişinde)
+
+**v7.0'da değişenler (24 Kasım, kimlik doğrulama):** Test arayüzüne **giriş sistemi** eklendi ve hocanın son güvenlik perspektifi olan kimlik doğrulama mimariye işlendi (#265 kararı: kullanıcı girişi uygulandı; #368-#373). `/login` sayfasında Yönetici / Tekne sahibi seçilir; hesaplar ayrı `admin_accounts` ve `owner_accounts` tablolarındadır (argon2id; `user_accounts` kaldırıldı, tablo sayısı 19, Alembic 0009); `POST /auth/login` tek tip hata verir, 5 hatada 15 dk kilit ve IP başına hata bütçesi uygular, olaylar denetim günlüğüne yazılır. Next tarafında imzalı `httpOnly` oturum çerezi (`mico_session`, 8 saat), `proxy.ts` ile rota koruması ve rol çaprazlama engeli getirildi; vekil rota kimliği ve rolü yalnızca çerezden türetip imzalar (tarayıcı kimliği/rol seçici ve `ALLOW_BROWSER_USER_ID` kaldırıldı). Genel mimari (01) ile S0/S1 şemaları yeniden üretildi; §3, §4.1, §6, §11, §12 ve `docs/guvenlik_mimarisi.md` güncellendi. Sınırlar: çok faktörlü doğrulama ve parola sıfırlama yok; oturum sunucuda iptal edilemez.
 
 **v6.1'de değişenler (20 Kasım, final ek özellikleri):** Hocanın geri dönüşünden sonra eklenen iki özellik işlendi: **canlı transkript** (yazıya çevirme sırasında konuşmacı ayrımlı pop-up; Redis Stream + SSE, #323-#327) ve **Duygu Analiz Agent'ı** (5. agent: olumlu / nötr / olumsuz + şikâyet bayrağı; şema, istem, orkestratör, DB sütunları, API alanları, KPI, arayüz ve ölçüm, #333-#335). Genel mimari, çağrı analitiği ve agent şemaları ile ER diyagramı yeniden üretildi (üretim betikleri `docs/diagrams/kaynak/` altında); güvenlik şeması S2'ye canlı transkript kuralları eklendi. Teknoloji tablosu, durum (§11) ve takvim (§2) gerçek duruma getirildi; sürümler `uv.lock`'a göre yazıldı; bağımlılıklar küçük/yama düzeyinde güncellendi. Planlanan sonraki işler (STT doğruluğu, STT model karşılaştırması, embedding karşılaştırması, otomatik güvenlik turu, entegrasyon ve canlıya alma) §2 ve §12'de. §1, §2, §4, §5, §9, §11, §12, §13 güncellendi.
 
@@ -37,7 +39,7 @@
 | 16 Kasım 23:59 | Vize sunumu yükleme (sunum: 17–19 Kasım) |
 | 16–22 Kasım (10. hafta) | Siber güvenlik katmanı (#264-#278), canlı transkript (#315, #323-#327), duygu analizi agent'ı (#317, #333-#335); bu belge ve diyagramların güncellenmesi |
 | 23 Kasım sonrası (planlı) | Yazıya çevirme doğruluğu: hatalı kelime listesi, parametre deneyi, alan sözlüğü (#322); ücretsiz STT modellerinin karşılaştırması (#316); 4 embedding modeli + reranker + HF API karşılaştırması (#318); arka planda otomatik güvenlik turu ve Berkay'ın manuel test listesi (#320); canlı transkript ve duygu analizi manuel testinden çıkan düzeltmeler |
-| En sonda (hocayla) | Miço Usta'ya entegrasyon ve canlıya alma (#321); giriş ekranı kararı (#265) |
+| En sonda (hocayla) | Miço Usta'ya entegrasyon ve canlıya alma (#321); Miço Usta'da giriş entegrasyonu |
 | 14 Aralık | Final sunumu yükleme (sunum: 15–17 Aralık); **canlıya alma final zamanı** |
 | 28 Aralık | Demo ve tez son teslim |
 | 5 Ocak | Demo ve poster sunumu |
@@ -81,9 +83,11 @@ Siber güvenlik dersi kapsamında (**Ses Verisi Güvenliği ve Yapay Zekâ Güve
 | Anahtar yalnızca Next.js sunucu tarafında; tarayıcı görmez | **Var** |
 | Tekne sahibi uçlarında `X-User-Id` zorunlu ve UUID doğrulamalı | **Var** |
 | Yeni bir uçta kimlik unutulursa yetki matrisi testi (83 test) kırılır | **Var** |
-| Tekne sahibi ve yönetici hesapları: `user_accounts`, kullanıcı adı + argon2id parola karması, deneme sayacı/kilit, seed (giriş ucu ve ekranı yok) | **Var** #278 (giriş ucu açılmadı; kimlik kaynağı hâlâ `X-User-Id`, #266) |
-| İmzalı `X-User-Id` (HMAC-SHA256, 60 sn ömür, ayrı `USER_SIGNING_KEY`), süreli çift anahtarlı rotasyon, argon2 iş parçacığında, IP giriş bütçesi yardımcıları | **Var** #266 (giriş ucu ve oturum yok, #265; vekil rota e2e denenmedi) |
-| Giriş ekranı gerekir mi? | **Hocaya sorulacak** #265 |
+| Ayrı hesap tabloları `admin_accounts` ve `owner_accounts`: kullanıcı adı + argon2id parola karması, deneme sayacı ve 15 dk kilit, her müşteri/yönetici için seed (parolalar git dışı dosyada) | **Var** #278, #368 |
+| Giriş: `/login` (Yönetici / Tekne sahibi), `POST /auth/login`, tek tip hata (kullanıcı numaralandırma yok), IP hata bütçesi (429), giriş olayları denetim günlüğünde | **Var** #369, #371 |
+| İmzalı `httpOnly` oturum çerezi (HMAC, 8 saat, SameSite=Lax, canlıda secure); `proxy.ts` rota koruması (oturumsuz → `/login`, rol çaprazlama engeli); vekil rota kimlik ve rolü çerezden türetir, tarayıcı başlığı yok sayılır | **Var** #371, #372 |
+| İmzalı `X-User-Id` (HMAC-SHA256, 60 sn ömür, ayrı `USER_SIGNING_KEY`), süreli çift anahtarlı rotasyon, argon2 iş parçacığında, IP giriş bütçesi yardımcıları | **Var** #266 (kimlik artık oturum çerezinden gelir, #372) |
+| Bilinen sınırlar: çok faktörlü doğrulama yok, parola sıfırlama yok, oturum sunucuda iptal edilemez (8 saat) | **Kabul edilen sınır** (test ortamı) #265 |
 
 ### Kişisel verilerin ve ses verisinin korunması — `S2_kisisel_veri_ve_ses_guvenligi.png`
 
@@ -261,12 +265,12 @@ Arayüz ile AI servisi arasındaki sözleşme `docs/api.md` ve `frontend/openapi
 | KPI özeti | Tarih aralığına göre toplam KPI'lar |
 | Asistan sohbeti | Soru ve kullanıcı kimliği gönderilir; kaynaklı cevap akış olarak döner; oturum listesi ve geçmişi |
 
-- **Kimlik doğrulama:** İstemci AI servisini servis anahtarıyla çağırır; tekne sahibinin kimliği isteğe eklenir. Giriş ekranı şu an yoktur; tekne sahibi ve yönetici hesapları (kullanıcı adı + argon2id parola karması) veritabanında tutulacak (#278); giriş ekranının gerekip gerekmediği hocaya sorulacak (#265). Ayrıntı §4.1.
+- **Kimlik doğrulama:** İstemci AI servisini servis anahtarıyla çağırır; tekne sahibinin kimliği isteğe eklenir. Test arayüzünde kullanıcı girişi vardır: ayrı yönetici/sahip hesap tabloları (argon2id), `POST /auth/login`, imzalı oturum çerezi ve rota koruması; Next vekil rotası kimliği çerezden türetip imzalar (#265, #368-#372). Miço Usta ile entegrasyonda kimliği .NET uygulaması belirler. Ayrıntı §4.1.
 - **Hatalar:** Tek tip hata biçimi (kod, mesaj, istek kimliği) korunur.
 
 ## 9. Veri
 
-- **Bizim tablolarımız:** çağrılar, transkript ve segmentler, analiz sonuçları (sürümlü; duygu, şikâyet bayrağı, gerekçe ve alıntı sütunları dahil) ve agent çalıştırma kayıtları (5 agent), **CRM inceleme kayıtları**, sohbet oturumları ve mesajları, RAG parçaları (vektör + tam metin indeksi), kullanıcı hesapları (`user_accounts`) ve ekleme-yalnız denetim günlüğü (`audit_log`). Toplam 18 tablo (Alembic 0008).
+- **Bizim tablolarımız:** çağrılar, transkript ve segmentler, analiz sonuçları (sürümlü; duygu, şikâyet bayrağı, gerekçe ve alıntı sütunları dahil) ve agent çalıştırma kayıtları (5 agent), **CRM inceleme kayıtları**, sohbet oturumları ve mesajları, RAG parçaları (vektör + tam metin indeksi), yönetici ve sahip hesapları (`admin_accounts`, `owner_accounts`) ve ekleme-yalnız denetim günlüğü (`audit_log`). Toplam 19 tablo (Alembic 0009).
 - **Miço Usta verisi** (müşteriler, tekneler, usta, servis emirleri, giderler, abonelikler): şu an sentetik olarak aynı veritabanında; şema ve erişim yöntemi hocadan alınacak. Onaylanan CRM önerisi bu tablolardaki servis emrini üretir.
 - Şema ayrıntısı: `docs/db_schema.md`.
 
@@ -281,7 +285,7 @@ Arayüz ile AI servisi arasındaki sözleşme `docs/api.md` ve `frontend/openapi
 
 | Alan | Durum |
 |------|-------|
-| Backend (FastAPI, 32 API işlemi, 18 tablo, Alembic 0008), CI (lint, tip, ~2.460 test, duman testi, Docker imajı, güvenlik taraması, gitleaks, belge tutarlılığı) | **Hazır** |
+| Backend (FastAPI, 32 API işlemi, 19 tablo, Alembic 0009), CI (lint, tip, ~2.460 test, duman testi, Docker imajı, güvenlik taraması, gitleaks, belge tutarlılığı) | **Hazır** |
 | Beş analiz agent'ı (sınıflandırma, CRM, satış, özet, duygu) + orkestratör, gerçek LLM ile ölçüm | **Hazır** (100 çağrılık sette ilk dört agent test kümesinde genel %94, sonraki aksiyon %92; duygu agent'ı 119 çağrıda %97, şikâyet kesinliği %92 — etiketler tek kişiden, örnek sayısı az: `docs/agent_dogrulugu.md`) |
 | Duygu analizi arayüzü: çağrı listesinde rozet ve şikâyet bayrağı, detayda gerekçe, analitikte dağılım ve şikâyet sayısı | **Hazır**; manuel test bekliyor |
 | Canlı transkript (yazıya çevirme sırasında pop-up, SSE) | **Hazır**; manuel test bekliyor; gerçek yığında uçtan uca denenmedi, parçalar ~30 sn'lik pencere hızında gelir |
@@ -295,7 +299,7 @@ Arayüz ile AI servisi arasındaki sözleşme `docs/api.md` ve `frontend/openapi
 | Docker ile tek komutla çalıştırma, ses depolama soyutlaması (yerel, GCS) | **Hazır**; uçtan uca duman testi CI'da |
 | CI ve dal koruması | **Hazır**: backend ve frontend iş akışları, Playwright e2e (Chromium), `main` için ruleset (zorunlu kontroller: Backend CI sonucu, Frontend CI sonucu) |
 | Erişilebilirlik (axe, klavye, pencere daraltma), Playwright E2E testleri | **Hazır** |
-| Güvenlik katmanı (§4.1): servis anahtarı ve imzalı kimlik, maskeleme, injection savunması, sahip izolasyonu ve roller, hız sınırı, denetim günlüğü, KVKK silme, yükleme kontrolleri, saldırı test paketi | **Hazır** (#264-#278 kapandı; giriş ekranı kararı #265 açık, hocaya sorulacak); otomatik tam tur (#320) planlı; `docs/guvenlik_mimarisi.md` |
+| Güvenlik katmanı (§4.1): servis anahtarı ve imzalı kimlik, maskeleme, injection savunması, sahip izolasyonu ve roller, hız sınırı, denetim günlüğü, KVKK silme, yükleme kontrolleri, saldırı test paketi | **Hazır** (#264-#278 ve kimlik doğrulama #265, #368-#373 kapandı); otomatik tam tur (#320) planlı; `docs/guvenlik_mimarisi.md` |
 | Miço Usta uygulamasına entegrasyon, kullanıcı girişi, Google Cloud'a canlıya alma | **Yapılmadı** (hocayla yöntem netleşecek) |
 | Yazıya çevirme doğruluğu (#322), ücretsiz STT modellerinin karşılaştırması (#316), embedding karşılaştırması (#318), otomatik güvenlik turu (#320) | **Planlandı** (ölçümler yalnız sentetik veriyle) |
 
@@ -313,13 +317,14 @@ Arayüz ile AI servisi arasındaki sözleşme `docs/api.md` ve `frontend/openapi
 | STT: model boyutu, beam, VAD, hotwords, alan sözlüğü (#322) ve ücretsiz model karşılaştırması (#316) | Planlandı; yalnız sentetik ses; bellek (15,7 GB, GPU yok) ve hız bütçesiyle sınırlı |
 | Canlı transkript ve duygu analizi: manuel test sonucu | 21 Kasım'dan sonra; sorun çıkarsa düzeltme issue'ları açılır |
 | Admin'deki mevcut AI Asistan'ın iyileştirilmesi kapsama dahil mi? | Hocaya sorulacak |
-| "Kimlik doğrulama" giriş ekranı mı, servisler arası doğrulama mı? (#265) | Hocaya sorulacak; hesaplar yine de DB'de tutulacak (#278) |
+| "Kimlik doğrulama" giriş ekranı mı, servisler arası doğrulama mı? (#265) | **Karar verildi:** ikisi de; kullanıcı girişi uygulandı, servis düzeyi korundu (#368-#373) |
 
 **Karara bağlananlar:** Çağrı verisi 100'e çıkarıldı (#148), toplu ölçümler yapıldı (#149, #151, #216).  STT: yerel faster-whisper, stereo; varsayılan `large-v3-turbo` (WER ~%14, #329/#330), bellek kısıtlıysa `small`; alan düzeltme sözlüğü maskelemeden önce. Hızlı LLM katmanı: NVIDIA lightning-30b, 404'te yedek model (#122). Veritabanı geliştirmede yerel PostgreSQL, Supabase yok.
 
 ## 13. Değişiklik Günlüğü
 
-- **v6.1 (2026-11-20):** Belge sürümü v6.1 oldu (dosya `Sistem_mimarisi_v6.1.md`). Canlı transkript ve duygu analizi (5. agent) mimariye, teknoloji ve durum tablolarına işlendi; genel mimari (01), çağrı analitiği (02), agent (04) ve ER şemaları yeniden üretildi (kaynak betikler `docs/diagrams/kaynak/mimari_semalari.py` ve `er_semasi.py`), S2'ye canlı transkript kuralları eklendi; güvenlik issue'larının durumu (#264-#278 kapandı) ve planlanan işler (#316, #318, #320, #321, #322) yazıldı; bağımlılıklar `uv.lock`'ta küçük/yama sürümlerine yükseltildi, doğrulanmış sürümler §5'e eklendi, ana sürüm atlayan üç paket bekletildi.
+- **v7.0 (2026-11-24):** Belge sürümü v7.0 oldu (dosya `Sistem_mimarisi_v7.0.md`). Kimlik doğrulama perspektifi tamamlandı: giriş sayfası, ayrı hesap tabloları, `POST /auth/login`, imzalı oturum çerezi, rota koruması, oturumdan türetilen imzalı kimlik; S0/S1 ve genel mimari (01) şemaları yeniden üretildi; tablo sayısı 19 (Alembic 0009); #265 kapandı.
+- **v6.1 (2026-11-20):** Belge sürümü v6.1 oldu (dosya `Sistem_mimarisi_v7.0.md`). Canlı transkript ve duygu analizi (5. agent) mimariye, teknoloji ve durum tablolarına işlendi; genel mimari (01), çağrı analitiği (02), agent (04) ve ER şemaları yeniden üretildi (kaynak betikler `docs/diagrams/kaynak/mimari_semalari.py` ve `er_semasi.py`), S2'ye canlı transkript kuralları eklendi; güvenlik issue'larının durumu (#264-#278 kapandı) ve planlanan işler (#316, #318, #320, #321, #322) yazıldı; bağımlılıklar `uv.lock`'ta küçük/yama sürümlerine yükseltildi, doğrulanmış sürümler §5'e eklendi, ana sürüm atlayan üç paket bekletildi.
 - **v6 ek (2026-11-20):** Duygu Analiz Agent'ı eklendi (5. agent): müşterinin duygusu (olumlu / nötr / olumsuz) ve şikâyet bayrağı; şema, istem, orkestratöre ekleme, DB sütunları ve API alanı (#333); çağrı listesi ve analitik özetinde duygu alanları, ölçüm ve süre etkisi (#334).
 - **v6 ek (2026-11-19):** Canlı transkript akışı eklendi (§6.1): Redis Stream, SSE ucu, vekil geçişi, pop-up (#323-#327).
 - **v6 (2026-11-17):** Belge sürümü v6 oldu (dosya `Sistem_mimarisi_v6.md`). Güvenlik katmanı (§4.1) mevcut tüm güvenlik kurallarını içerecek biçimde yeniden yazıldı; güvenlik ilkeleri (§4.2); kullanıcı hesapları kararı (#278); uygulama sırası (Hafta 10, kimlik doğrulama en son). İlk hali v5 ekinde (#277) S0-S5 şemaları ve `docs/guvenlik_mimarisi.md` ile gelmişti. Mono konuşmacı ayrımı (#263) duruma işlendi.

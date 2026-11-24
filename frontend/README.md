@@ -104,7 +104,7 @@ frontend/
 │   ├── layout.tsx              # Kök layout (Sidebar + Header)
 │   └── page.tsx                # Kök → /admin/analytics yönlendirme
 ├── components/
-│   ├── Header.tsx              # Üst çubuk + rol seçici
+│   ├── Header.tsx              # Üst çubuk + kullanıcı adı ve Çıkış
 │   ├── Sidebar.tsx             # Sol menü (role göre navigasyon)
 │   └── PlaceholderCard.tsx     # Placeholder kart bileşeni
 ├── lib/
@@ -121,7 +121,7 @@ frontend/
 
 ## Rol Sistemi
 
-Gerçek bir auth mekanizması yoktur. Header'daki **Rol Seçici** dropdown ile `Admin` ve `Tekne Sahibi` rolleri arasında geçiş yapılabilir.
+Giriş `/login` sayfasından yapılır (Yönetici / Tekne sahibi seçimi, kullanıcı adı + parola); rol imzalı `mico_session` çerezinden gelir ve `proxy.ts` her sayfayı/API'yi buna göre korur. `SESSION_SECRET` env değeri zorunludur. Test hesapları `backend/scripts/seed_accounts.py` ile üretilir.
 
 - **Admin**: Çağrı Analitiği, Çağrı Listesi, CRM Önerileri
 - **Tekne Sahibi**: Asistan Sohbet Ekranı

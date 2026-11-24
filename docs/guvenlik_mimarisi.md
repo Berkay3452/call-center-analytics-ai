@@ -1,7 +1,7 @@
 # Güvenlik Katmanı Mimarisi
 
 **Kapsam:** Ses Verisi Güvenliği ve Yapay Zekâ Güvenliği — kimlik doğrulama, kişisel verilerin korunması, güvenli API kullanımı, prompt injection ve yetkisiz komutlara karşı koruma.
-**Tarih:** 2026-11-17 · **İş takibi:** GitHub etiketi `güvenlik-katmanı`, kilometre taşı *Hafta 10 (16-22 Kasım)*, ana issue #264 (#264-#278). Mimarideki özeti: `Sistem_mimarisi_v6.1.md` §4.1-§4.2.
+**Tarih:** 2026-11-17 · **İş takibi:** GitHub etiketi `güvenlik-katmanı`, kilometre taşı *Hafta 10 (16-22 Kasım)*, ana issue #264 (#264-#278). Mimarideki özeti: `Sistem_mimarisi_v7.0.md` §4.1-§4.2.
 **Okuma kuralı:** Her satırda **Var** = kodda bugün çalışan, **Planlanan** = ilgili issue'da tanımlı, henüz yazılmamış. Olmayan özellik "var" diye yazılmaz. Bu belge `docs/guvenlik_yuk.md` (#158 kontrol listesi) ile birlikte okunur.
 
 ## 1. Genel bakış
