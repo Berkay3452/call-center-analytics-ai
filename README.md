@@ -44,6 +44,7 @@
 - Dayanıklılık: LLM zaman aşımında yedek modele geçilir; takılı kalan çağrı otomatik kurtarılır.
 - Miço AI: hibrit arama (vektör + tam metin, RRF), takip soruları, kelime kelime akış (SSE), oturum geçmişi, dayanaksız ifadeyi eleyen kaynak denetimi.
 - Miço AI güvenlik katmanı (LLM'siz): küfür, tehdit, kendine zarar, kural aşma girişimi, başkasının verisini isteme ve anlamsız metin için ayrı, duruma göre değişen cevaplar.
+- Giriş, iki panel için ayrıdır (Yönetici / Tekne sahibi): e-posta + parola, argon2id, 5 hatada 15 dk kilit, imzalı `httpOnly` oturum çerezi, rota koruması. Tekne sahipleri **kaydol** sayfasından hesap açar (ad, soyad, telefon, e-posta; parola en az 12 karakter, büyük/küçük harf ve özel sembol) ve **Teknelerim** sayfasında kendi teknelerini ekler.
 - Tekne sahibi yalnızca **kendi** verisini görür; oturum geçmişi de yalnızca kendi oturumundan okunur.
 
 ## Mimari
@@ -61,7 +62,7 @@ Kullanıcılar (admin ve tekne sahibi) Next.js arayüzünü kullanır. Arayüz, 
 | ![ER](docs/diagrams/er_diagram.png) | Veritabanı ER diyagramı (18 tablo) |
 | ![Güvenlik katmanı](docs/diagrams/S0_guvenlik_katmani_mimarisi.png) | Güvenlik katmanı mimarisi; beş perspektifin şemaları ve ayrıntısı: [`docs/guvenlik_mimarisi.md`](docs/guvenlik_mimarisi.md) |
 
-Ayrıntılı mimari, kararlar ve mevcut durum: [`Sistem_mimarisi_v7.0.md`](Sistem_mimarisi_v7.0.md).
+Ayrıntılı mimari, kararlar ve mevcut durum: [`Sistem_mimarisi_v7.1.md`](Sistem_mimarisi_v7.1.md).
 
 ## Teknolojiler
 
@@ -106,7 +107,7 @@ npm install
 cp .env.example .env.local    # Windows PowerShell: Copy-Item .env.example .env.local
 ```
 
-`backend/.env` içinde en az `SERVICE_API_KEY` ve `LLM_API_KEY` doldurulur; `frontend/.env.local` içindeki `SERVICE_KEY`, backend'deki `SERVICE_API_KEY` ile aynı olmalıdır.
+`backend/.env` içinde en az `SERVICE_API_KEY` ve `LLM_API_KEY` doldurulur; `frontend/.env.local` içindeki `SERVICE_KEY`, backend'deki `SERVICE_API_KEY` ile aynı olmalıdır. Giriş için `frontend/.env.local` içine ayrıca en az 32 karakterlik rastgele bir `SESSION_SECRET` yazılır.
 
 ```bash
 # Terminal 1: backend (altyapı, migration, seed, indeks, işçi ve API'yi tek komutla başlatır)
@@ -119,6 +120,8 @@ npm run dev
 ```
 
 İlk çalıştırma birkaç dakika sürebilir (embedding modeli ~2,3 GB iner); sonraki açılışlar birkaç saniyedir.
+
+**Giriş hesapları:** `uv run python -m scripts.seed_accounts` her sentetik müşteri ve iki yönetici için e-posta + rastgele parola üretir (parolalar yalnızca git dışı `backend/.local/seed_credentials.csv` dosyasına yazılır). Yöneticiler `yonetici1@micousta.test`, `yonetici2@micousta.test`; tekne sahipleri müşterinin e-postasıyla girer. Yeni müşteri `http://localhost:3000/register` sayfasından kendisi kaydolabilir.
 
 > **Windows notu:** `REDIS_URL` için `localhost` yerine `127.0.0.1` kullanın (`.env.example`'daki varsayılan budur). `localhost` önce IPv6'ya gittiği için her Redis bağlantısı ~2 sn gecikir.
 
@@ -133,6 +136,7 @@ Tüm ayarlar `backend/.env` dosyasından okunur (`backend/.env.example` açıkla
 | `STT_PROVIDER`, `WHISPER_MODEL`, `STT_CHANNEL_LAYOUT`, `WHISPER_INITIAL_PROMPT` | Konuşma tanıma: sağlayıcı, model boyutu, kanal düzeni, alan sözcükleri |
 | `EMBEDDING_PROVIDER`, `TEI_URL` | Embedding servisi |
 | `RERANKER_PROVIDER`, `RERANKER_URL` | Arama sonuçlarını yeniden sıralayan servis (isteğe bağlı, varsayılan `none`) |
+| `SESSION_SECRET` (frontend) | Oturum çerezini imzalayan gizli anahtar, en az 32 karakter (yoksa giriş çalışmaz) |
 | `AUDIO_STORAGE_BACKEND` | Ses depolama: `local` veya `gcs` |
 | `ANALYSIS_CLASSIFIER_FIRST` | `true` ise eski "önce sınıflandırma" sırası |
 | `LLM_SENTIMENT_ANALYZER_MODEL` | Duygu analizi agent'ının modeli (boşsa güçlü model) |
@@ -196,7 +200,7 @@ Sentetik veri üzerinde, gerçek LLM ile (ayrıntılar `docs/` altında):
 ## Güvenlik ve gizlilik
 
 - Veri tamamen sentetiktir; kişisel veriler LLM'e gitmeden maskelenir.
-- Arayüz AI servisini servis anahtarıyla çağırır; tekne sahibinin kimliği isteğe eklenir. Yetki matrisi testleriyle başka sahibin verisine erişilemediği doğrulanır.
+- Kimlik iki katmanlıdır: kullanıcı girişi (e-posta + parola, imzalı oturum çerezi, rota koruması) ve servisler arası servis anahtarı + imzalı kimlik/rol; tarayıcı kimlik veya rol belirleyemez. Bilinen sınırlar: çok faktörlü doğrulama ve parola sıfırlama yok. Arayüz AI servisini servis anahtarıyla çağırır; tekne sahibinin kimliği oturumdan türetilip imzalanarak isteğe eklenir. Yetki matrisi testleriyle başka sahibin verisine erişilemediği doğrulanır.
 - Miço AI cevabındaki her iddia bir kayda dayanır; dayanaksız ifade silinir.
 - Miço AI küfür, tehdit, kendine zarar, kural aşma ve başkasının verisi isteklerini LLM'e göndermeden cevaplar.
 - Güvenlik katmanı beş güven sınırında uygulanır: imzalı kimlik ve roller, hız sınırı ve güvenlik başlıkları, maskeleme, çok katmanlı (doğrudan ve dolaylı) prompt injection savunması, denetim günlüğü, KVKK silme ve saklama, ses dosyası doğrulaması. Saldırı test paketi: [`docs/guvenlik_testi.md`](docs/guvenlik_testi.md); ayrıntı: [`docs/guvenlik_mimarisi.md`](docs/guvenlik_mimarisi.md).
@@ -210,16 +214,16 @@ Sentetik veri üzerinde, gerçek LLM ile (ayrıntılar `docs/` altında):
 
 | Durum | İş |
 |---|---|
-| Hazır | Çağrı analizi (5 agent), CRM onay akışı, servis emirleri, KPI ekranları, Miço AI, canlı transkript, duygu analizi, güvenlik katmanı, Docker ile tek komut, CI |
+| Hazır | Çağrı analizi (5 agent), CRM onay akışı, servis emirleri, KPI ekranları, Miço AI, canlı transkript, duygu analizi, güvenlik katmanı, giriş / kaydol / tekne ekleme, Docker ile tek komut, CI |
 | Manuel test bekliyor | Canlı transkript ve duygu analizi (sorun çıkarsa düzeltme issue'ları açılır) |
 | Planlı | Yazıya çevirme doğruluğu ve ücretsiz STT modellerinin karşılaştırması; embedding alternatifleri (4 model, reranker, Hugging Face API) karşılaştırması; arka planda otomatik güvenlik turu |
-| Final | Miço Usta uygulamasına entegrasyon ve Google Cloud'a canlıya alma ([`docs/canliya_alma.md`](docs/canliya_alma.md)); giriş ekranı kararı hocayla |
+| Final | Miço Usta uygulamasına entegrasyon ve Google Cloud'a canlıya alma ([`docs/canliya_alma.md`](docs/canliya_alma.md)) |
 
 ## Belgeler
 
 | Belge | İçerik |
 |---|---|
-| [`Sistem_mimarisi_v7.0.md`](Sistem_mimarisi_v7.0.md) | Mimari, kararlar, güvenlik katmanı, mevcut durum (v7.0) |
+| [`Sistem_mimarisi_v7.1.md`](Sistem_mimarisi_v7.1.md) | Mimari, kararlar, güvenlik katmanı, mevcut durum (v7.1) |
 | [`docs/db_schema.md`](docs/db_schema.md) | Veritabanı şeması ve ER diyagramı |
 | [`docs/api.md`](docs/api.md) | API sözleşmesi |
 | [`docs/enums.md`](docs/enums.md) | Alan değer listeleri |

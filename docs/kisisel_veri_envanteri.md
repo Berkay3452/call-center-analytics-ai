@@ -17,12 +17,12 @@ silindiğini listeler (KVKK madde 7: silme, yok etme, anonim hale getirme). Veri
 | `agent_runs` | Hata iletisi, model, süre | Teknik | — | `analysis_results` CASCADE |
 | `crm_reviews` | `edited_fields`, `note` | İçerik (kullanıcı yazar) | Hayır | `calls` CASCADE |
 | `service_orders` | Açıklama, tekne, müşteri bağı | İş kaydı | Hayır | **Silinmez**; `source_call_id` NULL olur (bkz. §3) |
-| `customers` | Ad, telefon, e-posta, marina | Doğrudan tanımlayıcı | Hayır | Çağrı silme kapsamı dışı (§3) |
-| `boats`, `boat_notes`, `expenses`, `subscriptions` | Tekne, not, gider, abonelik | İş kaydı | Hayır | Çağrı silme kapsamı dışı (§3) |
+| `customers` | Ad, telefon, e-posta, marina; kaydol sayfasından müşterinin kendisi yazar (doğum tarihi alınmaz) | Doğrudan tanımlayıcı | Hayır | Çağrı silme kapsamı dışı (§3) |
+| `boats`, `boat_notes`, `expenses`, `subscriptions` | Tekne (sahibi kendi ekler: ad, model, yıl, marina), not, gider, abonelik | İş kaydı | Hayır | Çağrı silme kapsamı dışı (§3) |
 | `rag_chunks` | Tekne karnesi parçaları + embedding | İş kaydı içeriği | Hayır | Çağrıdan üretilmez; kaynak kayıt silinince (ayrı süreç) |
 | `chat_sessions`, `chat_messages` | Asistana sorulan sorular ve cevaplar | İçerik | Hayır | Sahibi `DELETE /assistant/sessions...` ile siler (#176) |
-| `owner_accounts` | Kullanıcı adı, parola özeti | Kimlik | — (parola düz değil) | Müşteri silinince CASCADE |
-| `admin_accounts` | Kullanıcı adı, görünen ad, parola özeti | Kimlik | — (parola düz değil) | Yönetici hesabı kaldırılınca |
+| `owner_accounts` | Kullanıcı adı (= e-posta), parola özeti | Kimlik | — (parola düz değil) | Müşteri silinince CASCADE |
+| `admin_accounts` | Kullanıcı adı (= e-posta), görünen ad, parola özeti | Kimlik | — (parola düz değil) | Yönetici hesabı kaldırılınca |
 | `audit_log` | `actor_id`, `ip`, olay türü, kimlikler | Teknik; IP kişisel veri sayılabilir | Metin/PII yazılmaz (kodla zorunlu) | **Silinmez** (yalnızca ekleme; §4) |
 | Uygulama günlükleri | İstek kimliği, durum | Teknik | Ham kişisel veri yazılmaz (#268 testi) | Günlük döndürme (altyapı) |
 

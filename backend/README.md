@@ -1,6 +1,6 @@
 # Backend (FastAPI)
 
-Çağrı merkezi analitiği sisteminin API'si ve arka plan işçileri. Mimari için repo kökündeki `Sistem_mimarisi_v7.0.md` dosyasına bakın.
+Çağrı merkezi analitiği sisteminin API'si ve arka plan işçileri. Mimari için repo kökündeki `Sistem_mimarisi_v7.1.md` dosyasına bakın.
 
 > Tüm sistemi (backend + frontend) sıfırdan ayağa kaldırmak için önce [`docs/calistirma.md`](../docs/calistirma.md) rehberine bak.
 
@@ -129,6 +129,9 @@ Analiz arka planda Celery işçisinde çalışır (`-Q default,analysis,index`);
 | `POST /api/v1/calls/{id}/analyze` | Çağrıyı yeniden işler: yeni analiz sürümü, transkript yoksa yeniden STT |
 | `GET /api/v1/calls/{id}/status` | İşlenme durumu |
 | `GET /api/v1/me/owner` | Tekne sahibi kimliği doğrulaması (`X-Service-Key` + zorunlu `X-User-Id`) |
+| `POST /api/v1/auth/login` | Giriş: rol (yönetici/sahip) + e-posta + parola; tek tip hata, kilit ve IP bütçesi (yalnız Next sunucusu çağırır) |
+| `POST /api/v1/auth/register` | Kaydol: müşteri + tekne sahibi hesabı oluşturur (parola ≥ 12 karakter, büyük/küçük harf, özel sembol) |
+| `GET/POST /api/v1/boats` | Tekne sahibi: kendi teknelerini listeler / ekler (`boats` tablosu) |
 
 ## Klasör Yapısı
 

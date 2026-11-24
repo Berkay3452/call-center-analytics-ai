@@ -95,8 +95,8 @@ def genel_mimari() -> None:
 
     c.zone(3, 66, 94, 23, "Miço Usta (hazır uygulama)")
     c.box(7, 69, 46, 12.5,
-          "Next.js arayüz\nAdmin · Tekne Sahibi · Usta panelleri\ngiriş sayfası · imzalı oturum çerezi · rota koruması\n"
-          "vekil rota, servis anahtarları · canlı transkript pop-up", "servis", fs=9)
+          "Next.js arayüz\nAdmin · Tekne Sahibi · Usta panelleri\ngiriş · kaydol · Teknelerim (tekne ekle) · oturum çerezi\n"
+          "rota koruması · vekil rota, servis anahtarları · canlı transkript", "servis", fs=9)
     c.box(62, 74.5, 30, 8, ".NET 10 API\nentegrasyon yöntemi\nhocadan bekleniyor", "servis", fs=9)
     c.box(68, 68.5, 18, 4, "PostgreSQL · Redis", "veri", fs=9)
     c.line([(24, 92), (24, 90.5), (24, 81.5)], arrow=True)
@@ -108,7 +108,7 @@ def genel_mimari() -> None:
 
     c.zone(1.5, 1, 97, 57, "Bizim AI servisimiz (Python 3.12 · FastAPI)")
     c.box(5, 44, 38, 10,
-          "REST API\ngiriş ucu · servis anahtarı · imzalı kimlik ve rol\nhız sınırı · denetim günlüğü · SSE akışı", "servis", fs=9)
+          "REST API\ngiriş · kaydol · tekne uçları\nservis anahtarı · imzalı kimlik/rol\nhız sınırı · denetim günlüğü · SSE akışı", "servis", fs=9)
     c.box(50, 44, 45, 10,
           "Celery işçisi + Beat\nkuyruk: Redis · canlı transkript: Redis Stream\ntakılı çağrı kurtarma, KVKK temizliği",
           "servis", fs=9)

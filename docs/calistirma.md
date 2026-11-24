@@ -101,6 +101,17 @@ uv run celery -A app.workers.celery_app beat -l info
 
 (Son üç komut ayrı terminallerde çalışır. `beat` zamanlayıcısı dakikada bir takılı kalan çağrıları tarayıp kurtarır [#107]; işçi de açılışında bir kez tarar. Windows'ta `worker -B` çalışmaz, bu yüzden `beat` ayrı süreçtir.)
 
+### Giriş hesapları ve kaydol
+
+Paneller oturum ister. Sentetik müşteri ve yönetici hesaplarını üret (Docker/Postgres açık, migration uygulanmış olmalı):
+
+```powershell
+cd backend
+uv run python -m scripts.seed_accounts
+```
+
+Giriş e-posta ile yapılır: yöneticiler `yonetici1@micousta.test` ve `yonetici2@micousta.test`, tekne sahipleri müşterinin e-postası. Rastgele parolalar yalnızca git dışı `backend/.local/seed_credentials.csv` dosyasında durur. `frontend/.env.local` içinde en az 32 karakterlik `SESSION_SECRET` tanımlı olmalıdır (yoksa giriş çalışmaz). Yeni müşteri `http://localhost:3000/register` sayfasından kaydolur (parola en az 12 karakter, büyük/küçük harf ve özel sembol) ve `Teknelerim` sayfasından kendi teknesini ekler; bu kayıtlar `customers`, `owner_accounts` ve `boats` tablolarına yazılır.
+
 ## 3. Ortam değişkenleri (backend/.env)
 
 `.env.example` dosyasındaki varsayılanlar yerel Docker ile uyumludur. Değiştirmen gerekenler:

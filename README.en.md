@@ -46,6 +46,7 @@ Istanbul Gedik University, MFK420 Graduation Project. An AI-powered call analyti
 - Resilience: on an LLM timeout the system switches to a fallback model; calls that get stuck are recovered automatically.
 - Miço AI: hybrid search (vector + full text, RRF), follow-up questions, word-by-word streaming (SSE), session history, and a grounding check that removes unsupported claims.
 - Miço AI safety layer (no LLM involved): distinct, situation-specific replies for profanity, threats, self-harm, prompt-injection attempts, requests for other people's data, and gibberish.
+- Login is separate for the two panels (Admin / Boat owner): e-mail + password, argon2id, 15-minute lock after 5 failures, signed `httpOnly` session cookie, route protection. Boat owners **sign up** on the register page (first name, last name, phone, e-mail; password of at least 12 characters with upper- and lower-case letters and a special symbol) and add their own boats on the **My boats** page.
 - A boat owner only sees **their own** data; chat history is read only from their own session.
 
 ## Architecture
@@ -63,7 +64,7 @@ Users (admin and boat owner) use the Next.js interface. It calls the Python AI s
 | ![ER](docs/diagrams/er_diagram.png) | Database ER diagram (18 tables) |
 | ![Security layer](docs/diagrams/S0_guvenlik_katmani_mimarisi.png) | Security-layer architecture; the five perspectives' diagrams and details: [`docs/guvenlik_mimarisi.md`](docs/guvenlik_mimarisi.md) (Turkish) |
 
-Detailed architecture, decisions and current status: [`Sistem_mimarisi_v7.0.md`](Sistem_mimarisi_v7.0.md) (Turkish).
+Detailed architecture, decisions and current status: [`Sistem_mimarisi_v7.1.md`](Sistem_mimarisi_v7.1.md) (Turkish).
 
 ## Tech stack
 
@@ -108,7 +109,7 @@ npm install
 cp .env.example .env.local    # Windows PowerShell: Copy-Item .env.example .env.local
 ```
 
-Fill in at least `SERVICE_API_KEY` and `LLM_API_KEY` in `backend/.env`; `SERVICE_KEY` in `frontend/.env.local` must equal the backend's `SERVICE_API_KEY`.
+Fill in at least `SERVICE_API_KEY` and `LLM_API_KEY` in `backend/.env`; `SERVICE_KEY` in `frontend/.env.local` must equal the backend's `SERVICE_API_KEY`. For login, also put a random `SESSION_SECRET` of at least 32 characters into `frontend/.env.local`.
 
 ```bash
 # Terminal 1: backend (starts infrastructure, migration, seed, index, worker and API in one command)
@@ -121,6 +122,8 @@ npm run dev
 ```
 
 The first run can take a few minutes (the embedding model, ~2.3 GB, is downloaded); later starts take a few seconds.
+
+**Login accounts:** `uv run python -m scripts.seed_accounts` creates an e-mail + random password for every synthetic customer and two admins (passwords are written only to the git-ignored `backend/.local/seed_credentials.csv`). Admins are `yonetici1@micousta.test` and `yonetici2@micousta.test`; boat owners log in with the customer's e-mail. A new customer can sign up at `http://localhost:3000/register`.
 
 > **Windows note:** use `127.0.0.1` instead of `localhost` in `REDIS_URL` (this is the default in `.env.example`). `localhost` resolves to IPv6 first, which adds ~2 s to every Redis connection.
 
@@ -135,6 +138,7 @@ All settings are read from `backend/.env` (`backend/.env.example` is commented).
 | `STT_PROVIDER`, `WHISPER_MODEL`, `STT_CHANNEL_LAYOUT`, `WHISPER_INITIAL_PROMPT` | Speech recognition: provider, model size, channel layout, domain vocabulary |
 | `EMBEDDING_PROVIDER`, `TEI_URL` | Embedding service |
 | `RERANKER_PROVIDER`, `RERANKER_URL` | Service that re-ranks search results (optional, default `none`) |
+| `SESSION_SECRET` (frontend) | Secret that signs the session cookie, at least 32 characters (login does not work without it) |
 | `AUDIO_STORAGE_BACKEND` | Audio storage: `local` or `gcs` |
 | `ANALYSIS_CLASSIFIER_FIRST` | If `true`, restores the older "classify first" ordering |
 | `LLM_SENTIMENT_ANALYZER_MODEL` | Model for the sentiment agent (the strong model if empty) |
@@ -198,7 +202,7 @@ On synthetic data with a real LLM (details under `docs/`, in Turkish):
 ## Security and privacy
 
 - All data is synthetic; personal data is masked before it reaches the LLM.
-- The web interface calls the AI service with a service key and attaches the boat owner's identity to each request. Authorization-matrix tests verify that one owner cannot reach another owner's data.
+- Identity has two layers: user login (e-mail + password, signed session cookie, route protection) and service-to-service key + signed identity/role; the browser cannot choose an identity or role. Known limits: no multi-factor authentication and no password reset. The web interface calls the AI service with a service key and attaches the boat owner's identity, derived from the session and signed, to each request. Authorization-matrix tests verify that one owner cannot reach another owner's data.
 - Every claim in a Miço AI answer is backed by a record; unsupported claims are removed.
 - Miço AI answers profanity, threats, self-harm, injection attempts and requests for other people's data without sending them to the LLM.
 - The security layer is applied at five trust boundaries: signed identity and roles, rate limiting and security headers, masking, multi-layer (direct and indirect) prompt-injection defence, an audit log, KVKK/GDPR-style deletion and retention, and audio-file validation. Attack test suite: [`docs/guvenlik_testi.md`](docs/guvenlik_testi.md); details: [`docs/guvenlik_mimarisi.md`](docs/guvenlik_mimarisi.md).
@@ -212,10 +216,10 @@ No direct commits to `main`. Every piece of work goes on its own branch with a p
 
 | Status | Item |
 |---|---|
-| Done | Call analysis (5 agents), CRM approval flow, service orders, KPI screens, Miço AI, live transcript, sentiment analysis, security layer, one-command Docker, CI |
+| Done | Call analysis (5 agents), CRM approval flow, service orders, KPI screens, Miço AI, live transcript, sentiment analysis, security layer, login / sign-up / add boat, one-command Docker, CI |
 | Awaiting manual test | Live transcript and sentiment analysis (fix issues are opened if problems appear) |
 | Planned | Transcription accuracy and a comparison of free STT models; a comparison of embedding alternatives (4 models, reranker, Hugging Face API); an automated background security round |
-| Final | Integration into the Miço Usta application and deployment to Google Cloud ([`docs/canliya_alma.md`](docs/canliya_alma.md)); the login-screen decision with the instructor |
+| Final | Integration into the Miço Usta application and deployment to Google Cloud ([`docs/canliya_alma.md`](docs/canliya_alma.md)) |
 
 ## Documentation
 
@@ -223,7 +227,7 @@ All documents below are in Turkish.
 
 | Document | Content |
 |---|---|
-| [`Sistem_mimarisi_v7.0.md`](Sistem_mimarisi_v7.0.md) | Architecture, decisions, security layer, current status (v7.0) |
+| [`Sistem_mimarisi_v7.1.md`](Sistem_mimarisi_v7.1.md) | Architecture, decisions, security layer, current status (v7.1) |
 | [`docs/db_schema.md`](docs/db_schema.md) | Database schema and ER diagram |
 | [`docs/api.md`](docs/api.md) | API contract |
 | [`docs/enums.md`](docs/enums.md) | Field value lists |
