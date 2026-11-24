@@ -92,3 +92,12 @@ Kara kutu QA turu (#320, #338, 2026-11-20): paketin dışından, çalışan sunu
 | BS-1 | Kalıp dışı köşeli parantezli sahte yönerge (`[SİSTEM: ...]`) dolaylı injection taramasında işaretlenmez | Metin yine de sınırlayıcı içinde veri olarak sunulur ve model çıktısı şema + sızıntı denetiminden geçer; ayarlanmamış taze kümede ölçülen yakalama ≈ %60 (`docs/dolayli_injection_olcum.md`) | `test_known_gap_bracketed_fake_system_directive_is_not_scanned` (xfail, strict) |
 | BS-2 | Yazıyla söylenen numaralar ("sıfır beş üç iki ...") ve kalıp dışı serbest adlar maskelenemez | Kural tabanlı maskeleme bilinçli olarak basittir; ayrıntı `docs/maskeleme_olcum.md` | `test_known_gap_numbers_spoken_as_words_are_not_masked` (xfail, strict) |
 | BS-3 | Gerçek LLM ile uçtan uca injection denemesi CI'da yok (sahte model) | CI'da gerçek model çağrılmaz; gerçek model ölçümü elle: `python -m scripts.injection_olcum --llm`, `python -m scripts.dolayli_olcum` | `docs/injection_olcum.md` |
+
+## Kimlik doğrulama testleri (#265, #369-#372)
+
+| Test | Kapsam |
+|---|---|
+| `backend/tests/test_login_endpoint.py`, `test_accounts*.py` | giriş ucu, tek tip hata, kilit (5 hata/15 dk), IP bütçesi (429), denetim kaydı, ayrı tablolar |
+| `frontend/lib/server/session.test.mjs`, `identity.test.mjs`, `login.test.mjs` | çerez imzası/süresi, kimlik imzası, `next` yolu güvenliği |
+| `frontend/e2e/giris.spec.ts`, `oturum.spec.ts` | giriş akışı, oturumsuz yönlendirme, sahte/süresi dolmuş çerez, rol çaprazlama, vekil 401, çıkış |
+| Manuel | Manuel test senaryoları, "Kimlik doğrulama" bölümü |
