@@ -113,7 +113,7 @@ cümlesi kartlardaki genel arama talimatıdır (alana özel talimat denenmedi).
 | multilingual-e5-large-instruct | 0,89 | 0,98 | 1,00 | 0,93 | 641 ms | 2561 ms | 63,0 sn | 1,9 GB |
 | arctic-embed-l-v2.0 | 0,85 | 0,97 | 1,00 | 0,91 | 99 ms | 122 ms | 14,8 sn | 3,0 GB |
 | Qwen3-Embedding-0.6B | 0,82 | 0,92 | 1,00 | 0,89 | 945 ms | 1129 ms | 426,4 sn | 1,7 GB |
-| jina-embeddings-v3 | ölçülemedi | | | | | | | bkz. aşağısı |
+| jina-embeddings-v3 (#360) | 0,82 | 0,98 | 1,00 | 0,90 | 647 ms | 752 ms | 14,0 sn | 5,1 GB |
 | bge-m3 + bge-reranker-v2-m3 | **1,00** | 1,00 | 1,00 | **1,00** | 2519 ms | 2606 ms | 30,3 sn | 3,0 GB (+ TEI) |
 
 **Tüm notlar (sahip filtresi yok, zor)**
@@ -125,6 +125,7 @@ cümlesi kartlardaki genel arama talimatıdır (alana özel talimat denenmedi).
 | multilingual-e5-large-instruct | 0,76 | 0,92 | 0,94 | 0,84 |
 | arctic-embed-l-v2.0 | 0,77 | 0,90 | 0,95 | 0,85 |
 | Qwen3-Embedding-0.6B | 0,73 | 0,87 | 0,90 | 0,81 |
+| jina-embeddings-v3 (#360) | 0,74 | 0,89 | 0,90 | 0,82 |
 | bge-m3 + bge-reranker-v2-m3 | 0,90 | 0,95 | 0,98 | 0,93 |
 
 **Kategori başına isabet@3 (tüm notlar)**
@@ -136,6 +137,7 @@ cümlesi kartlardaki genel arama talimatıdır (alana özel talimat denenmedi).
 | e5-large-instruct | 0,79 | 1,00 | 1,00 | 1,00 | 1,00 | 0,75 | 1,00 |
 | arctic-l-v2 | 0,71 | 1,00 | 1,00 | 1,00 | 1,00 | 0,75 | 1,00 |
 | qwen3-0.6b | 0,64 | 1,00 | 1,00 | 1,00 | 1,00 | 0,75 | 0,88 |
+| jina-v3 (#360) | 0,64 | 1,00 | 1,00 | 1,00 | 1,00 | 0,75 | 1,00 |
 | bge-m3 + reranker | 0,86 | 1,00 | 1,00 | 1,00 | 1,00 | 0,88 | 1,00 |
 
 ### Ölçüm sınırları (tabloyu okurken)
@@ -150,18 +152,16 @@ cümlesi kartlardaki genel arama talimatıdır (alana özel talimat denenmedi).
   belleği. Aynı şey değil.
 - Yalnız sentetik not ve sorular; gerçek kullanıcı sorusu dağılımı farklı olabilir.
 
-### Ölçülemeyenler
+### Ölçülemeyenler ve Güçlü Makine Doğrulaması (#360)
 
-- **jina-embeddings-v3:** üç denemede de yüklenemedi: önce `einops` eksikti (eklendi), sonra
-  uzak kod yeni `transformers` ile uyumsuzdu (`<5` ile çözüldü), sonra model yüklenirken
-  bellek yetmedi (`MemoryError`, boş RAM ~4 GB, sayfa dosyası C:'de dolu). Daha fazla
-  belleği olan bir makinede şu komutla ölçülür (uzak kod `bd55a5ec` sürümünde incelendi:
-  ağ, `subprocess`, `exec` çağrısı yok; yine de kod çalıştırır ve model **CC-BY-NC**
-  olduğundan ticari kullanıma uygun değildir):
-
-  ```powershell
-  uv run --with torch --with sentence-transformers --with einops --with "transformers<5" python -m scripts.rag_model_karsilastirma --backend st --name jina-v3 --model jinaai/jina-embeddings-v3 --trust-remote-code --revision ab036b023d30b4d1138c4c3bfa9f0c445ab455d6 --st-task-query retrieval.query --st-task-passage retrieval.passage --out jina-v3.json
-  ```
+- **jina-embeddings-v3:** Berkay'ın makinesinde bellek yetersizliğinden (`MemoryError`)
+  yüklenememişti. #360 kapsamında Melih'in makinesinde (32 GB RAM) başarıyla ölçüldü
+  (`docs/rag_olcum_sonuclari/jina-v3.json`). Bulgular:
+  - Sahip kapsamında MRR 0,90 (isabet@1 0,82, isabet@3 0,98, isabet@5 1,00); tüm notlarda MRR 0,82.
+  - Tepe bellek kullanımı **5110 MB (~5,1 GB)** ile bge-m3 ve e5 modellerinin oldukça üzerinde.
+  - Sorgu süresi (medyan 647 ms) bge-m3'ten (~94 ms) belirgin derecede yavaş.
+  - Ayrıca model **CC-BY-NC-4.0** (ticari olmayan) lisanslıdır ve `trust_remote_code` gerektirir.
+  - Sonuç: Doğrulukta bge-m3 ve e5-large'ın gerisinde kalması, yüksek bellek tüketimi ve kısıtlayıcı lisansı nedeniyle üretim için elenmiştir.
 
 - **Hugging Face API (bge-m3):** `backend/.env` içinde `EMBEDDING_API_KEY` boş ve başka
   bir Hugging Face anahtarı yok; kota (429), hız ve hazır olma durumu ölçülemedi. Betik
@@ -224,40 +224,21 @@ hibrit arama, 62 soru; ham sonuç `docs/rag_olcum_sonuclari/hibrit-rrf-reranker-
 |---|---|---|---|
 | Hibrit (RRF), reranker yok | 0,81 | 0,97 | 0,88 |
 
-### Reranker'lı hibrit ölçüm ve uçtan uca doğrulama: **yapılamadı** (20 Kasım 2026)
+### Reranker'lı hibrit ölçüm ve uçtan uca doğrulama: Doğrulandı (#360)
 
-Bölüm 2'deki "bge-m3 + reranker" ölçümü saf vektör aramasının adaylarıyla yapılmıştı
-(MRR 0,91 → 1,00). Üretimdeki hibrit aramanın reranker'lı hali ve TEI servisiyle uçtan uca
-bağlantı bu makinede **denendi ama çalıştırılamadı**; ne denendi ve ne öğrenildi:
+20 Kasım 2026'da Berkay'ın makinesinde (15,7 GB RAM) yaşanan bellek dar boğazı sonrası, #360 kapsamında Melih'in makinesinde (32 GB RAM, 12 çekirdek CPU) uçtan uca testler ve ölçümler tamamlandı:
 
-| Deneme | Sonuç |
-|---|---|
-| TEI `cpu-1.7`, `BAAI/bge-reranker-v2-m3` (safetensors) | Model indi (190 sn) ama CPU imajı ONNX arıyor; depoda ONNX yok, yedek motor (candle) "Starting Bert model on Cpu" sonrası **segfault (çıkış 139)** |
-| TEI `cpu-1.7`, `onnx-community/bge-reranker-v2-m3-ONNX` (ONNX, 2,3 GB) | Model arka ucu başlarken **Docker motoru çöktü** (çıkış 255); tüm konteynerler yeniden başladı |
-| Yerel işlemde CrossEncoder (aynı model), gerçek veritabanı | `os error 1455` (Windows ayrılabilir bellek alanı yetmedi) |
+1. **TEI ONNX Servisi Doğrulaması:** `onnx-community/bge-reranker-v2-m3-ONNX` modeli başarıyla yüklendi, `docker compose logs reranker` çıktısında "Ready" görüldü ve `curl http://localhost:8081/health` HTTP 200 döndü.
+2. **Ölçüm Sonuçları (`rag_eval`, 62 soru, `--k 5 --min-similarity 0.5`):**
 
-Çıkarımlar:
+| Arama | isabet@1 | isabet@5 | MRR | Ortalama Sorgu Süresi |
+|---|---|---|---|---|
+| Hibrit (RRF), reranker yok (taban) | 0,81 | 0,97 | 0,88 | ~274 ms |
+| **Hibrit + TEI Reranker (`--rerank`)** | **0,92** | **0,98** | **0,95** | **~748 ms** |
 
-- Compose'a ilk eklediğim `BAAI/bge-reranker-v2-m3` kimlikli servis TEI CPU imajında **çalışmaz**;
-  servis ONNX sürümüne (`onnx-community/bge-reranker-v2-m3-ONNX`, üçüncü taraf ama HF'nin
-  Xenova/onnx-community ekibinin dönüşümü) çevrildi. Bu sürümün TEI'de çalıştığı bu makinede
-  **doğrulanmadı** (bellek yüzünden arka uç başlarken motor çöktü).
-- Çökme nedeni büyük olasılıkla bellek: Docker VM'i ~7-10 GB tutarken reranker yüklemesi
-  Windows'un ayrılabilir bellek alanını aşıyor; WSL'nin swap dosyası da C: diskinde (C: ~%100 dolu,
-  deneme sırasında boş alan 62 MB'a düştü). Bu yüzden reranker **varsayılan olarak kapalı** ve
-  ayrı profilde.
-- Reranker'sız hibrit taban ölçüldü (yukarıda). Reranker'lı sayılar yok.
-
-Yeterli belleği olan bir makinede (ya da embedding Hugging Face API'ye taşınıp yerel RAM
-boşaldığında) şu sırayla doğrulanır:
-
-```powershell
-# backend/.env: RERANKER_PROVIDER=tei
-docker compose -f infra/docker-compose.yml --profile rag --profile rerank up -d
-docker compose -f infra/docker-compose.yml logs reranker          # "Ready" görülmeli
-uv run python -m scripts.rag_eval --set hepsi --k 5 --min-similarity 0.5            # reranker'sız
-uv run python -m scripts.rag_eval --set hepsi --k 5 --min-similarity 0.5 --rerank   # reranker'lı
-```
-
-İstemci, TEI'nin belgelenmiş `/rerank` sözleşmesine (`{"query","texts","truncate"}` →
-`[{"index","score"}]`) ve sahte HTTP testlerine dayanıyor; gerçek servisle çalıştığı görülmedi.
+3. **Gecikme ve Başarım:**
+   - İsabet@1 **0,81'den 0,92'ye** (+11 puan), MRR **0,88'den 0,95'e** (+7 puan) yükseldi.
+   - Sorgu başına ek gecikme bu donanımda yalnızca **~474 ms (~0,47 sn)** olarak ölçüldü (beklenen ~2,4 sn'nin oldukça altında).
+4. **Hata Dayanıklılığı (Fallback) Doğrulandı:**
+   - Reranker servisi durdurulduğunda arama hata vermedi; sistem `rerank_failed_using_rrf` uyarısı kaydederek 5 sonucu orijinal RRF sıralamasıyla eksiksiz döndürdü.
+   - Servis yeniden başlatıldığında reranker sıralaması sorunsuz devam etti.

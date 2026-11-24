@@ -295,6 +295,33 @@ Her aday ayrı süreçte koşar (tepe bellek ve model yükleme süresi karışma
 - 6 çağrı, 91 terim: yüzdeler ±birkaç puan oynar; 1-2 puanlık farklar (ör. turbo ile turbo-tr arasındaki WER) anlamlı sayılmamalı.
 - Tepe bellek çalışma kümesidir ve ölçüm sırasındaki bellek baskısına göre dalgalanır. `large-v3`/`large-v3-tr` bu makinedeki o anki boş belleğe göre yüklenemedi; 16 GB'ın tamamı boş bir makinede çalışabilir.
 
+## Güçlü makinede doğrulama: large-v3 ve large-v3-tr ölçümü (#360)
+
+**Tarih:** 2026-11-22 · **Ses:** #328'deki 6 sentetik çağrı (`call_001, 005, 010, 015, 020, 025`), **Edge TTS, stereo, telefon bozulmalı** (8 kHz, SNR 18 dB; ~9,5 dk) · **Ayar:** beam 1, VAD 0,2, mevcut `initial_prompt`, düzeltme sözlüğü açık (#330) · **CPU:** int8, GPU yok, 32 GB RAM, 12 çekirdek CPU (Melih'in makinesi) · **Komut:** `python -m scripts.stt_aday_kosusu --audio <klasör> --out-dir <klasör>`
+
+Berkay'ın makinesinde (15,7 GB RAM) `mkl_malloc` bellek hatasıyla yüklenemeyen `large-v3` ve `large-v3-tr` modelleri dahil olmak üzere tüm adaylar 32 GB RAM'li makinede tek seferde başarıyla koşuldu:
+
+| Aday | WER | Konuşmacı WER | Terim doğruluğu | RTF | Tepe bellek | Model yükleme |
+|---|---|---|---|---|---|---|
+| `small` | %21,0 | %20,5 | %74,0 (71/96) | 0,10 | 746 MB | 13,4 sn |
+| `medium` | %12,8 | %12,5 | %80,2 (77/96) | 0,27 | 1789 MB | 20,9 sn |
+| `large-v3` | %11,5 | %9,4 | %88,5 (85/96) | 0,42 | 3323 MB | 50,7 sn |
+| **`large-v3-turbo`** (varsayılan) | **%11,2** | %10,3 | **%92,7 (89/96)** | **0,24** | **1929 MB** | 34,9 sn |
+| `large-v3-tr` (Türkçe ince ayar) | %13,3 | **%6,7** | %90,6 (87/96) | 0,41 | 3324 MB | 39,8 sn |
+| `turbo-tr-itu` (turbo Türkçe ince ayar) | %12,4 | %9,0 | %81,2 (78/96) | 0,23 | 1928 MB | 27,8 sn |
+| `xlsr-tr` (wav2vec2 CTC) | %91,6 | %64,6 | %41,7 (40/96) | 0,38 | 3006 MB | — |
+| `groq-large-v3` (bulut) | anahtar yok (ölçülmedi) | | | | | |
+
+### Bulgular ve Kararın Teyidi
+
+1. **`large-v3-turbo` kesin olarak en iyi seçenek:**
+   - Tam boyutlu `large-v3` modeli (3,09 GB) WER %11,5 verirken, damıtılmış `large-v3-turbo` modeli (1,62 GB) hem daha iyi WER (%11,2) hem de daha yüksek alan terimi doğruluğu (%92,7 vs %88,5) sağladı.
+   - Üstelik `large-v3-turbo` neredeyse iki kat hızlı (RTF 0,24 vs 0,42) ve yarı bellek (1929 MB vs 3323 MB) tüketiyor.
+2. **`large-v3-tr` (Türkçe ince ayar):**
+   - Konuşmacı bazlı WER'de %6,7 ile en iyi sonucu verdi ve terim doğruluğu %90,6 oldu.
+   - Ancak genel WER (%13,3) turbo'nun gerisinde kaldı ve 3,3 GB bellek ile 0,41 RTF gerektiriyor.
+3. **Nihai Karar:** Varsayılan modelin `large-v3-turbo` olması yönündeki karar (#330) tam boyutlu `large-v3` ailesinin ölçümüyle de **kesinleşmiştir**.
+
 ## Gerçek ekip kayıtları (#150): betik hazır, kayıt bekleniyor
 
 Gerçek kayıtlar henüz yok; üretilmiş seslerle yetinilmiyor, issue açık kalır. Kayıt geldiğinde (kişisel veri: repoya koymayın, repo dışı bir klasör, ör. `D:\gercek_kayitlar`):
