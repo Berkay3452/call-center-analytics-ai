@@ -36,6 +36,8 @@ class AuditAction(StrEnum):
     GIRIS_BASARILI = "giris_basarili"  # #369 (kullanıcı girişi)
     GIRIS_BASARISIZ = "giris_basarisiz"
     HESAP_KILITLENDI = "hesap_kilitlendi"
+    HESAP_OLUSTURULDU = "hesap_olusturuldu"  # #382 (kaydol)
+    TEKNE_EKLENDI = "tekne_eklendi"  # #383
 
 
 class AuditActorRole(StrEnum):

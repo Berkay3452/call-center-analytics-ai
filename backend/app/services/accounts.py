@@ -25,16 +25,20 @@ import structlog
 from argon2 import PasswordHasher
 from argon2.exceptions import InvalidHashError, VerificationError, VerifyMismatchError
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.errors import TooManyRequestsError
 from app.core.ratelimit import RateLimiter
 from app.db.models.accounts import AdminAccount, OwnerAccount
+from app.db.models.external import Customer
 from app.domain.accounts import (
     LOCK_MINUTES,
     MAX_FAILED_ATTEMPTS,
     MIN_PASSWORD_LENGTH,
     AccountRole,
+    password_policy_message,
+    password_problems,
 )
 
 log = structlog.get_logger(__name__)
@@ -51,6 +55,10 @@ _TR_FOLD = str.maketrans("çğıöşüÇĞİÖŞÜâîû", "cgiosucgiosuaiu")
 
 class PasswordPolicyError(ValueError):
     """Parola politikasına uymuyor (en az `MIN_PASSWORD_LENGTH` karakter)."""
+
+
+class EmailTakenError(Exception):
+    """E-posta başka bir tekne sahibi hesabında kayıtlı (kayıtta 409)."""
 
 
 class LoginFailure(StrEnum):
@@ -87,7 +95,10 @@ def hash_password(password: str) -> str:
 def generate_password(length: int = 20) -> str:
     """Kriptografik rastgele parola (seed için)."""
     length = max(length, MIN_PASSWORD_LENGTH)
-    return "".join(secrets.choice(_PASSWORD_ALPHABET) for _ in range(length))
+    while True:  # kayıt kuralını (büyük, küçük harf, sembol) da sağlayana dek üret
+        candidate = "".join(secrets.choice(_PASSWORD_ALPHABET) for _ in range(length))
+        if not password_problems(candidate):
+            return candidate
 
 
 def normalize_username(username: str) -> str:
@@ -225,6 +236,39 @@ async def create_account(
     session.add(account)
     await session.flush()
     return account
+
+
+async def register_owner(
+    session: AsyncSession, *, full_name: str, phone: str, email: str, password: str
+) -> tuple[OwnerAccount, Customer]:
+    """Kaydol (#382): tek işlemde müşteri satırı + tekne sahibi hesabı (e-posta = kullanıcı adı).
+
+    E-posta zaten kayıtlıysa `EmailTakenError`; parola politikası `PasswordPolicyError`.
+    Çağıran işlemi onaylar. Hesap hiçbir koşulda yönetici olmaz.
+    """
+    username = normalize_username(email)
+    problems = password_problems(password)
+    if problems:
+        raise PasswordPolicyError(password_policy_message(problems))
+    if await session.scalar(select(OwnerAccount.id).where(OwnerAccount.username == username)):
+        raise EmailTakenError
+    password_hash = await asyncio.to_thread(_hasher.hash, password)
+    customer = Customer(full_name=full_name, phone=phone, email=username)
+    session.add(customer)
+    await session.flush()
+    account = OwnerAccount(
+        username=username,
+        password_hash=password_hash,
+        customer_id=customer.id,
+        failed_attempts=0,
+        is_active=True,
+    )
+    session.add(account)
+    try:
+        await session.flush()
+    except IntegrityError as exc:  # eşzamanlı aynı e-posta
+        raise EmailTakenError from exc
+    return account, customer
 
 
 # --- IP başına giriş denemesi sınırı (#266) ---------------------------------------------------
