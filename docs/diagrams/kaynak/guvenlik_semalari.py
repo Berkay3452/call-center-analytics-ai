@@ -136,8 +136,8 @@ def s1():
     c = Canvas("S1 · Kimlik doğrulama",
                "İki katman: (1) tarayıcı → Next: giriş + imzalı oturum çerezi, (2) Next → API: servis anahtarı + imzalı kimlik ve rol")
     c.zone(2, 44, 96, 36, "Katman 1 · Kullanıcı girişi ve oturum (Next, #369-#372)")
-    c.box(3.5, 60, 16, 14, "/login sayfası\nYönetici / Tekne sahibi\nkullanıcı adı + parola", "dis", 8.8)
-    c.box(24, 60, 18, 14, "POST /auth/login\nrole göre tablo; tek tip\n401, IP bütçesi 429,\n5 hata → 15 dk kilit", "var", 8.8)
+    c.box(3.5, 60, 16, 14, "/login · /register\nYönetici / Tekne sahibi\ne-posta + parola\n(kayıt: ≥12, Aa, sembol)", "dis", 8.8)
+    c.box(24, 60, 18, 14, "POST /auth/login ve /register\nrole göre tablo; tek tip 401,\nIP bütçesi 429, 5 hata → kilit;\nkayıt yalnız owner açar", "var", 8.8)
     c.box(47, 60, 18, 14, "admin_accounts /\nowner_accounts\nargon2id karma\n(ayrı tablolar)", "veri", 8.8)
     c.box(70, 60, 26, 14, "mico_session çerezi: HMAC imzalı,\nhttpOnly, SameSite=Lax,\ncanlıda secure, 8 saat", "var", 8.8)
     c.arrow(19.5, 67, 24, 67)
