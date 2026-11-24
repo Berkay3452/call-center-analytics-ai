@@ -100,4 +100,4 @@ Kara kutu QA turu (#320, #338, 2026-11-20): paketin dışından, çalışan sunu
 | `backend/tests/test_login_endpoint.py`, `test_accounts*.py` | giriş ucu, tek tip hata, kilit (5 hata/15 dk), IP bütçesi (429), denetim kaydı, ayrı tablolar |
 | `frontend/lib/server/session.test.mjs`, `identity.test.mjs`, `login.test.mjs` | çerez imzası/süresi, kimlik imzası, `next` yolu güvenliği |
 | `frontend/e2e/giris.spec.ts`, `oturum.spec.ts` | giriş akışı, oturumsuz yönlendirme, sahte/süresi dolmuş çerez, rol çaprazlama, vekil 401, çıkış |
-| Manuel | `docs/manuel_test_senaryolari.md` §2 |
+| Manuel | Manuel test senaryoları, "Kimlik doğrulama" bölümü |
