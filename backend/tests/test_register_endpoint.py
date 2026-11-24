@@ -135,17 +135,12 @@ async def test_duplicate_email_is_conflict_with_generic_message(
     "over",
     [
         {"password_confirm": "baska-bir-parola-123"},
-        {"password": "kisa", "password_confirm": "kisa"},
-        {"password": "kucukharfsadece!!", "password_confirm": "kucukharfsadece!!"},
-        {"password": "BUYUKHARFSADECE!!", "password_confirm": "BUYUKHARFSADECE!!"},
-        {"password": "SembolsuzParola123", "password_confirm": "SembolsuzParola123"},
         {"email": "gecersiz"},
         {"email": "a@b"},
         {"phone": "12345"},
         {"phone": "0212 123 45 67"},
         {"first_name": "   "},
         {"last_name": ""},
-        {"password": "x" * 201, "password_confirm": "x" * 201},
         {"first_name": "Ay\x00şe"},
     ],
 )
@@ -153,6 +148,18 @@ async def test_invalid_input_is_422_and_never_reaches_service(
     client: httpx.AsyncClient, spy: Spy, over: dict[str, str]
 ) -> None:
     resp = await client.post("/api/v1/auth/register", json=payload(**over), headers=HEADERS)
+    assert resp.status_code == 422
+    assert spy.calls == []
+
+
+@pytest.mark.parametrize(
+    "weak", ["kisa", "kucukharfsadece!!", "BUYUKHARFSADECE!!", "SembolsuzParola123", "x" * 201]
+)
+async def test_weak_or_oversized_password_is_422(
+    client: httpx.AsyncClient, spy: Spy, weak: str
+) -> None:
+    body = payload(**dict(password=weak, password_confirm=weak))
+    resp = await client.post("/api/v1/auth/register", json=body, headers=HEADERS)
     assert resp.status_code == 422
     assert spy.calls == []
 
