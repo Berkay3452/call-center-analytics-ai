@@ -28,6 +28,7 @@ from app.domain.accounts import MAX_FAILED_ATTEMPTS, AccountRole
 from app.services.accounts import (
     EmailTakenError,
     LoginFailure,
+    PasswordPolicyError,
     create_account,
     register_owner,
     verify_credentials,
@@ -38,7 +39,7 @@ pytestmark = pytest.mark.skipif(
     os.environ.get("RUN_DB_TESTS") != "1", reason="RUN_DB_TESTS=1 değil (gerçek veritabanı gerekir)"
 )
 
-GOOD = secrets.token_urlsafe(16)  # çalışma zamanında üretilir; sabit parola yok
+GOOD = "Aa!" + secrets.token_urlsafe(13)  # çalışma zamanında üretilir; kayıt kuralına uyar
 WRONG = secrets.token_urlsafe(16)
 
 
@@ -185,6 +186,20 @@ async def test_register_owner_writes_customer_and_account_then_logs_in(
             session, AccountRole.ADMIN, "kayit.testi@example.com", GOOD
         )
         assert not denied.ok
+
+
+async def test_register_owner_enforces_password_complexity(
+    factory: async_sessionmaker[AsyncSession],
+) -> None:
+    async with factory() as session:
+        with pytest.raises(PasswordPolicyError):
+            await register_owner(
+                session,
+                full_name="A B",
+                phone="+905321234567",
+                email="zayif@example.com",
+                password="sadecekucukharfler",
+            )
 
 
 async def test_register_owner_rejects_duplicate_email(

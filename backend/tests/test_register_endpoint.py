@@ -23,7 +23,7 @@ from app.services.accounts import EmailTakenError
 from tests.conftest import TEST_SERVICE_KEY, _client_for, make_settings
 
 HEADERS = {"X-Service-Key": TEST_SERVICE_KEY}
-PASSWORD = secrets.token_urlsafe(16)
+PASSWORD = "Aa!" + secrets.token_urlsafe(12)  # büyük, küçük harf ve sembol içerir
 ACCOUNT_ID, CUSTOMER_ID = uuid4(), uuid4()
 
 
@@ -136,6 +136,9 @@ async def test_duplicate_email_is_conflict_with_generic_message(
     [
         {"password_confirm": "baska-bir-parola-123"},
         {"password": "kisa", "password_confirm": "kisa"},
+        {"password": "kucukharfsadece!!", "password_confirm": "kucukharfsadece!!"},
+        {"password": "BUYUKHARFSADECE!!", "password_confirm": "BUYUKHARFSADECE!!"},
+        {"password": "SembolsuzParola123", "password_confirm": "SembolsuzParola123"},
         {"email": "gecersiz"},
         {"email": "a@b"},
         {"phone": "12345"},

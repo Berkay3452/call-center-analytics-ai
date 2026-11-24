@@ -37,6 +37,8 @@ from app.domain.accounts import (
     MAX_FAILED_ATTEMPTS,
     MIN_PASSWORD_LENGTH,
     AccountRole,
+    password_policy_message,
+    password_problems,
 )
 
 log = structlog.get_logger(__name__)
@@ -93,7 +95,10 @@ def hash_password(password: str) -> str:
 def generate_password(length: int = 20) -> str:
     """Kriptografik rastgele parola (seed için)."""
     length = max(length, MIN_PASSWORD_LENGTH)
-    return "".join(secrets.choice(_PASSWORD_ALPHABET) for _ in range(length))
+    while True:  # kayıt kuralını (büyük, küçük harf, sembol) da sağlayana dek üret
+        candidate = "".join(secrets.choice(_PASSWORD_ALPHABET) for _ in range(length))
+        if not password_problems(candidate):
+            return candidate
 
 
 def normalize_username(username: str) -> str:
@@ -242,7 +247,9 @@ async def register_owner(
     Çağıran işlemi onaylar. Hesap hiçbir koşulda yönetici olmaz.
     """
     username = normalize_username(email)
-    validate_password_policy(password)
+    problems = password_problems(password)
+    if problems:
+        raise PasswordPolicyError(password_policy_message(problems))
     if await session.scalar(select(OwnerAccount.id).where(OwnerAccount.username == username)):
         raise EmailTakenError
     password_hash = await asyncio.to_thread(_hasher.hash, password)
