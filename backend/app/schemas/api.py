@@ -307,6 +307,41 @@ class CustomerBoatOut(BaseModel):
     model: str | None = None
 
 
+class BoatCreate(BaseModel):
+    """`POST /boats` gövdesi (#383). Sahip istekten alınmaz; imzalı kimlikten gelir."""
+
+    name: Annotated[SafeStr, Field(min_length=1, max_length=80, description="Tekne adı.")]
+    model: Annotated[SafeStr, Field(max_length=80)] | None = Field(
+        default=None, description="Model (ör. Jeanneau Sun Odyssey 440)."
+    )
+    year: int | None = Field(default=None, ge=1950, le=2100, description="Üretim yılı.")
+    marina: Annotated[SafeStr, Field(max_length=80)] | None = Field(
+        default=None, description="Bağlı olduğu marina."
+    )
+
+    @model_validator(mode="after")
+    def _clean(self) -> "BoatCreate":
+        self.name = self.name.strip()
+        if not self.name:
+            raise ValueError("Tekne adı boş olamaz.")
+        self.model = (self.model or "").strip() or None
+        self.marina = (self.marina or "").strip() or None
+        if self.year is not None and self.year > datetime.now().year + 1:
+            raise ValueError("Üretim yılı gelecekte olamaz.")
+        return self
+
+
+class BoatOut(BaseModel):
+    """Tekne sahibinin teknesi (#383)."""
+
+    id: UUID
+    name: str
+    model: str | None = None
+    year: int | None = None
+    marina: str | None = None
+    created_at: datetime
+
+
 class CustomerSearchItem(BaseModel):
     """`GET /customers` satırı: müşteri ve tekneleri; elle eşleştirme için seçilir (#209)."""
 
