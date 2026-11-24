@@ -15,7 +15,7 @@ import pytest
 from argon2 import PasswordHasher
 from structlog.testing import capture_logs
 
-from app.db.models.accounts import UserAccount
+from app.db.models.accounts import AdminAccount, OwnerAccount
 from app.domain.accounts import (
     LOCK_MINUTES,
     MAX_FAILED_ATTEMPTS,
@@ -40,19 +40,18 @@ WRONG = secrets.token_urlsafe(16)
 ROOT = Path(__file__).resolve().parents[2]
 
 
-def make_account(**overrides: Any) -> UserAccount:
+def make_account(**overrides: Any) -> OwnerAccount:
     data: dict[str, Any] = {
         "id": uuid4(),
         "username": "ahmet.yilmaz",
         "password_hash": hash_password(GOOD),
-        "role": "owner",
         "customer_id": uuid4(),
         "is_active": True,
         "failed_attempts": 0,
         "locked_until": None,
     }
     data.update(overrides)
-    return UserAccount(**data)
+    return OwnerAccount(**data)
 
 
 # --- Karma ve politika ---------------------------------------------------------------------
@@ -78,6 +77,21 @@ def test_generated_passwords_are_random_and_meet_policy() -> None:
 
 
 # --- Doğrulama -----------------------------------------------------------------------------
+
+
+def test_admin_account_returns_admin_role_without_customer() -> None:
+    admin = AdminAccount(
+        id=uuid4(),
+        username="yonetici1",
+        display_name="Yönetici 1",
+        password_hash=hash_password(GOOD),
+        is_active=True,
+        failed_attempts=0,
+        locked_until=None,
+    )
+    result = evaluate_login(admin, GOOD, NOW)
+    assert result.ok and result.role is AccountRole.ADMIN and result.customer_id is None
+    assert result.display_name == "Yönetici 1"
 
 
 def test_correct_password_succeeds_and_returns_role() -> None:
@@ -177,12 +191,12 @@ def test_stale_hash_parameters_are_upgraded_on_success() -> None:
 
 
 class _FakeSession:
-    def __init__(self, account: UserAccount | None) -> None:
+    def __init__(self, account: OwnerAccount | None) -> None:
         self.account = account
         self.flushed = 0
         self.statements: list[str] = []
 
-    async def scalar(self, stmt: object) -> UserAccount | None:
+    async def scalar(self, stmt: object) -> OwnerAccount | None:
         self.statements.append(str(stmt))
         return self.account
 
@@ -193,7 +207,7 @@ class _FakeSession:
 async def test_verify_credentials_normalizes_username_and_flushes() -> None:
     session = _FakeSession(make_account())
     fake: Any = session
-    result = await verify_credentials(fake, "  Ahmet.Yilmaz ", GOOD, now=NOW)
+    result = await verify_credentials(fake, AccountRole.OWNER, "  Ahmet.Yilmaz ", GOOD, now=NOW)
     assert result.ok and session.flushed == 1
     assert "FOR UPDATE" in session.statements[0]  # eşzamanlı denemeler sayacı atlamasın
 
@@ -204,7 +218,7 @@ async def test_failed_login_logs_account_id_but_never_the_password() -> None:
     fake: Any = _FakeSession(account)
     with capture_logs() as logs:
         for _ in range(MAX_FAILED_ATTEMPTS):
-            await verify_credentials(fake, "ahmet.yilmaz", secret, now=NOW)
+            await verify_credentials(fake, AccountRole.OWNER, "ahmet.yilmaz", secret, now=NOW)
     assert logs  # olaylar yazıldı
     dump = repr(logs)
     assert secret not in dump and GOOD not in dump and account.password_hash not in dump

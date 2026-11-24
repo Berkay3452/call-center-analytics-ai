@@ -8,7 +8,7 @@ Alembic `Base.metadata` üzerinden bu paketi okur; yeni model eklenince buraya d
 """
 
 from app.db.base import Base
-from app.db.models.accounts import UserAccount
+from app.db.models.accounts import AdminAccount, OwnerAccount
 from app.db.models.ai import (
     AgentRun,
     AnalysisResult,
@@ -32,6 +32,7 @@ from app.db.models.external import (
 )
 
 __all__ = [
+    "AdminAccount",
     "AgentRun",
     "AnalysisResult",
     "AuditLog",
@@ -45,10 +46,10 @@ __all__ = [
     "CrmReview",
     "Customer",
     "Expense",
+    "OwnerAccount",
     "RagChunk",
     "ServiceOrder",
     "Subscription",
     "Transcript",
     "TranscriptSegment",
-    "UserAccount",
 ]

@@ -37,7 +37,7 @@ erDiagram
     boats ||--o{ calls : "about"
     customers ||--o{ calls : "called_by"
     chat_sessions ||--o{ chat_messages : "contains"
-    customers ||--o| user_accounts : "signs_in_as"
+    customers ||--o| owner_accounts : "signs_in_as"
     customers ||--o{ chat_sessions : "chats"
     analysis_results ||--o{ crm_reviews : "reviews"
     calls ||--o{ crm_reviews : "reviewed_call"
@@ -170,11 +170,22 @@ erDiagram
         timestamptz created_at
     }
 
-    user_accounts {
+    admin_accounts {
         uuid id PK
         text username UK
         text password_hash
-        text role
+        text display_name
+        boolean is_active
+        integer failed_attempts
+        timestamptz locked_until
+        timestamptz password_changed_at
+        timestamptz created_at
+    }
+
+    owner_accounts {
+        uuid id PK
+        text username UK
+        text password_hash
         uuid customer_id FK
         boolean is_active
         integer failed_attempts
@@ -582,17 +593,16 @@ Denetim günlüğü (#267): kim, ne zaman, hangi nesneye ne yaptı. **Yalnızca 
 
 **Kişisel veri kuralı:** ad, telefon, e-posta, transkript, soru metni, dosya adı, anahtar değeri yazılmaz; yalnızca kimlikler, türler ve sabit değerler. `record_audit_event` bu kuralı kodla uygular (serbest metin, `@`, boşluk, 9+ haneli sayı reddedilir). `ip` kişisel veri sayılabilir; tablo eklemeli olduğu için saklama süresiyle silinmez (bkz. `docs/kisisel_veri_envanteri.md` §3, kalan risk).
 
-### 3.11 `user_accounts`
+### 3.11 `admin_accounts`
 
-Kullanıcı hesapları (#278): her tekne sahibi ve yönetici için ayrı kullanıcı adı + parola karması. **Giriş ucu henüz açık değildir** (giriş ekranı kararı #265'e bağlı); tablo ve doğrulama servisi (`app/services/accounts.py`) kimlik doğrulama katmanı (#266) için hazırdır. Parola yalnızca **argon2id** karması olarak saklanır; düz parola hiçbir yerde tutulmaz.
+Yönetici hesapları (#278, #368). Yönetici ve tekne sahibi giriş bilgileri **ayrı tablolarda** tutulur (`owner_accounts`, bkz. §3.12): bir tekne sahibi hesabı hiçbir koşulda yönetici yetkisi taşıyamaz ve iki grubun kilit/politika ayarı bağımsız değişebilir. Giriş sırasında seçilen rol hangi tabloya bakılacağını belirler (`verify_credentials(role, ...)`, `app/services/accounts.py`). Parola yalnızca **argon2id** karması olarak saklanır; düz parola hiçbir yerde tutulmaz. Eski `user_accounts` tablosu migration `0009` ile ikiye bölündü.
 
 | Sütun | Tip | Zorunlu | Varsayılan | Açıklama |
 |-------|-----|---------|------------|----------|
 | `id` | `UUID` | ✅ | `gen_random_uuid()` | Birincil anahtar |
-| `username` | `TEXT` | ✅ | — | Benzersiz, küçük harf (müşteri adından türetilir, çakışmada sayı eki) |
+| `username` | `TEXT` | ✅ | — | Benzersiz, küçük harf |
 | `password_hash` | `TEXT` | ✅ | — | argon2id karması (`$argon2id$...`); parola politikası: en az 12 karakter |
-| `role` | `TEXT` | ✅ | — | CHECK: `admin`, `owner` |
-| `customer_id` | `UUID` | — | — | `owner` için `customers.id` (zorunlu), `admin` için boş |
+| `display_name` | `TEXT` | ✅ | — | Arayüzde gösterilen ad |
 | `is_active` | `BOOLEAN` | ✅ | `true` | Pasif hesap giriş yapamaz |
 | `failed_attempts` | `INTEGER` | ✅ | `0` | Üst üste başarısız deneme sayısı; başarıda sıfırlanır |
 | `locked_until` | `TIMESTAMPTZ` | — | — | 5 başarısız denemeden sonra 15 dakikalık geçici kilit |
@@ -601,13 +611,32 @@ Kullanıcı hesapları (#278): her tekne sahibi ve yönetici için ayrı kullan�
 
 **Kısıtlamalar ve indeksler:**
 - `PK (id)`
-- `FK (customer_id) REFERENCES customers(id) ON DELETE CASCADE`
-- `CHECK (role IN ('admin', 'owner'))`, `CHECK (username = lower(username) AND length(username) > 0)`
-- `CHECK ((role = 'owner' AND customer_id IS NOT NULL) OR (role = 'admin' AND customer_id IS NULL))`
-- `CHECK (failed_attempts >= 0)`
-- Benzersiz indeksler: `username`, `customer_id` (bir tekne sahibinin en çok bir hesabı olur)
+- `CHECK (username = lower(username) AND length(username) > 0)`, `CHECK (failed_attempts >= 0)`
+- Benzersiz indeks: `username`
 
-**Seed:** `uv run python -m scripts.seed_accounts` (Docker başlatıcısı da çağırır): her müşteriye bir hesap ve `yonetici1`, `yonetici2`. Parolalar rastgele üretilir ve yalnızca git'e girmeyen `backend/.local/seed_credentials.csv` dosyasına yazılır; repoda, belgede veya günlükte bulunmaz.
+**Seed:** `uv run python -m scripts.seed_accounts` (Docker başlatıcısı da çağırır): `yonetici1`, `yonetici2` ve her müşteriye bir tekne sahibi hesabı. Parolalar rastgele üretilir ve yalnızca git'e girmeyen `backend/.local/seed_credentials.csv` dosyasına yazılır; repoda, belgede veya günlükte bulunmaz.
+
+### 3.12 `owner_accounts`
+
+Tekne sahibi hesapları (#278, #368): her müşterinin en fazla bir hesabı olur. Sütun anlamları `admin_accounts` ile aynıdır; `display_name` yerine müşteri bağlantısı vardır.
+
+| Sütun | Tip | Zorunlu | Varsayılan | Açıklama |
+|-------|-----|---------|------------|----------|
+| `id` | `UUID` | ✅ | `gen_random_uuid()` | Birincil anahtar |
+| `username` | `TEXT` | ✅ | — | Benzersiz, küçük harf |
+| `password_hash` | `TEXT` | ✅ | — | argon2id karması (`$argon2id$...`); parola politikası: en az 12 karakter |
+| `customer_id` | `UUID` | ✅ | — | `customers.id`; sahibin kendi verisine erişimini belirler |
+| `is_active` | `BOOLEAN` | ✅ | `true` | Pasif hesap giriş yapamaz |
+| `failed_attempts` | `INTEGER` | ✅ | `0` | Üst üste başarısız deneme sayısı; başarıda sıfırlanır |
+| `locked_until` | `TIMESTAMPTZ` | — | — | 5 başarısız denemeden sonra 15 dakikalık geçici kilit |
+| `password_changed_at` | `TIMESTAMPTZ` | ✅ | `now()` | Parolanın son değiştiği an |
+| `created_at` | `TIMESTAMPTZ` | ✅ | `now()` | Oluşturulma zamanı |
+
+**Kısıtlamalar ve indeksler:**
+- `PK (id)`
+- `CHECK (username = lower(username) AND length(username) > 0)`, `CHECK (failed_attempts >= 0)`
+- `FK (customer_id) REFERENCES customers(id) ON DELETE CASCADE`
+- Benzersiz indeksler: `username`, `customer_id`
 
 ---
 
