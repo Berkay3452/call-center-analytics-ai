@@ -1,0 +1,2 @@
+# Test dosyasındaki sahte "zayıf parola" örnekleri (gerçek sır değil, #382)
+2e6b19d7aafe675bcf04f438c54cdec8eb09af62:backend/tests/test_register_endpoint.py:generic-api-key:141
