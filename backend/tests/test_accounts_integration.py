@@ -25,7 +25,13 @@ from app.core.config import Settings
 from app.db.models.accounts import AdminAccount, OwnerAccount
 from app.db.models.external import Customer
 from app.domain.accounts import MAX_FAILED_ATTEMPTS, AccountRole
-from app.services.accounts import LoginFailure, create_account, verify_credentials
+from app.services.accounts import (
+    EmailTakenError,
+    LoginFailure,
+    create_account,
+    register_owner,
+    verify_credentials,
+)
 from scripts.seed_accounts import ADMIN_USERNAMES, seed_accounts
 
 pytestmark = pytest.mark.skipif(
@@ -157,3 +163,42 @@ async def test_username_must_be_unique_and_lowercase(
         await create_account(session, username="Tekrar", password=GOOD, role=AccountRole.ADMIN)
         with pytest.raises(IntegrityError):
             await create_account(session, username="tekrar", password=GOOD, role=AccountRole.ADMIN)
+
+
+async def test_register_owner_writes_customer_and_account_then_logs_in(
+    factory: async_sessionmaker[AsyncSession],
+) -> None:
+    async with factory() as session:
+        account, customer = await register_owner(
+            session,
+            full_name="Kayıt Testi",
+            phone="+905321234567",
+            email="Kayit.Testi@Example.com",
+            password=GOOD,
+        )
+        assert customer.email == "kayit.testi@example.com" and account.customer_id == customer.id
+        assert GOOD not in account.password_hash and account.password_hash.startswith("$argon2id$")
+        ok = await verify_credentials(session, AccountRole.OWNER, "kayit.testi@example.com", GOOD)
+        assert ok.ok and ok.customer_id == customer.id
+        # yönetici tablosunda aynı bilgiyle giriş çalışmaz
+        denied = await verify_credentials(
+            session, AccountRole.ADMIN, "kayit.testi@example.com", GOOD
+        )
+        assert not denied.ok
+
+
+async def test_register_owner_rejects_duplicate_email(
+    factory: async_sessionmaker[AsyncSession],
+) -> None:
+    async with factory() as session:
+        await register_owner(
+            session, full_name="A B", phone="+905321234567", email="x@example.com", password=GOOD
+        )
+        with pytest.raises(EmailTakenError):
+            await register_owner(
+                session,
+                full_name="C D",
+                phone="+905321234568",
+                email="X@Example.com",
+                password=GOOD,
+            )

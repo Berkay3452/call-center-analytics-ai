@@ -11,6 +11,7 @@ Kurallar:
 - Tekne sahibi uçlarında kullanıcı kimliği gövdede değil, `X-User-Id` başlığında gelir (#24).
 """
 
+import re
 from datetime import datetime
 from typing import Annotated, Any, Literal
 from uuid import UUID
@@ -235,6 +236,43 @@ class LoginIn(BaseModel):
     )
     username: Annotated[SafeStr, Field(min_length=1, max_length=100)]
     password: Annotated[SafeStr, Field(min_length=1, max_length=200)]
+
+
+_EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]{2,}$")
+_PHONE_RE = re.compile(r"^(?:\+90|0)?(5\d{9})$")
+
+
+def normalize_phone(raw: str) -> str:
+    """TR cep numarasını `+905xxxxxxxxx` biçimine çevirir; geçersizse ValueError."""
+    compact = re.sub(r"[\s().-]", "", raw)
+    match = _PHONE_RE.match(compact)
+    if not match:
+        raise ValueError("Geçerli bir cep telefonu girin (ör. 0532 123 45 67).")
+    return f"+90{match.group(1)}"
+
+
+class RegisterIn(BaseModel):
+    """`POST /auth/register` gövdesi (#382): müşteri bilgileri + parola (doğum tarihi alınmaz)."""
+
+    first_name: Annotated[SafeStr, Field(min_length=1, max_length=80)]
+    last_name: Annotated[SafeStr, Field(min_length=1, max_length=80)]
+    phone: Annotated[SafeStr, Field(min_length=1, max_length=30)]
+    email: Annotated[SafeStr, Field(min_length=3, max_length=120)]
+    password: Annotated[SafeStr, Field(min_length=1, max_length=200)]
+    password_confirm: Annotated[SafeStr, Field(min_length=1, max_length=200)]
+
+    @model_validator(mode="after")
+    def _check(self) -> "RegisterIn":
+        self.first_name, self.last_name = self.first_name.strip(), self.last_name.strip()
+        if not self.first_name or not self.last_name:
+            raise ValueError("Ad ve soyad boş olamaz.")
+        self.email = self.email.strip().lower()
+        if not _EMAIL_RE.match(self.email):
+            raise ValueError("Geçerli bir e-posta adresi girin.")
+        self.phone = normalize_phone(self.phone)
+        if self.password != self.password_confirm:
+            raise ValueError("Parola ve tekrarı aynı olmalı.")
+        return self
 
 
 class LoginOut(BaseModel):

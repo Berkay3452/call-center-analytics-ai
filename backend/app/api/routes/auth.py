@@ -4,18 +4,21 @@ from fastapi import APIRouter, Request
 from sqlalchemy import select
 
 from app.api.deps import OwnerIdDep, ServiceCallerDep, SessionDep, SettingsDep
-from app.core.errors import UnauthorizedError
+from app.core.errors import ConflictError, TooManyRequestsError, UnauthorizedError
 from app.core.middleware import client_ip_var
 from app.core.security import ServiceCaller
 from app.db.models.external import Customer
 from app.domain.accounts import AccountRole
 from app.domain.audit import AuditAction, AuditActorRole, AuditOutcome
-from app.schemas.api import LoginIn, LoginOut
+from app.schemas.api import LoginIn, LoginOut, RegisterIn
 from app.schemas.common import ErrorResponse
 from app.services.accounts import (
+    EmailTakenError,
     LoginFailure,
+    PasswordPolicyError,
     enforce_login_ip_limit,
     record_login_failure_ip,
+    register_owner,
     verify_credentials,
 )
 from app.services.audit import record_audit_event_isolated
@@ -118,4 +121,71 @@ async def login(
         account_id=result.account_id,
         customer_id=result.customer_id,
         display_name=display_name,
+    )
+
+
+REGISTER_PER_HOUR = 10  # IP başına kayıt denemesi (toplu hesap açmayı engeller)
+REGISTER_ERROR = "Bu bilgilerle kayıt yapılamadı. Giriş yapmayı deneyin."
+
+
+@router.post(
+    "/auth/register",
+    response_model=LoginOut,
+    status_code=201,
+    operation_id="register",
+    responses={
+        409: {"model": ErrorResponse},
+        422: {"model": ErrorResponse},
+        429: {"model": ErrorResponse},
+    },
+)
+async def register(
+    body: RegisterIn,
+    request: Request,
+    session: SessionDep,
+    _caller: ServiceCallerDep,
+) -> LoginOut:
+    """Kaydol (#382): müşteri + tekne sahibi hesabı oluşturur ve girişe hazır `LoginOut` döner.
+
+    Yalnızca `owner` hesabı açılır; yönetici hesabı bu uçtan açılamaz. E-posta kayıtlıysa genel 409.
+    IP başına saatte `REGISTER_PER_HOUR` deneme. Parola yalnızca argon2id karması olarak saklanır.
+    """
+    limiter = getattr(request.app.state, "rate_limiter", None)
+    ip = client_ip_var.get() or "bilinmeyen"
+    if limiter is not None:
+        decision = await limiter.hit(f"kayit:{ip}", REGISTER_PER_HOUR, 3600)
+        if not decision.allowed:
+            raise TooManyRequestsError(
+                "Çok fazla kayıt denemesi; lütfen daha sonra tekrar deneyin.",
+                retry_after_s=decision.retry_after_s,
+            )
+    try:
+        account, customer = await register_owner(
+            session,
+            full_name=f"{body.first_name} {body.last_name}",
+            phone=body.phone,
+            email=body.email,
+            password=body.password,
+        )
+    except EmailTakenError:
+        await session.rollback()
+        raise ConflictError(REGISTER_ERROR) from None
+    except PasswordPolicyError as exc:
+        await session.rollback()
+        raise ConflictError(str(exc)) from None
+    await session.commit()
+    await record_audit_event_isolated(
+        request.app.state.session_factory,
+        action=AuditAction.HESAP_OLUSTURULDU,
+        actor_id=account.id,
+        actor_role=AuditActorRole.TEKNE_SAHIBI,
+        target_type="hesap_owner",
+        target_id=account.id,
+        details={"rol": "owner"},
+    )
+    return LoginOut(
+        role="owner",
+        account_id=account.id,
+        customer_id=customer.id,
+        display_name=customer.full_name,
     )

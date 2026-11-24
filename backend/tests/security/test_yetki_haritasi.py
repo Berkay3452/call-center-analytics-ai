@@ -24,7 +24,10 @@ from app.api.routes import (
 # yalnızca servis anahtarı gerekir (Next sunucusu çağırır) ve başarısızlıklar IP bütçesiyle,
 # hesap kilidiyle ve denetim günlüğüyle sınırlıdır. Yeni bir yazma ucu yönetici/sahip denetimi
 # olmadan eklenirse `test_no_mutating_route_is_left_unguarded` kırılır.
-BILINEN_ACIK: set[tuple[str, str]] = {("POST", "/api/v1/auth/login")}
+BILINEN_ACIK: set[tuple[str, str]] = {
+    ("POST", "/api/v1/auth/login"),
+    ("POST", "/api/v1/auth/register"),
+}
 
 
 def _dependency_names(route: APIRoute) -> set[str]:
