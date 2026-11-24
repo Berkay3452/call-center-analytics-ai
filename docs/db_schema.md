@@ -645,6 +645,7 @@ Tekne sahibi hesapları (#278, #368): her müşterinin en fazla bir hesabı olur
 > **⚠️ Bu tablolar varsayımdır.** Gerçek şema hocadan alınca güncellenecektir.
 > Şimdilik sentetik veriye (#23) uygun tasarlanmıştır.
 > AI servisi bu tabloları **yalnızca okur**, yazmaz.
+> **İstisna (#382, #383):** kaydol ucu `customers`'a, tekne ekleme ucu `boats`'a satır yazar (şema değişmez); diğer tablolar yalnızca okunur.
 
 ### 4.1 🔶 `customers`
 
