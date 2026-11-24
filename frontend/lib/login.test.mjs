@@ -19,7 +19,7 @@ test("safeNext: açık yönlendirme ve rol dışı yol ana sayfaya düşer", () 
 });
 
 test("hata iletileri genel ve kullanıcı dostu", () => {
-  assert.equal(loginErrorMessage(401), "Kullanıcı adı veya parola hatalı.");
+  assert.equal(loginErrorMessage(401), "E-posta veya parola hatalı.");
   assert.match(loginErrorMessage(429, 30), /30 sn/);
   assert.doesNotMatch(loginErrorMessage(429), /sn\)/);
   assert.match(loginErrorMessage(503), /şu anda yapılamıyor/);

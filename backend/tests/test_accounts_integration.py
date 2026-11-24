@@ -217,3 +217,36 @@ async def test_register_owner_rejects_duplicate_email(
                 email="X@Example.com",
                 password=GOOD,
             )
+
+
+async def test_seed_uses_email_as_login_and_migrates_legacy_usernames(
+    factory: async_sessionmaker[AsyncSession], tmp_path: Path
+) -> None:
+    path = tmp_path / "seed_credentials.csv"
+    async with factory() as session:
+        customer = Customer(full_name="Eski Hesap", email="Eski.Hesap@Example.com")
+        session.add(customer)
+        await session.flush()
+        # Eski usulde (kullanıcı adı) açılmış hesaplar
+        await create_account(
+            session,
+            username="eski.hesap",
+            password=GOOD,
+            role=AccountRole.OWNER,
+            customer_id=customer.id,
+        )
+        await create_account(session, username="yonetici1", password=GOOD, role=AccountRole.ADMIN)
+        path.write_text(
+            "username,role,password\neski.hesap,owner,x\nyonetici1,admin,y\n", encoding="utf-8"
+        )
+        await seed_accounts(session, path)
+        owner = await verify_credentials(session, AccountRole.OWNER, "eski.hesap@example.com", GOOD)
+        admin = await verify_credentials(
+            session, AccountRole.ADMIN, "yonetici1@micousta.test", GOOD
+        )
+        assert owner.ok and admin.ok  # parola karması korunur
+        old = await verify_credentials(session, AccountRole.OWNER, "eski.hesap", GOOD)
+        assert not old.ok
+    text_ = path.read_text(encoding="utf-8")
+    assert "eski.hesap@example.com,owner,x" in text_ and "yonetici1@micousta.test,admin,y" in text_
+    assert all("@" in row["username"] for row in csv.DictReader(path.open(encoding="utf-8")))

@@ -614,7 +614,7 @@ Yönetici hesapları (#278, #368). Yönetici ve tekne sahibi giriş bilgileri **
 - `CHECK (username = lower(username) AND length(username) > 0)`, `CHECK (failed_attempts >= 0)`
 - Benzersiz indeks: `username`
 
-**Seed:** `uv run python -m scripts.seed_accounts` (Docker başlatıcısı da çağırır): `yonetici1`, `yonetici2` ve her müşteriye bir tekne sahibi hesabı. Parolalar rastgele üretilir ve yalnızca git'e girmeyen `backend/.local/seed_credentials.csv` dosyasına yazılır; repoda, belgede veya günlükte bulunmaz.
+**Seed:** `uv run python -m scripts.seed_accounts` (Docker başlatıcısı da çağırır): `yonetici1@micousta.test`, `yonetici2@micousta.test` ve her müşteriye bir tekne sahibi hesabı. Parolalar rastgele üretilir ve yalnızca git'e girmeyen `backend/.local/seed_credentials.csv` dosyasına yazılır; repoda, belgede veya günlükte bulunmaz.
 
 ### 3.12 `owner_accounts`
 

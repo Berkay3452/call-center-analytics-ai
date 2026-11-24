@@ -1,5 +1,5 @@
 /**
- * Giriş (#371): tarayıcıdan gelen rol + kullanıcı adı + parolayı backend `/auth/login` ucuna iletir.
+ * Giriş (#371): tarayıcıdan gelen rol + e-posta + parolayı backend `/auth/login` ucuna iletir.
  *
  * Servis anahtarı yalnızca bu sunucuda bulunur. Başarılıysa imzalı, `httpOnly` oturum çerezi
  * kurulur; parola hiçbir yerde saklanmaz/günlüğe yazılmaz. Backend'in genel 401 iletisi aynen
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest): Promise<Response> {
     username.length > 100 ||
     password.length > 200
   ) {
-    return error(400, "bad_request", "Rol, kullanıcı adı ve parola gerekli.");
+    return error(400, "bad_request", "Rol, e-posta ve parola gerekli.");
   }
 
   const key = await getSessionKey(process.env);
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest): Promise<Response> {
   }
 
   if (upstream.status === 401) {
-    return error(401, "unauthorized", "Kullanıcı adı veya parola hatalı.");
+    return error(401, "unauthorized", "E-posta veya parola hatalı.");
   }
   if (upstream.status === 429) {
     const retry = upstream.headers.get("retry-after");

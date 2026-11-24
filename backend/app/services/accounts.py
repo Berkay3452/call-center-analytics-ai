@@ -118,6 +118,17 @@ def derive_username(full_name: str, taken: set[str]) -> str:
     return candidate
 
 
+EMAIL_DOMAIN = "micousta.test"  # sentetik hesap e-postaları (gerçek adres değildir)
+
+
+def derive_email(full_name: str, taken: set[str]) -> str:
+    """Müşteri adından sentetik e-posta: "Ahmet Yılmaz" → "ahmet.yilmaz@micousta.test"."""
+    local = derive_username(full_name, {t.split("@")[0] for t in taken if t.endswith(EMAIL_DOMAIN)})
+    email = f"{local}@{EMAIL_DOMAIN}"
+    taken.add(email)
+    return email
+
+
 def _verify_hash(stored_hash: str, password: str) -> bool:
     try:
         return _hasher.verify(stored_hash, password)

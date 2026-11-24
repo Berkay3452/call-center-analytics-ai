@@ -28,11 +28,11 @@ export function safeNext(next: string | null | undefined, role: LoginRole): stri
 
 /** Sunucu yanıt koduna göre kullanıcıya gösterilecek ileti. */
 export function loginErrorMessage(status: number, retryAfterS?: number | null): string {
-  if (status === 401) return "Kullanıcı adı veya parola hatalı.";
+  if (status === 401) return "E-posta veya parola hatalı.";
   if (status === 429) {
     const wait = retryAfterS && retryAfterS > 0 ? ` (yaklaşık ${Math.ceil(retryAfterS)} sn)` : "";
     return `Çok fazla deneme yapıldı; lütfen biraz bekleyip tekrar deneyin${wait}.`;
   }
-  if (status === 400) return "Kullanıcı adı ve parolayı girin.";
+  if (status === 400) return "E-posta ve parolayı girin.";
   return "Giriş şu anda yapılamıyor. Lütfen daha sonra tekrar deneyin.";
 }
