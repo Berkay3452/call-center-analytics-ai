@@ -26,8 +26,11 @@ from tests.test_authorization_matrix import OWNER_PREFIXES, ROUTES
 KEY = secrets.token_urlsafe(32)
 USER = str(uuid4())
 
+# `/me*` ve `/auth/*` (giriş, #369) rolü belirleyen/doğrulayan uçlardır; rol denetimi dışındadır.
 STAFF_ROUTES = [
-    (m, p) for m, p in ROUTES if not p.startswith(OWNER_PREFIXES) and not p.startswith("/api/v1/me")
+    (m, p)
+    for m, p in ROUTES
+    if not p.startswith(OWNER_PREFIXES) and not p.startswith(("/api/v1/me", "/api/v1/auth/"))
 ]
 OWNER_ROUTES = [(m, p) for m, p in ROUTES if p.startswith(OWNER_PREFIXES)]
 

@@ -19,9 +19,12 @@ from app.api.routes import (
     service_orders,
 )
 
-# Rol denetimi (#275) tüm açık uçları kapattı; bilinen açık uç kalmadı. Yeni bir yazma ucu
-# yönetici/sahip denetimi olmadan eklenirse `test_no_mutating_route_is_left_unguarded` kırılır.
-BILINEN_ACIK: set[tuple[str, str]] = set()
+# Rol denetimi (#275) tüm açık uçları kapattı. Tek bilinçli istisna giriş ucudur (#369): henüz
+# bir rol yoktur (rolü bu uç belirler), bu yüzden `require_admin`/`require_owner_id` aranmaz;
+# yalnızca servis anahtarı gerekir (Next sunucusu çağırır) ve başarısızlıklar IP bütçesiyle,
+# hesap kilidiyle ve denetim günlüğüyle sınırlıdır. Yeni bir yazma ucu yönetici/sahip denetimi
+# olmadan eklenirse `test_no_mutating_route_is_left_unguarded` kırılır.
+BILINEN_ACIK: set[tuple[str, str]] = {("POST", "/api/v1/auth/login")}
 
 
 def _dependency_names(route: APIRoute) -> set[str]:

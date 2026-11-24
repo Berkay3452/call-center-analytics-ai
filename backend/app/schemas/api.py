@@ -227,6 +227,27 @@ class CallDetail(BaseModel):
     analysis: AnalysisOut | None = None
 
 
+class LoginIn(BaseModel):
+    """`POST /auth/login` istek gövdesi (#369). `role` hangi hesap tablosuna bakılacağını seçer."""
+
+    role: Literal["admin", "owner"] = Field(
+        description="Giriş sekmesi: yönetici veya tekne sahibi."
+    )
+    username: Annotated[SafeStr, Field(min_length=1, max_length=100)]
+    password: Annotated[SafeStr, Field(min_length=1, max_length=200)]
+
+
+class LoginOut(BaseModel):
+    """Başarılı girişin sonucu; oturumu Next sunucusu kurar, parola/karma asla dönmez."""
+
+    role: Literal["admin", "owner"]
+    account_id: UUID
+    customer_id: UUID | None = Field(
+        default=None, description="Tekne sahibi için müşteri kimliği, yönetici için boş."
+    )
+    display_name: str
+
+
 class CallMatchIn(BaseModel):
     """`PUT /calls/{id}/match` istek gövdesi (#119)."""
 
