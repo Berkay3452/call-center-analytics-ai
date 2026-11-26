@@ -34,6 +34,16 @@ test.describe("Güvenlik başlıkları ve vekil kısıtları (#271)", () => {
     expect(body.error.code).toBe("method_not_allowed");
   });
 
+  test("vekil, istemcinin çağırdığı yolları tanır (#391)", async ({ request }) => {
+    // Mock modu istemcide yanıt verdiği için eksik izin ancak vekile doğrudan istekle görülür.
+    // Arka uç çalışmasa da izinli yol "Bilinmeyen uç nokta" (404) ya da 405 dönmez.
+    const paths = ["calls", "customers", "crm", "service-orders", "analytics/summary", "boats", "chat/sessions"];
+    for (const path of paths) {
+      const res = await request.get(`/api/backend/${path}`);
+      expect([404, 405], path).not.toContain(res.status());
+    }
+  });
+
   test("vekil bilinmeyen yolu 404 ile reddeder", async ({ request }) => {
     const res = await request.get("/api/backend/health");
     expect(res.status()).toBe(404);
