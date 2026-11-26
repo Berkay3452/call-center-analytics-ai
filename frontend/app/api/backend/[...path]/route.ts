@@ -24,6 +24,7 @@ const R: Array<[RegExp, readonly string[]]> = [
   [/^calls\/[^/]+\/audio$/, ["GET", "HEAD"]],
   [/^calls\/[^/]+\/transcript\/stream$/, ["GET"]], // canlı transkript (SSE, #325)
   [/^calls\/audio$/, ["POST"]],
+  [/^customers$/, ["GET"]], // elle eşleştirme: müşteri ve tekne arama (#209, #391)
   [/^crm$/, ["GET"]],
   [/^crm\/[^/]+\/approve$/, ["POST"]],
   [/^crm\/[^/]+\/reject$/, ["POST"]],
