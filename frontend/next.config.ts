@@ -45,6 +45,11 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   poweredByHeader: false,
+  experimental: {
+    // `proxy.ts` çalışan isteklerde gövde varsayılan 10 MB'ta kesilir; ses yükleme sınırı 25 MB (#390).
+    // Pay, çok parçalı form başlıkları ve alanları içindir.
+    proxyClientMaxBodySize: "26mb",
+  },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
